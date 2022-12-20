@@ -1,0 +1,42 @@
+spring:
+  data:
+    elasticsearch:
+      repositories:
+        enabled: false
+    redis:
+      repositories:
+        enabled: false
+  jpa:
+    open-in-view: false
+  rabbitmq:
+#    开启发送端确认
+    publisher-confirm-type: correlated
+#  开去发送端抵达队列的确认
+    publisher-returns: true
+#    只要抵达队列，以异步方式优先回调这个returnsConfirm
+    template:
+      mandatory: true
+#    手动ack消息
+#    只要没有手动确认，队列重的消息就不会在被消费后删除，下一次消费者进来再发给他
+    listener:
+      simple:
+        acknowledge-mode: manual
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+    time-zone: GMT+8
+server:
+  port: 8081
+  max-http-request-header-size: 10MB
+
+logging:
+  config: classpath:logback-spring.xml
+#配置自定义的线程池
+blog:
+  thread:
+    core-size: 20
+    max-size: 100
+    keep-alive-time: 10
+  highest-role: admin
+  default-role: boy,girl
+
