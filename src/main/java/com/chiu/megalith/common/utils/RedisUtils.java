@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @RequiredArgsConstructor
-public class RedisLock {
+public class RedisUtils {
 
     private final StringRedisTemplate redisTemplate;
 

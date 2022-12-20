@@ -5,7 +5,7 @@ import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
-import com.chiu.megalith.common.utils.RedisLock;
+import com.chiu.megalith.common.utils.RedisUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class CacheScheduled {
 
     private final ObjectMapper objectMapper;
 
-    private final RedisLock rLock;
+    private final RedisUtils redisUtils;
 
     private final int blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
 
@@ -54,9 +54,9 @@ public class CacheScheduled {
     public void configureTask() {
         long startMillis = System.currentTimeMillis();
 
-        Long out = rLock.delete("cacheKey", uuid);
+        Long out = redisUtils.delete("cacheKey", uuid);
 
-        if (Optional.ofNullable(out).orElse(0L) == 1) {
+        if (Optional.ofNullable(out).orElse(0L).equals(1L)) {
             List<Integer> years = blogService.searchYears();
             CompletableFuture<Void> var1 = CompletableFuture.runAsync(() -> {
                 //getBlogDetail和getBlogStatus接口

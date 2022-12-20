@@ -1,6 +1,6 @@
 package com.chiu.megalith.blog.cache;
 
-import com.chiu.megalith.common.utils.RedisLock;
+import com.chiu.megalith.common.utils.RedisUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class CacheAspect {
 
     private final ObjectMapper objectMapper;
 
-    private final RedisLock rLock;
+    private final RedisUtils rLock;
 
     @Pointcut("@annotation(com.chiu.megalith.blog.cache.Cache)")
     public void pt() {}
