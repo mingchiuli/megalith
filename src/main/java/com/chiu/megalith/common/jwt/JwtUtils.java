@@ -26,8 +26,6 @@ public class JwtUtils {
 
     private long expire;
 
-    private String header;
-
     /**
      * 生成jwt token
      */

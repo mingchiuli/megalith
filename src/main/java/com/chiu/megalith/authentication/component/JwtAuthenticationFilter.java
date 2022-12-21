@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -39,7 +40,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-		String jwt = request.getHeader(jwtUtils.getHeader());
+		String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (!StringUtils.hasLength(jwt)) {
 			chain.doFilter(request, response);
 			return;
@@ -72,7 +73,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 		String userId = claim.getSubject();
 		String role = (String) claim.get("role");
 		return new PreAuthenticatedAuthenticationToken(userId,
-				"",
+				null,
 				AuthorityUtils.createAuthorityList(role));
 	}
 }

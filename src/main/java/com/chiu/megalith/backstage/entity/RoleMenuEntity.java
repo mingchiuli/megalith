@@ -41,7 +41,6 @@ public class RoleMenuEntity implements Serializable {
     @Column(name = "menu_id")
     private Long menuId;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -9,7 +9,6 @@ import com.chiu.megalith.backstage.service.RoleService;
 import com.chiu.megalith.backstage.vo.MenuEntityVo;
 import com.chiu.megalith.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,16 +35,23 @@ public class MenuServiceImpl implements MenuService {
         String role = userEntity.getRole();
 
         List<Long> menuIds = roleService.getNavMenuIds(role);
-        Iterable<MenuEntity> menus = menuRepository.findAllById(menuIds);
-        List<MenuEntityVo> entities = new ArrayList<>();
-        menus.forEach(menu -> {
-            MenuEntityVo entity = new MenuEntityVo();
-            BeanUtils.copyProperties(menu, entity);
-            entities.add(entity);
-        });
+        List<MenuEntity> menus = menuRepository.findAllById(menuIds);
+
+        List<MenuEntityVo> entities = menus.stream().map(menu -> MenuEntityVo.builder().
+                        menuId(menu.getMenuId()).
+                        parentId(menu.getParentId()).
+                        icon(menu.getIcon()).
+                        url(menu.getUrl()).
+                        title(menu.getTitle()).
+                        name(menu.getName()).
+                        component(menu.getComponent()).
+                        type(menu.getType()).
+                        orderNum(menu.getOrderNum()).
+                        status(menu.getStatus()).
+                        build())
+                .toList();
         // 转树状结构
         return buildTreeMenu(entities);
-
     }
 
     @Override
@@ -56,19 +62,40 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<MenuEntityVo> tree() {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
-        List<MenuEntityVo> entityVos = new ArrayList<>();
-        menus.forEach(menu -> {
-            MenuEntityVo menuEntityVo = new MenuEntityVo();
-            BeanUtils.copyProperties(menu, menuEntityVo);
-            entityVos.add(menuEntityVo);
-        });
+
+        List<MenuEntityVo> entityVos = menus.stream().map(menu -> MenuEntityVo.builder().
+                        menuId(menu.getMenuId()).
+                        parentId(menu.getParentId()).
+                        icon(menu.getIcon()).
+                        url(menu.getUrl()).
+                        title(menu.getTitle()).
+                        name(menu.getName()).
+                        component(menu.getComponent()).
+                        type(menu.getType()).
+                        orderNum(menu.getOrderNum()).
+                        status(menu.getStatus()).
+                        build())
+                .toList();
+
         return buildTreeMenu(entityVos);
     }
 
     @Override
     public void saveOrUpdate(MenuEntityVo menu) {
-        MenuEntity menuEntity = new MenuEntity();
-        BeanUtils.copyProperties(menu, menuEntity);
+
+        MenuEntity menuEntity = MenuEntity.builder().
+                menuId(menu.getMenuId()).
+                parentId(menu.getParentId()).
+                icon(menu.getIcon()).
+                url(menu.getUrl()).
+                title(menu.getTitle()).
+                name(menu.getName()).
+                component(menu.getComponent()).
+                type(menu.getType()).
+                orderNum(menu.getOrderNum()).
+                status(menu.getStatus()).
+                build();
+
         menuRepository.save(menuEntity);
     }
 

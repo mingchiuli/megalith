@@ -1,7 +1,5 @@
 package com.chiu.megalith.blog.service.impl;
 
-
-import com.chiu.megalith.backstage.entity.UserEntity;
 import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.blog.cache.Cache;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
@@ -67,7 +65,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Cache(prefix = Const.HOT_BLOG)
     public BlogEntity findByIdAndStatus(Long id, Integer status) {
-        return blogRepository.findByIdAndStatus(id, status).orElseThrow();
+        return blogRepository.findByIdAndStatus(id, status).orElseThrow(() -> new NotFoundException("blog not found"));
     }
 
     @Async(value = "readCountThreadPoolExecutor")
@@ -251,17 +249,19 @@ public class BlogServiceImpl implements BlogService {
 
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page = blogRepository.findAllAdmin(pageRequest, userId);
-        ArrayList<BlogEntityDto> entities = new ArrayList<>();
 
-        page.getContent().forEach(blogEntity -> {
-            BlogEntityDto entityDto = new BlogEntityDto();
-            BeanUtils.copyProperties(blogEntity, entityDto);
+        List<BlogEntityDto> entities = page.getContent().stream().map(blogEntity -> {
             Integer readNum = Integer.valueOf(Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).orElse("0"));
-            UserEntity userEntity = userService.findUsernameById(blogEntity.getUserId());
-            entityDto.setUsername(userEntity.getUsername());
-            entityDto.setReadRecent(readNum);
-            entities.add(entityDto);
-        });
+
+            return BlogEntityDto.builder().
+                    id(blogEntity.getId()).
+                    title(blogEntity.getTitle()).
+                    description(blogEntity.getDescription()).
+                    status(blogEntity.getStatus()).
+                    created(blogEntity.getCreated()).
+                    content(blogEntity.getContent()).
+                    readRecent(readNum).build();
+        }).toList();
 
         return PageAdapter.<BlogEntityDto>builder().
                 content(entities).

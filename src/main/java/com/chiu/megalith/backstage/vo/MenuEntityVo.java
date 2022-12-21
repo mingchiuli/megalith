@@ -2,7 +2,10 @@ package com.chiu.megalith.backstage.vo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,6 +16,9 @@ import java.util.List;
  * @create 2022-12-04 6:23 pm
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MenuEntityVo implements Serializable {
 
     private Long menuId;

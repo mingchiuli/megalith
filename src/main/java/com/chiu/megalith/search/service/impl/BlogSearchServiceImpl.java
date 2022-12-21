@@ -1,7 +1,6 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import com.chiu.megalith.backstage.entity.UserEntity;
 import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.common.lang.Const;
@@ -10,7 +9,6 @@ import com.chiu.megalith.search.document.BlogDocument;
 import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -23,7 +21,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -90,15 +87,21 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
 
-        ArrayList<BlogDocumentVo> vos = new ArrayList<>();
 
-        search.getSearchHits().forEach(hit -> {
-            BlogDocumentVo vo = new BlogDocumentVo();
-            BeanUtils.copyProperties(hit.getContent(), vo);
-            vo.setScore(hit.getScore());
-            vo.setHighlight(hit.getHighlightFields().values().toString());
-            vos.add(vo);
-        });
+        List<BlogDocumentVo> vos = search.getSearchHits().stream().map(hit -> BlogDocumentVo.builder().
+                        id(hit.getContent().getId()).
+                        userId(hit.getContent().getUserId()).
+                        status(hit.getContent().getStatus()).
+                        title(hit.getContent().getTitle()).
+                        description(hit.getContent().getDescription()).
+                        content(hit.getContent().getContent()).
+                        link(hit.getContent().getLink()).
+                        created(hit.getContent().getCreated()).
+                        score(hit.getScore()).
+                        highlight(hit.getHighlightFields().values().toString()).
+                        build()).
+                toList();
+
 
         return PageAdapter.
                 <BlogDocumentVo>builder().
@@ -133,17 +136,21 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
 
-        List<BlogEntityDto> entities = new ArrayList<>();
-        search.getSearchHits().forEach(hit -> {
+        List<BlogEntityDto> entities = search.getSearchHits().stream().map(hit -> {
             BlogDocument content = hit.getContent();
-            BlogEntityDto entityDto = new BlogEntityDto();
-            BeanUtils.copyProperties(content, entityDto);
-            Integer readNum = Integer.valueOf(Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + content.getId())).orElse("0"));
-            UserEntity userEntity = userService.findUsernameById(content.getUserId());
-            entityDto.setUsername(userEntity.getUsername());
-            entityDto.setReadRecent(readNum);
-            entities.add(entityDto);
-        });
+            Integer readNum = Integer.valueOf(Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + hit.getContent().getId())).orElse("0"));
+
+            return BlogEntityDto.builder().
+                    id(content.getId()).
+                    title(content.getTitle()).
+                    description(content.getDescription()).
+                    content(content.getContent()).
+                    created(content.getCreated().toLocalDateTime()).
+                    status(content.getStatus()).
+                    readRecent(readNum).
+                    build();
+        }).toList();
+
 
         return PageAdapter.<BlogEntityDto>builder().
                 totalPages((int) (search.getTotalHits() % size == 0 ? search.getTotalHits() / size : (search.getTotalHits() / size + 1))).

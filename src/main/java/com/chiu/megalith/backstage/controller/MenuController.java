@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class MenuController {
 
     @GetMapping("/nav")
     public Result<List<MenuEntityVo>> nav(HttpServletRequest request) {
-        String jwt = request.getHeader(jwtUtils.getHeader());
+        String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
         Claims claim = jwtUtils.getClaimByToken(jwt).orElseThrow(() -> new JwtException("invalid token"));;
         String username = claim.getSubject();
         List<MenuEntityVo> navs = menuService.getCurrentUserNav(username);

@@ -18,7 +18,6 @@ public class UserController {
 
     private final UserService userService;
 
-
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @PostMapping("/save")
     public Result<Void> save(@Validated @RequestBody UserEntityVo userEntityVo) {

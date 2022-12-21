@@ -7,6 +7,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -22,8 +23,6 @@ import java.nio.charset.StandardCharsets;
 public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
 	private final ObjectMapper objectMapper;
 
-	private final JwtUtils jwtUtils;
-
 	private final static LogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
 	@Override
@@ -31,7 +30,7 @@ public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
 		logoutHandler.logout(request, response, authentication);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
-		response.setHeader(jwtUtils.getHeader(), null);
+		response.setHeader(HttpHeaders.AUTHORIZATION, null);
 		Result<String> result = Result.success();
 		outputStream.write(objectMapper.writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
 

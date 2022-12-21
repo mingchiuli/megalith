@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +72,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Long> getNavMenuIds(String role) {
-        RoleEntity roleEntity = roleRepository.findByCode(role).orElseThrow();
+        RoleEntity roleEntity = roleRepository.findByCode(role).orElseThrow(() -> new NotFoundException("role not exist"));
         Long id = roleEntity.getId();
         return roleMenuService.findMenuIdsByRoleId(id);
     }
@@ -92,13 +91,13 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public List<Long> perm(Long roleId, List<Long> menuIds) {
-        List<RoleMenuEntity> roleMenus = new ArrayList<>();
-        menuIds.forEach(menuId -> {
-            RoleMenuEntity roleMenu = new RoleMenuEntity();
-            roleMenu.setMenuId(menuId);
-            roleMenu.setRoleId(roleId);
-            roleMenus.add(roleMenu);
-        });
+
+        List<RoleMenuEntity> roleMenus = menuIds.stream().map(menuId ->
+                RoleMenuEntity.builder().
+                        menuId(menuId).
+                        roleId(roleId).
+                        build()).
+                toList();
 
         roleMenuService.deleteByRoleId(roleId);
         roleMenuService.saveAll(roleMenus);

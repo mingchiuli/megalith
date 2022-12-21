@@ -19,8 +19,6 @@ public class BlogEntityDto {
 
     private Long id;
 
-    private String username;
-
     private String title;
 
     private String description;
@@ -30,8 +28,6 @@ public class BlogEntityDto {
     private LocalDateTime created;
 
     private Integer status;
-
-    private Long readCount;
 
     private Integer readRecent;
 }
