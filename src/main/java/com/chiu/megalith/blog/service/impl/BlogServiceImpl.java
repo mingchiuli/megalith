@@ -260,7 +260,8 @@ public class BlogServiceImpl implements BlogService {
                     status(blogEntity.getStatus()).
                     created(blogEntity.getCreated()).
                     content(blogEntity.getContent()).
-                    readRecent(readNum).build();
+                    readRecent(readNum).
+                    build();
         }).toList();
 
         return PageAdapter.<BlogEntityDto>builder().
