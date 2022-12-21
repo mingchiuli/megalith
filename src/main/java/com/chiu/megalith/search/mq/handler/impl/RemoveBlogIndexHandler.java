@@ -19,7 +19,7 @@ import java.util.Set;
  */
 @Component
 public class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
-    ElasticsearchTemplate elasticsearchTemplate;
+    private final ElasticsearchTemplate elasticsearchTemplate;
 
     public RemoveBlogIndexHandler(StringRedisTemplate redisTemplate, BlogRepository blogRepository, ElasticsearchTemplate elasticsearchTemplate) {
         super(redisTemplate, blogRepository);

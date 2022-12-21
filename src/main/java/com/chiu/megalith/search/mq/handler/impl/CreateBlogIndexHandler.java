@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
-    ObjectMapper objectMapper;
-    ElasticsearchTemplate elasticsearchTemplate;
+    private final ObjectMapper objectMapper;
+    private final ElasticsearchTemplate elasticsearchTemplate;
 
     public CreateBlogIndexHandler(StringRedisTemplate redisTemplate, BlogRepository blogRepository, ObjectMapper objectMapper, ElasticsearchTemplate elasticsearchTemplate) {
         super(redisTemplate, blogRepository);

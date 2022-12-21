@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/sys/blog")
-@Validated
 public class BlogManagerController {
 
     private final BlogService blogService;
@@ -31,7 +30,7 @@ public class BlogManagerController {
         return Result.success();
     }
 
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @PostMapping("/delete")
     public Result<Void> deleteBlogs(@RequestBody List<Long> ids) {
         blogService.deleteBlogs(ids);

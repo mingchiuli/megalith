@@ -22,7 +22,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/sys/menu")
-@Validated
 @RequiredArgsConstructor
 public class MenuController {
 

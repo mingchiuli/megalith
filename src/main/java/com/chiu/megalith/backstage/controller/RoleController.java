@@ -1,8 +1,6 @@
 package com.chiu.megalith.backstage.controller;
 
-import com.chiu.megalith.authentication.user.service.UserService;
 import com.chiu.megalith.backstage.entity.RoleEntity;
-import com.chiu.megalith.backstage.service.RoleMenuService;
 import com.chiu.megalith.backstage.service.RoleService;
 import com.chiu.megalith.backstage.vo.RoleEntityVo;
 import com.chiu.megalith.common.lang.Result;
@@ -20,7 +18,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/sys/role")
-@Validated
 @RequiredArgsConstructor
 public class RoleController {
 

@@ -69,9 +69,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 			throw new JwtException("token expired");
 		}
 
-		String username = claim.getSubject();
+		String userId = claim.getSubject();
 		String role = (String) claim.get("role");
-		return new PreAuthenticatedAuthenticationToken(username,
+		return new PreAuthenticatedAuthenticationToken(userId,
 				"",
 				AuthorityUtils.createAuthorityList(role));
 	}

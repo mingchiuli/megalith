@@ -59,11 +59,11 @@ public class RoleServiceImpl implements RoleService {
             ref.roleEntity = roleRepository.findById(id).orElseThrow(() -> new NotFoundException("role not exist"));
             ref.roleEntity.setUpdated(LocalDateTime.now());
         }, () -> {
-            LocalDateTime time = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now();
             ref.roleEntity = RoleEntity.
                     builder().
-                    created(time).
-                    updated(time).
+                    created(now).
+                    updated(now).
                     build();
         });
 

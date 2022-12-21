@@ -1,6 +1,6 @@
 package com.chiu.megalith.authentication.dto;
 
-import com.chiu.megalith.authentication.user.entity.UserEntity;
+import com.chiu.megalith.backstage.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

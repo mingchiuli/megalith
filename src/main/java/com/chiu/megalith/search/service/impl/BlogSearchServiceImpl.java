@@ -1,8 +1,8 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import com.chiu.megalith.authentication.user.entity.UserEntity;
-import com.chiu.megalith.authentication.user.service.UserService;
+import com.chiu.megalith.backstage.entity.UserEntity;
+import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.page.PageAdapter;
@@ -20,6 +20,7 @@ import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightParameters;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,11 +36,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BlogSearchServiceImpl implements BlogSearchService {
 
-    ElasticsearchTemplate elasticsearchTemplate;
+    private final ElasticsearchTemplate elasticsearchTemplate;
 
-    StringRedisTemplate redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
-    UserService userService;
+    private final UserService userService;
 
     private final int blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
 
@@ -114,12 +115,19 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
     @Override
     public PageAdapter<BlogEntityDto> searchAllBlogs(String keyword, Integer currentPage, Integer size) {
-        NativeQuery nativeQuery = NativeQuery.builder()
-                .withQuery(query ->
-                        query.multiMatch(multiQuery -> multiQuery.
-                                fields(Arrays.asList("title", "description", "content")).query(keyword)))
-                .withPageable(PageRequest.of(currentPage - 1, size))
-                .withSort(sortQuery -> sortQuery.
+        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        NativeQuery nativeQuery = NativeQuery.builder().
+                withQuery(query -> query.
+                        bool(boolQuery -> boolQuery.
+                                must(mustQuery1 -> mustQuery1.
+                                        multiMatch(multiQuery -> multiQuery.
+                                                fields(Arrays.asList("title", "description", "content")).query(keyword))).
+                                must(mustQuery2 -> mustQuery2.
+                                        term(termQuery -> termQuery.
+                                                field("userId").value(userId))))).
+                withPageable(PageRequest.of(currentPage - 1, size)).
+                withSort(sortQuery -> sortQuery.
                         field(fieldQuery -> fieldQuery.
                                 field("created").order(SortOrder.Desc))).build();
 

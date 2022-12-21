@@ -1,4 +1,3 @@
-# DataSource Config
 spring:
   jpa:
     show-sql: true

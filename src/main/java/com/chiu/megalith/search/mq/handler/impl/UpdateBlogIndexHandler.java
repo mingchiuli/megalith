@@ -22,7 +22,7 @@ import java.util.Set;
 @Component
 public class UpdateBlogIndexHandler extends BlogIndexAbstractHandler {
 
-    ElasticsearchTemplate elasticsearchTemplate;
+    private final ElasticsearchTemplate elasticsearchTemplate;
 
     private final int blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
 

@@ -1,7 +1,7 @@
 package com.chiu.megalith.authentication.component;
 
-import com.chiu.megalith.authentication.user.entity.UserEntity;
-import com.chiu.megalith.authentication.user.service.UserService;
+import com.chiu.megalith.backstage.entity.UserEntity;
+import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.authentication.dto.LoginSuccessDto;
 import com.chiu.megalith.common.jwt.JwtUtils;
 import com.chiu.megalith.common.lang.Result;
@@ -38,18 +38,16 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
 
-		// 生成jwt
-		String jwt = jwtUtils.generateToken(authentication.getName(),
-				authentication.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority).orElse("ROLE_default"));
-
 		UserEntity user = userService.retrieveUserInfo(authentication.getName());
+
+		// 生成jwt
+		String jwt = jwtUtils.generateToken(String.valueOf(user.getId()),
+				authentication.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority).orElse("ROLE_default"));
 
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
 
-
 		Result<LoginSuccessDto> success = Result.success(
-				LoginSuccessDto.
-				builder().
+				LoginSuccessDto.builder().
 				user(user).
 				token(jwt).
 				build());

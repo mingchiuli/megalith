@@ -1,4 +1,4 @@
-package com.chiu.megalith.authentication.user.entity;
+package com.chiu.megalith.backstage.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

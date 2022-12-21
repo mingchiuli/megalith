@@ -82,7 +82,7 @@ public class BlogController {
         return Result.success(status);
     }
 
-    @GetMapping("/search/years")
+    @GetMapping("/years")
     @Cache(prefix = Const.YEARS)
     public Result<List<Integer>> searchYears() {
         List<Integer> years = blogService.searchYears();

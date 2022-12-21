@@ -1,7 +1,7 @@
 package com.chiu.megalith.backstage.service.impl;
 
-import com.chiu.megalith.authentication.user.entity.UserEntity;
-import com.chiu.megalith.authentication.user.service.UserService;
+import com.chiu.megalith.backstage.entity.UserEntity;
+import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.backstage.entity.MenuEntity;
 import com.chiu.megalith.backstage.repository.MenuRepository;
 import com.chiu.megalith.backstage.service.MenuService;
@@ -37,7 +37,7 @@ public class MenuServiceImpl implements MenuService {
 
         List<Long> menuIds = roleService.getNavMenuIds(role);
         Iterable<MenuEntity> menus = menuRepository.findAllById(menuIds);
-        ArrayList<MenuEntityVo> entities = new ArrayList<>();
+        List<MenuEntityVo> entities = new ArrayList<>();
         menus.forEach(menu -> {
             MenuEntityVo entity = new MenuEntityVo();
             BeanUtils.copyProperties(menu, entity);
@@ -56,7 +56,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<MenuEntityVo> tree() {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
-        ArrayList<MenuEntityVo> entityVos = new ArrayList<>();
+        List<MenuEntityVo> entityVos = new ArrayList<>();
         menus.forEach(menu -> {
             MenuEntityVo menuEntityVo = new MenuEntityVo();
             BeanUtils.copyProperties(menu, menuEntityVo);

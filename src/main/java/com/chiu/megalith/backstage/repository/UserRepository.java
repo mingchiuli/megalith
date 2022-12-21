@@ -1,6 +1,6 @@
-package com.chiu.megalith.authentication.user.repository;
+package com.chiu.megalith.backstage.repository;
 
-import com.chiu.megalith.authentication.user.entity.UserEntity;
+import com.chiu.megalith.backstage.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,7 +1,8 @@
-package com.chiu.megalith.authentication.user.service;
+package com.chiu.megalith.backstage.service;
 
 
-import com.chiu.megalith.authentication.user.entity.UserEntity;
+import com.chiu.megalith.backstage.entity.UserEntity;
+import com.chiu.megalith.backstage.vo.UserEntityVo;
 
 import java.time.LocalDateTime;
 
@@ -13,11 +14,10 @@ public interface UserService {
 
     UserEntity findUsernameById(Long userId);
 
-    UserEntity findByUsername(String username);
-
     UserEntity retrieveUserInfo(String username);
 
     void updateLoginTime(String username, LocalDateTime time);
 
+    void saveOrUpdate(UserEntityVo userEntityVo);
 
 }

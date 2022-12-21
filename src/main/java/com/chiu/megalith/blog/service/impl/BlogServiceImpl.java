@@ -1,8 +1,8 @@
 package com.chiu.megalith.blog.service.impl;
 
 
-import com.chiu.megalith.authentication.user.entity.UserEntity;
-import com.chiu.megalith.authentication.user.service.UserService;
+import com.chiu.megalith.backstage.entity.UserEntity;
+import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.blog.cache.Cache;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.blog.entity.BlogEntity;
@@ -10,6 +10,7 @@ import com.chiu.megalith.blog.repository.BlogRepository;
 import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.blog.vo.BlogEntityVo;
 import com.chiu.megalith.common.config.RabbitConfig;
+import com.chiu.megalith.common.exception.AuthenticationException;
 import com.chiu.megalith.common.exception.NotFoundException;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.page.PageAdapter;
@@ -92,7 +93,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEntity findById(Long id) {
-        return blogRepository.findById(id).orElseThrow();
+        return blogRepository.findById(id).orElseThrow(() -> new NotFoundException("blog not exist"));
     }
 
     @Override
@@ -158,8 +159,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void saveOrUpdate(BlogEntityVo blog) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserEntity user = userService.findByUsername(username);
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
         var ref = new Object() {
             BlogEntity blogEntity;
             BlogIndexEnum type;
@@ -167,14 +167,13 @@ public class BlogServiceImpl implements BlogService {
 
         Optional.ofNullable(blog.getId()).ifPresentOrElse((id) -> {
             ref.blogEntity = blogRepository.findById(blog.getId()).orElseThrow(() -> new NotFoundException("blog not exist"));
-            Assert.isTrue(ref.blogEntity.getUserId().equals(user.getId()), "must edit your blog!");
+            Assert.isTrue(ref.blogEntity.getUserId().equals(userId), "must edit your blog!");
             ref.type = BlogIndexEnum.UPDATE;
         }, () -> {
-            ref.blogEntity = new BlogEntity();
             ref.blogEntity = BlogEntity.
                     builder().
                     created(LocalDateTime.now()).
-                    userId(user.getId()).
+                    userId(userId).
                     readCount(0L).
                     build();
             ref.type = BlogIndexEnum.CREATE;
@@ -203,13 +202,19 @@ public class BlogServiceImpl implements BlogService {
     @SneakyThrows
     @Override
     public void deleteBlogs(List<Long> ids) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
         for (Long id : ids) {
             Optional<BlogEntity> optionalBlog = blogRepository.findById(id);
-            BlogEntity blogEntity = optionalBlog.orElseThrow();
+            BlogEntity blogEntity = optionalBlog.orElseThrow(() -> new NotFoundException("blog not exist"));
+
+            if (!blogEntity.getUserId().equals(userId)) {
+                throw new AuthenticationException("must delete own blog");
+            }
+
             blogRepository.delete(blogEntity);
-            redisTemplate.opsForValue().set(username + Const.QUERY_DELETED + id,
+
+            redisTemplate.opsForValue().set(userId + Const.QUERY_DELETED.getMsg() + id,
                     objectMapper.writeValueAsString(blogEntity),
                     7,
                     TimeUnit.DAYS);
@@ -242,8 +247,10 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageAdapter<BlogEntityDto> getAllABlogs(Integer currentPage, Integer size) {
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findAllAdmin(pageRequest);
+        Page<BlogEntity> page = blogRepository.findAllAdmin(pageRequest, userId);
         ArrayList<BlogEntityDto> entities = new ArrayList<>();
 
         page.getContent().forEach(blogEntity -> {

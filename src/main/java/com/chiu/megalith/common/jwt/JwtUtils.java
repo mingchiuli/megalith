@@ -31,7 +31,7 @@ public class JwtUtils {
     /**
      * 生成jwt token
      */
-    public String generateToken(String username, String role) {
+    public String generateToken(String userId, String role) {
         Date nowDate = new Date();
         //过期时间
         Date expireDate = new Date(nowDate.getTime() + expire * 1000);
@@ -39,7 +39,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .claim("role", role)
-                .setSubject(username)
+                .setSubject(userId)
                 .setIssuedAt(nowDate)
                 .setExpiration(expireDate)
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()) ,SignatureAlgorithm.HS512)
