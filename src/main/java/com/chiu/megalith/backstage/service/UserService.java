@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
  */
 public interface UserService {
 
-    UserEntity findUsernameById(Long userId);
-
     UserEntity retrieveUserInfo(String username);
 
     void updateLoginTime(String username, LocalDateTime time);
