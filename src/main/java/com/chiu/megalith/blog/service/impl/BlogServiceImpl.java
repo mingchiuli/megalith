@@ -149,7 +149,6 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Long count() {
         return blogRepository.count();
-
     }
 
     @Override
@@ -247,21 +246,23 @@ public class BlogServiceImpl implements BlogService {
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page = blogRepository.findAllAdmin(pageRequest, userId);
 
-        List<BlogEntityDto> entities = page.getContent().stream().map(blogEntity -> {
-            Integer readNum = Integer.valueOf(
-                    Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).
-                    orElse("0"));
-
-            return BlogEntityDto.builder().
-                    id(blogEntity.getId()).
-                    title(blogEntity.getTitle()).
-                    description(blogEntity.getDescription()).
-                    status(blogEntity.getStatus()).
-                    created(blogEntity.getCreated()).
-                    content(blogEntity.getContent()).
-                    readRecent(readNum).
-                    build();
-        }).toList();
+        List<BlogEntityDto> entities = page.getContent().stream().
+                map(blogEntity -> {
+                    Integer readNum = Integer.valueOf(
+                            Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).
+                                    orElse("0")
+                    );
+                    return BlogEntityDto.builder().
+                            id(blogEntity.getId()).
+                            title(blogEntity.getTitle()).
+                            description(blogEntity.getDescription()).
+                            status(blogEntity.getStatus()).
+                            created(blogEntity.getCreated()).
+                            content(blogEntity.getContent()).
+                            readRecent(readNum).
+                            build();
+                }).
+                toList();
 
         return PageAdapter.<BlogEntityDto>builder().
                 content(entities).
@@ -306,13 +307,13 @@ public class BlogServiceImpl implements BlogService {
                         totalElements(total).
                         empty(entities.isEmpty()).
                         build();
-
             });
         });
 
         return ref.pageAdapter;
     }
 
+    @SneakyThrows
     @Override
     public void recoverDeletedBlog(Long id) {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -321,20 +322,20 @@ public class BlogServiceImpl implements BlogService {
                 redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getMsg() + id)).
                 orElseThrow(() -> new NotFoundException("blog is expired"));
 
-        BlogEntity blogEntity = objectMapper.convertValue(blogStr, BlogEntity.class);
-        blogRepository.save(blogEntity);
+        BlogEntity tempBlog = objectMapper.readValue(blogStr, BlogEntity.class);
+        BlogEntity blog = blogRepository.save(tempBlog);
+        redisTemplate.delete(userId + Const.QUERY_DELETED.getMsg() + id);
 
         CorrelationData correlationData = new CorrelationData();
-
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
-                BlogIndexEnum.CREATE.name() + "_" + id,
+                BlogIndexEnum.CREATE.name() + "_" + blog.getId(),
                 10,
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
                 RabbitConfig.ES_EXCHANGE,
                 RabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(id, BlogIndexEnum.CREATE, blogEntity.getCreated().getYear()),
+                new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
                 correlationData);
     }
 

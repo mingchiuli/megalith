@@ -6,10 +6,7 @@ import com.chiu.megalith.common.lang.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/sys/user")
@@ -24,6 +21,18 @@ public class UserController {
         userService.saveOrUpdate(userEntityVo);
         return Result.success();
     }
+
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @GetMapping("/status/{id}/{status}")
+    public Result<Void> changeUserStatus(@PathVariable(value = "id") Long userId, @PathVariable(value = "status") Integer status) {
+        userService.changeUserStatus(userId, status);
+        return Result.success();
+    }
+
+
+//    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+//    @GetMapping("/page/{currentPage}")
+
 
 
 

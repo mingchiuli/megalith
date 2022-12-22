@@ -39,39 +39,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
-        http.cors().and().csrf().disable()
+        http.cors().and().csrf().disable().
+                //登录配置
+                formLogin().
+                successHandler(loginSuccessHandler).
+                failureHandler(loginFailureHandler).
 
-                // 登录配置
-                .formLogin()
-                .successHandler(loginSuccessHandler)
-                .failureHandler(loginFailureHandler)
+                and().
+                logout().
+                logoutSuccessHandler(jwtLogoutSuccessHandler).
 
-                .and()
-                .logout()
-                .logoutSuccessHandler(jwtLogoutSuccessHandler)
+                //禁用session
+                and().
+                sessionManagement().
+                sessionCreationPolicy(SessionCreationPolicy.STATELESS).
 
-                // 禁用session
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                //配置拦截规则
+                and().
+                authorizeHttpRequests().
+                requestMatchers(URL_WHITELIST).permitAll().
+                anyRequest().authenticated().
 
+                //异常处理器
+                and().
+                exceptionHandling().
+                authenticationEntryPoint(jwtAuthenticationEntryPoint).
 
-                // 配置拦截规则
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers(URL_WHITELIST).permitAll()
-                .anyRequest().authenticated()
-
-                // 异常处理器
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-
-                // 配置自定义的过滤器
-                .and()
-                .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class)
-                .userDetailsService(userDetailsService);
+                //配置自定义的过滤器
+                and().
+                addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class).
+                addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class).
+                userDetailsService(userDetailsService);
 
         return http.build();
     }

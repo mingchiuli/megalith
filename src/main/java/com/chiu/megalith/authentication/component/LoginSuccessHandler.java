@@ -48,10 +48,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
 
-		Result<LoginSuccessDto> success = Result.success(LoginSuccessDto.builder().
+		Result<LoginSuccessDto> success = Result.success(
+				LoginSuccessDto.builder().
 				user(user).
 				token(jwt).
-				build());
+				build()
+		);
 
 		outputStream.write(objectMapper.writeValueAsString(success).getBytes(StandardCharsets.UTF_8));
 

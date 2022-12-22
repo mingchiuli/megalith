@@ -20,4 +20,5 @@ public interface UserService {
 
     UserEntity findById(Long userId);
 
+    void changeUserStatus(Long id, Integer status);
 }

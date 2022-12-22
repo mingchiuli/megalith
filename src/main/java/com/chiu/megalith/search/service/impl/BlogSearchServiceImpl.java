@@ -135,7 +135,10 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         List<BlogEntityDto> entities = search.getSearchHits().stream().map(hit -> {
             BlogDocument content = hit.getContent();
-            Integer readNum = Integer.valueOf(Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + hit.getContent().getId())).orElse("0"));
+            Integer readNum = Integer.valueOf(
+                    Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + hit.getContent().getId())).
+                            orElse("0")
+            );
 
             return BlogEntityDto.builder().
                     id(content.getId()).

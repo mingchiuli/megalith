@@ -68,4 +68,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user not exist"));
     }
 
+    @Override
+    public void changeUserStatus(Long userId, Integer status) {
+        userRepository.setUserStatus(userId, status);
+    }
+
 }

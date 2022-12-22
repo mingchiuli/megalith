@@ -28,4 +28,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query(value = "SELECT new UserEntity (username) from UserEntity where id = ?1")
     Optional<UserEntity> findUsernameById(Long userId);
+
+    @Query(value = "UPDATE UserEntity user set user.status = :status where user.id = :userId")
+    @Modifying
+    @Transactional
+    void setUserStatus(Long userId, Integer status);
 }
