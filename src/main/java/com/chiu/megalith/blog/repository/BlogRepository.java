@@ -47,4 +47,9 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     @Query(value = "SELECT count(blog) from BlogEntity blog where blog.created < :created and Year(blog.created) = :year")
     Long getPageCountYear(LocalDateTime created, int year);
+
+    @Query(value = "UPDATE BlogEntity entity SET entity.status = :status WHERE entity.id = :id")
+    @Modifying
+    @Transactional
+    void setStatus(Long id, Integer status);
 }

@@ -27,8 +27,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserEntity retrieveUserInfo(Long userId) {
-        return userRepository.retrieveUserInfo(userId).orElseThrow(() -> new UsernameNotFoundException("user not exist"));
+    public UserEntity retrieveUserInfo(String username) {
+        return userRepository.retrieveUserInfo(username).orElseThrow(() -> new UsernameNotFoundException("user not exist"));
     }
 
     @Override
@@ -61,6 +61,11 @@ public class UserServiceImpl implements UserService {
 
         BeanUtils.copyProperties(userEntityVo, ref.userEntity);
         userRepository.save(ref.userEntity);
+    }
+
+    @Override
+    public UserEntity findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user not exist"));
     }
 
 }

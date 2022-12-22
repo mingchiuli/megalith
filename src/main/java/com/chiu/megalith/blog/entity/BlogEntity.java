@@ -19,8 +19,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @DynamicUpdate
 @Builder
 @Table(name ="m_blog", indexes = {@Index(columnList = "created"), @Index(columnList = "status")})

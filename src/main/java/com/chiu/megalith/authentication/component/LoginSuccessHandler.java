@@ -38,9 +38,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
 
-		Long userId = Long.parseLong(authentication.getName());
+		String username = authentication.getName();
 
-		UserEntity user = userService.retrieveUserInfo(userId);
+		UserEntity user = userService.retrieveUserInfo(username);
 
 		// 生成jwt
 		String jwt = jwtUtils.generateToken(String.valueOf(user.getId()),

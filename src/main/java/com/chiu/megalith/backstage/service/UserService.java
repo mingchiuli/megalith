@@ -12,10 +12,12 @@ import java.time.LocalDateTime;
  */
 public interface UserService {
 
-    UserEntity retrieveUserInfo(Long userId);
+    UserEntity retrieveUserInfo(String username);
 
     void updateLoginTime(String username, LocalDateTime time);
 
     void saveOrUpdate(UserEntityVo userEntityVo);
+
+    UserEntity findById(Long userId);
 
 }

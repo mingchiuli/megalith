@@ -95,7 +95,7 @@ public class CacheAspect {
 
         String redisKey = StringUtils.hasLength(prefix) ? prefix + "::" + className + "::" + methodName + params : className + "::" + methodName + params;
 
-        Object o;
+        String o;
 
         //防止redis挂了以后db也访问不了
         try {
@@ -106,7 +106,7 @@ public class CacheAspect {
 
 
         if (o != null) {
-            return objectMapper.convertValue(o, javaType);
+            return objectMapper.readValue(o, javaType);
         }
 
         String lock = (LOCK + className + methodName + params);
@@ -122,10 +122,10 @@ public class CacheAspect {
 
         try {
             //双重检查
-            Object r = redisTemplate.opsForValue().get(redisKey);
+            String r = redisTemplate.opsForValue().get(redisKey);
 
             if (r != null) {
-                return objectMapper.convertValue(r, javaType);
+                return objectMapper.readValue(r, javaType);
             }
             //执行目标方法
             Object proceed = pjp.proceed();

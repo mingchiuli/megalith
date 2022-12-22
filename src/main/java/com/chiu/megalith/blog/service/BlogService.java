@@ -46,4 +46,10 @@ public interface BlogService {
 
     PageAdapter<BlogEntityDto> getAllABlogs(Integer currentPage, Integer size);
 
+    void recoverDeletedBlog(Long id);
+
+    PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage, Integer size);
+
+    void changeBlogStatus(Long id, Integer status, Integer year);
+
 }
