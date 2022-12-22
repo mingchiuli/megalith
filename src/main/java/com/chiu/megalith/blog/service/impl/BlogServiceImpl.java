@@ -178,8 +178,8 @@ public class BlogServiceImpl implements BlogService {
         blogRepository.save(ref.blogEntity);
 
         //通知消息给mq,更新并删除缓存
-        CorrelationData correlationData = new CorrelationData();
         //防止重复消费
+        CorrelationData correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
                         ref.type.name() + "_" + ref.blogEntity.getId(),
                         10,
@@ -213,8 +213,8 @@ public class BlogServiceImpl implements BlogService {
                     7,
                     TimeUnit.DAYS);
 
-            CorrelationData correlationData = new CorrelationData();
             //防止重复消费
+            CorrelationData correlationData = new CorrelationData();
             redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
                     BlogIndexEnum.REMOVE.name() + "_" + id,
                     30,
