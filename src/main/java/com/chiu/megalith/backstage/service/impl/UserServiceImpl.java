@@ -27,8 +27,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserEntity retrieveUserInfo(String username) {
-        return userRepository.retrieveUserInfo(username).orElseThrow(() -> new UsernameNotFoundException("user not exist"));
+    public UserEntity retrieveUserInfo(Long userId) {
+        return userRepository.retrieveUserInfo(userId).orElseThrow(() -> new UsernameNotFoundException("user not exist"));
     }
 
     @Override

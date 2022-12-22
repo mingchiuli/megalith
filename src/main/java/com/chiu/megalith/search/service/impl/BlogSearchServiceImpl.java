@@ -1,7 +1,6 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.page.PageAdapter;
@@ -36,8 +35,6 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     private final StringRedisTemplate redisTemplate;
-
-    private final UserService userService;
 
     private final int blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
 

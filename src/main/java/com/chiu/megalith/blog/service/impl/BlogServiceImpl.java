@@ -146,7 +146,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<BlogEntity> findAll() {
-        return new ArrayList<>(blogRepository.findAll());
+        return blogRepository.findAll();
     }
 
     @Override
@@ -251,7 +251,9 @@ public class BlogServiceImpl implements BlogService {
         Page<BlogEntity> page = blogRepository.findAllAdmin(pageRequest, userId);
 
         List<BlogEntityDto> entities = page.getContent().stream().map(blogEntity -> {
-            Integer readNum = Integer.valueOf(Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).orElse("0"));
+            Integer readNum = Integer.valueOf(
+                    Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).
+                    orElse("0"));
 
             return BlogEntityDto.builder().
                     id(blogEntity.getId()).

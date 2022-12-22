@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface MenuService {
 
-    List<MenuEntityVo> getCurrentUserNav(String username);
+    List<MenuEntityVo> getCurrentUserNav(Long userId);
 
     MenuEntity findById(Long id);
 

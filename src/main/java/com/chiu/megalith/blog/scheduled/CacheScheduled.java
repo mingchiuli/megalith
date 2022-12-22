@@ -169,7 +169,7 @@ public class CacheScheduled {
     }
 
     @Scheduled(cron = "0 30 0/2 * * ?")
-    public void setKey() {
+    public void setNumKey() {
         uuid = UUID.randomUUID().toString();
         redisTemplate.opsForValue().setIfAbsent("cacheKey", uuid, 2, TimeUnit.HOURS);
     }

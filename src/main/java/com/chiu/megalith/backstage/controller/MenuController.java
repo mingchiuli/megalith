@@ -34,8 +34,8 @@ public class MenuController {
     public Result<List<MenuEntityVo>> nav(HttpServletRequest request) {
         String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
         Claims claim = jwtUtils.getClaimByToken(jwt).orElseThrow(() -> new JwtException("invalid token"));;
-        String username = claim.getSubject();
-        List<MenuEntityVo> navs = menuService.getCurrentUserNav(username);
+        Long userId = Long.parseLong(claim.getSubject());
+        List<MenuEntityVo> navs = menuService.getCurrentUserNav(userId);
         return Result.success(navs);
     }
 

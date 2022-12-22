@@ -29,9 +29,9 @@ public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
 
     @Override
-    public List<MenuEntityVo> getCurrentUserNav(String username) {
+    public List<MenuEntityVo> getCurrentUserNav(Long userId) {
 
-        UserEntity userEntity = userService.retrieveUserInfo(username);
+        UserEntity userEntity = userService.retrieveUserInfo(userId);
         String role = userEntity.getRole();
 
         List<Long> menuIds = roleService.getNavMenuIds(role);
