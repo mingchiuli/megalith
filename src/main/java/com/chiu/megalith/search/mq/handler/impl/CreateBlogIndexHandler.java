@@ -46,7 +46,6 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
             keys = new HashSet<>();
         }
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getMsg() + blog.getCreated().getYear());
-        keys.add(blog.getUserId() + Const.QUERY_DELETED.getMsg() + blog.getId());
         redisTemplate.unlink(keys);
 
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getMsg(), blog.getId(), true);

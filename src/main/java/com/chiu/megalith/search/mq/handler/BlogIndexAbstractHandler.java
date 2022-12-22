@@ -12,7 +12,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 
 public abstract class BlogIndexAbstractHandler {
@@ -32,29 +31,29 @@ public abstract class BlogIndexAbstractHandler {
     @SneakyThrows
     public void handle(BlogSearchIndexMessage message, Channel channel, Message msg) {
         String createUUID = msg.getMessageProperties().getHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY);
+        long deliveryTag = msg.getMessageProperties().getDeliveryTag();
         if (Boolean.TRUE.equals(redisTemplate.hasKey(Const.CONSUME_MONITOR.getMsg()  + createUUID))) {
             try {
                 Long blogId = message.getBlogId();
                 Integer year = message.getYear();
-                Optional<BlogEntity> blog = blogRepository.findById(blogId);
-                BlogEntity blogEntity = blog.orElseGet(() ->
+                BlogEntity blogEntity = blogRepository.findById(blogId).
+                        orElseGet(() ->
                         BlogEntity.
                                 builder().
                                 id(blogId).
                                 created(LocalDateTime.of(year, 1,1,1 ,1 ,1, 1)).
-                                build());
+                                build()
+                        );
 
                 redisProcess(blogEntity);
                 elasticSearchProcess(blogEntity);
-                long deliveryTagCreate = msg.getMessageProperties().getDeliveryTag();
                 //手动签收消息
                 //false代表不是批量签收模式
-                channel.basicAck(deliveryTagCreate, false);
+                channel.basicAck(deliveryTag, false);
             } finally {
                 redisTemplate.delete(Const.CONSUME_MONITOR.getMsg() + createUUID);
             }
         } else {
-            long deliveryTag = msg.getMessageProperties().getDeliveryTag();
             channel.basicNack(deliveryTag, false, false);
         }
     }
