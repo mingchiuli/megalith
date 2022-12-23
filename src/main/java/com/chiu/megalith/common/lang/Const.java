@@ -9,8 +9,6 @@ public enum Const {
 
     CAPTCHA_KEY("captcha:"),
 
-    TOKEN("token"),
-
     READ_RECENT("blogReadRecent:"),
 
     HOT_BLOGS_PATTERN("hot_blogs*"),
@@ -18,8 +16,6 @@ public enum Const {
     CO_PREFIX("co_blogId:"),
 
     CO_NUM_PREFIX("co_num:"),
-
-    QUERY_ALL_DELETED(":blog:*"),
 
     QUERY_DELETED(":blog:"),
 
@@ -48,8 +44,6 @@ public enum Const {
     WEB_PAGE_SIZE("9"),
 
     JSON_WEB_TOKEN("jwt"),
-
-    TOKEN_TOOL("token_tool"),
 
     ROLE_TOKEN_TOOL("ROLE_token_tool");
 

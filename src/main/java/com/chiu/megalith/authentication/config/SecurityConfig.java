@@ -34,13 +34,14 @@ public class SecurityConfig {
 
     private static final String[] URL_WHITELIST = {
             "/captcha",
-            "/public/blog/*"
+            "/public/blog/**",
+            "/search/website/*"
     };
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
-        http.cors().and().csrf().disable().
+        return http.cors().and().csrf().disable().
                 //登录配置
                 formLogin().
                 successHandler(loginSuccessHandler).
@@ -70,9 +71,9 @@ public class SecurityConfig {
                 and().
                 addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class).
                 addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class).
-                userDetailsService(userDetailsService);
+                userDetailsService(userDetailsService).
 
-        return http.build();
+                build();
     }
 
 }

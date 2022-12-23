@@ -41,26 +41,6 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keyword, Integer flag, Integer year) {
 
-        HighlightParameters highlightParameters;
-        HighlightParameters.HighlightParametersBuilder highlightParametersBuilder = new HighlightParameters.
-                HighlightParametersBuilder().
-                withPreTags("<b style='color:red'>").
-                withPostTags("</b>");
-        if (flag == 0) {
-            highlightParametersBuilder
-                    .withNumberOfFragments(1)
-                    .withFragmentSize(5);
-        }
-
-        highlightParameters = highlightParametersBuilder.build();
-
-        List<HighlightField> fields = Arrays.asList(
-                new HighlightField("title"),
-                new HighlightField("description"),
-                new HighlightField("content"));
-
-        Highlight highlight = new Highlight(highlightParameters, fields);
-
         NativeQuery matchQuery = NativeQuery.builder().
                 withQuery(query -> query.
                         bool(boolQuery -> boolQuery.
@@ -73,43 +53,71 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 must(mustQuery3 -> mustQuery3.
                                         range(rangeQuery -> rangeQuery.
                                                 field("created").
-                                                from(year == null ? null : year + "-01-01T00:00:00.000").
-                                                to(year == null ? null : year + "-12-31T23:59:59.999")))))
+                                                from(year != null ? year + "-01-01T00:00:00.000" : null).
+                                                to(year != null ? year + "-12-31T23:59:59.999" : null)))))
                 .withSort(sort -> sort.
                         score(score -> score.
                                 order(SortOrder.Desc)))
                 .withPageable(PageRequest.of(currentPage - 1, blogPageSize))
-                .withHighlightQuery(new HighlightQuery(highlight, null))
-                .build();
+                .withHighlightQuery(new HighlightQuery(
+                        new Highlight(flag == 0 ?
+                                new HighlightParameters.
+                                        HighlightParametersBuilder().
+                                        withPreTags("<b style='color:red'>").
+                                        withPostTags("</b>").
+                                        withNumberOfFragments(1).
+                                        withFragmentSize(5).
+                                        build() :
+                                new HighlightParameters.
+                                        HighlightParametersBuilder().
+                                        withPreTags("<b style='color:red'>").
+                                        withPostTags("</b>").
+                                        build(),
+                                Arrays.asList(
+                                        new HighlightField("title"),
+                                        new HighlightField("description"),
+                                        new HighlightField("content"))),
+                        null)).
+                build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
+        long totalHits = search.getTotalHits();
+        long totalPage = totalHits % blogPageSize == 0 ? totalHits / blogPageSize : totalHits / blogPageSize + 1;
 
-
-        List<BlogDocumentVo> vos = search.getSearchHits().stream().
-                map(hit -> BlogDocumentVo.builder().
-                        id(hit.getContent().getId()).
-                        userId(hit.getContent().getUserId()).
-                        status(hit.getContent().getStatus()).
-                        title(hit.getContent().getTitle()).
-                        description(hit.getContent().getDescription()).
-                        content(hit.getContent().getContent()).
-                        link(hit.getContent().getLink()).
-                        created(hit.getContent().getCreated()).
-                        score(hit.getScore()).
-                        highlight(hit.getHighlightFields().values().toString()).
-                        build()).
+        List<BlogDocumentVo> vos = search.getSearchHits().
+                stream().
+                map(hit ->
+                        BlogDocumentVo.builder().
+                                id(hit.getContent().
+                                        getId()).
+                                userId(hit.getContent().
+                                        getUserId()).
+                                status(hit.getContent().
+                                        getStatus()).
+                                title(hit.getContent().
+                                        getTitle()).
+                                description(hit.getContent().
+                                        getDescription()).
+                                content(hit.getContent().
+                                        getContent()).
+                                link(hit.getContent().
+                                        getLink()).
+                                created(hit.getContent().
+                                        getCreated()).
+                                score(hit.getScore()).
+                                highlight(hit.getHighlightFields().values().toString()).
+                                build()).
                 toList();
-
 
         return PageAdapter.
                 <BlogDocumentVo>builder().
                 first(currentPage == 1).
-                last(currentPage == (search.getTotalHits() % blogPageSize == 0 ? search.getTotalHits() / blogPageSize : search.getTotalHits() / blogPageSize + 1)).
+                last(currentPage == totalPage).
                 pageSize(blogPageSize).
                 pageNumber(currentPage).
-                empty(search.isEmpty()).
-                totalElements(search.getTotalHits()).
-                totalPages((int) (search.getTotalHits() % blogPageSize == 0 ? search.getTotalHits() / blogPageSize : (search.getTotalHits() / blogPageSize + 1))).
+                empty(totalHits == 0).
+                totalElements(totalHits).
+                totalPages((int) totalPage).
                 content(vos).
                 build();
     }
@@ -130,38 +138,47 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 withPageable(PageRequest.of(currentPage - 1, size)).
                 withSort(sortQuery -> sortQuery.
                         field(fieldQuery -> fieldQuery.
-                                field("created").order(SortOrder.Desc))).build();
+                                field("created").order(SortOrder.Desc))).
+                build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
+        long totalHits = search.getTotalHits();
+        long totalPage = totalHits % size == 0 ? totalHits / size : totalHits / size + 1;
 
-        List<BlogEntityDto> entities = search.getSearchHits().stream().
-                map(hit -> {
-                    BlogDocument content = hit.getContent();
-                    Integer readNum = Integer.valueOf(
-                            Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + hit.getContent().getId())).
-                                    orElse("0")
-                    );
-
-                    return BlogEntityDto.builder().
-                            id(content.getId()).
-                            title(content.getTitle()).
-                            description(content.getDescription()).
-                            content(content.getContent()).
-                            created(content.getCreated().toLocalDateTime()).
-                            status(content.getStatus()).
-                            readRecent(readNum).
-                            build();
-                }).
+        List<BlogEntityDto> entities = search.getSearchHits().
+                stream().
+                map(hit ->
+                        BlogEntityDto.builder().
+                                id(hit.getContent().
+                                        getId()).
+                                title(hit.getContent().
+                                        getTitle()).
+                                description(hit.getContent().
+                                        getDescription()).
+                                content(hit.getContent().
+                                        getContent()).
+                                created(hit.getContent().
+                                        getCreated().toLocalDateTime()).
+                                status(hit.getContent().
+                                        getStatus()).
+                                readRecent(Integer.valueOf(
+                                    Optional.ofNullable(redisTemplate.opsForValue().get(
+                                            Const.READ_RECENT.getMsg() + hit.getContent().getId()
+                                            )).
+                                            orElse("0")
+                                )).
+                                build()
+                ).
                 toList();
 
         return PageAdapter.<BlogEntityDto>builder().
-                totalPages((int) (search.getTotalHits() % size == 0 ? search.getTotalHits() / size : (search.getTotalHits() / size + 1))).
-                totalElements(search.getTotalHits()).
+                totalElements(totalHits).
                 pageNumber(currentPage).
                 pageSize(size).
-                empty(search.isEmpty()).
+                empty(totalHits == 0).
                 first(currentPage == 1).
-                last(currentPage == (search.getTotalHits() % size == 0 ? search.getTotalHits() / size : search.getTotalHits() / size + 1)).
+                last(currentPage == totalPage).
+                totalPages((int) totalPage).
                 content(entities).
                 build();
     }

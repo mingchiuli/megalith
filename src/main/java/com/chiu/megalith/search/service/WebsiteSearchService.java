@@ -1,5 +1,7 @@
 package com.chiu.megalith.search.service;
 
+import com.chiu.megalith.common.page.PageAdapter;
+import com.chiu.megalith.search.vo.WebsiteDocumentVo;
 import com.chiu.megalith.search.vo.WebsiteVo;
 
 /**
@@ -11,4 +13,9 @@ public interface WebsiteSearchService {
 
     void saveOrUpdate(WebsiteVo document);
 
+    void delete(String id);
+
+    PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage, String keyword);
+
+    PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword);
 }
