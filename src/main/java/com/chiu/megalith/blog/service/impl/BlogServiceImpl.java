@@ -62,7 +62,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Cache(prefix = Const.HOT_BLOG)
     public BlogEntity findByIdAndStatus(Long id, Integer status) {
-        return blogRepository.findByIdAndStatus(id, status).orElseThrow(() -> new NotFoundException("blog not found"));
+        return blogRepository.findByIdAndStatus(id, status).
+                orElseThrow(() -> new NotFoundException("blog not found"));
     }
 
     @Async(value = "readCountThreadPoolExecutor")
@@ -88,7 +89,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEntity findById(Long id) {
-        return blogRepository.findById(id).orElseThrow(() -> new NotFoundException("blog not exist"));
+        return blogRepository.findById(id).
+                orElseThrow(() -> new NotFoundException("blog not exist"));
     }
 
     @Override
@@ -124,10 +126,11 @@ public class BlogServiceImpl implements BlogService {
         String password = redisTemplate.opsForValue().get(Const.READ_TOKEN);
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
             if (password.equals(token)) {
-                return blogRepository.findByIdAndStatus(blogId, 1).orElseThrow(() -> new NotFoundException("status error"));
+                return blogRepository.findByIdAndStatus(blogId, 1).
+                        orElseThrow(() -> new NotFoundException("status error"));
             }
         }
-        return null;
+        throw new AuthenticationException("authorization exception");
     }
 
     @Override
@@ -200,7 +203,8 @@ public class BlogServiceImpl implements BlogService {
 
         for (Long id : ids) {
             Optional<BlogEntity> optionalBlog = blogRepository.findById(id);
-            BlogEntity blogEntity = optionalBlog.orElseThrow(() -> new NotFoundException("blog not exist"));
+            BlogEntity blogEntity = optionalBlog.
+                    orElseThrow(() -> new NotFoundException("blog not exist"));
 
             if (!blogEntity.getUserId().equals(userId)) {
                 throw new AuthenticationException("must delete own blog");
@@ -246,22 +250,21 @@ public class BlogServiceImpl implements BlogService {
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page = blogRepository.findAllAdmin(pageRequest, userId);
 
-        List<BlogEntityDto> entities = page.getContent().stream().
-                map(blogEntity -> {
-                    Integer readNum = Integer.valueOf(
-                            Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).
-                                    orElse("0")
-                    );
-                    return BlogEntityDto.builder().
-                            id(blogEntity.getId()).
-                            title(blogEntity.getTitle()).
-                            description(blogEntity.getDescription()).
-                            status(blogEntity.getStatus()).
-                            created(blogEntity.getCreated()).
-                            content(blogEntity.getContent()).
-                            readRecent(readNum).
-                            build();
-                }).
+        List<BlogEntityDto> entities = page.getContent().
+                stream().
+                map(blogEntity ->
+                        BlogEntityDto.builder().
+                                id(blogEntity.getId()).
+                                title(blogEntity.getTitle()).
+                                description(blogEntity.getDescription()).
+                                status(blogEntity.getStatus()).
+                                created(blogEntity.getCreated()).
+                                content(blogEntity.getContent()).
+                                readRecent(Integer.valueOf(
+                                        Optional.ofNullable(
+                                                redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).
+                                        orElse("0"))).
+                                build()).
                 toList();
 
         return PageAdapter.<BlogEntityDto>builder().
@@ -285,29 +288,29 @@ public class BlogServiceImpl implements BlogService {
             PageAdapter<BlogEntity> pageAdapter;
         };
 
+
+
         Optional.ofNullable(set).ifPresent(keys -> {
             int total = set.size();
             int totalPages = total % size == 0 ? total / size : total / size + 1;
 
             List<String> stringList = redisTemplate.opsForValue().multiGet(keys);
-            Optional.ofNullable(stringList).ifPresent(list -> {
-                List<BlogEntity> entities = list.stream().
-                        map(this::readValue).
-                        sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
-                        limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
-                        toList();
-
-                ref.pageAdapter = PageAdapter.<BlogEntity>builder().
-                        content(entities).
-                        last(currentPage == totalPages).
-                        first(currentPage == 1).
-                        pageNumber(currentPage).
-                        totalPages(totalPages).
-                        pageSize(size).
-                        totalElements(total).
-                        empty(entities.isEmpty()).
-                        build();
-            });
+            Optional.ofNullable(stringList).ifPresent(list ->
+                    ref.pageAdapter = PageAdapter.<BlogEntity>builder().
+                            content(list.
+                                    stream().
+                                    map(this::readValue).
+                                    sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
+                                    limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
+                                    toList()).
+                            last(currentPage == totalPages).
+                            first(currentPage == 1).
+                            pageNumber(currentPage).
+                            totalPages(totalPages).
+                            pageSize(size).
+                            totalElements(total).
+                            empty(total == 0).
+                            build());
         });
 
         return ref.pageAdapter;

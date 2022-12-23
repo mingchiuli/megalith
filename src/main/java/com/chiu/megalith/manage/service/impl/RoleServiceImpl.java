@@ -92,11 +92,13 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     public List<Long> perm(Long roleId, List<Long> menuIds) {
 
-        List<RoleMenuEntity> roleMenus = menuIds.stream().map(menuId ->
-                RoleMenuEntity.builder().
-                        menuId(menuId).
-                        roleId(roleId).
-                        build()).
+        List<RoleMenuEntity> roleMenus = menuIds.
+                stream().
+                map(menuId ->
+                        RoleMenuEntity.builder().
+                                menuId(menuId).
+                                roleId(roleId).
+                                build()).
                 toList();
 
         roleMenuService.deleteByRoleId(roleId);

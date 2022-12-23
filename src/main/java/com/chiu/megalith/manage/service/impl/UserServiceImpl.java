@@ -55,15 +55,15 @@ public class UserServiceImpl implements UserService {
                     orElseThrow(() -> new NotFoundException("user not exist"));
             Optional.ofNullable(userEntityVo.getPassword()).ifPresentOrElse(password ->
                             userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
-                    userEntityVo.setPassword(ref.userEntity.getPassword())
-            );
+                    userEntityVo.setPassword(ref.userEntity.getPassword()));
         }, () -> {
             ref.userEntity = UserEntity.builder().
                     created(now).
                     lastLogin(now).
                     build();
-            userEntityVo.setPassword(passwordEncoder.encode(Optional.ofNullable(userEntityVo.getPassword()).
-                    orElseThrow(() -> new CommitException("password is required")))
+            userEntityVo.setPassword(passwordEncoder.encode(
+                    Optional.ofNullable(userEntityVo.getPassword()).orElseThrow(() ->
+                            new CommitException("password is required")))
             );
         });
 
