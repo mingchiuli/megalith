@@ -23,7 +23,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<UserEntity> sysUser = userRepository.findByUsername(username);
 
-		UserEntity user = sysUser.orElseThrow(() -> new UsernameNotFoundException("username not exist"));
+		UserEntity user = sysUser.
+				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
 		//通过User去自动比较用户名和密码
 		return new User(user.getUsername(),
