@@ -1,4 +1,4 @@
-package com.chiu.megalith.backstage.vo;
+package com.chiu.megalith.manage.vo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,4 +1,4 @@
-package com.chiu.megalith.backstage.vo;
+package com.chiu.megalith.manage.vo;
 
 import com.chiu.megalith.common.valid.ListValue;
 import jakarta.validation.constraints.Email;

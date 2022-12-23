@@ -1,4 +1,4 @@
-package com.chiu.megalith.backstage.entity;
+package com.chiu.megalith.manage.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

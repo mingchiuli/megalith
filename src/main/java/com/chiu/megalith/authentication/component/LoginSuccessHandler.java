@@ -1,7 +1,7 @@
 package com.chiu.megalith.authentication.component;
 
-import com.chiu.megalith.backstage.entity.UserEntity;
-import com.chiu.megalith.backstage.service.UserService;
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.authentication.dto.LoginSuccessDto;
 import com.chiu.megalith.common.jwt.JwtUtils;
 import com.chiu.megalith.common.lang.Result;

@@ -1,8 +1,8 @@
-package com.chiu.megalith.backstage.controller;
+package com.chiu.megalith.manage.controller;
 
-import com.chiu.megalith.backstage.entity.MenuEntity;
-import com.chiu.megalith.backstage.service.MenuService;
-import com.chiu.megalith.backstage.vo.MenuEntityVo;
+import com.chiu.megalith.manage.entity.MenuEntity;
+import com.chiu.megalith.manage.service.MenuService;
+import com.chiu.megalith.manage.vo.MenuEntityVo;
 import com.chiu.megalith.common.jwt.JwtUtils;
 import com.chiu.megalith.common.lang.Result;
 import io.jsonwebtoken.Claims;

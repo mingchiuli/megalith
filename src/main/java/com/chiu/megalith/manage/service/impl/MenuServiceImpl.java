@@ -1,12 +1,12 @@
-package com.chiu.megalith.backstage.service.impl;
+package com.chiu.megalith.manage.service.impl;
 
-import com.chiu.megalith.backstage.entity.UserEntity;
-import com.chiu.megalith.backstage.service.UserService;
-import com.chiu.megalith.backstage.entity.MenuEntity;
-import com.chiu.megalith.backstage.repository.MenuRepository;
-import com.chiu.megalith.backstage.service.MenuService;
-import com.chiu.megalith.backstage.service.RoleService;
-import com.chiu.megalith.backstage.vo.MenuEntityVo;
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.service.UserService;
+import com.chiu.megalith.manage.entity.MenuEntity;
+import com.chiu.megalith.manage.repository.MenuRepository;
+import com.chiu.megalith.manage.service.MenuService;
+import com.chiu.megalith.manage.service.RoleService;
+import com.chiu.megalith.manage.vo.MenuEntityVo;
 import com.chiu.megalith.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

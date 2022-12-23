@@ -62,14 +62,16 @@ public class BlogManagerController {
 
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @GetMapping("/get/blogs")
-    public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "5") Integer size) {
+    public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
+                                                          @RequestParam(defaultValue = "5") Integer size) {
         PageAdapter<BlogEntityDto> page = blogService.getAllABlogs(currentPage, size);
         return Result.success(page);
     }
 
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @GetMapping("/deleted")
-    public Result<PageAdapter<BlogEntity>> listDeletedBlogs(@RequestParam Integer currentPage, @RequestParam Integer size) {
+    public Result<PageAdapter<BlogEntity>> listDeletedBlogs(@RequestParam Integer currentPage,
+                                                            @RequestParam Integer size) {
         PageAdapter<BlogEntity> deletedBlogs = blogService.listDeletedBlogs(currentPage, size);
         return Result.success(deletedBlogs);
     }
@@ -83,7 +85,9 @@ public class BlogManagerController {
 
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/status/{id}/{status}/{year}")
-    public Result<Void> changeBlogStatus(@PathVariable(value = "id") Long id, @PathVariable(value = "status") Integer status, @PathVariable(value = "year") Integer year) {
+    public Result<Void> changeBlogStatus(@PathVariable(value = "id") Long id,
+                                         @PathVariable(value = "status") Integer status,
+                                         @PathVariable(value = "year") Integer year) {
         blogService.changeBlogStatus(id, status, year);
         return Result.success();
     }

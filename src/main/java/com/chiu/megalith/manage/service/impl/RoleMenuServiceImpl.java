@@ -1,8 +1,8 @@
-package com.chiu.megalith.backstage.service.impl;
+package com.chiu.megalith.manage.service.impl;
 
-import com.chiu.megalith.backstage.entity.RoleMenuEntity;
-import com.chiu.megalith.backstage.repository.RoleMenuRepository;
-import com.chiu.megalith.backstage.service.RoleMenuService;
+import com.chiu.megalith.manage.entity.RoleMenuEntity;
+import com.chiu.megalith.manage.repository.RoleMenuRepository;
+import com.chiu.megalith.manage.service.RoleMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

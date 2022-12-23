@@ -1,8 +1,8 @@
-package com.chiu.megalith.backstage.service;
+package com.chiu.megalith.manage.service;
 
 
-import com.chiu.megalith.backstage.entity.MenuEntity;
-import com.chiu.megalith.backstage.vo.MenuEntityVo;
+import com.chiu.megalith.manage.entity.MenuEntity;
+import com.chiu.megalith.manage.vo.MenuEntityVo;
 
 import java.util.List;
 

@@ -46,7 +46,8 @@ public class BlogController {
     @GetMapping("/page/year/{year}/{currentPage}")
     @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListByYearBloomHandler.class)
-    public Result<PageAdapter<BlogEntity>> listPageByYear(@PathVariable(name = "currentPage") Integer currentPage, @PathVariable(name = "year") Integer year) {
+    public Result<PageAdapter<BlogEntity>> listPageByYear(@PathVariable(name = "currentPage") Integer currentPage,
+                                                          @PathVariable(name = "year") Integer year) {
         PageAdapter<BlogEntity> pageData = blogService.listPageByYear(currentPage, year);
         return Result.success(pageData);
     }
@@ -60,7 +61,8 @@ public class BlogController {
     }
 
     @GetMapping("/token/{blogId}/{token}")
-    public Result<BlogEntity> getLockedBlog(@PathVariable Long blogId, @PathVariable String token) {
+    public Result<BlogEntity> getLockedBlog(@PathVariable Long blogId,
+                                            @PathVariable String token) {
         BlogEntity blog = blogService.getLockedBlog(blogId, token);
         return Result.success(blog);
     }

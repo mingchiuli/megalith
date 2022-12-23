@@ -1,8 +1,8 @@
-package com.chiu.megalith.backstage.service;
+package com.chiu.megalith.manage.service;
 
 
-import com.chiu.megalith.backstage.entity.UserEntity;
-import com.chiu.megalith.backstage.vo.UserEntityVo;
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.vo.UserEntityVo;
 import com.chiu.megalith.common.page.PageAdapter;
 
 import java.time.LocalDateTime;

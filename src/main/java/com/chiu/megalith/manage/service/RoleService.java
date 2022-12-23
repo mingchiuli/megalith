@@ -1,8 +1,8 @@
-package com.chiu.megalith.backstage.service;
+package com.chiu.megalith.manage.service;
 
 
-import com.chiu.megalith.backstage.entity.RoleEntity;
-import com.chiu.megalith.backstage.vo.RoleEntityVo;
+import com.chiu.megalith.manage.entity.RoleEntity;
+import com.chiu.megalith.manage.vo.RoleEntityVo;
 import com.chiu.megalith.common.page.PageAdapter;
 
 import java.util.List;

@@ -1,8 +1,8 @@
-package com.chiu.megalith.backstage.controller;
+package com.chiu.megalith.manage.controller;
 
-import com.chiu.megalith.backstage.entity.RoleEntity;
-import com.chiu.megalith.backstage.service.RoleService;
-import com.chiu.megalith.backstage.vo.RoleEntityVo;
+import com.chiu.megalith.manage.entity.RoleEntity;
+import com.chiu.megalith.manage.service.RoleService;
+import com.chiu.megalith.manage.vo.RoleEntityVo;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,8 @@ public class RoleController {
 
     @GetMapping("/page")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public Result<PageAdapter<RoleEntity>> listPage(@RequestParam(defaultValue = "1") Integer currentPage, @RequestParam(defaultValue = "5") Integer pageSize) {
+    public Result<PageAdapter<RoleEntity>> listPage(@RequestParam(defaultValue = "1") Integer currentPage,
+                                                    @RequestParam(defaultValue = "5") Integer pageSize) {
         PageAdapter<RoleEntity> pageData = roleService.listPage(currentPage, pageSize);
         return Result.success(pageData);
     }
@@ -53,7 +54,8 @@ public class RoleController {
 
     @PostMapping("/perm/{roleId}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<List<Long>> info(@PathVariable("roleId") Long roleId, @RequestBody List<Long> menuIds) {
+    public Result<List<Long>> info(@PathVariable("roleId") Long roleId,
+                                   @RequestBody List<Long> menuIds) {
         menuIds = roleService.perm(roleId, menuIds);
         return Result.success(menuIds);
     }

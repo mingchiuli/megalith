@@ -1,9 +1,9 @@
-package com.chiu.megalith.backstage.service.impl;
+package com.chiu.megalith.manage.service.impl;
 
-import com.chiu.megalith.backstage.entity.UserEntity;
-import com.chiu.megalith.backstage.repository.UserRepository;
-import com.chiu.megalith.backstage.service.UserService;
-import com.chiu.megalith.backstage.vo.UserEntityVo;
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.repository.UserRepository;
+import com.chiu.megalith.manage.service.UserService;
+import com.chiu.megalith.manage.vo.UserEntityVo;
 import com.chiu.megalith.common.exception.CommitException;
 import com.chiu.megalith.common.exception.NotFoundException;
 import com.chiu.megalith.common.page.PageAdapter;

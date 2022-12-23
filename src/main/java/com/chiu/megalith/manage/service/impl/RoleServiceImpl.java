@@ -1,12 +1,12 @@
-package com.chiu.megalith.backstage.service.impl;
+package com.chiu.megalith.manage.service.impl;
 
 
-import com.chiu.megalith.backstage.entity.RoleEntity;
-import com.chiu.megalith.backstage.entity.RoleMenuEntity;
-import com.chiu.megalith.backstage.repository.RoleRepository;
-import com.chiu.megalith.backstage.service.RoleMenuService;
-import com.chiu.megalith.backstage.service.RoleService;
-import com.chiu.megalith.backstage.vo.RoleEntityVo;
+import com.chiu.megalith.manage.entity.RoleEntity;
+import com.chiu.megalith.manage.entity.RoleMenuEntity;
+import com.chiu.megalith.manage.repository.RoleRepository;
+import com.chiu.megalith.manage.service.RoleMenuService;
+import com.chiu.megalith.manage.service.RoleService;
+import com.chiu.megalith.manage.vo.RoleEntityVo;
 import com.chiu.megalith.common.exception.NotFoundException;
 import com.chiu.megalith.common.page.PageAdapter;
 import lombok.RequiredArgsConstructor;

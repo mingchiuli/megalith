@@ -1,6 +1,6 @@
-package com.chiu.megalith.backstage.repository;
+package com.chiu.megalith.manage.repository;
 
-import com.chiu.megalith.backstage.entity.RoleEntity;
+import com.chiu.megalith.manage.entity.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

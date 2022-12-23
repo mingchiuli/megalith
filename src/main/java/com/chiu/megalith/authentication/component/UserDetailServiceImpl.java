@@ -1,7 +1,7 @@
 package com.chiu.megalith.authentication.component;
 
-import com.chiu.megalith.backstage.entity.UserEntity;
-import com.chiu.megalith.backstage.repository.UserRepository;
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;

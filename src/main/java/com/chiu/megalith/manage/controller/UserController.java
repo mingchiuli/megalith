@@ -1,8 +1,8 @@
-package com.chiu.megalith.backstage.controller;
+package com.chiu.megalith.manage.controller;
 
-import com.chiu.megalith.backstage.entity.UserEntity;
-import com.chiu.megalith.backstage.service.UserService;
-import com.chiu.megalith.backstage.vo.UserEntityVo;
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.service.UserService;
+import com.chiu.megalith.manage.vo.UserEntityVo;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,8 @@ public class UserController {
 
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/status/{id}/{status}")
-    public Result<Void> changeUserStatus(@PathVariable(value = "id") Long userId, @PathVariable(value = "status") Integer status) {
+    public Result<Void> changeUserStatus(@PathVariable(value = "id") Long userId,
+                                         @PathVariable(value = "status") Integer status) {
         userService.changeUserStatus(userId, status);
         return Result.success();
     }
@@ -36,7 +37,8 @@ public class UserController {
 
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/page/{currentPage}")
-    public Result<PageAdapter<UserEntity>> page(@PathVariable(value = "currentPage") Integer currentPage, @RequestParam(value = "size", defaultValue = "5") Integer size) {
+    public Result<PageAdapter<UserEntity>> page(@PathVariable(value = "currentPage") Integer currentPage,
+                                                @RequestParam(value = "size", defaultValue = "5") Integer size) {
         PageAdapter<UserEntity> page = userService.listPage(currentPage, size);
         return Result.success(page);
     }
