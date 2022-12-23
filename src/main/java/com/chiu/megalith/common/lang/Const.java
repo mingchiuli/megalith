@@ -45,7 +45,14 @@ public enum Const {
 
     BLOG_PAGE_SIZE("5"),
 
-    WEB_PAGE_SIZE("9");
+    WEB_PAGE_SIZE("9"),
+
+    JSON_WEB_TOKEN("jwt"),
+
+    TOKEN_TOOL("token_tool"),
+
+    ROLE_TOKEN_TOOL("ROLE_token_tool");
+
 
     private final String msg;
 
