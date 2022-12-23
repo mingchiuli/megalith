@@ -85,7 +85,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
 
 
-        List<BlogDocumentVo> vos = search.getSearchHits().stream().map(hit -> BlogDocumentVo.builder().
+        List<BlogDocumentVo> vos = search.getSearchHits().stream().
+                map(hit -> BlogDocumentVo.builder().
                         id(hit.getContent().getId()).
                         userId(hit.getContent().getUserId()).
                         status(hit.getContent().getStatus()).
@@ -133,24 +134,25 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
 
-        List<BlogEntityDto> entities = search.getSearchHits().stream().map(hit -> {
-            BlogDocument content = hit.getContent();
-            Integer readNum = Integer.valueOf(
-                    Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + hit.getContent().getId())).
-                            orElse("0")
-            );
+        List<BlogEntityDto> entities = search.getSearchHits().stream().
+                map(hit -> {
+                    BlogDocument content = hit.getContent();
+                    Integer readNum = Integer.valueOf(
+                            Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + hit.getContent().getId())).
+                                    orElse("0")
+                    );
 
-            return BlogEntityDto.builder().
-                    id(content.getId()).
-                    title(content.getTitle()).
-                    description(content.getDescription()).
-                    content(content.getContent()).
-                    created(content.getCreated().toLocalDateTime()).
-                    status(content.getStatus()).
-                    readRecent(readNum).
-                    build();
-        }).toList();
-
+                    return BlogEntityDto.builder().
+                            id(content.getId()).
+                            title(content.getTitle()).
+                            description(content.getDescription()).
+                            content(content.getContent()).
+                            created(content.getCreated().toLocalDateTime()).
+                            status(content.getStatus()).
+                            readRecent(readNum).
+                            build();
+                }).
+                toList();
 
         return PageAdapter.<BlogEntityDto>builder().
                 totalPages((int) (search.getTotalHits() % size == 0 ? search.getTotalHits() / size : (search.getTotalHits() / size + 1))).

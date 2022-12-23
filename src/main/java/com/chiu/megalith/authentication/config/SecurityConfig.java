@@ -34,6 +34,7 @@ public class SecurityConfig {
 
     private static final String[] URL_WHITELIST = {
             "/captcha",
+            "/public/blog/*"
     };
 
     @Bean

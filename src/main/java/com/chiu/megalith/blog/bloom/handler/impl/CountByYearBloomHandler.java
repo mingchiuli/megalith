@@ -23,7 +23,7 @@ public class CountByYearBloomHandler implements BloomHandler {
     public void handle(Object[] args) {
         Integer year = (Integer) args[0];
         if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEARS.getMsg(), year))) {
-            throw new NotFoundException("Not found " + year + "year");
+            throw new NotFoundException("Not found " + year + " year");
         }
     }
 }

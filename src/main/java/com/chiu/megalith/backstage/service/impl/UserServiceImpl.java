@@ -6,12 +6,18 @@ import com.chiu.megalith.backstage.service.UserService;
 import com.chiu.megalith.backstage.vo.UserEntityVo;
 import com.chiu.megalith.common.exception.CommitException;
 import com.chiu.megalith.common.exception.NotFoundException;
+import com.chiu.megalith.common.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,14 +55,16 @@ public class UserServiceImpl implements UserService {
                     orElseThrow(() -> new NotFoundException("user not exist"));
             Optional.ofNullable(userEntityVo.getPassword()).ifPresentOrElse(password ->
                             userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
-                    userEntityVo.setPassword(ref.userEntity.getPassword()));
+                    userEntityVo.setPassword(ref.userEntity.getPassword())
+            );
         }, () -> {
             ref.userEntity = UserEntity.builder().
                     created(now).
                     lastLogin(now).
                     build();
             userEntityVo.setPassword(passwordEncoder.encode(Optional.ofNullable(userEntityVo.getPassword()).
-                    orElseThrow(() -> new CommitException("password is required"))));
+                    orElseThrow(() -> new CommitException("password is required")))
+            );
         });
 
         BeanUtils.copyProperties(userEntityVo, ref.userEntity);
@@ -73,4 +81,24 @@ public class UserServiceImpl implements UserService {
         userRepository.setUserStatus(userId, status);
     }
 
+    @Override
+    public PageAdapter<UserEntity> listPage(Integer currentPage, Integer size) {
+        Pageable pageRequest = PageRequest.of(currentPage - 1,
+                size,
+                Sort.by("created").ascending());
+        Page<UserEntity> page = userRepository.findAll(pageRequest);
+        return new PageAdapter<>(page);
+    }
+
+    @Override
+    public void deleteUsers(List<Long> ids) {
+        userRepository.deleteAllById(ids);
+    }
+
+    @Override
+    public UserEntity findByIdWithoutPassword(Long id) {
+        UserEntity userEntity = findById(id);
+        userEntity.setPassword(null);
+        return userEntity;
+    }
 }

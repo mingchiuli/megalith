@@ -3,8 +3,10 @@ package com.chiu.megalith.backstage.service;
 
 import com.chiu.megalith.backstage.entity.UserEntity;
 import com.chiu.megalith.backstage.vo.UserEntityVo;
+import com.chiu.megalith.common.page.PageAdapter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -21,4 +23,10 @@ public interface UserService {
     UserEntity findById(Long userId);
 
     void changeUserStatus(Long id, Integer status);
+
+    PageAdapter<UserEntity> listPage(Integer currentPage, Integer size);
+
+    void deleteUsers(List<Long> ids);
+
+    UserEntity findByIdWithoutPassword(Long id);
 }

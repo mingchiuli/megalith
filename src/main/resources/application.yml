@@ -8,6 +8,10 @@ spring:
         enabled: false
   jpa:
     open-in-view: false
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
   rabbitmq:
 #    开启发送端确认
     publisher-confirm-type: correlated

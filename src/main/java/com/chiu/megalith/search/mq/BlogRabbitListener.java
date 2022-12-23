@@ -1,6 +1,6 @@
 package com.chiu.megalith.search.mq;
 
-import com.chiu.megalith.common.config.RabbitConfig;
+import com.chiu.megalith.common.config.RabbitMQConfig;
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
 import com.chiu.megalith.common.utils.SpringUtils;
 import com.chiu.megalith.search.mq.handler.BlogIndexAbstractHandler;
@@ -23,7 +23,7 @@ public class BlogRabbitListener {
         private static final Map<String, BlogIndexAbstractHandler> cacheHandlers = SpringUtils.getHandlers(BlogIndexAbstractHandler.class);
     }
 
-    @RabbitListener(queues = RabbitConfig.ES_QUEUE)
+    @RabbitListener(queues = RabbitMQConfig.ES_QUEUE)
     public void handler(BlogSearchIndexMessage message, Channel channel, Message msg) {
         for (BlogIndexAbstractHandler handler : CacheHandlers.cacheHandlers.values()) {
             if (handler.supports(message.typeEnum)) {

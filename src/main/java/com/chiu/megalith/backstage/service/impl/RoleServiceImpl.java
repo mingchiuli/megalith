@@ -40,9 +40,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PageAdapter<RoleEntity> listPage(Integer currentPage, Integer pageSize) {
+    public PageAdapter<RoleEntity> listPage(Integer currentPage, Integer size) {
         Pageable pageRequest = PageRequest.of(currentPage - 1,
-                pageSize,
+                size,
                 Sort.by("created").ascending());
         Page<RoleEntity> page = roleRepository.findAll(pageRequest);
         return new PageAdapter<>(page);
@@ -54,17 +54,17 @@ public class RoleServiceImpl implements RoleService {
             RoleEntity roleEntity;
         };
 
+        LocalDateTime now = LocalDateTime.now();
+
         Optional.ofNullable(roleVo.getId()).ifPresentOrElse((id) -> {
             ref.roleEntity = roleRepository.findById(id).orElseThrow(() -> new NotFoundException("role not exist"));
-            ref.roleEntity.setUpdated(LocalDateTime.now());
-        }, () -> {
-            LocalDateTime now = LocalDateTime.now();
-            ref.roleEntity = RoleEntity.
-                    builder().
-                    created(now).
-                    updated(now).
-                    build();
-        });
+            ref.roleEntity.setUpdated(now);
+        }, () -> ref.roleEntity = RoleEntity.
+                builder().
+                created(now).
+                updated(now).
+                build()
+        );
 
         BeanUtils.copyProperties(roleVo, ref.roleEntity);
         roleRepository.save(ref.roleEntity);

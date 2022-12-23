@@ -9,7 +9,6 @@ import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,18 +27,10 @@ public class BlogController {
 
     private final BlogService blogService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/info/{id}")
     @Bloom(handler = DetailBloomHandler.class)
     public Result<BlogEntity> getBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findByIdAndStatus(id, 0);
-        blogService.setReadCount(id);
-        return Result.success(blog);
-    }
-
-    @GetMapping("/authorize/{id}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<BlogEntity> getLockedBlogDetail(@PathVariable(name = "id") Long id) {
-        BlogEntity blog = blogService.findById(id);
         blogService.setReadCount(id);
         return Result.success(blog);
     }

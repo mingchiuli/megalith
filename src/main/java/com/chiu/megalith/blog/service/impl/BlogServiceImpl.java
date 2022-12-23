@@ -6,7 +6,7 @@ import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.repository.BlogRepository;
 import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.blog.vo.BlogEntityVo;
-import com.chiu.megalith.common.config.RabbitConfig;
+import com.chiu.megalith.common.config.RabbitMQConfig;
 import com.chiu.megalith.common.exception.AuthenticationException;
 import com.chiu.megalith.common.exception.NotFoundException;
 import com.chiu.megalith.common.lang.Const;
@@ -186,8 +186,8 @@ public class BlogServiceImpl implements BlogService {
                         TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                RabbitConfig.ES_EXCHANGE,
-                RabbitConfig.ES_BINDING_KEY,
+                RabbitMQConfig.ES_EXCHANGE,
+                RabbitMQConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(ref.blogEntity.getId(), ref.type, ref.blogEntity.getCreated().getYear()),
                 correlationData);
     }
@@ -221,8 +221,8 @@ public class BlogServiceImpl implements BlogService {
                     TimeUnit.SECONDS);
 
             rabbitTemplate.convertAndSend(
-                    RabbitConfig.ES_EXCHANGE,
-                    RabbitConfig.ES_BINDING_KEY,
+                    RabbitMQConfig.ES_EXCHANGE,
+                    RabbitMQConfig.ES_BINDING_KEY,
                     new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
         }
     }
@@ -333,8 +333,8 @@ public class BlogServiceImpl implements BlogService {
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                RabbitConfig.ES_EXCHANGE,
-                RabbitConfig.ES_BINDING_KEY,
+                RabbitMQConfig.ES_EXCHANGE,
+                RabbitMQConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
                 correlationData);
     }
@@ -351,8 +351,8 @@ public class BlogServiceImpl implements BlogService {
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                RabbitConfig.ES_EXCHANGE,
-                RabbitConfig.ES_BINDING_KEY,
+                RabbitMQConfig.ES_EXCHANGE,
+                RabbitMQConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
                 correlationData);
     }

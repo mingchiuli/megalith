@@ -24,8 +24,16 @@ public class BlogManagerController {
 
     private final BlogService blogService;
 
+    @GetMapping("/info/authorize/{id}")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    public Result<BlogEntity> getLockedBlogDetail(@PathVariable(name = "id") Long id) {
+        BlogEntity blog = blogService.findById(id);
+        blogService.setReadCount(id);
+        return Result.success(blog);
+    }
+
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    @PostMapping("/edit")
+    @PostMapping("/save")
     public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityVo blog) {
         blogService.saveOrUpdate(blog);
         return Result.success();

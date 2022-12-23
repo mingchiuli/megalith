@@ -1,7 +1,6 @@
 package com.chiu.megalith.search.controller;
 
 import com.chiu.megalith.blog.dto.BlogEntityDto;
-import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
 import com.chiu.megalith.common.valid.ListValue;
@@ -9,7 +8,6 @@ import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
  * @create 2022-11-30 8:48 pm
  */
 @RestController
-@Validated
 @RequestMapping(value = "/search")
 @RequiredArgsConstructor
 public class BlogSearchController {
