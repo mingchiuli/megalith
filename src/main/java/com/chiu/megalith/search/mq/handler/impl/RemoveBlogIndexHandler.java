@@ -37,10 +37,10 @@ public class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
         StringBuilder builder = new StringBuilder();
         builder.append("::");
         builder.append(blog.getId());
-        String contentKey = Const.HOT_BLOG + "::BlogServiceImpl::findByIdAndStatus" + builder;
-        String statusKey = Const.BLOG_STATUS + "::BlogController::getBlogStatus" + builder;
+        String contentKey = Const.HOT_BLOG.getMsg() + "::BlogServiceImpl::findByIdAndStatus" + builder;
+        String statusKey = Const.BLOG_STATUS.getMsg() + "::BlogController::getBlogStatus" + builder;
         //年份缓存
-        String yearsKey = Const.YEARS + "::BlogController::searchYears";
+        String yearsKey = Const.YEARS.getMsg() + "::BlogController::searchYears";
         String blogReadKey = Const.READ_RECENT.getMsg() + blog.getId();
 
         //删掉所有摘要缓存
