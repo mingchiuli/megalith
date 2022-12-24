@@ -52,8 +52,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         };
 
         Optional.ofNullable(websiteVo.getId()).ifPresentOrElse(id ->
-                ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class), () ->
-                ref.document = WebsiteDocument.builder().
+                ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class),
+                () -> ref.document = WebsiteDocument.builder().
                         created(ZonedDateTime.now()).
                         build());
 
@@ -69,31 +69,30 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Override
     public PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage, String keyword) {
 
-        HighlightParameters highlightParameters = new HighlightParameters.
-                HighlightParametersBuilder().
-                withPreTags("<b style='color:red'>").
-                withPostTags("</b>").
-                build();
-
-        List<HighlightField> fields = Arrays.asList(
-                new HighlightField("title"),
-                new HighlightField("description")
-        );
-
-        Highlight highlight = new Highlight(highlightParameters, fields);
-
         NativeQuery matchQuery = NativeQuery.builder().
                 withQuery(query -> query.
                         bool(boolQuery -> boolQuery.
                                 must(mustQuery1 -> mustQuery1.
                                         multiMatch(multiQuery -> multiQuery.
-                                                fields(Arrays.asList("title", "description")).query(keyword)))))
-                .withSort(sort -> sort.
+                                                fields(Arrays.asList("title", "description")).query(keyword))))).
+                withSort(sort -> sort.
                         score(score -> score.
-                                order(SortOrder.Desc)))
-                .withPageable(PageRequest.of(currentPage - 1, webPageSize))
-                .withHighlightQuery(new HighlightQuery(highlight, null))
-                .build();
+                                order(SortOrder.Desc))).
+                withPageable(PageRequest.of(currentPage - 1, webPageSize)).
+                withHighlightQuery(
+                        new HighlightQuery(
+                                new Highlight(
+                                        new HighlightParameters.
+                                                HighlightParametersBuilder().
+                                                withPreTags("<b style='color:red'>").
+                                                withPostTags("</b>").
+                                                build(),
+                                        Arrays.asList(
+                                                new HighlightField("title"),
+                                                new HighlightField("description"))
+                                ), null)
+                ).
+                build();
 
         SearchHits<WebsiteDocument> search = elasticsearchTemplate.search(matchQuery, WebsiteDocument.class);
         long totalHits = search.getTotalHits();
@@ -167,9 +166,9 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                         withSort(sortQuery ->
                                 sortQuery.field(fieldQuery ->
                                         fieldQuery.field("created").order(SortOrder.Desc))).
-                        withQuery(query -> query.
-                                bool(boolQuery -> boolQuery.
-                                        must(mustQuery2 ->
+                        withQuery(query ->
+                                query.bool(boolQuery ->
+                                        boolQuery.must(mustQuery2 ->
                                                 mustQuery2.term(termQuery ->
                                                         termQuery.field("status").value(0))))));
 
