@@ -31,7 +31,10 @@ public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
 		ServletOutputStream outputStream = response.getOutputStream();
 		response.setHeader(HttpHeaders.AUTHORIZATION, null);
 		Result<String> result = Result.success();
-		outputStream.write(objectMapper.writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
+		outputStream.write(objectMapper.
+				writeValueAsString(result).
+				getBytes(StandardCharsets.UTF_8)
+		);
 
 		outputStream.flush();
 		outputStream.close();

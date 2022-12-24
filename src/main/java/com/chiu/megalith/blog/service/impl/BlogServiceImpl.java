@@ -176,7 +176,6 @@ public class BlogServiceImpl implements BlogService {
             ref.type = BlogIndexEnum.CREATE;
         });
 
-
         BeanUtils.copyProperties(blog, ref.blogEntity);
         blogRepository.save(ref.blogEntity);
 
@@ -206,9 +205,7 @@ public class BlogServiceImpl implements BlogService {
             BlogEntity blogEntity = optionalBlog.
                     orElseThrow(() -> new NotFoundException("blog not exist"));
 
-            if (!blogEntity.getUserId().equals(userId)) {
-                throw new AuthenticationException("must delete own blog");
-            }
+            Assert.isTrue(blogEntity.getUserId().equals(userId), "must delete own blog");
 
             blogRepository.delete(blogEntity);
 
@@ -263,7 +260,9 @@ public class BlogServiceImpl implements BlogService {
                                 readRecent(Integer.valueOf(
                                         Optional.ofNullable(
                                                 redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).
-                                        orElse("0"))).
+                                        orElse("0")
+                                        )
+                                ).
                                 build()).
                 toList();
 
@@ -287,8 +286,6 @@ public class BlogServiceImpl implements BlogService {
         var ref = new Object() {
             PageAdapter<BlogEntity> pageAdapter;
         };
-
-
 
         Optional.ofNullable(set).ifPresent(keys -> {
             int total = set.size();

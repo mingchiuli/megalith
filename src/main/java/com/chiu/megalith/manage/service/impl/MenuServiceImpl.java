@@ -87,21 +87,20 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void saveOrUpdate(MenuEntityVo menu) {
-
-        MenuEntity menuEntity = MenuEntity.builder().
-                menuId(menu.getMenuId()).
-                parentId(menu.getParentId()).
-                icon(menu.getIcon()).
-                url(menu.getUrl()).
-                title(menu.getTitle()).
-                name(menu.getName()).
-                component(menu.getComponent()).
-                type(menu.getType()).
-                orderNum(menu.getOrderNum()).
-                status(menu.getStatus()).
-                build();
-
-        menuRepository.save(menuEntity);
+        menuRepository.save(
+                MenuEntity.builder().
+                        menuId(menu.getMenuId()).
+                        parentId(menu.getParentId()).
+                        icon(menu.getIcon()).
+                        url(menu.getUrl()).
+                        title(menu.getTitle()).
+                        name(menu.getName()).
+                        component(menu.getComponent()).
+                        type(menu.getType()).
+                        orderNum(menu.getOrderNum()).
+                        status(menu.getStatus()).
+                        build()
+        );
     }
 
     @Override

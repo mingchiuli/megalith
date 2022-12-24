@@ -70,7 +70,9 @@ public class CacheAspect {
                 if (arg.get() instanceof String) {
                     params.append(arg.get());
                 } else {
-                    params.append(objectMapper.writeValueAsString(arg.get()));
+                    params.append(objectMapper.
+                            writeValueAsString(arg.get())
+                    );
                 }
                 parameterTypes[i] = arg.get().getClass();
             }

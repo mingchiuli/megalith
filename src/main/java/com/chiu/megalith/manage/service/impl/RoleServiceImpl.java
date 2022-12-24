@@ -72,7 +72,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Long> getNavMenuIds(String role) {
-        RoleEntity roleEntity = roleRepository.findByCode(role).orElseThrow(() -> new NotFoundException("role not exist"));
+        RoleEntity roleEntity = roleRepository.findByCode(role).
+                orElseThrow(() -> new NotFoundException("role not exist"));
         Long id = roleEntity.getId();
         return roleMenuService.findMenuIdsByRoleId(id);
     }
@@ -91,18 +92,17 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public List<Long> perm(Long roleId, List<Long> menuIds) {
-
-        List<RoleMenuEntity> roleMenus = menuIds.
-                stream().
-                map(menuId ->
-                        RoleMenuEntity.builder().
+        roleMenuService.deleteByRoleId(roleId);
+        roleMenuService.saveAll(
+                menuIds.
+                        stream().
+                        map(menuId -> RoleMenuEntity.builder().
                                 menuId(menuId).
                                 roleId(roleId).
-                                build()).
-                toList();
-
-        roleMenuService.deleteByRoleId(roleId);
-        roleMenuService.saveAll(roleMenus);
+                                build()
+                        ).
+                        toList()
+        );
         return menuIds;
     }
 }

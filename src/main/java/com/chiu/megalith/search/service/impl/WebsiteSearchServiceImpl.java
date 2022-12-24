@@ -99,7 +99,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % webPageSize == 0 ? totalHits / webPageSize : totalHits / webPageSize + 1;
 
-        List<WebsiteDocumentVo> vos = search.getSearchHits().stream().
+        List<WebsiteDocumentVo> vos = search.getSearchHits().
+                stream().
                 map(hit -> WebsiteDocumentVo.builder().
                         id(hit.getContent().
                                 getId()).
@@ -181,27 +182,26 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         List<WebsiteDocumentVo> vos = search.getSearchHits().
                 stream().
-                map(hit ->
-                        WebsiteDocumentVo.builder().
-                                id(hit.getContent().
-                                        getId()).
-                                title(hit.getContent().
-                                        getTitle()).
-                                description(hit.getContent().
-                                        getDescription()).
-                                link(hit.getContent().
-                                        getLink()).
-                                status(hit.getContent().
-                                        getStatus()).
-                                created(hit.getContent().
-                                        getCreated()).
-                                highlight(!hit.getHighlightFields().values().isEmpty() ?
-                                        hit.getHighlightFields().values().toString() :
-                                        null).
-                                score(!Float.isNaN(hit.getScore()) ?
-                                        hit.getScore() :
-                                        null).
-                                build()).
+                map(hit -> WebsiteDocumentVo.builder().
+                        id(hit.getContent().
+                                getId()).
+                        title(hit.getContent().
+                                getTitle()).
+                        description(hit.getContent().
+                                getDescription()).
+                        link(hit.getContent().
+                                getLink()).
+                        status(hit.getContent().
+                                getStatus()).
+                        created(hit.getContent().
+                                getCreated()).
+                        highlight(!hit.getHighlightFields().values().isEmpty() ?
+                                hit.getHighlightFields().values().toString() :
+                                null).
+                        score(!Float.isNaN(hit.getScore()) ?
+                                hit.getScore() :
+                                null).
+                        build()).
                 toList();
 
         return PageAdapter.

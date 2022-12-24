@@ -36,7 +36,12 @@ public class CaptchaFilter extends OncePerRequestFilter {
 				validate(request);
 			} catch (CaptchaException e) {
 				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-				response.getWriter().write(objectMapper.writeValueAsString(Result.fail(400, e.getMessage())));
+				response.getWriter().write(
+						objectMapper.
+								writeValueAsString(
+										Result.fail(400, e.getMessage())
+						)
+				);
 				return;
 			}
 		}
@@ -51,8 +56,8 @@ public class CaptchaFilter extends OncePerRequestFilter {
 		if (!StringUtils.hasLength(code) || !StringUtils.hasLength(key)) {
 			throw new CaptchaException("pin_code invalid");
 		}
-		if (!code.equals(redisTemplate.opsForValue().get(Const.CAPTCHA_KEY + key))) {
-			redisTemplate.delete(Const.CAPTCHA_KEY + key);
+		if (!code.equals(redisTemplate.opsForValue().get(Const.CAPTCHA_KEY.getMsg() + key))) {
+			redisTemplate.delete(Const.CAPTCHA_KEY.getMsg() + key);
 			throw new CaptchaException("pin_code error");
 		}
 	}
