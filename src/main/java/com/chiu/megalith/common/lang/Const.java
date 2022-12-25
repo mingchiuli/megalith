@@ -13,7 +13,7 @@ public enum Const {
 
     HOT_BLOGS_PATTERN("hot_blogs*"),
 
-    CO_PREFIX("co_blogId:"),
+    COOP_PREFIX("coop_blogId:"),
 
     CO_NUM_PREFIX("co_num:"),
 

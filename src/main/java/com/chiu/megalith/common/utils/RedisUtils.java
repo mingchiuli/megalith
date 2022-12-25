@@ -1,6 +1,9 @@
 package com.chiu.megalith.common.utils;
 
+import com.chiu.megalith.websocket.vo.UserEntityVo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -15,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtils {
 
     private final StringRedisTemplate redisTemplate;
+
+    private final ObjectMapper objectMapper;
 
     public boolean tryLock(String key, String val, long timeOut, long expireTime){
         long start = System.currentTimeMillis();
@@ -39,5 +44,10 @@ public class RedisUtils {
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
         RedisScript<Long> redisScript = new DefaultRedisScript<>(script, Long.class);
         return redisTemplate.execute(redisScript, Collections.singletonList(key), val);
+    }
+
+    @SneakyThrows
+    public <T> T readValue(String str, Class<T> clazz) {
+        return objectMapper.readValue(str, clazz);
     }
 }

@@ -15,13 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @create 2022-12-01 10:41 pm
  */
 @Configuration
-public class RabbitMQConfig {
-    public static final String ES_QUEUE = "ex_queue";
-
-    public static final String ES_EXCHANGE = "ex_exchange";
-
-    public static final String ES_BINDING_KEY = "ex_exchange";
-
+public class LogMQConfig {
     public static final String LOG_QUEUE = "log_queue";
 
     public static final String LOG_EXCHANGE = "log_exchange";
@@ -34,22 +28,6 @@ public class RabbitMQConfig {
     }
 
     //ES队列
-    @Bean("ES_QUEUE")
-    public Queue esQueue() {
-        return new Queue(ES_QUEUE);
-    }
-
-    //ES交换机
-    @Bean("ES_EXCHANGE")
-    public DirectExchange esExchange() {
-        return new DirectExchange(ES_EXCHANGE);
-    }
-
-    //绑定ES队列和ES交换机
-    @Bean
-    public Binding esBinding(@Qualifier("ES_QUEUE") Queue esQueue, @Qualifier("ES_EXCHANGE") DirectExchange esExchange) {
-        return BindingBuilder.bind(esQueue).to(esExchange).with(ES_BINDING_KEY);
-    }
 
     //LOG队列
     @Bean("LOG_QUEUE")

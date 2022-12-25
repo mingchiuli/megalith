@@ -52,4 +52,5 @@ public interface BlogService {
 
     void changeBlogStatus(Long id, Integer status, Integer year);
 
+    boolean exist(Long blogId);
 }

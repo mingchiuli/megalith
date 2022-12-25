@@ -6,13 +6,14 @@ import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.repository.BlogRepository;
 import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.blog.vo.BlogEntityVo;
-import com.chiu.megalith.common.config.RabbitMQConfig;
 import com.chiu.megalith.common.exception.AuthenticationException;
 import com.chiu.megalith.common.exception.NotFoundException;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.page.PageAdapter;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
+import com.chiu.megalith.common.utils.RedisUtils;
+import com.chiu.megalith.search.config.ESMQConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -56,6 +57,8 @@ public class BlogServiceImpl implements BlogService {
     private final ObjectMapper objectMapper;
 
     private final RabbitTemplate rabbitTemplate;
+
+    private final RedisUtils redisUtils;
 
     private final Integer blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
 
@@ -188,8 +191,8 @@ public class BlogServiceImpl implements BlogService {
                         TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.ES_EXCHANGE,
-                RabbitMQConfig.ES_BINDING_KEY,
+                ESMQConfig.ES_EXCHANGE,
+                ESMQConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(ref.blogEntity.getId(), ref.type, ref.blogEntity.getCreated().getYear()),
                 correlationData);
     }
@@ -222,8 +225,8 @@ public class BlogServiceImpl implements BlogService {
                     TimeUnit.SECONDS);
 
             rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.ES_EXCHANGE,
-                    RabbitMQConfig.ES_BINDING_KEY,
+                    ESMQConfig.ES_EXCHANGE,
+                    ESMQConfig.ES_BINDING_KEY,
                     new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
         }
     }
@@ -296,7 +299,7 @@ public class BlogServiceImpl implements BlogService {
                     ref.pageAdapter = PageAdapter.<BlogEntity>builder().
                             content(list.
                                     stream().
-                                    map(this::readValue).
+                                    map(str -> redisUtils.readValue(str, BlogEntity.class)).
                                     sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
                                     limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
                                     toList()).
@@ -333,8 +336,8 @@ public class BlogServiceImpl implements BlogService {
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.ES_EXCHANGE,
-                RabbitMQConfig.ES_BINDING_KEY,
+                ESMQConfig.ES_EXCHANGE,
+                ESMQConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
                 correlationData);
     }
@@ -351,14 +354,14 @@ public class BlogServiceImpl implements BlogService {
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.ES_EXCHANGE,
-                RabbitMQConfig.ES_BINDING_KEY,
+                ESMQConfig.ES_EXCHANGE,
+                ESMQConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
                 correlationData);
     }
 
-    @SneakyThrows
-    private BlogEntity readValue(String str) {
-        return objectMapper.readValue(str, BlogEntity.class);
+    @Override
+    public boolean exist(Long blogId) {
+        return blogRepository.existsById(blogId);
     }
 }

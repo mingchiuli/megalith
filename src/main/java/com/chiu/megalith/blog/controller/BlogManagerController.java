@@ -32,59 +32,59 @@ public class BlogManagerController {
         return Result.success(blog);
     }
 
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @PostMapping("/save")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityVo blog) {
         blogService.saveOrUpdate(blog);
         return Result.success();
     }
 
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @PostMapping("/delete")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> deleteBlogs(@RequestBody List<Long> ids) {
         blogService.deleteBlogs(ids);
         return Result.success();
     }
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/set/token")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> setBlogToken() {
         blogService.setBlogToken();
         return Result.success();
     }
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/get/token")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<String> getBlogToken() {
         String token = blogService.getBlogToken();
         return Result.success(token);
     }
 
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @GetMapping("/get/blogs")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                           @RequestParam(defaultValue = "5") Integer size) {
         PageAdapter<BlogEntityDto> page = blogService.getAllABlogs(currentPage, size);
         return Result.success(page);
     }
 
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @GetMapping("/deleted")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogEntity>> listDeletedBlogs(@RequestParam Integer currentPage,
                                                             @RequestParam Integer size) {
         PageAdapter<BlogEntity> deletedBlogs = blogService.listDeletedBlogs(currentPage, size);
         return Result.success(deletedBlogs);
     }
 
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @GetMapping("/recover/{id}")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> recoverDeletedBlog(@PathVariable(value = "id") Long id) {
         blogService.recoverDeletedBlog(id);
         return Result.success();
     }
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/status/{id}/{status}/{year}")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> changeBlogStatus(@PathVariable(value = "id") Long id,
                                          @PathVariable(value = "status") Integer status,
                                          @PathVariable(value = "year") Integer year) {
