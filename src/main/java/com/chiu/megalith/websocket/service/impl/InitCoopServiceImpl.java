@@ -11,7 +11,9 @@ import com.chiu.megalith.websocket.dto.Container;
 import com.chiu.megalith.websocket.dto.impl.InitDto;
 import com.chiu.megalith.websocket.service.InitCoopService;
 import com.chiu.megalith.websocket.vo.UserEntityVo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,6 +42,9 @@ public class InitCoopServiceImpl implements InitCoopService {
 
     private final RedisUtils redisUtils;
 
+    private final ObjectMapper objectMapper;
+
+    @SneakyThrows
     @Override
     public Map<String, Object> initCoop(Long blogId, Integer orderNumber) {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -54,7 +59,7 @@ public class InitCoopServiceImpl implements InitCoopService {
                 serverMark(CoWorkMQConfig.serverMark).
                 build();
 
-        redisTemplate.opsForHash().putIfAbsent(Const.COOP_PREFIX.getMsg() + blogId, userId.toString(), vo);
+        redisTemplate.opsForHash().put(Const.COOP_PREFIX.getMsg() + blogId, userId.toString(), objectMapper.writeValueAsString(vo));
         redisTemplate.expire(Const.COOP_PREFIX.getMsg() + blogId, 6 * 60, TimeUnit.MINUTES);
 
         Map<Object, Object> userMap = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + blogId);
@@ -77,13 +82,11 @@ public class InitCoopServiceImpl implements InitCoopService {
 
 
         InitDto dto = InitDto.builder().
-                data(
-                        new Container<>(
-                                InitDto.Bind.builder().
-                                        blogId(blogId).
-                                        users(userEntityVos).
-                                        build())
-                ).
+                data(new Container<>(
+                        InitDto.Bind.builder().
+                                blogId(blogId).
+                                users(userEntityVos).
+                                build())).
                 build();
 
 

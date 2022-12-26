@@ -45,18 +45,14 @@ public class JwtUtils {
     }
 
     public Optional<Claims> getClaimByToken(String token) {
-        try {
-            return Optional.ofNullable(
-                    Jwts.parserBuilder().
-                            setSigningKey(Keys.hmacShaKeyFor(secret.getBytes())).
-                            build().
-                            parseClaimsJws(token).
-                            getBody()
-            );
-        } catch (JwtException e){
-            log.debug("validate is token error ", e);
-            return Optional.empty();
-        }
+        return Optional.ofNullable(
+                Jwts.parserBuilder().
+                        setSigningKey(Keys.hmacShaKeyFor(secret.getBytes())).
+                        build().
+                        parseClaimsJws(token).
+                        getBody()
+        );
+
     }
 
     /**

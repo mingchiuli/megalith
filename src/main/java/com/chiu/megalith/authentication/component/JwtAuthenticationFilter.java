@@ -68,9 +68,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 	}
 
 	private Authentication getAuthentication(String jwt) {
-		Optional<Claims> claims = jwtUtils.getClaimByToken(jwt);
-		Claims claim = claims.
-				orElseThrow(() -> new JwtException("redo login"));
+		Claims claim = jwtUtils.getClaimByToken(jwt).
+				orElseThrow(() -> new JwtException("token invalid"));
 
 		if (jwtUtils.isTokenExpired(claim.getExpiration())) {
 			throw new JwtException("token expired");
