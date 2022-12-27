@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class DestroyDto implements Serializable, MessageDto<DestroyDto.Bind> {
+public class DestroyDto implements Serializable, MessageDto {
     private Container<Bind> data;
 
     @Override

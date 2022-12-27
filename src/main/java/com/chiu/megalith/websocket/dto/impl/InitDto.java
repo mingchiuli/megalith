@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InitDto implements Serializable, MessageDto<InitDto.Bind> {
+public class InitDto implements Serializable, MessageDto {
     private Container<Bind> data;
 
     @Override

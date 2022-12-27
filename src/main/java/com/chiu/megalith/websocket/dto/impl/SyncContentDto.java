@@ -11,9 +11,9 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-public class SyncContentDto implements Serializable, MessageDto<SyncContentDto.Content> {
+public class SyncContentDto implements Serializable, MessageDto {
 
-    Container<Content> content;
+    private Container<Content> content;
 
     @Override
     public Container<Content> getData() {

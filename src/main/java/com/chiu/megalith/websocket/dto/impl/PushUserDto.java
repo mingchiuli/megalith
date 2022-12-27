@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
-public class PushUserDto implements Serializable, MessageDto<PushUserDto.Bind> {
+public class PushUserDto implements Serializable, MessageDto {
     private Container<Bind> data;
 
     @Override

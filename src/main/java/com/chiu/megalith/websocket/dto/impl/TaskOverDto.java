@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-public class TaskOverDto implements Serializable, MessageDto<String> {
+public class TaskOverDto implements Serializable, MessageDto {
 
     private Container<String> from;
 

@@ -19,26 +19,26 @@ public class CoWorkMQConfig {
 
     public static String serverMark;
 
-    public static String WS_QUEUE = "ws_queue_";
+    public static String WS_QUEUE = "coop_queue_";
 
-    public static final String WS_TOPIC_EXCHANGE = "ws_topic_exchange";
+    public static final String WS_TOPIC_EXCHANGE = "coop_topic_exchange";
 
-    public static final String WS_BINDING_KEY = "ws_exchange_";
+    public static final String WS_BINDING_KEY = "coop_exchange_";
 
-    @Bean("WS_QUEUE")
+    @Bean("COOP_QUEUE")
     public Queue wsQueue() {
         serverMark = UUID.randomUUID().toString();
         WS_QUEUE += serverMark;
         return new Queue(WS_QUEUE);
     }
 
-    @Bean("WS_TOPIC_EXCHANGE")
+    @Bean("COOP_TOPIC_EXCHANGE")
     public TopicExchange wsExchange() {
         return new TopicExchange(WS_TOPIC_EXCHANGE);
     }
 
     @Bean
-    public Binding wsTopicBinding(@Qualifier("WS_QUEUE") Queue wsQueue, @Qualifier("WS_TOPIC_EXCHANGE") TopicExchange wsExchange) {
+    public Binding wsTopicBinding(@Qualifier("COOP_QUEUE") Queue wsQueue, @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
         return BindingBuilder.bind(wsQueue).to(wsExchange).with(WS_BINDING_KEY + serverMark);
     }
 
