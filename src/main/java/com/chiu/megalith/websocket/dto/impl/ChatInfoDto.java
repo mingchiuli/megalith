@@ -13,11 +13,11 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@SuppressWarnings("unchecked")
 public class ChatInfoDto implements Serializable, MessageDto {
     private Container<Message> message;
 
     @Override
+    @SuppressWarnings("unchecked")
     public Container<Message> getData() {
         return message;
     }
@@ -30,7 +30,7 @@ public class ChatInfoDto implements Serializable, MessageDto {
     public static class Message implements Serializable {
         private String message;
         private Long from;
-        private List<Long> to;
+        private List<Long> toAll;
         private Long blogId;
         private Long toOne;
     }

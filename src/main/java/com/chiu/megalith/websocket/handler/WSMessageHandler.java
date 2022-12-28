@@ -41,6 +41,7 @@ public class WSMessageHandler {
     }
 
 
+    @SuppressWarnings("unused")
     public void processMessage(MessageDto msg) {
         for (WSHandler handler : CacheHandlers.cacheHandlers.values()) {
             if (handler.supports(msg)) {

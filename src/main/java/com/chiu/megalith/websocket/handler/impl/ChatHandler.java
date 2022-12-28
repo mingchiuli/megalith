@@ -23,6 +23,7 @@ public class ChatHandler implements WSHandler {
     public void handle(MessageDto msg) {
         Container<ChatInfoDto.Message> container = msg.getData();
         ChatInfoDto.Message data = container.getData();
+        data.setToAll(null);
         Long id = data.getBlogId();
         Long to = data.getToOne();
         simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + "/queue/chat", data);

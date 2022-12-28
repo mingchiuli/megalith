@@ -59,7 +59,9 @@ public class InitCoopServiceImpl implements InitCoopService {
                 serverMark(CoWorkMQConfig.serverMark).
                 build();
 
-        redisTemplate.opsForHash().put(Const.COOP_PREFIX.getMsg() + blogId, userId.toString(), objectMapper.writeValueAsString(vo));
+        redisTemplate.opsForHash().put(Const.COOP_PREFIX.getMsg() + blogId,
+                userId.toString(),
+                objectMapper.writeValueAsString(vo));
         redisTemplate.expire(Const.COOP_PREFIX.getMsg() + blogId, 6 * 60, TimeUnit.MINUTES);
 
         Map<Object, Object> userMap = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + blogId);
