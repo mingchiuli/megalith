@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class UserDetailServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
 	private final UserRepository userRepository;
 
@@ -27,7 +27,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
 		//通过User去自动比较用户名和密码
-		return new User(user.getUsername(),
+		return new User(username,
 				user.getPassword(),
 				true,
 				true,

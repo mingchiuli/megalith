@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -31,14 +32,17 @@ public class MessageServiceImpl implements MessageService {
         msg.setFrom(Long.parseLong(user.getName()));
 
         msg.getToAll().forEach(userId -> {
-            UserEntityVo userEntityVo = redisUtils.readValue(
-                    (String) redisTemplate.opsForHash().get(Const.COOP_PREFIX.getMsg(), userId),
-                    UserEntityVo.class);
-            msg.setToOne(userId);
 
-            rabbitTemplate.convertAndSend(
-                    CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
-                    msg);
+            String o = (String) redisTemplate.opsForHash().get(Const.COOP_PREFIX.getMsg() + msg.getBlogId(), userId);
+            Optional.ofNullable(o).ifPresent(str -> {
+                UserEntityVo userEntityVo = redisUtils.readValue(
+                        str,
+                        UserEntityVo.class);
+                msg.setToOne(userId);
+                rabbitTemplate.convertAndSend(
+                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        msg);
+            });
         });
     }
 }

@@ -23,7 +23,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity
 @DynamicUpdate
-@Table(name ="m_user", indexes = {@Index(columnList = "username")}, uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
+@Table(name ="m_user",
+        indexes = {@Index(columnList = "username"), @Index(columnList = "email")},
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"username"}), @UniqueConstraint(columnNames = {"email"})})
 public class UserEntity implements Serializable {
 
     @Serial
@@ -72,12 +74,11 @@ public class UserEntity implements Serializable {
         return getClass().hashCode();
     }
 
-    public UserEntity(Long id, String username, String avatar, String email, String role) {
+    public UserEntity(Long id, String username, String avatar, String email) {
         this.id = id;
         this.username = username;
         this.avatar = avatar;
         this.email = email;
-        this.role = role;
     }
 
     public UserEntity(String username) {

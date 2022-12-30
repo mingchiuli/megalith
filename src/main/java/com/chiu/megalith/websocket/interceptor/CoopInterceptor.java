@@ -2,7 +2,7 @@ package com.chiu.megalith.websocket.interceptor;
 
 import com.chiu.megalith.authentication.role.DefaultRoleHolder;
 import com.chiu.megalith.authentication.role.HighestRoleHolder;
-import com.chiu.megalith.common.exception.AuthenticationException;
+import com.chiu.megalith.common.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.common.jwt.JwtUtils;
 import com.chiu.megalith.websocket.principal.StompPrincipal;
 import io.jsonwebtoken.Claims;
@@ -66,7 +66,7 @@ public class CoopInterceptor implements ChannelInterceptor {
                 String role = (String) claim.get("role");
 
                 if (!roles.contains(role)) {
-                    throw new AuthenticationException("non permit");
+                    throw new AuthenticationExceptionImpl("non permit");
                 }
                 accessor.setUser(new StompPrincipal(userId));
 

@@ -6,7 +6,7 @@ import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.repository.BlogRepository;
 import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.blog.vo.BlogEntityVo;
-import com.chiu.megalith.common.exception.AuthenticationException;
+import com.chiu.megalith.common.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.common.exception.NotFoundException;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.page.PageAdapter;
@@ -133,7 +133,7 @@ public class BlogServiceImpl implements BlogService {
                         orElseThrow(() -> new NotFoundException("status error"));
             }
         }
-        throw new AuthenticationException("authorization exception");
+        throw new AuthenticationExceptionImpl("authorization exception");
     }
 
     @Override

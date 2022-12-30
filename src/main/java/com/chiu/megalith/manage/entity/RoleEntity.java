@@ -23,7 +23,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity
 @DynamicUpdate
-@Table(name ="m_role", indexes = {@Index(columnList = "code"), @Index(columnList = "name")}, uniqueConstraints = {@UniqueConstraint(columnNames = "code"), @UniqueConstraint(columnNames = "name")})
+@Table(name ="m_role",
+        indexes = {@Index(columnList = "code"), @Index(columnList = "name")},
+        uniqueConstraints = {@UniqueConstraint(columnNames = "code"), @UniqueConstraint(columnNames = "name")})
 public class RoleEntity implements Serializable {
 
     @Serial

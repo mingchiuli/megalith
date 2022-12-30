@@ -30,7 +30,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-		if ("/login".equals(request.getRequestURI()) && request.getMethod().equals("POST")) {
+		if ("password".equals(request.getHeader("Grant-Type"))) {
 			// 校验验证码
 			try {
 				validate(request);

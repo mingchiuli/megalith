@@ -5,10 +5,10 @@ import com.chiu.megalith.authentication.component.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -28,12 +28,14 @@ public class SecurityConfig {
 
     private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
 
-    private final UserDetailsService userDetailsService;
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final EmailAuthenticationProvider emailAuthenticationProvider;
+
+    private final DaoAuthenticationProvider passwordAuthenticationProvider;
+
     private static final String[] URL_WHITELIST = {
-            "/captcha",
+            "/captcha/**",
             "/public/blog/**",
             "/search/website/*",
             "/coop/**",
@@ -73,7 +75,8 @@ public class SecurityConfig {
                 and().
                 addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class).
                 addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class).
-                userDetailsService(userDetailsService).
+                authenticationProvider(passwordAuthenticationProvider).
+                authenticationProvider(emailAuthenticationProvider).
 
                 build();
     }

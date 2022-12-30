@@ -9,6 +9,10 @@ public enum Const {
 
     CAPTCHA_KEY("captcha:"),
 
+    EMAIL_KEY("email_validation:"),
+
+    EMAIL_TRY_COUNT("3"),
+
     READ_RECENT("blogReadRecent:"),
 
     HOT_BLOGS_PATTERN("hot_blogs*"),
@@ -57,5 +61,6 @@ public enum Const {
     Const(String msg) {
         this.msg = msg;
     }
+
 }
 

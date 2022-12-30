@@ -1,13 +1,37 @@
 package com.chiu.megalith;
 
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.repository.UserRepository;
+import org.aspectj.lang.annotation.Around;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDateTime;
 
 @SpringBootTest
 class MegalithApplicationTests {
 
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
 	@Test
 	void contextLoads() {
+		UserEntity userEntity = new UserEntity();
+		userEntity.setEmail("1111@163.com");
+		userEntity.setRole("admin");
+		userEntity.setCreated(LocalDateTime.now());
+		userEntity.setStatus(0);
+		userEntity.setAvatar("aa");
+		userEntity.setLastLogin(LocalDateTime.now());
+		userEntity.setPassword(passwordEncoder.encode("111111"));
+		userEntity.setUsername("admin");
+
+		userRepository.save(userEntity);
 	}
 
 }

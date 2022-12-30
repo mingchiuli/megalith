@@ -11,4 +11,7 @@ import java.util.Map;
 public interface CaptchaService {
 
     CaptchaDto createCaptcha();
+
+    void createEmailCode(String loginName);
+
 }

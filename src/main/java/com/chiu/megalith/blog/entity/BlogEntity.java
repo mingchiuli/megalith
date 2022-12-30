@@ -23,7 +23,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @DynamicUpdate
 @Builder
-@Table(name ="m_blog", indexes = {@Index(columnList = "created"), @Index(columnList = "status")})
+@Table(name ="m_blog",
+        indexes = {@Index(columnList = "created"), @Index(columnList = "status")})
 public class BlogEntity implements Serializable {
 
     @Serial

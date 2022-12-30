@@ -27,8 +27,8 @@ import java.util.Optional;
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(value = AuthenticationException.class)
-    public Result<?> handler(AuthenticationException e) {
+    @ExceptionHandler(value = AuthenticationExceptionImpl.class)
+    public Result<?> handler(AuthenticationExceptionImpl e) {
         log.error("authentication exception:{}", e.toString());
         return Result.fail(401, e.getMessage());
     }
