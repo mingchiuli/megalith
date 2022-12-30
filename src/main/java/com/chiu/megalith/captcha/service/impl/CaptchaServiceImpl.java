@@ -3,7 +3,6 @@ package com.chiu.megalith.captcha.service.impl;
 import com.chiu.megalith.captcha.dto.CaptchaDto;
 import com.chiu.megalith.captcha.service.CaptchaService;
 import com.chiu.megalith.common.lang.Const;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
