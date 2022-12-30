@@ -4,6 +4,9 @@ import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisUtils;
 import com.chiu.megalith.websocket.config.CoWorkMQConfig;
 import com.chiu.megalith.websocket.dto.impl.ChatInfoDto;
+import com.chiu.megalith.websocket.dto.impl.DestroyDto;
+import com.chiu.megalith.websocket.dto.impl.QuitDto;
+import com.chiu.megalith.websocket.dto.impl.SyncContentDto;
 import com.chiu.megalith.websocket.service.MessageService;
 import com.chiu.megalith.websocket.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -29,7 +33,6 @@ public class MessageServiceImpl implements MessageService {
     private final RedisUtils redisUtils;
     @Override
     public void chat(Principal user, ChatInfoDto.Message msg) {
-        msg.setFrom(Long.parseLong(user.getName()));
 
         msg.getToAll().forEach(userId -> {
 
@@ -43,6 +46,48 @@ public class MessageServiceImpl implements MessageService {
                         CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             });
+        });
+    }
+
+    @Override
+    public void sync(Principal user, SyncContentDto.Content msg) {
+        Long from = Long.parseLong(user.getName());
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        entries.forEach((k, v) -> {
+            if (!from.equals(Long.parseLong((String) k))) {
+                UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
+                rabbitTemplate.convertAndSend(
+                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        msg);
+            }
+        });
+    }
+
+    @Override
+    public void destroy(Principal user, DestroyDto.Bind msg) {
+        Long from = Long.parseLong(user.getName());
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        entries.forEach((k, v) -> {
+            if (!from.equals(Long.parseLong((String) k))) {
+                UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
+                rabbitTemplate.convertAndSend(
+                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        msg);
+            }
+        });
+    }
+
+    @Override
+    public void quit(Principal user, QuitDto.Bind msg) {
+        Long from = Long.parseLong(user.getName());
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        entries.forEach((k, v) -> {
+            if (!from.equals(Long.parseLong((String) k))) {
+                UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
+                rabbitTemplate.convertAndSend(
+                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        msg);
+            }
         });
     }
 }

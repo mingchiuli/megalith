@@ -16,6 +16,7 @@ public class SyncContentDto implements Serializable, MessageDto {
     private Container<Content> content;
 
     @Override
+    @SuppressWarnings("unchecked")
     public Container<Content> getData() {
         return content;
     }
@@ -25,7 +26,6 @@ public class SyncContentDto implements Serializable, MessageDto {
     @Builder
     @NoArgsConstructor
     public static class Content implements Serializable {
-        private Long from;
         private String content;
         private Long blogId;
     }

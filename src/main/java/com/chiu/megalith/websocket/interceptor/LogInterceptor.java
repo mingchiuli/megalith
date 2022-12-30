@@ -1,6 +1,5 @@
 package com.chiu.megalith.websocket.interceptor;
 
-import com.chiu.megalith.authentication.role.DefaultRoleHolder;
 import com.chiu.megalith.authentication.role.HighestRoleHolder;
 import com.chiu.megalith.common.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.common.jwt.JwtUtils;
@@ -19,7 +18,9 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -27,11 +28,9 @@ import java.util.*;
  */
 @Component
 @RequiredArgsConstructor
-public class CoopInterceptor implements ChannelInterceptor {
+public class LogInterceptor implements ChannelInterceptor {
 
     private final JwtUtils jwtUtils;
-
-    private final DefaultRoleHolder defaultRoleHolder;
 
     private final HighestRoleHolder highestRoleHolder;
 
@@ -40,7 +39,6 @@ public class CoopInterceptor implements ChannelInterceptor {
 
     @PostConstruct
     private void init() {
-        roles.addAll(Arrays.stream(defaultRoleHolder.getRole()).toList());
         roles.add(highestRoleHolder.getRole());
     }
 
@@ -53,7 +51,7 @@ public class CoopInterceptor implements ChannelInterceptor {
 
                 String type = acc.getFirstNativeHeader("Type");
 
-                if (!"Coop".equals(type)) {
+                if (!"Log".equals(type)) {
                     return;
                 }
 

@@ -2,26 +2,22 @@ package com.chiu.megalith.websocket.dto.impl;
 
 import com.chiu.megalith.websocket.dto.Container;
 import com.chiu.megalith.websocket.dto.MessageDto;
-import com.chiu.megalith.websocket.vo.UserEntityVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * @author mingchiuli
- * @create 2022-10-14 6:15 AM
- */
 @Data
 @AllArgsConstructor
-public class PushUserDto implements Serializable, MessageDto {
-    private Container<Bind> data;
+public class QuitDto implements MessageDto, Serializable {
+
+    private Container<QuitDto.Bind> from;
+
 
     @Override
-    public Container<Bind> getData() {
-        return data;
+    @SuppressWarnings("unchecked")
+    public Container<QuitDto.Bind> getData() {
+        return from;
     }
 
 
@@ -29,7 +25,6 @@ public class PushUserDto implements Serializable, MessageDto {
     @AllArgsConstructor
     public static class Bind implements Serializable {
         private Long blogId;
-        private List<UserEntityVo> users;
+        private Long from;
     }
 }
-

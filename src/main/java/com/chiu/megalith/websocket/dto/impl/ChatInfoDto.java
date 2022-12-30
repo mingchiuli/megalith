@@ -29,7 +29,6 @@ public class ChatInfoDto implements Serializable, MessageDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Message implements Serializable {
         private String message;
-        private Long from;
         private List<Long> toAll;
         private Long blogId;
         private Long toOne;

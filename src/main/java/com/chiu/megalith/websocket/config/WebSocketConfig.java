@@ -1,6 +1,7 @@
 package com.chiu.megalith.websocket.config;
 
 import com.chiu.megalith.websocket.interceptor.CoopInterceptor;
+import com.chiu.megalith.websocket.interceptor.LogInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -21,6 +22,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final CoopInterceptor coopInterceptor;
 
+    private final LogInterceptor logInterceptor;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/coop", "/log").setAllowedOriginPatterns("*").withSockJS();
@@ -38,7 +41,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(coopInterceptor);
+        registration.interceptors(coopInterceptor, logInterceptor);
     }
 
 

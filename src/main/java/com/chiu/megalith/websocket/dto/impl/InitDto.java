@@ -19,6 +19,7 @@ public class InitDto implements Serializable, MessageDto {
     private Container<Bind> data;
 
     @Override
+    @SuppressWarnings("unchecked")
     public Container<Bind> getData() {
         return data;
     }
@@ -28,7 +29,7 @@ public class InitDto implements Serializable, MessageDto {
     @NoArgsConstructor
     @Builder
     public static class Bind implements Serializable {
-        Long blogId;
-        List<UserEntityVo> users;
+        private Long blogId;
+        private List<UserEntityVo> users;
     }
 }
