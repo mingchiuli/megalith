@@ -5,7 +5,6 @@ import com.chiu.megalith.captcha.service.CaptchaService;
 import com.chiu.megalith.common.lang.Const;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.code.kaptcha.Producer;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +31,8 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     private final JavaMailSender javaMailSender;
 
-    private final ObjectMapper objectMapper;
+    @Value("${spring.mail.properties.from}")
+    private String from;
 
     @SneakyThrows
     @Override
@@ -59,8 +59,6 @@ public class CaptchaServiceImpl implements CaptchaService {
                 build();
     }
 
-    @Value("${spring.mail.properties.from}")
-    private String from;
 
     @SneakyThrows
     @Override
