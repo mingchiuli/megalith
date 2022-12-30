@@ -1,8 +1,6 @@
 package com.chiu.megalith.authentication.component;
 
 import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.manage.entity.UserEntity;
-import com.chiu.megalith.manage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -10,7 +8,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Map;
 
@@ -22,8 +19,6 @@ import java.util.Map;
 public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
 
     private final StringRedisTemplate redisTemplate;
-
-    private final UserRepository userRepository;
 
     private final Integer maxTryNum = Integer.valueOf(Const.EMAIL_TRY_COUNT.getMsg());
 
@@ -39,9 +34,6 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
             String tryCount = (String) entries.get("tryCount");
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {
-                UserEntity userEntity = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("user not exist"));
-                userEntity.setStatus(1);
-                userRepository.save(userEntity);
                 throw new BadCredentialsException("code reach max try number");
             }
 

@@ -1,7 +1,6 @@
 package com.chiu.megalith.authentication.config;
 
 import com.chiu.megalith.authentication.component.EmailAuthenticationProvider;
-import com.chiu.megalith.manage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +23,6 @@ public class AuthenticationProviderConfig {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final UserRepository userRepository;
-
-
 
     @Bean
     public DaoAuthenticationProvider passwordAuthenticationProvider() {
@@ -38,7 +34,7 @@ public class AuthenticationProviderConfig {
 
     @Bean
     public EmailAuthenticationProvider emailAuthenticationProvider() {
-        EmailAuthenticationProvider emailAuthenticationProvider = new EmailAuthenticationProvider(redisTemplate, userRepository);
+        EmailAuthenticationProvider emailAuthenticationProvider = new EmailAuthenticationProvider(redisTemplate);
         emailAuthenticationProvider.setUserDetailsService(userDetailsService);
         return emailAuthenticationProvider;
     }
