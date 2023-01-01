@@ -2,6 +2,7 @@ package com.chiu.megalith.authentication.config;
 
 
 import com.chiu.megalith.authentication.component.*;
+import com.chiu.megalith.authentication.provider.EmailAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,7 +76,6 @@ public class SecurityConfig {
                 and().
                 addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class).
                 addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class).
-                authenticationProvider(passwordAuthenticationProvider).
                 authenticationProvider(emailAuthenticationProvider).
 
                 build();

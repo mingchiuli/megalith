@@ -1,4 +1,4 @@
-package com.chiu.megalith.authentication.component;
+package com.chiu.megalith.authentication.provider;
 
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
             String tryCount = (String) entries.get("tryCount");
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {
+                redisTemplate.delete(prefix);
                 throw new BadCredentialsException("code reach max try number");
             }
 
