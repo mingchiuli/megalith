@@ -1,6 +1,5 @@
 package com.chiu.megalith.blog.cache;
 
-import com.chiu.megalith.common.utils.RedisUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,8 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,7 +22,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,7 +43,7 @@ public class CacheAspect {
 
     private final ObjectMapper objectMapper;
 
-    private final RedisUtils rLock;
+    private final RedissonClient redissonClient;
 
     @Pointcut("@annotation(com.chiu.megalith.blog.cache.Cache)")
     public void pt() {}
@@ -115,8 +115,9 @@ public class CacheAspect {
 
 
         //防止缓存击穿
-        String uuid = UUID.randomUUID().toString();
-        boolean locked = rLock.tryLock(lock, uuid, 5000, 5000);
+        RLock rLock = redissonClient.getLock(lock);
+
+        boolean locked = rLock.tryLock(5000, TimeUnit.MILLISECONDS);
 
         if (!locked) {
             return around(pjp);
@@ -134,7 +135,7 @@ public class CacheAspect {
             redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(proceed), expire, TimeUnit.SECONDS);
             return proceed;
         } finally {
-            rLock.unLock(lock, uuid);
+            rLock.unlock();
         }
     }
 
