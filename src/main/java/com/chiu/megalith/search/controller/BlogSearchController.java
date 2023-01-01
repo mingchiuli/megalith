@@ -9,6 +9,7 @@ import com.chiu.megalith.search.vo.BlogDocumentVo;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -16,13 +17,14 @@ import org.springframework.web.bind.annotation.*;
  * @create 2022-11-30 8:48 pm
  */
 @RestController
-@RequestMapping(value = "/search/blog")
+@RequestMapping(value = "/search")
 @RequiredArgsConstructor
+@Validated
 public class BlogSearchController {
 
     private final BlogSearchService blogSearchService;
 
-    @GetMapping("/{flag}/{currentPage}")
+    @GetMapping("/blog/{flag}/{currentPage}")
     public Result<PageAdapter<BlogDocumentVo>> selectBlogsByES(@PathVariable Integer currentPage,
                                                                @PathVariable @ListValue(values = {0, 1}, message = "must commit 0 or 1") Integer flag ,
                                                                @RequestParam(value = "year", required = false) Integer year,

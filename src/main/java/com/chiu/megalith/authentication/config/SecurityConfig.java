@@ -39,6 +39,7 @@ public class SecurityConfig {
             "/captcha/**",
             "/public/blog/**",
             "/search/website/*",
+            "/search/blog/**",
             "/coop/**",
             "/log/**"
     };
