@@ -60,6 +60,7 @@ public class CacheScheduled {
 
             if (!StringUtils.hasLength(flag)) {
                 long startMillis = System.currentTimeMillis();
+                redisTemplate.opsForValue().set(CACHE_FINISH_FLAG, CACHE_FINISH_FLAG, 1, TimeUnit.HOURS);
 
                 List<Integer> years = blogService.searchYears();
                 CompletableFuture<Void> var1 = CompletableFuture.runAsync(() -> {
@@ -166,7 +167,6 @@ public class CacheScheduled {
                 }, executor);
 
                 CompletableFuture.allOf(var1, var2, var3, var4, var5).get();
-                redisTemplate.opsForValue().set(CACHE_FINISH_FLAG, CACHE_FINISH_FLAG, 1, TimeUnit.HOURS);
                 long endMillis = System.currentTimeMillis();
 
                 log.info("定时任务执行用时{}毫秒", endMillis - startMillis);
