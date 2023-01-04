@@ -2,7 +2,6 @@ package com.chiu.megalith.captcha.service;
 
 import com.chiu.megalith.captcha.dto.CaptchaDto;
 
-import java.util.Map;
 
 /**
  * @author mingchiuli

@@ -20,10 +20,11 @@ import java.util.Optional;
  */
 @Slf4j
 @RestControllerAdvice(basePackages = {
-        "com.chiu.megalith.backstage.controller",
+        "com.chiu.megalith.manage.controller",
         "com.chiu.megalith.captcha.controller",
         "com.chiu.megalith.blog.controller",
-        "com.chiu.megalith.search.controller"})
+        "com.chiu.megalith.search.controller",
+        "com.chiu.megalith.websocket.controller"})
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
