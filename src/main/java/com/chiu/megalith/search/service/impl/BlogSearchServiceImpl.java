@@ -54,12 +54,12 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         range(rangeQuery -> rangeQuery.
                                                 field("created").
                                                 from(year != null ? year + "-01-01T00:00:00.000" : null).
-                                                to(year != null ? year + "-12-31T23:59:59.999" : null)))))
-                .withSort(sort -> sort.
+                                                to(year != null ? year + "-12-31T23:59:59.999" : null))))).
+                withSort(sort -> sort.
                         score(score -> score.
-                                order(SortOrder.Desc)))
-                .withPageable(PageRequest.of(currentPage - 1, blogPageSize))
-                .withHighlightQuery(new HighlightQuery(
+                                order(SortOrder.Desc))).
+                withPageable(PageRequest.of(currentPage - 1, blogPageSize)).
+                withHighlightQuery(new HighlightQuery(
                         new Highlight(flag == 0 ?
                                 new HighlightParameters.
                                         HighlightParametersBuilder().
