@@ -21,8 +21,11 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 统一缓存处理
@@ -44,6 +47,8 @@ public class CacheAspect {
     private final ObjectMapper objectMapper;
 
     private final RedissonClient redissonClient;
+
+    private final Map<String, RLock> lockCache = new ConcurrentHashMap<>();
 
     @Pointcut("@annotation(com.chiu.megalith.blog.cache.Cache)")
     public void pt() {}
@@ -115,12 +120,22 @@ public class CacheAspect {
 
 
         //防止缓存击穿
-        RLock rLock = redissonClient.getLock(lock);
+        RLock rLock = lockCache.get(lock);
+        if (rLock == null) {
+            synchronized (lock.intern()) {
+                rLock = lockCache.get(lock);
+                if (rLock == null) {
+                    rLock = redissonClient.getLock(lock);
+                    lockCache.put(lock, rLock);
+                }
+            }
+        }
+
 
         boolean locked = rLock.tryLock(5000, TimeUnit.MILLISECONDS);
 
         if (!locked) {
-            return around(pjp);
+            throw new TimeoutException("request timeout");
         }
 
         try {

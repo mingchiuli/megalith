@@ -13,7 +13,7 @@ import com.chiu.megalith.common.page.PageAdapter;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
 import com.chiu.megalith.common.utils.RedisUtils;
-import com.chiu.megalith.search.config.ESMQConfig;
+import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -191,8 +191,8 @@ public class BlogServiceImpl implements BlogService {
                         TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                ESMQConfig.ES_EXCHANGE,
-                ESMQConfig.ES_BINDING_KEY,
+                ElasticSearchRabbitConfig.ES_EXCHANGE,
+                ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(ref.blogEntity.getId(), ref.type, ref.blogEntity.getCreated().getYear()),
                 correlationData);
     }
@@ -225,8 +225,8 @@ public class BlogServiceImpl implements BlogService {
                     TimeUnit.SECONDS);
 
             rabbitTemplate.convertAndSend(
-                    ESMQConfig.ES_EXCHANGE,
-                    ESMQConfig.ES_BINDING_KEY,
+                    ElasticSearchRabbitConfig.ES_EXCHANGE,
+                    ElasticSearchRabbitConfig.ES_BINDING_KEY,
                     new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
         }
     }
@@ -336,8 +336,8 @@ public class BlogServiceImpl implements BlogService {
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                ESMQConfig.ES_EXCHANGE,
-                ESMQConfig.ES_BINDING_KEY,
+                ElasticSearchRabbitConfig.ES_EXCHANGE,
+                ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
                 correlationData);
     }
@@ -354,8 +354,8 @@ public class BlogServiceImpl implements BlogService {
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
-                ESMQConfig.ES_EXCHANGE,
-                ESMQConfig.ES_BINDING_KEY,
+                ElasticSearchRabbitConfig.ES_EXCHANGE,
+                ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
                 correlationData);
     }

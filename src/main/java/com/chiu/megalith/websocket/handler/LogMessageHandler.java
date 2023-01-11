@@ -1,6 +1,6 @@
 package com.chiu.megalith.websocket.handler;
 
-import com.chiu.megalith.common.config.LogConfig;
+import com.chiu.megalith.common.config.LogRabbitConfig;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class LogMessageHandler {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
 
-    @RabbitListener(id = "log", queues = LogConfig.LOG_QUEUE, autoStartup = "false")
+    @RabbitListener(id = "log", queues = LogRabbitConfig.LOG_QUEUE, autoStartup = "false")
 //    @RabbitListener(id = "log", queues = LogMQConfig.LOG_QUEUE)
     public void processMessage(String msg, Channel channel, Message message) {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @create 2022-12-01 10:41 pm
  */
 @Configuration
-public class LogConfig {
+public class LogRabbitConfig {
     public static final String LOG_QUEUE = "log_queue";
 
     public static final String LOG_EXCHANGE = "log_exchange";

@@ -2,7 +2,7 @@ package com.chiu.megalith.search.mq;
 
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
 import com.chiu.megalith.common.utils.SpringUtils;
-import com.chiu.megalith.search.config.ESMQConfig;
+import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import com.chiu.megalith.search.mq.handler.BlogIndexAbstractHandler;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class BlogRabbitListener {
         private static final Map<String, BlogIndexAbstractHandler> cacheHandlers = SpringUtils.getHandlers(BlogIndexAbstractHandler.class);
     }
 
-    @RabbitListener(queues = ESMQConfig.ES_QUEUE)
+    @RabbitListener(queues = ElasticSearchRabbitConfig.ES_QUEUE)
     public void handler(BlogSearchIndexMessage message, Channel channel, Message msg) {
         for (BlogIndexAbstractHandler handler : CacheHandlers.cacheHandlers.values()) {
             if (handler.supports(message.typeEnum)) {

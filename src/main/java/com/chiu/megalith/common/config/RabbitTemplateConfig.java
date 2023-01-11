@@ -4,7 +4,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.policy.CircuitBreakerRetryPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 /**
  * @author mingchiuli
@@ -13,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-public class RabbitCallbackConfig {
+public class RabbitTemplateConfig {
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -27,5 +31,14 @@ public class RabbitCallbackConfig {
         //只要消息没有投递给指定的队列，就触发这个失败回调
         rabbitTemplate.setReturnsCallback(returned -> log.info("message not come to queue {}", returned));
 
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+
+        RetryTemplate retryTemplate = new RetryTemplate();
+        CircuitBreakerRetryPolicy circuitBreakerRetryPolicy = new CircuitBreakerRetryPolicy(new SimpleRetryPolicy(10));
+        circuitBreakerRetryPolicy.setOpenTimeout(5000L);
+        circuitBreakerRetryPolicy.setResetTimeout(10000L);
+        retryTemplate.setRetryPolicy(circuitBreakerRetryPolicy);
+
+        rabbitTemplate.setRetryTemplate(retryTemplate);
     }
 }
