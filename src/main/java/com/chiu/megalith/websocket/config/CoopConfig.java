@@ -29,7 +29,7 @@ public class CoopConfig {
     public Queue wsQueue() {
         serverMark = UUID.randomUUID().toString();
         WS_QUEUE += serverMark;
-        return new Queue(WS_QUEUE);
+        return new Queue(WS_QUEUE, true, false, true);
     }
 
     @Bean("COOP_TOPIC_EXCHANGE")
