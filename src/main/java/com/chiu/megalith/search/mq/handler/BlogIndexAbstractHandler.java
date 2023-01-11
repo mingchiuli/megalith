@@ -48,8 +48,9 @@ public abstract class BlogIndexAbstractHandler {
                 //手动签收消息
                 //false代表不是批量签收模式
                 channel.basicAck(deliveryTag, false);
-            } finally {
                 redisTemplate.delete(Const.CONSUME_MONITOR.getMsg() + createUUID);
+            } catch (Exception e) {
+                channel.basicNack(deliveryTag, false, true);
             }
         } else {
             channel.basicNack(deliveryTag, false, false);
