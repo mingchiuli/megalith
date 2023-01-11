@@ -3,6 +3,7 @@ package com.chiu.megalith.websocket.handler;
 import com.chiu.megalith.common.utils.SpringUtils;
 import com.chiu.megalith.websocket.dto.MessageDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -35,6 +36,7 @@ public class WSMessageHandler {
                                                                      @Qualifier("CoopMessageListener") MessageListenerAdapter listenerAdapter,
                                                                      @Qualifier("COOP_QUEUE") Queue queue) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        listenerAdapter.containerAckMode(AcknowledgeMode.AUTO);
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queue.getName());
         container.setMessageListener(listenerAdapter);

@@ -51,6 +51,7 @@ public abstract class BlogIndexAbstractHandler {
                 redisTemplate.delete(Const.CONSUME_MONITOR.getMsg() + createUUID);
             } catch (Exception e) {
                 channel.basicNack(deliveryTag, false, true);
+                throw e;
             }
         } else {
             channel.basicNack(deliveryTag, false, false);
