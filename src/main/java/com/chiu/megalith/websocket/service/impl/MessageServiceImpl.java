@@ -2,7 +2,7 @@ package com.chiu.megalith.websocket.service.impl;
 
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisUtils;
-import com.chiu.megalith.websocket.config.CoWorkMQConfig;
+import com.chiu.megalith.websocket.config.CoopConfig;
 import com.chiu.megalith.websocket.dto.impl.ChatInfoDto;
 import com.chiu.megalith.websocket.dto.impl.DestroyDto;
 import com.chiu.megalith.websocket.dto.impl.QuitDto;
@@ -43,7 +43,7 @@ public class MessageServiceImpl implements MessageService {
                         UserEntityVo.class);
                 msg.setToOne(userId);
                 rabbitTemplate.convertAndSend(
-                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             });
         });
@@ -57,7 +57,7 @@ public class MessageServiceImpl implements MessageService {
             if (!from.equals(Long.parseLong((String) k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });
@@ -71,7 +71,7 @@ public class MessageServiceImpl implements MessageService {
             if (!from.equals(Long.parseLong((String) k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });
@@ -85,7 +85,7 @@ public class MessageServiceImpl implements MessageService {
             if (!from.equals(Long.parseLong((String) k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoWorkMQConfig.WS_TOPIC_EXCHANGE, CoWorkMQConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });

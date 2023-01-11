@@ -15,7 +15,7 @@ import java.util.UUID;
  * @create 2022-12-25 4:24 pm
  */
 @Configuration
-public class CoWorkMQConfig {
+public class CoopConfig {
 
     public static String serverMark;
 

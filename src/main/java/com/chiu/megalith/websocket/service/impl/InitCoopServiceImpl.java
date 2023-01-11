@@ -6,7 +6,7 @@ import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
-import com.chiu.megalith.websocket.config.CoWorkMQConfig;
+import com.chiu.megalith.websocket.config.CoopConfig;
 import com.chiu.megalith.websocket.dto.Container;
 import com.chiu.megalith.websocket.dto.impl.InitDto;
 import com.chiu.megalith.websocket.service.InitCoopService;
@@ -56,7 +56,7 @@ public class InitCoopServiceImpl implements InitCoopService {
                 avatar(userEntity.getAvatar()).
                 username(userEntity.getUsername()).
                 orderNumber(orderNumber).
-                serverMark(CoWorkMQConfig.serverMark).
+                serverMark(CoopConfig.serverMark).
                 build();
 
         redisTemplate.opsForHash().put(Const.COOP_PREFIX.getMsg() + blogId,
@@ -93,10 +93,10 @@ public class InitCoopServiceImpl implements InitCoopService {
 
 
         userEntityInfos.forEach(user -> {
-            if (!user.getServerMark().equals(CoWorkMQConfig.serverMark)) {
+            if (!user.getServerMark().equals(CoopConfig.serverMark)) {
                 rabbitTemplate.convertAndSend(
-                        CoWorkMQConfig.WS_TOPIC_EXCHANGE,
-                        CoWorkMQConfig.WS_BINDING_KEY + user.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE,
+                        CoopConfig.WS_BINDING_KEY + user.getServerMark(),
                         dto);
             }
         });
