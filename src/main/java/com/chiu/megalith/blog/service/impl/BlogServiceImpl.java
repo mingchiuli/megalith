@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -60,7 +61,8 @@ public class BlogServiceImpl implements BlogService {
 
     private final RedisUtils redisUtils;
 
-    private final Integer blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
+    @Value("${blog.blog-page-size}")
+    private Integer blogPageSize;
 
 
     @Cache(prefix = Const.HOT_BLOG)

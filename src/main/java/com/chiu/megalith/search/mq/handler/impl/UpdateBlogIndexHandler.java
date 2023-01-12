@@ -6,6 +6,7 @@ import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
 import com.chiu.megalith.search.mq.handler.BlogIndexAbstractHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,8 @@ public class UpdateBlogIndexHandler extends BlogIndexAbstractHandler {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
-    private final int blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
+    @Value("${blog.blog-page-size}")
+    private Integer blogPageSize;
 
     public UpdateBlogIndexHandler(StringRedisTemplate redisTemplate, BlogRepository blogRepository, ElasticsearchTemplate elasticsearchTemplate) {
         super(redisTemplate, blogRepository);

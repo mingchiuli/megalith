@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,7 +45,8 @@ public class CacheScheduled {
 
     private final RedissonClient redissonClient;
 
-    private final int blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
+    @Value("${blog.blog-page-size}")
+    private Integer blogPageSize;
 
 
     @SneakyThrows

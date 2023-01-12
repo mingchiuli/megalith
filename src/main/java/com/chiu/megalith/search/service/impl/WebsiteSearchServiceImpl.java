@@ -10,6 +10,7 @@ import com.chiu.megalith.search.vo.WebsiteDocumentVo;
 import com.chiu.megalith.search.vo.WebsiteVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -38,7 +39,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
-    private final int webPageSize = Integer.parseInt(Const.WEB_PAGE_SIZE.getMsg());
+    @Value("${blog.web-page-size}")
+    private Integer webPageSize;
 
     @Override
     public String generateJwt() {

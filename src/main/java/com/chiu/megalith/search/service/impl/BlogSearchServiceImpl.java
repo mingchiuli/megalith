@@ -8,6 +8,7 @@ import com.chiu.megalith.search.document.BlogDocument;
 import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -36,7 +37,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final int blogPageSize = Integer.parseInt(Const.BLOG_PAGE_SIZE.getMsg());
+    @Value("${blog.blog-page-size}")
+    private Integer blogPageSize;
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keyword, Integer flag, Integer year) {

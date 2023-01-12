@@ -11,8 +11,6 @@ public enum Const {
 
     EMAIL_KEY("email_validation:"),
 
-    EMAIL_TRY_COUNT("3"),
-
     READ_RECENT("blogReadRecent:"),
 
     HOT_BLOGS_PATTERN("hot_blogs*"),
@@ -42,10 +40,6 @@ public enum Const {
     YEARS("years"),
 
     BLOOM_FILTER_YEARS("bloom_filter_years"),
-
-    BLOG_PAGE_SIZE("5"),
-
-    WEB_PAGE_SIZE("9"),
 
     JSON_WEB_TOKEN("jwt"),
 

@@ -42,4 +42,7 @@ blog:
     keep-alive-time: 10
   highest-role: admin
   default-role: boy,girl
+  email-try-count: 3
+  blog-page-size: 5
+  web-page-size: 9
 

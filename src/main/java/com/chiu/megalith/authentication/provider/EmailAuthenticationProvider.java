@@ -3,6 +3,7 @@ package com.chiu.megalith.authentication.provider;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +21,8 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final Integer maxTryNum = Integer.valueOf(Const.EMAIL_TRY_COUNT.getMsg());
+    @Value("${blog.email-try-count}")
+    private Integer maxTryNum;
 
     @SneakyThrows
     @Override
