@@ -7,7 +7,7 @@ import com.chiu.megalith.websocket.dto.impl.ChatInfoDto;
 import com.chiu.megalith.websocket.dto.impl.DestroyDto;
 import com.chiu.megalith.websocket.dto.impl.QuitDto;
 import com.chiu.megalith.websocket.dto.impl.SyncContentDto;
-import com.chiu.megalith.websocket.service.MessageService;
+import com.chiu.megalith.websocket.service.CoopMessageService;
 import com.chiu.megalith.websocket.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 @Service
 @RequiredArgsConstructor
-public class MessageServiceImpl implements MessageService {
+public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final RabbitTemplate rabbitTemplate;
 

@@ -4,7 +4,7 @@ import com.chiu.megalith.websocket.dto.impl.ChatInfoDto;
 import com.chiu.megalith.websocket.dto.impl.DestroyDto;
 import com.chiu.megalith.websocket.dto.impl.QuitDto;
 import com.chiu.megalith.websocket.dto.impl.SyncContentDto;
-import com.chiu.megalith.websocket.service.MessageService;
+import com.chiu.megalith.websocket.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
@@ -19,30 +19,30 @@ import java.security.Principal;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/coop")
-public class MessageController {
+public class CoopMessageController {
 
-    private final MessageService messageService;
+    private final CoopMessageService coopMessageService;
 
 
     @MessageMapping("/chat")
     public void chat(Principal user, ChatInfoDto.Message msg) {
-        messageService.chat(user, msg);
+        coopMessageService.chat(user, msg);
     }
 
     @MessageMapping("/sync")
     public void syncContent(Principal user, SyncContentDto.Content msg) {
-        messageService.sync(user, msg);
+        coopMessageService.sync(user, msg);
     }
 
 
     @MessageMapping("/destroy")
     public void destroy(Principal user, DestroyDto.Bind msg) {
-        messageService.destroy(user, msg);
+        coopMessageService.destroy(user, msg);
     }
 
     @MessageMapping("/quit")
     public void quit(Principal user, QuitDto.Bind msg) {
-        messageService.quit(user, msg);
+        coopMessageService.quit(user, msg);
     }
 
 }

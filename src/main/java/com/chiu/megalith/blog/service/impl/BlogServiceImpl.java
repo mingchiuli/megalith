@@ -31,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -189,7 +190,7 @@ public class BlogServiceImpl implements BlogService {
         CorrelationData correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
                         ref.type.name() + "_" + ref.blogEntity.getId(),
-                        10,
+                        30,
                         TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
@@ -284,6 +285,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage, Integer size) {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -292,7 +294,7 @@ public class BlogServiceImpl implements BlogService {
             PageAdapter<BlogEntity> pageAdapter;
         };
 
-        Optional.ofNullable(set).ifPresent(keys -> {
+        Optional.ofNullable(set).ifPresentOrElse(keys -> {
             int total = set.size();
             int totalPages = total % size == 0 ? total / size : total / size + 1;
 
@@ -313,7 +315,7 @@ public class BlogServiceImpl implements BlogService {
                             totalElements(total).
                             empty(total == 0).
                             build());
-        });
+        }, () -> ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
 
         return ref.pageAdapter;
     }
@@ -334,7 +336,7 @@ public class BlogServiceImpl implements BlogService {
         CorrelationData correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
                 BlogIndexEnum.CREATE.name() + "_" + blog.getId(),
-                10,
+                30,
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
@@ -352,7 +354,7 @@ public class BlogServiceImpl implements BlogService {
         CorrelationData correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
                 BlogIndexEnum.UPDATE + "_" + id,
-                10,
+                30,
                 TimeUnit.SECONDS);
 
         rabbitTemplate.convertAndSend(
