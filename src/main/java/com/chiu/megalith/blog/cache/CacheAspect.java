@@ -111,12 +111,11 @@ public class CacheAspect {
             return pjp.proceed();
         }
 
-
         if (o != null) {
             return objectMapper.readValue(o, javaType);
         }
 
-        String lock = (LOCK + className + methodName + params);
+        String lock = LOCK + className + methodName + params;
 
 
         //防止缓存击穿

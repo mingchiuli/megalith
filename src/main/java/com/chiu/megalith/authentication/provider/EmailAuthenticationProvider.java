@@ -3,6 +3,7 @@ package com.chiu.megalith.authentication.provider;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,11 +28,12 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
         //username is login email
         String prefix = Const.EMAIL_KEY.getMsg() + userDetails.getUsername();
-        Map<Object, Object> entries = redisTemplate.opsForHash().entries(prefix);
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> entries = hashOperations.entries(prefix);
 
         if (entries.size() == 2) {
-            String code = (String) entries.get("code");
-            String tryCount = (String) entries.get("tryCount");
+            String code = entries.get("code");
+            String tryCount = entries.get("tryCount");
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {
                 redisTemplate.delete(prefix);

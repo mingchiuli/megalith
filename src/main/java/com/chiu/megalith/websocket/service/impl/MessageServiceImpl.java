@@ -11,6 +11,7 @@ import com.chiu.megalith.websocket.service.MessageService;
 import com.chiu.megalith.websocket.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,8 @@ public class MessageServiceImpl implements MessageService {
 
         msg.getToAll().forEach(userId -> {
 
-            String o = (String) redisTemplate.opsForHash().get(Const.COOP_PREFIX.getMsg() + msg.getBlogId(), userId);
+            HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+            String o = hashOperations.get(Const.COOP_PREFIX.getMsg() + msg.getBlogId(), userId);
             Optional.ofNullable(o).ifPresent(str -> {
                 UserEntityVo userEntityVo = redisUtils.readValue(
                         str,
@@ -52,10 +54,12 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void sync(Principal user, SyncContentDto.Content msg) {
         Long from = Long.parseLong(user.getName());
-        Map<Object, Object> entries = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+
         entries.forEach((k, v) -> {
-            if (!from.equals(Long.parseLong((String) k))) {
-                UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
+            if (!from.equals(Long.parseLong(k))) {
+                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
                         CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
@@ -66,10 +70,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void destroy(Principal user, DestroyDto.Bind msg) {
         Long from = Long.parseLong(user.getName());
-        Map<Object, Object> entries = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
         entries.forEach((k, v) -> {
-            if (!from.equals(Long.parseLong((String) k))) {
-                UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
+            if (!from.equals(Long.parseLong(k))) {
+                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
                         CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
@@ -80,10 +85,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void quit(Principal user, QuitDto.Bind msg) {
         Long from = Long.parseLong(user.getName());
-        Map<Object, Object> entries = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
         entries.forEach((k, v) -> {
-            if (!from.equals(Long.parseLong((String) k))) {
-                UserEntityVo userEntityVo = redisUtils.readValue((String) v, UserEntityVo.class);
+            if (!from.equals(Long.parseLong(k))) {
+                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
                         CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);

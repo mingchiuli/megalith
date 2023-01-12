@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -64,11 +65,12 @@ public class InitCoopServiceImpl implements InitCoopService {
                 objectMapper.writeValueAsString(vo));
         redisTemplate.expire(Const.COOP_PREFIX.getMsg() + blogId, 6 * 60, TimeUnit.MINUTES);
 
-        Map<Object, Object> userMap = redisTemplate.opsForHash().entries(Const.COOP_PREFIX.getMsg() + blogId);
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> userMap = hashOperations.entries(Const.COOP_PREFIX.getMsg() + blogId);
 
         List<UserEntityVo> userEntityInfos = userMap.values().
                 stream().
-                map(str -> redisUtils.readValue((String) str, UserEntityVo.class)).
+                map(str -> redisUtils.readValue(str, UserEntityVo.class)).
                 sorted(Comparator.comparing(UserEntityVo::getOrderNumber)).
                 toList();
 
