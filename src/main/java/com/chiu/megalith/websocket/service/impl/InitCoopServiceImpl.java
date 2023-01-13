@@ -10,8 +10,8 @@ import com.chiu.megalith.websocket.config.CoopConfig;
 import com.chiu.megalith.websocket.dto.Container;
 import com.chiu.megalith.websocket.dto.impl.InitDto;
 import com.chiu.megalith.websocket.service.InitCoopService;
+import com.chiu.megalith.websocket.vo.InitCoopVo;
 import com.chiu.megalith.websocket.vo.UserEntityVo;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataAccessException;
@@ -24,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -46,11 +45,9 @@ public class InitCoopServiceImpl implements InitCoopService {
 
     private final RedisUtils redisUtils;
 
-    private final ObjectMapper objectMapper;
-
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> initCoop(Long blogId, Integer orderNumber) {
+    public InitCoopVo initCoop(Long blogId, Integer orderNumber) {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         UserEntity userEntity = userService.findById(userId);
@@ -113,9 +110,9 @@ public class InitCoopServiceImpl implements InitCoopService {
             }
         });
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("blog", blogEntity);
-        map.put("users", userEntityVos);
-        return map;
+        return InitCoopVo.builder().
+                blogEntity(blogEntity).
+                userEntityVos(userEntityVos).
+                build();
     }
 }

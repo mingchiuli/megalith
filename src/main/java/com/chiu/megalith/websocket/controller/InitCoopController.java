@@ -3,6 +3,7 @@ package com.chiu.megalith.websocket.controller;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.valid.CoopBlogId;
 import com.chiu.megalith.websocket.service.InitCoopService;
+import com.chiu.megalith.websocket.vo.InitCoopVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Map;
 
 
 /**
@@ -27,8 +27,8 @@ public class InitCoopController {
 
     @GetMapping("/init/{blogId}/{orderNumber}")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public Result<Map<String, Object>> initCoop(@PathVariable @CoopBlogId Long blogId, @PathVariable Integer orderNumber) {
-        Map<String, Object> map = initCoopService.initCoop(blogId, orderNumber);
-        return Result.success(map);
+    public Result<InitCoopVo> initCoop(@PathVariable @CoopBlogId Long blogId, @PathVariable Integer orderNumber) {
+        InitCoopVo initCoopVo = initCoopService.initCoop(blogId, orderNumber);
+        return Result.success(initCoopVo);
     }
 }

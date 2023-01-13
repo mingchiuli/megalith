@@ -1,5 +1,7 @@
 package com.chiu.megalith.websocket.service;
 
+import com.chiu.megalith.websocket.vo.InitCoopVo;
+
 import java.util.Map;
 
 /**
@@ -7,6 +9,6 @@ import java.util.Map;
  * @create 2022-12-26 1:05 am
  */
 public interface InitCoopService {
-    Map<String, Object> initCoop(Long blogId, Integer orderNumber);
+    InitCoopVo initCoop(Long blogId, Integer orderNumber);
 
 }
