@@ -2,7 +2,7 @@ package com.chiu.megalith.blog.controller;
 
 import com.chiu.megalith.blog.bloom.Bloom;
 import com.chiu.megalith.blog.bloom.handler.impl.*;
-import com.chiu.megalith.blog.cache.Cache;
+import com.chiu.megalith.blog.cache.Cached;
 import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
@@ -28,7 +28,7 @@ public class BlogController {
     private final BlogService blogService;
 
     @GetMapping("/info/{id}")
-    @Bloom(handler = DetailBloomHandler.class)
+//    @Bloom(handler = DetailBloomHandler.class)
     public Result<BlogEntity> getBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findByIdAndStatus(id, 0);
         blogService.setReadCount(id);
@@ -36,7 +36,7 @@ public class BlogController {
     }
 
     @GetMapping("/page/{currentPage}")
-    @Cache(prefix = Const.HOT_BLOGS)
+    @Cached(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListBloomHandler.class)
     public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage) {
         PageAdapter<BlogEntity> pageData = blogService.listPage(currentPage);
@@ -44,7 +44,7 @@ public class BlogController {
     }
 
     @GetMapping("/page/year/{year}/{currentPage}")
-    @Cache(prefix = Const.HOT_BLOGS)
+    @Cached(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListByYearBloomHandler.class)
     public Result<PageAdapter<BlogEntity>> listPageByYear(@PathVariable(name = "currentPage") Integer currentPage,
                                                           @PathVariable(name = "year") Integer year) {
@@ -53,7 +53,7 @@ public class BlogController {
     }
 
     @GetMapping("/count/year/{year}")
-    @Cache(prefix = Const.HOT_BLOGS)
+    @Cached(prefix = Const.HOT_BLOGS)
     @Bloom(handler = CountByYearBloomHandler.class)
     public Result<Integer> getCountByYear(@PathVariable(name = "year") Integer year) {
         Integer count = blogService.getCountByYear(year);
@@ -69,14 +69,14 @@ public class BlogController {
 
     @Bloom(handler = BlogStatusBloomHandler.class)
     @GetMapping("/status/{blogId}")
-    @Cache(prefix = Const.BLOG_STATUS)
+    @Cached(prefix = Const.BLOG_STATUS)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
         Integer status = blogService.findStatusById(blogId);
         return Result.success(status);
     }
 
     @GetMapping("/years")
-    @Cache(prefix = Const.YEARS)
+    @Cached(prefix = Const.YEARS)
     public Result<List<Integer>> searchYears() {
         List<Integer> years = blogService.searchYears();
         return Result.success(years);

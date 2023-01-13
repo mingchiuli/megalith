@@ -1,6 +1,6 @@
 package com.chiu.megalith.blog.service.impl;
 
-import com.chiu.megalith.blog.cache.Cache;
+import com.chiu.megalith.blog.cache.Cached;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.repository.BlogRepository;
@@ -31,7 +31,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,7 +65,7 @@ public class BlogServiceImpl implements BlogService {
     private Integer blogPageSize;
 
 
-    @Cache(prefix = Const.HOT_BLOG)
+    @Cached(prefix = Const.HOT_BLOG)
     public BlogEntity findByIdAndStatus(Long id, Integer status) {
         return blogRepository.findByIdAndStatus(id, status).
                 orElseThrow(() -> new NotFoundException("blog not found"));

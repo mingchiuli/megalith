@@ -2,6 +2,8 @@ package com.chiu.megalith.blog.cache;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,8 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Map;
+import java.time.Duration;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -38,7 +39,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Order(2)
 @RequiredArgsConstructor
-public class CacheAspect {
+public class CachedAspect {
 
     private static final String LOCK = "lock:";
 
@@ -48,9 +49,12 @@ public class CacheAspect {
 
     private final RedissonClient redissonClient;
 
-    private final Map<String, RLock> lockCache = new ConcurrentHashMap<>();
+    private final Cache<String, RLock> lockCache = Caffeine.newBuilder()
+            .maximumSize(500)
+            .expireAfterWrite(Duration.ofMinutes(30))
+            .build();
 
-    @Pointcut("@annotation(com.chiu.megalith.blog.cache.Cache)")
+    @Pointcut("@annotation(com.chiu.megalith.blog.cache.Cached)")
     public void pt() {}
 
     @SneakyThrows
@@ -86,7 +90,7 @@ public class CacheAspect {
         Class<?> declaringType = signature.getDeclaringType();
         Method method = declaringType.getMethod(methodName, parameterTypes);
 
-        Cache annotation = method.getAnnotation(Cache.class);
+        Cached annotation = method.getAnnotation(Cached.class);
         long expire = annotation.expire();
         String prefix = annotation.prefix().getMsg();
 
@@ -119,10 +123,10 @@ public class CacheAspect {
 
 
         //防止缓存击穿
-        RLock rLock = lockCache.get(lock);
+        RLock rLock = lockCache.getIfPresent(lock);
         if (rLock == null) {
             synchronized (lock.intern()) {
-                rLock = lockCache.get(lock);
+                rLock = lockCache.getIfPresent(lock);
                 if (rLock == null) {
                     rLock = redissonClient.getLock(lock);
                     lockCache.put(lock, rLock);
