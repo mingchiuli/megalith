@@ -148,7 +148,6 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.searchYears();
     }
 
-
     @Override
     public List<BlogEntity> findAll() {
         return blogRepository.findAll();
@@ -199,15 +198,12 @@ public class BlogServiceImpl implements BlogService {
                 correlationData);
     }
 
-
-    @SneakyThrows
     @Override
     public void deleteBlogs(List<Long> ids) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        for (Long id : ids) {
-            Optional<BlogEntity> optionalBlog = blogRepository.findById(id);
-            BlogEntity blogEntity = optionalBlog.
+        ids.forEach(id -> {
+            BlogEntity blogEntity = blogRepository.findById(id).
                     orElseThrow(() -> new NotFoundException("blog not exist"));
 
             Assert.isTrue(blogEntity.getUserId().equals(userId), "must delete own blog");
@@ -215,7 +211,7 @@ public class BlogServiceImpl implements BlogService {
             blogRepository.delete(blogEntity);
 
             redisTemplate.opsForValue().set(userId + Const.QUERY_DELETED.getMsg() + id,
-                    objectMapper.writeValueAsString(blogEntity),
+                    redisUtils.writeValueAsString(blogEntity),
                     7,
                     TimeUnit.DAYS);
 
@@ -230,7 +226,7 @@ public class BlogServiceImpl implements BlogService {
                     ElasticSearchRabbitConfig.ES_EXCHANGE,
                     ElasticSearchRabbitConfig.ES_BINDING_KEY,
                     new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
-        }
+        });
     }
 
     @Override
@@ -241,7 +237,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public String getBlogToken() {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_TOKEN)).
+        return Optional.ofNullable(
+                redisTemplate.opsForValue().get(Const.READ_TOKEN)
+                ).
                 orElse("read token is not exist");
     }
 
@@ -264,8 +262,9 @@ public class BlogServiceImpl implements BlogService {
                                 content(blogEntity.getContent()).
                                 readRecent(Integer.valueOf(
                                         Optional.ofNullable(
-                                                redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())).
-                                        orElse("0")
+                                                redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())
+                                                ).
+                                                orElse("0")
                                         )
                                 ).
                                 build()).
@@ -325,7 +324,8 @@ public class BlogServiceImpl implements BlogService {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         String blogStr = Optional.ofNullable(
-                redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getMsg() + id)).
+                redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getMsg() + id)
+                ).
                 orElseThrow(() -> new NotFoundException("blog is expired"));
 
         BlogEntity tempBlog = objectMapper.readValue(blogStr, BlogEntity.class);

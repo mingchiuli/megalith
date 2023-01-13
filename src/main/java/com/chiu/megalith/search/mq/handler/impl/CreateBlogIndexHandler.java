@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -40,11 +41,9 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
     @SneakyThrows
     @Override
     protected void redisProcess(BlogEntity blog) {
-        Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg());
-
-        if (keys == null) {
-            keys = new HashSet<>();
-        }
+        Set<String> keys = Optional.ofNullable(
+                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg())
+        ).orElseGet(HashSet::new);
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getMsg() + blog.getCreated().getYear());
         redisTemplate.unlink(keys);
 

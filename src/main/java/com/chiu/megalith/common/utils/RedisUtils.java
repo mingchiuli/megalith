@@ -1,6 +1,5 @@
 package com.chiu.megalith.common.utils;
 
-import com.chiu.megalith.websocket.vo.UserEntityVo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -49,5 +48,10 @@ public class RedisUtils {
     @SneakyThrows
     public <T> T readValue(String str, Class<T> clazz) {
         return objectMapper.readValue(str, clazz);
+    }
+
+    @SneakyThrows
+    public String writeValueAsString(Object obj) {
+        return objectMapper.writeValueAsString(obj);
     }
 }

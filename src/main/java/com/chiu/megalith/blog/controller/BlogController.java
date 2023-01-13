@@ -28,7 +28,7 @@ public class BlogController {
     private final BlogService blogService;
 
     @GetMapping("/info/{id}")
-//    @Bloom(handler = DetailBloomHandler.class)
+    @Bloom(handler = DetailBloomHandler.class)
     public Result<BlogEntity> getBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findByIdAndStatus(id, 0);
         blogService.setReadCount(id);

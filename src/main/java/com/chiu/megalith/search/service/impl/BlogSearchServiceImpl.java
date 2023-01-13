@@ -20,6 +20,7 @@ import org.springframework.data.elasticsearch.core.query.highlight.HighlightPara
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,8 +56,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 must(mustQuery3 -> mustQuery3.
                                         range(rangeQuery -> rangeQuery.
                                                 field("created").
-                                                from(year != null ? year + "-01-01T00:00:00.000" : null).
-                                                to(year != null ? year + "-12-31T23:59:59.999" : null))))).
+                                                from(Optional.ofNullable(year).isPresent() ? year + "-01-01T00:00:00.000" : null).
+                                                to(Optional.ofNullable(year).isPresent() ? year + "-12-31T23:59:59.999" : null))))).
                 withSort(sort -> sort.
                         score(score -> score.
                                 order(SortOrder.Desc))).

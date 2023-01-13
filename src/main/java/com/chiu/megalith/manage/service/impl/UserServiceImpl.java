@@ -34,7 +34,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity retrieveUserInfo(String username) {
-        return userRepository.retrieveUserInfo(username).orElseThrow(() -> new UsernameNotFoundException("user not exist"));
+        return userRepository.retrieveUserInfo(username).
+                orElseThrow(() -> new UsernameNotFoundException("user not exist"));
     }
 
     @Override
@@ -61,9 +62,11 @@ public class UserServiceImpl implements UserService {
                     created(now).
                     lastLogin(now).
                     build();
-            userEntityVo.setPassword(passwordEncoder.encode(
-                    Optional.ofNullable(userEntityVo.getPassword()).orElseThrow(() ->
-                            new CommitException("password is required")))
+            userEntityVo.setPassword(
+                    passwordEncoder.encode(
+                            Optional.ofNullable(userEntityVo.getPassword()).
+                                    orElseThrow(() -> new CommitException("password is required"))
+                    )
             );
         });
 

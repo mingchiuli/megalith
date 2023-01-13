@@ -59,9 +59,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 				build()
 		);
 
-		outputStream.write(objectMapper.
-				writeValueAsString(success).
-				getBytes(StandardCharsets.UTF_8)
+		outputStream.write(
+				objectMapper.writeValueAsString(success).getBytes(StandardCharsets.UTF_8)
 		);
 
 		outputStream.flush();

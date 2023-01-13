@@ -37,9 +37,8 @@ public class CaptchaFilter extends OncePerRequestFilter {
 			} catch (CaptchaException e) {
 				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 				response.getWriter().write(
-						objectMapper.
-								writeValueAsString(
-										Result.fail(400, e.getMessage())
+						objectMapper.writeValueAsString(
+								Result.fail(400, e.getMessage())
 						)
 				);
 				return;

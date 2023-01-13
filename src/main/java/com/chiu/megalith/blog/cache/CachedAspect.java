@@ -49,7 +49,7 @@ public class CachedAspect {
     private final RedissonClient redissonClient;
 
     private final LoadingCache<String, RLock> lockCache = Caffeine.newBuilder()
-            .maximumSize(500)
+            .maximumSize(5000)
             .expireAfterWrite(Duration.ofMinutes(60))
             .refreshAfterWrite(Duration.ofMinutes(30))
             .build(this::createRlock);
@@ -73,18 +73,19 @@ public class CachedAspect {
         StringBuilder params = new StringBuilder();
 
         for (int i = 0; i < args.length; i++) {
-            Optional<Object> arg = Optional.ofNullable(args[i]);
-            if (arg.isPresent()) {
+            Optional<Object> argOptional = Optional.ofNullable(args[i]);
+            if (argOptional.isPresent()) {
+                Object arg = argOptional.get();
                 //方法的参数必须是能够json化的
                 params.append("::");
-                if (arg.get() instanceof String) {
-                    params.append(arg.get());
+                if (arg instanceof String) {
+                    params.append(arg);
                 } else {
-                    params.append(objectMapper.
-                            writeValueAsString(arg.get())
+                    params.append(
+                            objectMapper.writeValueAsString(arg)
                     );
                 }
-                parameterTypes[i] = arg.get().getClass();
+                parameterTypes[i] = arg.getClass();
             }
         }
 
@@ -116,24 +117,14 @@ public class CachedAspect {
             return pjp.proceed();
         }
 
-        if (o != null) {
+        if (StringUtils.hasLength(o)) {
             return objectMapper.readValue(o, javaType);
         }
 
         String lock = LOCK + className + methodName + params;
 
-
-        //防止缓存击穿
-        RLock rLock = lockCache.getIfPresent(lock);
-        if (rLock == null) {
-            synchronized (lock.intern()) {
-                rLock = lockCache.getIfPresent(lock);
-                if (rLock == null) {
-                    rLock = redissonClient.getLock(lock);
-                    lockCache.put(lock, rLock);
-                }
-            }
-        }
+        //已经防止缓存击穿
+        RLock rLock = lockCache.get(lock);
 
         boolean locked = rLock.tryLock(5000, TimeUnit.MILLISECONDS);
 
@@ -145,7 +136,7 @@ public class CachedAspect {
             //双重检查
             String r = redisTemplate.opsForValue().get(redisKey);
 
-            if (r != null) {
+            if (StringUtils.hasLength(r)) {
                 return objectMapper.readValue(r, javaType);
             }
             //执行目标方法

@@ -7,7 +7,11 @@ import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -59,8 +63,8 @@ public class CaptchaServiceImpl implements CaptchaService {
     }
 
 
-    @SneakyThrows
     @Override
+    @SuppressWarnings("unchecked")
     public void createEmailCode(String loginEmail) {
         String prefix = Const.EMAIL_KEY.getMsg() + loginEmail;
         String code = producer.createText();
@@ -69,8 +73,15 @@ public class CaptchaServiceImpl implements CaptchaService {
         map.put("code", code);
         map.put("tryCount", "0");
 
-        redisTemplate.opsForHash().putAll(prefix, map);
-        redisTemplate.expire(prefix, 120, TimeUnit.SECONDS);
+        redisTemplate.execute(new SessionCallback<>() {
+            @Override
+            public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
+                operations.multi();
+                operations.opsForHash().putAll(prefix, map);
+                operations.expire(prefix, 120, TimeUnit.SECONDS);
+                return operations.exec();
+            }
+        });
 
         SimpleMailMessage simpMsg = new SimpleMailMessage();
         simpMsg.setFrom(from);

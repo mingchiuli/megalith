@@ -52,10 +52,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 		} catch (JwtException e) {
 			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 			response.getWriter().write(
-					objectMapper.
-							writeValueAsString(
+					objectMapper.writeValueAsString(
 									Result.fail(401, e.getMessage())
-							)
+					)
 			);
 			return;
 		}

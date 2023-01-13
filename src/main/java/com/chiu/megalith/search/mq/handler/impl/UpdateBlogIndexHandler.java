@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -61,10 +62,9 @@ public class UpdateBlogIndexHandler extends BlogIndexAbstractHandler {
         String contentKey = Const.HOT_BLOG.getMsg() + "::BlogServiceImpl::findByIdAndStatus" + builder;
         String statusKey = Const.BLOG_STATUS.getMsg() + "::BlogController::getBlogStatus" + builder;
 
-        Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg());
-        if (keys == null) {
-            keys = new HashSet<>();
-        }
+        Set<String> keys = Optional.ofNullable(
+                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg())
+        ).orElseGet(HashSet::new);
 
         keys.add(contentKey);
         keys.add(statusKey);

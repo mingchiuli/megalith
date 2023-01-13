@@ -54,8 +54,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         };
 
         Optional.ofNullable(websiteVo.getId()).ifPresentOrElse(id ->
-                ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class),
-                () -> ref.document = WebsiteDocument.builder().
+                ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class), () ->
+                ref.document = WebsiteDocument.builder().
                         created(ZonedDateTime.now()).
                         build());
 
@@ -163,8 +163,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                                                         fields(Arrays.asList("title", "description")).query(keyword))).
                                         must(mustQuery2 ->
                                                 mustQuery2.term(termQuery ->
-                                                        termQuery.field("status").value(0))))),
-                () -> nativeQueryBuilder.
+                                                        termQuery.field("status").value(0))))), () ->
+                nativeQueryBuilder.
                         withSort(sortQuery ->
                                 sortQuery.field(fieldQuery ->
                                         fieldQuery.field("created").order(SortOrder.Desc))).

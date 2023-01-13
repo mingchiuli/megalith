@@ -45,7 +45,8 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                         UserEntityVo.class);
                 msg.setToOne(userId);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE,
+                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             });
         });
@@ -61,7 +62,8 @@ public class CoopMessageServiceImpl implements CoopMessageService {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE,
+                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });
@@ -76,7 +78,8 @@ public class CoopMessageServiceImpl implements CoopMessageService {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE,
+                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });
@@ -91,7 +94,8 @@ public class CoopMessageServiceImpl implements CoopMessageService {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE, CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopConfig.WS_TOPIC_EXCHANGE,
+                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });

@@ -35,8 +35,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleEntity info(Long id) {
-        Optional<RoleEntity> roleEntity = roleRepository.findById(id);
-        return roleEntity.orElseThrow(() -> new NotFoundException("role not exist"));
+        return roleRepository.findById(id).
+                orElseThrow(() -> new NotFoundException("role not exist"));
     }
 
     @Override
@@ -57,7 +57,8 @@ public class RoleServiceImpl implements RoleService {
         LocalDateTime now = LocalDateTime.now();
 
         Optional.ofNullable(roleVo.getId()).ifPresentOrElse((id) -> {
-            ref.roleEntity = roleRepository.findById(id).orElseThrow(() -> new NotFoundException("role not exist"));
+            ref.roleEntity = roleRepository.findById(id).
+                    orElseThrow(() -> new NotFoundException("role not exist"));
             ref.roleEntity.setUpdated(now);
         }, () -> ref.roleEntity = RoleEntity.
                 builder().
@@ -93,16 +94,16 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     public List<Long> perm(Long roleId, List<Long> menuIds) {
         roleMenuService.deleteByRoleId(roleId);
-        roleMenuService.saveAll(
-                menuIds.
-                        stream().
-                        map(menuId -> RoleMenuEntity.builder().
-                                menuId(menuId).
-                                roleId(roleId).
-                                build()
-                        ).
-                        toList()
-        );
+        List<RoleMenuEntity> roleMenuEntities = menuIds.
+                stream().
+                map(menuId -> RoleMenuEntity.builder().
+                        menuId(menuId).
+                        roleId(roleId).
+                        build()
+                ).
+                toList();
+
+        roleMenuService.saveAll(roleMenuEntities);
         return menuIds;
     }
 }

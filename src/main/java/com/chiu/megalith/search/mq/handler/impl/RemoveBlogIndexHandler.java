@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -44,10 +45,9 @@ public class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
         String blogReadKey = Const.READ_RECENT.getMsg() + blog.getId();
 
         //删掉所有摘要缓存
-        Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg());
-        if (keys == null) {
-            keys = new HashSet<>();
-        }
+        Set<String> keys = Optional.ofNullable(
+                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg())
+        ).orElseGet(HashSet::new);
 
         keys.add(yearsKey);
         keys.add(contentKey);

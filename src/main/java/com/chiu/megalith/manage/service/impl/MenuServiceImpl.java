@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author mingchiuli
@@ -37,58 +36,9 @@ public class MenuServiceImpl implements MenuService {
         List<Long> menuIds = roleService.getNavMenuIds(role);
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
 
-        // 转树状结构
-        return buildTreeMenu(
-                menus.
-                        stream().
-                        map(menu -> MenuEntityVo.builder().
-                                menuId(menu.getMenuId()).
-                                parentId(menu.getParentId()).
-                                icon(menu.getIcon()).
-                                url(menu.getUrl()).
-                                title(menu.getTitle()).
-                                name(menu.getName()).
-                                component(menu.getComponent()).
-                                type(menu.getType()).
-                                orderNum(menu.getOrderNum()).
-                                status(menu.getStatus()).
-                                build()).
-                        toList()
-        );
-    }
-
-    @Override
-    public MenuEntity findById(Long id) {
-        return menuRepository.findById(id).orElseThrow(() -> new NotFoundException("menu not exist"));
-    }
-
-    @Override
-    public List<MenuEntityVo> tree() {
-        List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
-
-        return buildTreeMenu(
-                menus.
-                        stream().
-                        map(menu -> MenuEntityVo.builder().
-                                menuId(menu.getMenuId()).
-                                parentId(menu.getParentId()).
-                                icon(menu.getIcon()).
-                                url(menu.getUrl()).
-                                title(menu.getTitle()).
-                                name(menu.getName()).
-                                component(menu.getComponent()).
-                                type(menu.getType()).
-                                orderNum(menu.getOrderNum()).
-                                status(menu.getStatus()).
-                                build())
-                        .toList()
-        );
-    }
-
-    @Override
-    public void saveOrUpdate(MenuEntityVo menu) {
-        menuRepository.save(
-                MenuEntity.builder().
+        List<MenuEntityVo> menuEntityVos = menus.
+                stream().
+                map(menu -> MenuEntityVo.builder().
                         menuId(menu.getMenuId()).
                         parentId(menu.getParentId()).
                         icon(menu.getIcon()).
@@ -99,8 +49,58 @@ public class MenuServiceImpl implements MenuService {
                         type(menu.getType()).
                         orderNum(menu.getOrderNum()).
                         status(menu.getStatus()).
-                        build()
-        );
+                        build()).
+                toList();
+
+        // 转树状结构
+        return buildTreeMenu(menuEntityVos);
+    }
+
+    @Override
+    public MenuEntity findById(Long id) {
+        return menuRepository.findById(id).
+                orElseThrow(() -> new NotFoundException("menu not exist"));
+    }
+
+    @Override
+    public List<MenuEntityVo> tree() {
+        List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
+
+        List<MenuEntityVo> menuEntityVos = menus.
+                stream().
+                map(menu -> MenuEntityVo.builder().
+                        menuId(menu.getMenuId()).
+                        parentId(menu.getParentId()).
+                        icon(menu.getIcon()).
+                        url(menu.getUrl()).
+                        title(menu.getTitle()).
+                        name(menu.getName()).
+                        component(menu.getComponent()).
+                        type(menu.getType()).
+                        orderNum(menu.getOrderNum()).
+                        status(menu.getStatus()).
+                        build())
+                .toList();
+
+        return buildTreeMenu(menuEntityVos);
+    }
+
+    @Override
+    public void saveOrUpdate(MenuEntityVo menu) {
+        MenuEntity menuEntity = MenuEntity.builder().
+                menuId(menu.getMenuId()).
+                parentId(menu.getParentId()).
+                icon(menu.getIcon()).
+                url(menu.getUrl()).
+                title(menu.getTitle()).
+                name(menu.getName()).
+                component(menu.getComponent()).
+                type(menu.getType()).
+                orderNum(menu.getOrderNum()).
+                status(menu.getStatus()).
+                build();
+
+        menuRepository.save(menuEntity);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class MenuServiceImpl implements MenuService {
                 stream().
                 filter(menu -> menu.getParentId() == 0).
                 peek(menu-> menu.setChildren(getChildren(menu, menus))).
-                sorted(Comparator.comparingInt(menu -> (menu.getOrderNum() == null ? 0 : menu.getOrderNum()))).
+                sorted(Comparator.comparingInt(menu -> (Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum()))).
                 toList();
     }
 
@@ -124,7 +124,7 @@ public class MenuServiceImpl implements MenuService {
                 stream().
                 filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId())).
                 peek(menu -> menu.setChildren(getChildren(menu, all))).
-                sorted(Comparator.comparingInt(menu -> (menu.getOrderNum() == null ? 0 : menu.getOrderNum()))).
+                sorted(Comparator.comparingInt(menu -> (Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum()))).
                 toList();
     }
 }

@@ -13,10 +13,13 @@ import com.chiu.megalith.websocket.service.InitCoopService;
 import com.chiu.megalith.websocket.vo.UserEntityVo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +48,7 @@ public class InitCoopServiceImpl implements InitCoopService {
 
     private final ObjectMapper objectMapper;
 
-    @SneakyThrows
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> initCoop(Long blogId, Integer orderNumber) {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -60,10 +63,17 @@ public class InitCoopServiceImpl implements InitCoopService {
                 serverMark(CoopConfig.serverMark).
                 build();
 
-        redisTemplate.opsForHash().put(Const.COOP_PREFIX.getMsg() + blogId,
-                userId.toString(),
-                objectMapper.writeValueAsString(vo));
-        redisTemplate.expire(Const.COOP_PREFIX.getMsg() + blogId, 6 * 60, TimeUnit.MINUTES);
+        redisTemplate.execute(new SessionCallback<>() {
+            @Override
+            public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
+                operations.multi();
+                operations.opsForHash().put(Const.COOP_PREFIX.getMsg() + blogId,
+                        userId.toString(),
+                        redisUtils.writeValueAsString(vo));
+                operations.expire(Const.COOP_PREFIX.getMsg() + blogId, 6 * 60, TimeUnit.MINUTES);
+                return operations.exec();
+            }
+        });
 
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> userMap = hashOperations.entries(Const.COOP_PREFIX.getMsg() + blogId);
@@ -90,9 +100,9 @@ public class InitCoopServiceImpl implements InitCoopService {
                         InitDto.Bind.builder().
                                 blogId(blogId).
                                 users(userEntityVos).
-                                build())).
+                                build()
+                        )).
                 build();
-
 
         userEntityInfos.forEach(user -> {
             if (!user.getServerMark().equals(CoopConfig.serverMark)) {
