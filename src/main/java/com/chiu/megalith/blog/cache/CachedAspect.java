@@ -50,7 +50,7 @@ public class CachedAspect {
 
     private final LoadingCache<String, RLock> lockCache = Caffeine.newBuilder()
             .maximumSize(500)
-            .expireAfterWrite(Duration.ofMinutes(30))
+            .expireAfterWrite(Duration.ofMinutes(60))
             .refreshAfterWrite(Duration.ofMinutes(30))
             .build(this::createRlock);
 
