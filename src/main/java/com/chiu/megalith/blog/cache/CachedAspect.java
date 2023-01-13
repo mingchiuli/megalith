@@ -2,8 +2,8 @@ package com.chiu.megalith.blog.cache;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +12,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.*;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -49,10 +48,12 @@ public class CachedAspect {
 
     private final RedissonClient redissonClient;
 
-    private final Cache<String, RLock> lockCache = Caffeine.newBuilder()
+    private final LoadingCache<String, RLock> lockCache = Caffeine.newBuilder()
             .maximumSize(500)
             .expireAfterWrite(Duration.ofMinutes(30))
-            .build();
+            .refreshAfterWrite(Duration.ofMinutes(30))
+            .build(this::createRlock);
+
 
     @Pointcut("@annotation(com.chiu.megalith.blog.cache.Cached)")
     public void pt() {}
@@ -134,7 +135,6 @@ public class CachedAspect {
             }
         }
 
-
         boolean locked = rLock.tryLock(5000, TimeUnit.MILLISECONDS);
 
         if (!locked) {
@@ -170,5 +170,9 @@ public class CachedAspect {
             }
         }
         return objectMapper.getTypeFactory().constructParametricType(rawType, javaTypes);
+    }
+
+    private RLock createRlock(String key) {
+        return redissonClient.getLock(key);
     }
 }
