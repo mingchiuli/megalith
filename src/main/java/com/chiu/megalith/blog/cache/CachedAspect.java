@@ -1,5 +1,6 @@
 package com.chiu.megalith.blog.cache;
 
+import com.chiu.megalith.common.utils.RedisUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -44,6 +45,8 @@ public class CachedAspect {
 
     private final StringRedisTemplate redisTemplate;
 
+    private final RedisUtils redisUtils;
+
     private final ObjectMapper objectMapper;
 
     private final RedissonClient redissonClient;
@@ -73,20 +76,15 @@ public class CachedAspect {
         StringBuilder params = new StringBuilder();
 
         for (int i = 0; i < args.length; i++) {
-            Optional<Object> argOptional = Optional.ofNullable(args[i]);
-            if (argOptional.isPresent()) {
-                Object arg = argOptional.get();
-                //方法的参数必须是能够json化的
+            Optional.ofNullable(args[i]).ifPresent(arg -> {
                 params.append("::");
                 if (arg instanceof String) {
                     params.append(arg);
                 } else {
-                    params.append(
-                            objectMapper.writeValueAsString(arg)
-                    );
+                    params.append(redisUtils.writeValueAsString(arg));
                 }
-                parameterTypes[i] = arg.getClass();
-            }
+            });
+            parameterTypes[i] = Optional.ofNullable(args[i]).isPresent() ? args[i].getClass() : null;
         }
 
         Class<?> declaringType = signature.getDeclaringType();
@@ -123,7 +121,7 @@ public class CachedAspect {
 
         String lock = LOCK + className + methodName + params;
 
-        //已经防止缓存击穿
+        //已经线程安全
         RLock rLock = lockCache.get(lock);
 
         boolean locked = rLock.tryLock(5000, TimeUnit.MILLISECONDS);
