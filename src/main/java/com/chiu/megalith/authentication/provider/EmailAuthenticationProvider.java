@@ -55,7 +55,9 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
                 throw new BadCredentialsException("code not exist");
             }
         } else {
-            throw new BadCredentialsException(LoginUser.loginException.get());
+            String msg = LoginUser.loginException.get();
+            LoginUser.loginException.remove();
+            throw new BadCredentialsException(msg);
         }
     }
 }
