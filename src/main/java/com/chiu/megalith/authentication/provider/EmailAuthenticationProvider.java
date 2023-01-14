@@ -1,5 +1,6 @@
 package com.chiu.megalith.authentication.provider;
 
+import com.chiu.megalith.authentication.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,29 +27,37 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
-        //username is login email
-        String prefix = Const.EMAIL_KEY.getMsg() + userDetails.getUsername();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(prefix);
 
-        if (entries.size() == 2) {
-            String code = entries.get("code");
-            String tryCount = entries.get("tryCount");
+        LoginUser user = (LoginUser) userDetails;
 
-            if (Integer.parseInt(tryCount) >= maxTryNum) {
+        String grantType = user.getGrantType();
+
+        if (Const.GRANT_TYPE_EMAIL.getMsg().equals(grantType)) {
+            //username is login email
+            String prefix = Const.EMAIL_KEY.getMsg() + user.getUsername();
+            HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+            Map<String, String> entries = hashOperations.entries(prefix);
+
+            if (entries.size() == 2) {
+                String code = entries.get("code");
+                String tryCount = entries.get("tryCount");
+
+                if (Integer.parseInt(tryCount) >= maxTryNum) {
+                    redisTemplate.delete(prefix);
+                    throw new BadCredentialsException("code reach max try number");
+                }
+
+                if (!code.equals(authentication.getCredentials())) {
+                    redisTemplate.opsForHash().increment(prefix, "tryCount", 1);
+                    throw new BadCredentialsException("code mismatch");
+                }
+
                 redisTemplate.delete(prefix);
-                throw new BadCredentialsException("code reach max try number");
+            } else {
+                throw new BadCredentialsException("code not exist");
             }
-
-            if (!code.equals(authentication.getCredentials())) {
-                redisTemplate.opsForHash().increment(prefix, "tryCount", 1);
-                throw new BadCredentialsException("code mismatch");
-            }
-
-            redisTemplate.delete(prefix);
         } else {
-            throw new BadCredentialsException("code non exist");
+            throw new BadCredentialsException("password error");
         }
-
     }
 }

@@ -1,10 +1,10 @@
-package com.chiu.megalith.authentication.component;
+package com.chiu.megalith.authentication.user;
 
+import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,13 +26,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		UserEntity user = sysUser.
 				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
+		String grantType = username.contains("@") ? Const.GRANT_TYPE_EMAIL.getMsg() : Const.GRANT_TYPE_PASSWORD.getMsg();
+
 		//通过User去自动比较用户名和密码
-		return new User(username,
+		return new LoginUser(username,
 				user.getPassword(),
 				true,
 				true,
 				true,
 				user.getStatus() == 0,
-				AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()));
+				AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()),
+				grantType);
 	}
 }

@@ -7,6 +7,10 @@ package com.chiu.megalith.common.lang;
  */
 public enum Const {
 
+    GRANT_TYPE_EMAIL("email"),
+
+    GRANT_TYPE_PASSWORD("password"),
+
     CAPTCHA_KEY("captcha:"),
 
     EMAIL_KEY("email_validation:"),

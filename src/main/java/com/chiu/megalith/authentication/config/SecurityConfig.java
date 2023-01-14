@@ -2,10 +2,10 @@ package com.chiu.megalith.authentication.config;
 
 
 import com.chiu.megalith.authentication.component.*;
-import com.chiu.megalith.authentication.provider.EmailAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -30,7 +30,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private final EmailAuthenticationProvider emailAuthenticationProvider;
+    private final AuthenticationManager authenticationManager;
 
     private static final String[] URL_WHITELIST = {
             "/captcha/**",
@@ -74,8 +74,7 @@ public class SecurityConfig {
                 and().
                 addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class).
                 addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class).
-                authenticationProvider(emailAuthenticationProvider).
-
+                authenticationManager(authenticationManager).
                 build();
     }
 
