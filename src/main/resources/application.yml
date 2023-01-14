@@ -32,6 +32,7 @@ server:
   port: 8081
   max-http-request-header-size: 10MB
 
+
 kaptcha:
   border: 'no'
   textproducer:
@@ -47,6 +48,9 @@ kaptcha:
 
 logging:
   config: classpath:logback-spring.xml
+  level:
+    org.springframework.web.socket.config.WebSocketMessageBrokerStats: error
+
 #配置自定义的线程池
 blog:
   thread:
