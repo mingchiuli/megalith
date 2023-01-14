@@ -2,6 +2,7 @@ package com.chiu.megalith.captcha.config;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,14 +16,19 @@ import java.util.Properties;
 public class KaptchaConfig {
 
     @Bean
-    DefaultKaptcha producer() {
+    DefaultKaptcha producer(@Value("${kaptcha.border}") String border,
+                            @Value("${kaptcha.textproducer.font.color}") String color,
+                            @Value("${kaptcha.textproducer.char.space}") String space,
+                            @Value("${kaptcha.image.height}") String height,
+                            @Value("${kaptcha.image.width}") String width,
+                            @Value("${kaptcha.textproducer.font.size}") String fontSize) {
         Properties properties = new Properties();
-        properties.put("kaptcha.border", "no");
-        properties.put("kaptcha.textproducer.font.color", "black");
-        properties.put("kaptcha.textproducer.char.space", "4");
-        properties.put("kaptcha.image.height", "40");
-        properties.put("kaptcha.image.width", "120");
-        properties.put("kaptcha.textproducer.font.size", "30");
+        properties.put("kaptcha.border", border);
+        properties.put("kaptcha.textproducer.font.color", color);
+        properties.put("kaptcha.textproducer.char.space", space);
+        properties.put("kaptcha.image.height", height);
+        properties.put("kaptcha.image.width", width);
+        properties.put("kaptcha.textproducer.font.size", fontSize);
 
         Config config = new Config(properties);
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();

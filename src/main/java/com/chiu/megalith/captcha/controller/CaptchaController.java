@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CaptchaController {
     private final CaptchaService captchaService;
 
-    @GetMapping("/")
+    @GetMapping("/create")
     public Result<CaptchaDto> createCaptcha() {
         CaptchaDto captcha = captchaService.createCaptcha();
         return Result.success(captcha);
