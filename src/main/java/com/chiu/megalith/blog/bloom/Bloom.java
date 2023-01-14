@@ -1,6 +1,8 @@
 package com.chiu.megalith.blog.bloom;
 
 
+import com.chiu.megalith.blog.bloom.handler.BloomHandler;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,5 +13,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Bloom {
-    Class<?> handler();
+    Class<? extends BloomHandler> handler();
 }

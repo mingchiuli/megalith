@@ -54,8 +54,9 @@ public class UserServiceImpl implements UserService {
         Optional.ofNullable(userEntityVo.getId()).ifPresentOrElse(id -> {
             ref.userEntity = userRepository.findById(id).
                     orElseThrow(() -> new NotFoundException("user not exist"));
+
             Optional.ofNullable(userEntityVo.getPassword()).ifPresentOrElse(password ->
-                            userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
+                    userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
                     userEntityVo.setPassword(ref.userEntity.getPassword()));
         }, () -> {
             ref.userEntity = UserEntity.builder().

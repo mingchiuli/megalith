@@ -60,12 +60,10 @@ public class RoleServiceImpl implements RoleService {
             ref.roleEntity = roleRepository.findById(id).
                     orElseThrow(() -> new NotFoundException("role not exist"));
             ref.roleEntity.setUpdated(now);
-        }, () -> ref.roleEntity = RoleEntity.
-                builder().
+        }, () -> ref.roleEntity = RoleEntity.builder().
                 created(now).
                 updated(now).
-                build()
-        );
+                build());
 
         BeanUtils.copyProperties(roleVo, ref.roleEntity);
         roleRepository.save(ref.roleEntity);

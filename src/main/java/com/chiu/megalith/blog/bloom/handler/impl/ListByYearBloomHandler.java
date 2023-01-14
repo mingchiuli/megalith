@@ -14,7 +14,7 @@ public class ListByYearBloomHandler implements BloomHandler {
     private final StringRedisTemplate redisTemplate;
 
     @Override
-    public boolean supports(Class<?> clazz) {
+    public boolean supports(Class<? extends BloomHandler> clazz) {
         return clazz.equals(ListByYearBloomHandler.class);
     }
 

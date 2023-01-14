@@ -254,12 +254,18 @@ public class BlogServiceImpl implements BlogService {
                 stream().
                 map(blogEntity ->
                         BlogEntityDto.builder().
-                                id(blogEntity.getId()).
-                                title(blogEntity.getTitle()).
-                                description(blogEntity.getDescription()).
-                                status(blogEntity.getStatus()).
-                                created(blogEntity.getCreated()).
-                                content(blogEntity.getContent()).
+                                id(blogEntity.
+                                        getId()).
+                                title(blogEntity.
+                                        getTitle()).
+                                description(blogEntity.
+                                        getDescription()).
+                                status(blogEntity.
+                                        getStatus()).
+                                created(blogEntity.
+                                        getCreated()).
+                                content(blogEntity.
+                                        getContent()).
                                 readRecent(Integer.valueOf(
                                         Optional.ofNullable(
                                                 redisTemplate.opsForValue().get(Const.READ_RECENT.getInfo() + blogEntity.getId())

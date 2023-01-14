@@ -8,6 +8,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.aop.AspectException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -76,15 +77,17 @@ public class CachedAspect {
         StringBuilder params = new StringBuilder();
 
         for (int i = 0; i < args.length; i++) {
-            Optional.ofNullable(args[i]).ifPresent(arg -> {
+            Optional.ofNullable(args[i]).ifPresentOrElse(arg -> {
                 params.append("::");
                 if (arg instanceof String) {
                     params.append(arg);
                 } else {
                     params.append(redisUtils.writeValueAsString(arg));
                 }
+            }, () -> {
+                throw new AspectException("argument can't be null");
             });
-            parameterTypes[i] = Optional.ofNullable(args[i]).isPresent() ? args[i].getClass() : null;
+            parameterTypes[i] = args[i].getClass();
         }
 
         Class<?> declaringType = signature.getDeclaringType();

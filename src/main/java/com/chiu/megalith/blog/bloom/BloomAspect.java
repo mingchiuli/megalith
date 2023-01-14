@@ -4,6 +4,7 @@ import com.chiu.megalith.blog.bloom.handler.BloomHandler;
 import com.chiu.megalith.common.utils.SpringUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.aop.AspectException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -43,16 +45,20 @@ public class BloomAspect {
         Object[] args = jp.getArgs();
         Class<?>[] classes = new Class[args.length];
         for (int i = 0; i < args.length; i++) {
-            classes[i] = args[i].getClass();
+            if (Optional.ofNullable(args[i]).isPresent()) {
+                classes[i] = args[i].getClass();
+            } else {
+                throw new AspectException("argument can't be null");
+            }
         }
 
         Class<?> declaringType = signature.getDeclaringType();
         Method method = declaringType.getMethod(methodName, classes);
         Bloom bloom = method.getAnnotation(Bloom.class);
-        Class<?> aClass = bloom.handler();
+        Class<? extends BloomHandler> handler0 = bloom.handler();
 
         for (BloomHandler handler : CacheHandlers.cacheHandlers.values()) {
-            if (handler.supports(aClass)) {
+            if (handler.supports(handler0)) {
                 try {
                     handler.handle(args);
                     break;
