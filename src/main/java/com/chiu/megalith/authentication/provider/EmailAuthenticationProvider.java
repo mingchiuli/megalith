@@ -30,9 +30,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
 
         LoginUser user = (LoginUser) userDetails;
 
-        String grantType = user.getGrantType();
-
-        if (Const.GRANT_TYPE_EMAIL.getMsg().equals(grantType)) {
+        if (Const.GRANT_TYPE_EMAIL.getMsg().equals(user.getGrantType())) {
             //username is login email
             String prefix = Const.EMAIL_KEY.getMsg() + user.getUsername();
             HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
@@ -47,7 +45,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
                     throw new BadCredentialsException("code reach max try number");
                 }
 
-                if (!code.equals(authentication.getCredentials())) {
+                if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
                     redisTemplate.opsForHash().increment(prefix, "tryCount", 1);
                     throw new BadCredentialsException("code mismatch");
                 }
@@ -57,7 +55,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
                 throw new BadCredentialsException("code not exist");
             }
         } else {
-            throw new BadCredentialsException("password error");
+            throw new BadCredentialsException(LoginUser.loginException.get());
         }
     }
 }

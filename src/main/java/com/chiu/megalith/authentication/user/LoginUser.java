@@ -11,6 +11,8 @@ import java.util.Collection;
  */
 public class LoginUser extends User {
 
+    public static final ThreadLocal<String> loginException = new ThreadLocal<>();
+
     private final String grantType;
 
     public LoginUser(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, String grantType) {

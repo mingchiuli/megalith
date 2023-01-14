@@ -28,6 +28,7 @@ public class AuthenticationProviderConfig {
     public PasswordAuthenticationProvider passwordAuthenticationProvider() {
         PasswordAuthenticationProvider passwordAuthenticationProvider = new PasswordAuthenticationProvider(passwordEncoder);
         passwordAuthenticationProvider.setUserDetailsService(userDetailsService);
+        passwordAuthenticationProvider.setHideUserNotFoundExceptions(false);
         return passwordAuthenticationProvider;
     }
 
@@ -35,6 +36,7 @@ public class AuthenticationProviderConfig {
     public EmailAuthenticationProvider emailAuthenticationProvider() {
         EmailAuthenticationProvider emailAuthenticationProvider = new EmailAuthenticationProvider(redisTemplate);
         emailAuthenticationProvider.setUserDetailsService(userDetailsService);
+        emailAuthenticationProvider.setHideUserNotFoundExceptions(false);
         return emailAuthenticationProvider;
     }
 }
