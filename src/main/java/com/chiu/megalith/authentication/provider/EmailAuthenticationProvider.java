@@ -30,9 +30,9 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
 
         LoginUser user = (LoginUser) userDetails;
 
-        if (Const.GRANT_TYPE_EMAIL.getMsg().equals(user.getGrantType())) {
+        if (Const.GRANT_TYPE_EMAIL.getInfo().equals(user.getGrantType())) {
             //username is login email
-            String prefix = Const.EMAIL_KEY.getMsg() + user.getUsername();
+            String prefix = Const.EMAIL_KEY.getInfo() + user.getUsername();
             HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
             Map<String, String> entries = hashOperations.entries(prefix);
 

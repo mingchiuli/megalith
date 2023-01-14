@@ -50,14 +50,14 @@ public enum Const {
     ROLE_TOKEN_TOOL("ROLE_token_tool");
 
 
-    private final String msg;
+    private final String info;
 
-    public String getMsg() {
-        return msg;
+    public String getInfo() {
+        return info;
     }
 
-    Const(String msg) {
-        this.msg = msg;
+    Const(String info) {
+        this.info = info;
     }
 
 }

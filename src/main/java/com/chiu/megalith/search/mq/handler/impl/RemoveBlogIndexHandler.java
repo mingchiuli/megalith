@@ -38,26 +38,26 @@ public class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
         StringBuilder builder = new StringBuilder();
         builder.append("::");
         builder.append(blog.getId());
-        String contentKey = Const.HOT_BLOG.getMsg() + "::BlogServiceImpl::findByIdAndStatus" + builder;
-        String statusKey = Const.BLOG_STATUS.getMsg() + "::BlogController::getBlogStatus" + builder;
+        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndStatus" + builder;
+        String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
         //年份缓存
-        String yearsKey = Const.YEARS.getMsg() + "::BlogController::searchYears";
-        String blogReadKey = Const.READ_RECENT.getMsg() + blog.getId();
+        String yearsKey = Const.YEARS.getInfo() + "::BlogController::searchYears";
+        String blogReadKey = Const.READ_RECENT.getInfo() + blog.getId();
 
         //删掉所有摘要缓存
         Set<String> keys = Optional.ofNullable(
-                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg())
+                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())
         ).orElseGet(HashSet::new);
 
         keys.add(yearsKey);
         keys.add(contentKey);
         keys.add(statusKey);
         keys.add(blogReadKey);
-        keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getMsg() + blog.getCreated().getYear());
+        keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         redisTemplate.unlink(keys);
 
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getMsg(), blog.getId(), false);
-        redisTemplate.delete(Const.READ_RECENT.getMsg() + blog.getId());
+        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);
+        redisTemplate.delete(Const.READ_RECENT.getInfo() + blog.getId());
     }
 
     @Override

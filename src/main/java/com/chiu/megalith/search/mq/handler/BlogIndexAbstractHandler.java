@@ -32,7 +32,7 @@ public abstract class BlogIndexAbstractHandler {
     public void handle(BlogSearchIndexMessage message, Channel channel, Message msg) {
         String createUUID = msg.getMessageProperties().getHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY);
         long deliveryTag = msg.getMessageProperties().getDeliveryTag();
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(Const.CONSUME_MONITOR.getMsg()  + createUUID))) {
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(Const.CONSUME_MONITOR.getInfo()  + createUUID))) {
             try {
                 Long blogId = message.getBlogId();
                 Integer year = message.getYear();
@@ -48,7 +48,7 @@ public abstract class BlogIndexAbstractHandler {
                 //手动签收消息
                 //false代表不是批量签收模式
                 channel.basicAck(deliveryTag, false);
-                redisTemplate.delete(Const.CONSUME_MONITOR.getMsg() + createUUID);
+                redisTemplate.delete(Const.CONSUME_MONITOR.getInfo() + createUUID);
             } catch (Exception e) {
                 channel.basicNack(deliveryTag, false, true);
                 throw e;

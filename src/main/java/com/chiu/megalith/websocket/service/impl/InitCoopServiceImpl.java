@@ -64,16 +64,16 @@ public class InitCoopServiceImpl implements InitCoopService {
             @Override
             public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                 operations.multi();
-                operations.opsForHash().put(Const.COOP_PREFIX.getMsg() + blogId,
+                operations.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId,
                         userId.toString(),
                         redisUtils.writeValueAsString(vo));
-                operations.expire(Const.COOP_PREFIX.getMsg() + blogId, 6 * 60, TimeUnit.MINUTES);
+                operations.expire(Const.COOP_PREFIX.getInfo() + blogId, 6 * 60, TimeUnit.MINUTES);
                 return operations.exec();
             }
         });
 
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> userMap = hashOperations.entries(Const.COOP_PREFIX.getMsg() + blogId);
+        Map<String, String> userMap = hashOperations.entries(Const.COOP_PREFIX.getInfo() + blogId);
 
         List<UserEntityVo> userEntityInfos = userMap.values().
                 stream().

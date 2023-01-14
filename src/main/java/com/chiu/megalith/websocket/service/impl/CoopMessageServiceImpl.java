@@ -38,7 +38,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
         msg.getToAll().forEach(userId -> {
 
             HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-            String o = hashOperations.get(Const.COOP_PREFIX.getMsg() + msg.getBlogId(), userId);
+            String o = hashOperations.get(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
             Optional.ofNullable(o).ifPresent(str -> {
                 UserEntityVo userEntityVo = redisUtils.readValue(
                         str,
@@ -56,7 +56,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     public void sync(Principal user, SyncContentDto.Content msg) {
         Long from = Long.parseLong(user.getName());
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
 
         entries.forEach((k, v) -> {
             if (!from.equals(Long.parseLong(k))) {
@@ -73,7 +73,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     public void destroy(Principal user, DestroyDto.Bind msg) {
         Long from = Long.parseLong(user.getName());
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
         entries.forEach((k, v) -> {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
@@ -89,7 +89,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     public void quit(Principal user, QuitDto.Bind msg) {
         Long from = Long.parseLong(user.getName());
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getMsg() + msg.getBlogId());
+        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
         entries.forEach((k, v) -> {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);

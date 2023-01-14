@@ -22,7 +22,7 @@ public class ListByYearBloomHandler implements BloomHandler {
     public void handle(Object[] args) {
         Integer currentPage = (Integer) args[0];
         Integer yearMark = (Integer) args[1];
-        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEAR_PAGE.getMsg() + yearMark, currentPage))) {
+        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + yearMark, currentPage))) {
             throw new NotFoundException("Not found " + yearMark + " year" + currentPage + " page");
         }
     }

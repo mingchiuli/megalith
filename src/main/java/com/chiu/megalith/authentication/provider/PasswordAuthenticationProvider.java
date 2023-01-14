@@ -26,7 +26,7 @@ public class PasswordAuthenticationProvider extends DaoAuthenticationProvider {
         LoginUser user = (LoginUser) userDetails;
 
         Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
-            if (Const.GRANT_TYPE_PASSWORD.getMsg().equals(user.getGrantType())) {
+            if (Const.GRANT_TYPE_PASSWORD.getInfo().equals(user.getGrantType())) {
                 String presentedPassword = credentials.toString();
                 if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
                     LoginUser.loginException.set("Failed to authenticate since password does not match stored value");

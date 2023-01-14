@@ -42,17 +42,17 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
     @Override
     protected void redisProcess(BlogEntity blog) {
         Set<String> keys = Optional.ofNullable(
-                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg())
+                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())
         ).orElseGet(HashSet::new);
-        keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getMsg() + blog.getCreated().getYear());
+        keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         redisTemplate.unlink(keys);
 
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getMsg(), blog.getId(), true);
-        redisTemplate.opsForValue().set(Const.READ_RECENT.getMsg() + blog.getId(), objectMapper.writeValueAsString(0), 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true);
+        redisTemplate.opsForValue().set(Const.READ_RECENT.getInfo() + blog.getId(), objectMapper.writeValueAsString(0), 7, TimeUnit.DAYS);
 
         //年份过滤bloom更新
         int year = blog.getCreated().getYear();
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getMsg(), year, true);
+        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
     }
 
     @Override

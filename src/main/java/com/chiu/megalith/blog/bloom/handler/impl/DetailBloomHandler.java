@@ -22,7 +22,7 @@ public class DetailBloomHandler implements BloomHandler {
     @Override
     public void handle(Object[] args) {
         Long blogId = (Long) args[0];
-        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_BLOG.getMsg(), blogId))) {
+        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_BLOG.getInfo(), blogId))) {
             throw new NotFoundException("Not found "+ blogId + " blog");
         }
     }

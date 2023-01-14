@@ -165,7 +165,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                         readRecent(Integer.valueOf(
                                 Optional.ofNullable(
                                         redisTemplate.opsForValue().get(
-                                                Const.READ_RECENT.getMsg() + hit.getContent().getId()
+                                                Const.READ_RECENT.getInfo() + hit.getContent().getId()
                                         )).
                                         orElse("0")
                         )).

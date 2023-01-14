@@ -52,7 +52,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         String base64Img = str + encoder.encodeToString(outputStream.toByteArray());
 
-        redisTemplate.opsForValue().set(Const.CAPTCHA_KEY.getMsg() + key, code, 120, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(Const.CAPTCHA_KEY.getInfo() + key, code, 120, TimeUnit.SECONDS);
 
 
         return CaptchaDto.
@@ -66,7 +66,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Override
     @SuppressWarnings("unchecked")
     public void createEmailCode(String loginEmail) {
-        String prefix = Const.EMAIL_KEY.getMsg() + loginEmail;
+        String prefix = Const.EMAIL_KEY.getInfo() + loginEmail;
         String code = producer.createText();
 
         Map<String, Object> map = new HashMap<>(2);

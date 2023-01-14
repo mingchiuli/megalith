@@ -91,7 +91,7 @@ public class CacheScheduled {
                     });
 
                     //bloomFilter
-                    allBlogs.forEach(blog -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getMsg(), blog.getId(), true));
+                    allBlogs.forEach(blog -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true));
 
                 }, executor);
 
@@ -113,7 +113,7 @@ public class CacheScheduled {
                             log.info(e.getMessage());
                         }
                         //bloomFilter
-                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getMsg(), no, true);
+                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
                     }
                 }, executor);
 
@@ -149,7 +149,7 @@ public class CacheScheduled {
                                 log.info(e.getMessage());
                             }
                             //bloom过滤器
-                            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getMsg() + year, no, true);
+                            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
                         }
                     }
                 }, executor);
@@ -164,7 +164,7 @@ public class CacheScheduled {
                         log.info(e.getMessage());
                     }
                     //getCountByYear的bloom
-                    years.forEach(year -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getMsg(), year, true));
+                    years.forEach(year -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true));
                 }, executor);
 
                 CompletableFuture.allOf(var1, var2, var3, var4, var5).get();

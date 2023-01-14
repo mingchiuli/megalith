@@ -55,8 +55,8 @@ public class CaptchaFilter extends OncePerRequestFilter {
 		if (!StringUtils.hasLength(code) || !StringUtils.hasLength(key)) {
 			throw new CaptchaException("pin_code invalid");
 		}
-		if (!code.equals(redisTemplate.opsForValue().get(Const.CAPTCHA_KEY.getMsg() + key))) {
-			redisTemplate.delete(Const.CAPTCHA_KEY.getMsg() + key);
+		if (!code.equals(redisTemplate.opsForValue().get(Const.CAPTCHA_KEY.getInfo() + key))) {
+			redisTemplate.delete(Const.CAPTCHA_KEY.getInfo() + key);
 			throw new CaptchaException("pin_code error");
 		}
 	}

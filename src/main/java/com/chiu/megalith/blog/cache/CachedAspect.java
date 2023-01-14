@@ -92,7 +92,7 @@ public class CachedAspect {
 
         Cached annotation = method.getAnnotation(Cached.class);
         long expire = annotation.expire();
-        String prefix = annotation.prefix().getMsg();
+        String prefix = annotation.prefix().getInfo();
 
         Type genericReturnType = method.getGenericReturnType();
 

@@ -22,7 +22,7 @@ public class ListBloomHandler implements BloomHandler {
     @Override
     public void handle(Object[] args) {
         Integer i = (Integer) args[0];
-        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_PAGE.getMsg(), i))) {
+        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_PAGE.getInfo(), i))) {
             throw new NotFoundException("Not found " + i + " page");
         }
     }

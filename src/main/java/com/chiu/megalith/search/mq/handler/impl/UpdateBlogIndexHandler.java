@@ -46,24 +46,24 @@ public class UpdateBlogIndexHandler extends BlogIndexAbstractHandler {
         count++;
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
         String sb = "::" + pageNo;
-        String pageNoPrefix = Const.HOT_BLOGS.getMsg() + "::BlogController::listPage" + sb;
+        String pageNoPrefix = Const.HOT_BLOGS.getInfo() + "::BlogController::listPage" + sb;
 
         //分年份的页数
         long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
         countYear++;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
         String s = "::" + pageYearNo + "::" + blog.getCreated().getYear();
-        String pageYearNoPrefix = Const.HOT_BLOGS.getMsg() + "::BlogController::listPageByYear" + s;
+        String pageYearNoPrefix = Const.HOT_BLOGS.getInfo() + "::BlogController::listPageByYear" + s;
 
         //博客对象本身缓存
         StringBuilder builder = new StringBuilder();
         builder.append("::");
         builder.append(blog.getId());
-        String contentKey = Const.HOT_BLOG.getMsg() + "::BlogServiceImpl::findByIdAndStatus" + builder;
-        String statusKey = Const.BLOG_STATUS.getMsg() + "::BlogController::getBlogStatus" + builder;
+        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndStatus" + builder;
+        String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
 
         Set<String> keys = Optional.ofNullable(
-                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getMsg())
+                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())
         ).orElseGet(HashSet::new);
 
         keys.add(contentKey);

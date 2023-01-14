@@ -44,7 +44,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
     @Override
     public String generateJwt() {
-        return jwtUtils.generateToken(Const.ROLE_TOKEN_TOOL.getMsg(), Const.ROLE_TOKEN_TOOL.getMsg());
+        return jwtUtils.generateToken(Const.ROLE_TOKEN_TOOL.getInfo(), Const.ROLE_TOKEN_TOOL.getInfo());
     }
 
     @Override

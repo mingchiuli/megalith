@@ -81,8 +81,8 @@ public class BlogServiceImpl implements BlogService {
                 @Override
                 public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                     operations.multi();
-                    operations.opsForValue().setIfAbsent(Const.READ_RECENT.getMsg() + id, "0", 7, TimeUnit.DAYS);
-                    operations.opsForValue().increment(Const.READ_RECENT.getMsg() + id, 1);
+                    operations.opsForValue().setIfAbsent(Const.READ_RECENT.getInfo() + id, "0", 7, TimeUnit.DAYS);
+                    operations.opsForValue().increment(Const.READ_RECENT.getInfo() + id, 1);
                     return operations.exec();
                 }
             });
@@ -186,7 +186,7 @@ public class BlogServiceImpl implements BlogService {
         //通知消息给mq,更新并删除缓存
         //防止重复消费
         CorrelationData correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                         ref.type.name() + "_" + ref.blogEntity.getId(),
                         30,
                         TimeUnit.SECONDS);
@@ -210,14 +210,14 @@ public class BlogServiceImpl implements BlogService {
 
             blogRepository.delete(blogEntity);
 
-            redisTemplate.opsForValue().set(userId + Const.QUERY_DELETED.getMsg() + id,
+            redisTemplate.opsForValue().set(userId + Const.QUERY_DELETED.getInfo() + id,
                     redisUtils.writeValueAsString(blogEntity),
                     7,
                     TimeUnit.DAYS);
 
             //防止重复消费
             CorrelationData correlationData = new CorrelationData();
-            redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
+            redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                     BlogIndexEnum.REMOVE.name() + "_" + id,
                     30,
                     TimeUnit.SECONDS);
@@ -232,7 +232,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void setBlogToken() {
         String token = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(Const.READ_TOKEN.getMsg(), token, 24, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo(), token, 24, TimeUnit.HOURS);
     }
 
     @Override
@@ -262,7 +262,7 @@ public class BlogServiceImpl implements BlogService {
                                 content(blogEntity.getContent()).
                                 readRecent(Integer.valueOf(
                                         Optional.ofNullable(
-                                                redisTemplate.opsForValue().get(Const.READ_RECENT.getMsg() + blogEntity.getId())
+                                                redisTemplate.opsForValue().get(Const.READ_RECENT.getInfo() + blogEntity.getId())
                                                 ).
                                                 orElse("0")
                                         )
@@ -287,7 +287,7 @@ public class BlogServiceImpl implements BlogService {
     public PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage, Integer size) {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        Set<String> set = redisTemplate.keys(userId + Const.QUERY_DELETED.getMsg() + "*");
+        Set<String> set = redisTemplate.keys(userId + Const.QUERY_DELETED.getInfo() + "*");
         var ref = new Object() {
             PageAdapter<BlogEntity> pageAdapter;
         };
@@ -324,16 +324,16 @@ public class BlogServiceImpl implements BlogService {
         Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         String blogStr = Optional.ofNullable(
-                redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getMsg() + id)
+                redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getInfo() + id)
                 ).
                 orElseThrow(() -> new NotFoundException("blog is expired"));
 
         BlogEntity tempBlog = objectMapper.readValue(blogStr, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
-        redisTemplate.delete(userId + Const.QUERY_DELETED.getMsg() + id);
+        redisTemplate.delete(userId + Const.QUERY_DELETED.getInfo() + id);
 
         CorrelationData correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                 BlogIndexEnum.CREATE.name() + "_" + blog.getId(),
                 30,
                 TimeUnit.SECONDS);
@@ -351,7 +351,7 @@ public class BlogServiceImpl implements BlogService {
         blogRepository.setStatus(id, status);
 
         CorrelationData correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getMsg() + correlationData.getId(),
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                 BlogIndexEnum.UPDATE + "_" + id,
                 30,
                 TimeUnit.SECONDS);
