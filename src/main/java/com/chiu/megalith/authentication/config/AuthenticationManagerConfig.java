@@ -20,8 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationManagerConfig {
 
-//    private final AuthenticationConfiguration authenticationConfiguration;
-
     private final PasswordAuthenticationProvider passwordAuthenticationProvider;
 
     private final EmailAuthenticationProvider emailAuthenticationProvider;
