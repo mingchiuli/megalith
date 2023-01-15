@@ -37,7 +37,7 @@ public class CoopRabbitConfig {
         return new TopicExchange(WS_TOPIC_EXCHANGE);
     }
 
-    @Bean
+    @Bean("COOP_BINDING")
     public Binding binding(@Qualifier("COOP_QUEUE") Queue wsQueue, @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
         return BindingBuilder.bind(wsQueue).to(wsExchange).with(WS_BINDING_KEY + serverMark);
     }
