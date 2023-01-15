@@ -49,7 +49,7 @@ kaptcha:
 logging:
   config: classpath:logback-spring.xml
   level:
-    org.springframework.web.socket.config.WebSocketMessageBrokerStats: error
+    org.springframework.web.socket.config.WebSocketMessageBrokerStats: off
 
 #配置自定义的线程池
 blog:
