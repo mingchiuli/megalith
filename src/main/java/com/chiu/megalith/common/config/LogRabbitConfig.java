@@ -24,18 +24,18 @@ public class LogRabbitConfig {
 
     //LOG队列
     @Bean("LOG_QUEUE")
-    public Queue logQueue() {
+    public Queue queue() {
         return new Queue(LOG_QUEUE);
     }
 
     //LOG交换机
     @Bean("LOG_EXCHANGE")
-    public DirectExchange logExchange() {
+    public DirectExchange exchange() {
         return new DirectExchange(LOG_EXCHANGE);
     }
 
     @Bean
-    public Binding LogBinding(@Qualifier("LOG_QUEUE") Queue logQueue, @Qualifier("LOG_EXCHANGE") DirectExchange logExchange) {
+    public Binding binding(@Qualifier("LOG_QUEUE") Queue logQueue, @Qualifier("LOG_EXCHANGE") DirectExchange logExchange) {
         return BindingBuilder.bind(logQueue).to(logExchange).with(LOG_BINDING_KEY);
     }
 }

@@ -26,19 +26,19 @@ public class CoopRabbitConfig {
     public static final String WS_BINDING_KEY = "coop_exchange_";
 
     @Bean("COOP_QUEUE")
-    public Queue wsQueue() {
+    public Queue queue() {
         serverMark = UUID.randomUUID().toString();
         WS_QUEUE += serverMark;
         return new Queue(WS_QUEUE, true, false, true);
     }
 
     @Bean("COOP_TOPIC_EXCHANGE")
-    public TopicExchange wsExchange() {
+    public TopicExchange exchange() {
         return new TopicExchange(WS_TOPIC_EXCHANGE);
     }
 
     @Bean
-    public Binding wsTopicBinding(@Qualifier("COOP_QUEUE") Queue wsQueue, @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
+    public Binding binding(@Qualifier("COOP_QUEUE") Queue wsQueue, @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
         return BindingBuilder.bind(wsQueue).to(wsExchange).with(WS_BINDING_KEY + serverMark);
     }
 
