@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {

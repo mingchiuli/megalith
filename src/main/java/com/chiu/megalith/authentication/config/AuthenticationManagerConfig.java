@@ -16,7 +16,7 @@ import java.util.List;
  * @author mingchiuli
  * @create 2022-11-27 5:56 pm
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 public class AuthenticationManagerConfig {
 

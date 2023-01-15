@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author mingchiuli
  * @create 2022-12-30 11:44 am
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 public class AuthenticationProviderConfig {
 

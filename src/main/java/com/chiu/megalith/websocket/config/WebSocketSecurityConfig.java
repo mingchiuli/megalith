@@ -11,7 +11,7 @@ import org.springframework.security.messaging.access.intercept.MessageMatcherDel
  * @author mingchiuli
  * @create 2023-01-15 11:38 am
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebSocketSecurity
 public class WebSocketSecurityConfig {
 

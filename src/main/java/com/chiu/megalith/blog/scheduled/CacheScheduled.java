@@ -14,9 +14,9 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @author mingchiuli
  * @create 2022-11-29 10:52 pm
  */
-@Configuration
+@Component
 @Slf4j
 @RequiredArgsConstructor
 public class CacheScheduled {

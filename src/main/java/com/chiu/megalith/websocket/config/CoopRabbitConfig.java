@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author mingchiuli
  * @create 2022-12-25 4:24 pm
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class CoopRabbitConfig {
 
     public static String serverMark;

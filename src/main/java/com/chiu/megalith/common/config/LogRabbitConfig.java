@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @author mingchiuli
  * @create 2022-12-01 10:41 pm
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class LogRabbitConfig {
     public static final String LOG_QUEUE = "log_queue";
 

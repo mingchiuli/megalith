@@ -12,7 +12,7 @@ import java.util.Properties;
  * @author mingchiuli
  * @create 2021-12-14 11:52 AM
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class KaptchaConfig {
 
     @Bean

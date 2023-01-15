@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @author mingchiuli
  * @create 2022-04-26 10:06 PM
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ThreadPoolConfigProperties.class)
 public class ThreadPoolConfig {
 
