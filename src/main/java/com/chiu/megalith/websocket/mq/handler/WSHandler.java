@@ -1,4 +1,4 @@
-package com.chiu.megalith.websocket.handler;
+package com.chiu.megalith.websocket.mq.handler;
 
 import com.chiu.megalith.websocket.dto.MessageDto;
 

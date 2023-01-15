@@ -7,10 +7,9 @@ import com.chiu.megalith.websocket.dto.impl.SyncContentDto;
 import com.chiu.megalith.websocket.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.security.Principal;
 
 /**
  * @author mingchiuli
@@ -18,31 +17,35 @@ import java.security.Principal;
  */
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/coop")
+@MessageMapping("/coop")
 public class CoopMessageController {
 
     private final CoopMessageService coopMessageService;
 
 
-    @MessageMapping("/chat")
-    public void chat(Principal user, ChatInfoDto.Message msg) {
-        coopMessageService.chat(user, msg);
+    @MessageMapping("chat")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
+    public void chat(ChatInfoDto.Message msg) {
+        coopMessageService.chat(msg);
     }
 
-    @MessageMapping("/sync")
-    public void syncContent(Principal user, SyncContentDto.Content msg) {
-        coopMessageService.sync(user, msg);
+    @MessageMapping("sync")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
+    public void syncContent(SyncContentDto.Content msg) {
+        coopMessageService.sync(msg);
     }
 
 
-    @MessageMapping("/destroy")
-    public void destroy(Principal user, DestroyDto.Bind msg) {
-        coopMessageService.destroy(user, msg);
+    @MessageMapping("destroy")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole())")
+    public void destroy(DestroyDto.Bind msg) {
+        coopMessageService.destroy(msg);
     }
 
-    @MessageMapping("/quit")
-    public void quit(Principal user, QuitDto.Bind msg) {
-        coopMessageService.quit(user, msg);
+    @MessageMapping("quit")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
+    public void quit(QuitDto.Bind msg) {
+        coopMessageService.quit(msg);
     }
 
 }

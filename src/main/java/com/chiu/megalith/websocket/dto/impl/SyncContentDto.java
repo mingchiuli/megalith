@@ -28,5 +28,7 @@ public class SyncContentDto implements Serializable, MessageDto {
     public static class Content implements Serializable {
         private String content;
         private Long blogId;
+
+        private Long from;
     }
 }

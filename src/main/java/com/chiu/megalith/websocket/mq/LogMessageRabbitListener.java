@@ -1,4 +1,4 @@
-package com.chiu.megalith.websocket.handler;
+package com.chiu.megalith.websocket.mq;
 
 import com.chiu.megalith.common.config.LogRabbitConfig;
 import com.rabbitmq.client.Channel;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LogMessageHandler {
+public class LogMessageRabbitListener {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 

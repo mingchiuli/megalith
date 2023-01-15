@@ -1,7 +1,8 @@
-package com.chiu.megalith.websocket.handler;
+package com.chiu.megalith.websocket.mq;
 
 import com.chiu.megalith.common.utils.SpringUtils;
 import com.chiu.megalith.websocket.dto.MessageDto;
+import com.chiu.megalith.websocket.mq.handler.WSHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class WSMessageHandler {
+public class WSMessageRabbitListener {
 
     private static class CacheHandlers {
         private static final Map<String, WSHandler> cacheHandlers = SpringUtils.getHandlers(WSHandler.class);
@@ -25,8 +26,8 @@ public class WSMessageHandler {
 
     @Bean("CoopMessageListener")
     //processMessage作为listener
-    public MessageListenerAdapter wSMessageListener(WSMessageHandler wSMessageHandler) {
-        return new MessageListenerAdapter(wSMessageHandler, "processMessage");
+    public MessageListenerAdapter wSMessageListener(WSMessageRabbitListener wSMessageRabbitListener) {
+        return new MessageListenerAdapter(wSMessageRabbitListener, "processMessage");
     }
 
     //在container内将queue和listener绑定

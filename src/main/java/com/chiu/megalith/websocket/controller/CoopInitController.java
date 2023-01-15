@@ -21,8 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping("/room")
-public class InitCoopController {
-
+public class CoopInitController {
     private final InitCoopService initCoopService;
 
     @GetMapping("/init/{blogId}/{orderNumber}")

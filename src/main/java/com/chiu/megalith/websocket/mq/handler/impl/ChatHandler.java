@@ -1,9 +1,9 @@
-package com.chiu.megalith.websocket.handler.impl;
+package com.chiu.megalith.websocket.mq.handler.impl;
 
 import com.chiu.megalith.websocket.dto.Container;
 import com.chiu.megalith.websocket.dto.MessageDto;
 import com.chiu.megalith.websocket.dto.impl.ChatInfoDto;
-import com.chiu.megalith.websocket.handler.WSHandler;
+import com.chiu.megalith.websocket.mq.handler.WSHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;

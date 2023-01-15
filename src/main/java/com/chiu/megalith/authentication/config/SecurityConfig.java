@@ -37,8 +37,8 @@ public class SecurityConfig {
             "/public/blog/**",
             "/search/website/*",
             "/search/blog/**",
-            "/coop/**",
-            "/log/**"
+//            "/coop/**",
+//            "/log/**"
     };
 
     @Bean

@@ -2,7 +2,7 @@ package com.chiu.megalith.websocket.service.impl;
 
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisUtils;
-import com.chiu.megalith.websocket.config.CoopConfig;
+import com.chiu.megalith.websocket.config.CoopRabbitConfig;
 import com.chiu.megalith.websocket.dto.impl.ChatInfoDto;
 import com.chiu.megalith.websocket.dto.impl.DestroyDto;
 import com.chiu.megalith.websocket.dto.impl.QuitDto;
@@ -15,7 +15,6 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,7 +32,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final RedisUtils redisUtils;
     @Override
-    public void chat(Principal user, ChatInfoDto.Message msg) {
+    public void chat(ChatInfoDto.Message msg) {
 
         msg.getToAll().forEach(userId -> {
 
@@ -45,16 +44,16 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                         UserEntityVo.class);
                 msg.setToOne(userId);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE,
-                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             });
         });
     }
 
     @Override
-    public void sync(Principal user, SyncContentDto.Content msg) {
-        Long from = Long.parseLong(user.getName());
+    public void sync(SyncContentDto.Content msg) {
+        Long from = msg.getFrom();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
 
@@ -62,40 +61,40 @@ public class CoopMessageServiceImpl implements CoopMessageService {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE,
-                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });
     }
 
     @Override
-    public void destroy(Principal user, DestroyDto.Bind msg) {
-        Long from = Long.parseLong(user.getName());
+    public void destroy(DestroyDto.Bind msg) {
+        Long from = msg.getFrom();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
         entries.forEach((k, v) -> {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE,
-                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });
     }
 
     @Override
-    public void quit(Principal user, QuitDto.Bind msg) {
-        Long from = Long.parseLong(user.getName());
+    public void quit(QuitDto.Bind msg) {
+        Long from = msg.getFrom();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
         entries.forEach((k, v) -> {
             if (!from.equals(Long.parseLong(k))) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
-                        CoopConfig.WS_TOPIC_EXCHANGE,
-                        CoopConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
+                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
             }
         });

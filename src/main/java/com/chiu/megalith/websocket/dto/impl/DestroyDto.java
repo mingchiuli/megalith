@@ -22,5 +22,7 @@ public class DestroyDto implements Serializable, MessageDto {
     @AllArgsConstructor
     public static class Bind implements Serializable {
         private Long blogId;
+
+        private Long from;
     }
 }
