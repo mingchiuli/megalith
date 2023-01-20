@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class CacheScheduled {
+public class CacheSchedule {
 
     @Qualifier("scheduledThreadPoolExecutor")
     private final ThreadPoolExecutor executor;
@@ -44,7 +43,7 @@ public class CacheScheduled {
 
     private final ObjectMapper objectMapper;
 
-    private final Redisson redisson;
+    private final RedissonClient redisson;
 
     @Value("${blog.blog-page-size}")
     private Integer blogPageSize;

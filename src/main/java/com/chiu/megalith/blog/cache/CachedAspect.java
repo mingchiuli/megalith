@@ -14,7 +14,6 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.redisson.Redisson;
 import org.redisson.api.*;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
@@ -51,7 +50,7 @@ public class CachedAspect {
 
     private final ObjectMapper objectMapper;
 
-    private final Redisson redisson;
+    private final RedissonClient redisson;
 
     private final LoadingCache<String, RLock> lockCache = Caffeine.newBuilder()
             .maximumSize(500)
