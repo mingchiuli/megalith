@@ -1,7 +1,7 @@
-package com.chiu.megalith.authentication.config;
+package com.chiu.megalith.auth.config;
 
 
-import com.chiu.megalith.authentication.component.*;
+import com.chiu.megalith.auth.component.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

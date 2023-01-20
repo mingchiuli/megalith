@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 public class ElasticSearchRabbitConfig {
 
-    public static final String ES_QUEUE = "es_queue";
+    public static final String ES_QUEUE = "es.queue";
 
-    public static final String ES_EXCHANGE = "es_exchange";
+    public static final String ES_EXCHANGE = "es.exchange";
 
-    public static final String ES_BINDING_KEY = "es_exchange";
+    public static final String ES_BINDING_KEY = "es.binding";
 
     @Bean("ES_QUEUE")
     public Queue queue() {

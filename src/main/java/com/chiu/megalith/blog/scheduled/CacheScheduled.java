@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,7 +44,7 @@ public class CacheScheduled {
 
     private final ObjectMapper objectMapper;
 
-    private final RedissonClient redissonClient;
+    private final Redisson redisson;
 
     @Value("${blog.blog-page-size}")
     private Integer blogPageSize;
@@ -53,7 +54,7 @@ public class CacheScheduled {
     @Scheduled(cron = "0 0 0/2 * * ?")
     public void configureTask() {
 
-        RLock rLock = redissonClient.getLock("cacheKey");
+        RLock rLock = redisson.getLock("cacheKey");
 
         if (rLock.tryLock(10, TimeUnit.SECONDS)) {
 

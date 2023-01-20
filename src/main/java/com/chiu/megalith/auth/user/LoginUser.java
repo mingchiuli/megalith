@@ -1,5 +1,6 @@
-package com.chiu.megalith.authentication.user;
+package com.chiu.megalith.auth.user;
 
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -11,7 +12,7 @@ import java.util.Collection;
  */
 public class LoginUser extends User {
 
-    public static final ThreadLocal<String> loginException = new ThreadLocal<>();
+    public static final ThreadLocal<AuthenticationException> loginException = new ThreadLocal<>();
 
     private final String grantType;
 

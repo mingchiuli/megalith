@@ -1,4 +1,4 @@
-package com.chiu.megalith.authentication.config;
+package com.chiu.megalith.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

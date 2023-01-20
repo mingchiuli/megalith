@@ -62,7 +62,7 @@ public class BlogServiceImpl implements BlogService {
     private final RedisUtils redisUtils;
 
     @Value("${blog.blog-page-size}")
-    private Integer blogPageSize;
+    private int blogPageSize;
 
 
     @Cached(prefix = Const.HOT_BLOG)
@@ -291,7 +291,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @SuppressWarnings("unchecked")
     public PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage, Integer size) {
-        Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         Set<String> set = redisTemplate.keys(userId + Const.QUERY_DELETED.getInfo() + "*");
         var ref = new Object() {
@@ -299,7 +299,7 @@ public class BlogServiceImpl implements BlogService {
         };
 
         Optional.ofNullable(set).ifPresentOrElse(keys -> {
-            int total = set.size();
+            int total = keys.size();
             int totalPages = total % size == 0 ? total / size : total / size + 1;
 
             List<String> stringList = redisTemplate.opsForValue().multiGet(keys);
@@ -327,7 +327,7 @@ public class BlogServiceImpl implements BlogService {
     @SneakyThrows
     @Override
     public void recoverDeletedBlog(Long id) {
-        Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         String blogStr = Optional.ofNullable(
                 redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getInfo() + id)

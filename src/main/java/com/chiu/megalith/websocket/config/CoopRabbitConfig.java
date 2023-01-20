@@ -19,11 +19,11 @@ public class CoopRabbitConfig {
 
     public static String serverMark;
 
-    public static String WS_QUEUE = "coop_queue_";
+    public static String WS_QUEUE = "coop.queue.";
 
-    public static final String WS_TOPIC_EXCHANGE = "coop_topic_exchange";
+    public static final String WS_TOPIC_EXCHANGE = "coop.topic.exchange";
 
-    public static final String WS_BINDING_KEY = "coop_exchange_";
+    public static final String WS_BINDING_KEY = "coop.exchange.";
 
     @Bean("COOP_QUEUE")
     public Queue queue() {

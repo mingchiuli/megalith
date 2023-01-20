@@ -1,4 +1,4 @@
-package com.chiu.megalith.authentication.user;
+package com.chiu.megalith.auth.user;
 
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.manage.entity.UserEntity;

@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class CaptchaServiceImpl implements CaptchaService {
     private final Producer producer;
+
     private final StringRedisTemplate redisTemplate;
 
     private final JavaMailSender javaMailSender;

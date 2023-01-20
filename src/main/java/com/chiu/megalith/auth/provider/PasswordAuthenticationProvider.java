@@ -1,6 +1,6 @@
-package com.chiu.megalith.authentication.provider;
+package com.chiu.megalith.auth.provider;
 
-import com.chiu.megalith.authentication.user.LoginUser;
+import com.chiu.megalith.auth.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,16 +28,18 @@ public class PasswordAuthenticationProvider extends DaoAuthenticationProvider {
         Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
             if (Const.GRANT_TYPE_PASSWORD.getInfo().equals(user.getGrantType())) {
                 String presentedPassword = credentials.toString();
-                if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
-                    LoginUser.loginException.set("Failed to authenticate since password does not match stored value");
-                    throw new BadCredentialsException("Bad credentials");
+                if (!passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
+                    BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since password does not match stored value");
+                    LoginUser.loginException.set(exception);
+                    throw exception;
                 }
             } else {
                 throw new BadCredentialsException("go next provider");
             }
         }, () -> {
-            LoginUser.loginException.set("Failed to authenticate since no credentials provided");
-            throw new BadCredentialsException("Bad credentials");
+            BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since no credentials provided");
+            LoginUser.loginException.set(exception);
+            throw exception;
         });
     }
 }

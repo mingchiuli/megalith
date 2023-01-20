@@ -1,4 +1,4 @@
-package com.chiu.megalith.authentication.component;
+package com.chiu.megalith.auth.component;
 
 import com.chiu.megalith.common.jwt.JwtUtils;
 import com.chiu.megalith.common.lang.Result;

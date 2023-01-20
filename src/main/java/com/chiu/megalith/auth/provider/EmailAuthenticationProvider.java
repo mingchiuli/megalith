@@ -1,6 +1,6 @@
-package com.chiu.megalith.authentication.provider;
+package com.chiu.megalith.auth.provider;
 
-import com.chiu.megalith.authentication.user.LoginUser;
+import com.chiu.megalith.auth.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Map;
@@ -23,7 +24,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
     private final StringRedisTemplate redisTemplate;
 
     @Value("${blog.email-try-count}")
-    private Integer maxTryNum;
+    private int maxTryNum;
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
@@ -55,9 +56,9 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
                 throw new BadCredentialsException("code not exist");
             }
         } else {
-            String msg = LoginUser.loginException.get();
+            AuthenticationException exception = LoginUser.loginException.get();
             LoginUser.loginException.remove();
-            throw new BadCredentialsException(msg);
+            throw exception;
         }
     }
 }
