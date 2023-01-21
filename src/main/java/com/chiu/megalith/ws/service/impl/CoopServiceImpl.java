@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -145,5 +144,7 @@ public class CoopServiceImpl implements CoopService {
                         CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                         CoopRabbitConfig.WS_BINDING_KEY + serverMark,
                         dto));
+
+        redisTemplate.expire(Const.COOP_PREFIX.getInfo() + blogId, 10 , TimeUnit.SECONDS);
     }
 }

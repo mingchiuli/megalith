@@ -14,7 +14,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -31,7 +30,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final RedisUtils redisUtils;
     @Override
-    public void chat(ChatInfoDto.Bind msg) {
+    public void chat(ChatDto.Bind msg) {
         msg.getToAll().forEach(userId -> {
             HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
             String obj = hashOperations.get(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
@@ -49,7 +48,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void sync(SyncContentDto.Bind msg) {
+    public void syncContent(SyncContentDto.Bind msg) {
         sendToOtherUsers(msg);
     }
 
@@ -72,7 +71,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
         users.values().
                 stream().
                 map(userStr -> redisUtils.readValue(userStr, UserEntityVo.class)).
-                filter(user -> !Objects.equals(user.getId(), from)).
+                filter(user -> !from.equals(user.getId())).
                 map(UserEntityVo::getServerMark).
                 distinct().
                 forEach(serverMark -> rabbitTemplate.convertAndSend(

@@ -24,5 +24,6 @@ public class DestroyDto implements Serializable, MessageDto {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
+    @NoArgsConstructor
     public static class Bind extends BaseBind implements Serializable {}
 }

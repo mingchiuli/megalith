@@ -1,6 +1,6 @@
 package com.chiu.megalith.ws.controller;
 
-import com.chiu.megalith.ws.dto.impl.ChatInfoDto;
+import com.chiu.megalith.ws.dto.impl.ChatDto;
 import com.chiu.megalith.ws.dto.impl.DestroyDto;
 import com.chiu.megalith.ws.dto.impl.QuitDto;
 import com.chiu.megalith.ws.dto.impl.SyncContentDto;
@@ -22,19 +22,17 @@ public class CoopMessageController {
 
     private final CoopMessageService coopMessageService;
 
-
     @MessageMapping("/chat")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void chat(ChatInfoDto.Bind msg) {
+    public void chat(ChatDto.Bind msg) {
         coopMessageService.chat(msg);
     }
 
     @MessageMapping("/sync")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public void syncContent(SyncContentDto.Bind msg) {
-        coopMessageService.sync(msg);
+        coopMessageService.syncContent(msg);
     }
-
 
     @MessageMapping("/destroy")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole())")

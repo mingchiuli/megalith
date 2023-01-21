@@ -25,6 +25,7 @@ public class JoinDto implements Serializable, MessageDto {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
+    @NoArgsConstructor
     public static class Bind extends BaseBind implements Serializable {
         private UserEntityVo user;
     }

@@ -6,6 +6,7 @@ import com.chiu.megalith.ws.dto.MessageDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
@@ -27,5 +28,6 @@ public class QuitDto implements MessageDto, Serializable {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
+    @NoArgsConstructor
     public static class Bind extends BaseBind implements Serializable {}
 }

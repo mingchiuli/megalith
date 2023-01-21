@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ChatInfoDto implements Serializable, MessageDto {
+public class ChatDto implements Serializable, MessageDto {
     private Container<Bind> message;
 
     @Override
@@ -24,6 +24,7 @@ public class ChatInfoDto implements Serializable, MessageDto {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Bind extends BaseBind implements Serializable {
 

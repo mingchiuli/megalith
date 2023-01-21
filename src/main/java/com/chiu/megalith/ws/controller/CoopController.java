@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/room")
+@RequestMapping("/coop")
 public class CoopController {
     private final CoopService coopService;
 

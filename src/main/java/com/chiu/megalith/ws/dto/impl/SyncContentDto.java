@@ -23,6 +23,7 @@ public class SyncContentDto implements Serializable, MessageDto {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
+    @NoArgsConstructor
     public static class Bind extends BaseBind implements Serializable {
         private String content;
 
