@@ -48,6 +48,7 @@ public class SecurityConfig {
                 and().
                 csrf().
                 disable().
+
                 //登录配置
                 formLogin().
                 successHandler(loginSuccessHandler).
