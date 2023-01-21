@@ -67,8 +67,8 @@ public class BlogController {
         return Result.success(blog);
     }
 
-    @Bloom(handler = BlogStatusBloomHandler.class)
     @GetMapping("/status/{blogId}")
+    @Bloom(handler = BlogStatusBloomHandler.class)
     @Cached(prefix = Const.BLOG_STATUS)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
         Integer status = blogService.findStatusById(blogId);

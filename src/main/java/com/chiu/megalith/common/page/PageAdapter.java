@@ -53,7 +53,8 @@ public class PageAdapter<T> implements Serializable {
 
     @SuppressWarnings("rawtypes")
     public static PageAdapter emptyPage(Integer pageSize) {
-        return PageAdapter.builder().
+        return PageAdapter.
+                builder().
                 content(null).
                 empty(true).
                 first(true).

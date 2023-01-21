@@ -200,13 +200,13 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void deleteBlogs(List<Long> ids) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         ids.forEach(id -> {
             BlogEntity blogEntity = blogRepository.findById(id).
                     orElseThrow(() -> new NotFoundException("blog not exist"));
 
-            Assert.isTrue(blogEntity.getUserId().equals(userId), "must delete own blog");
+            Assert.isTrue(blogEntity.getUserId() == userId, "must delete own blog");
 
             blogRepository.delete(blogEntity);
 
@@ -276,7 +276,8 @@ public class BlogServiceImpl implements BlogService {
                                 build()).
                 toList();
 
-        return PageAdapter.<BlogEntityDto>builder().
+        return PageAdapter.
+                <BlogEntityDto>builder().
                 content(entities).
                 last(page.isLast()).
                 first(page.isFirst()).
@@ -303,8 +304,9 @@ public class BlogServiceImpl implements BlogService {
             int totalPages = total % size == 0 ? total / size : total / size + 1;
 
             List<String> stringList = redisTemplate.opsForValue().multiGet(keys);
-            Optional.ofNullable(stringList).ifPresent(list ->
-                    ref.pageAdapter = PageAdapter.<BlogEntity>builder().
+            Optional.ofNullable(stringList).ifPresentOrElse(list ->
+                    ref.pageAdapter = PageAdapter.
+                            <BlogEntity>builder().
                             content(list.
                                     stream().
                                     map(str -> redisUtils.readValue(str, BlogEntity.class)).
@@ -318,7 +320,7 @@ public class BlogServiceImpl implements BlogService {
                             pageSize(size).
                             totalElements(total).
                             empty(total == 0).
-                            build());
+                            build(), () -> ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
         }, () -> ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
 
         return ref.pageAdapter;

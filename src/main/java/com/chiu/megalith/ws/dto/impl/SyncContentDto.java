@@ -1,8 +1,10 @@
 package com.chiu.megalith.ws.dto.impl;
 
+import com.chiu.megalith.ws.dto.BaseBind;
 import com.chiu.megalith.ws.dto.Container;
 import com.chiu.megalith.ws.dto.MessageDto;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
@@ -10,22 +12,18 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class SyncContentDto implements Serializable, MessageDto {
 
-    private Container<Content> content;
+    private Container<Bind> content;
 
     @Override
     @SuppressWarnings("unchecked")
-    public Container<Content> getData() {
+    public Container<Bind> getData() {
         return content;
     }
 
+    @EqualsAndHashCode(callSuper = true)
     @Data
-    @AllArgsConstructor
-    @Builder
-    @NoArgsConstructor
-    public static class Content implements Serializable {
-        private Long from;
-
-        private Long blogId;
+    @SuperBuilder
+    public static class Bind extends BaseBind implements Serializable {
         private String content;
 
     }

@@ -57,7 +57,8 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
 
     @Override
     protected void elasticSearchProcess(BlogEntity blog) {
-        BlogDocument blogDocument = BlogDocument.builder().
+        BlogDocument blogDocument = BlogDocument.
+                builder().
                 id(blog.getId()).
                 userId(blog.getUserId()).
                 title(blog.getTitle()).

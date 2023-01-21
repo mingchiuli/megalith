@@ -11,9 +11,9 @@ import com.chiu.megalith.ws.dto.impl.SyncContentDto;
  * @create 2022-12-28 3:42 pm
  */
 public interface CoopMessageService {
-    void chat(ChatInfoDto.Message msg);
+    void chat(ChatInfoDto.Bind msg);
 
-    void sync(SyncContentDto.Content msg);
+    void sync(SyncContentDto.Bind msg);
 
     void destroy(DestroyDto.Bind msg);
 

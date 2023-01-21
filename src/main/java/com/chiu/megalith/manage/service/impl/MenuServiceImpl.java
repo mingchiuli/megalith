@@ -145,7 +145,7 @@ public class MenuServiceImpl implements MenuService {
                 stream().
                 filter(menu -> menu.getParentId() == 0).
                 peek(menu-> menu.setChildren(getChildren(menu, menus))).
-                sorted(Comparator.comparingInt(menu -> (Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum()))).
+                sorted(Comparator.comparingInt(menu -> Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum())).
                 toList();
     }
 
@@ -154,7 +154,7 @@ public class MenuServiceImpl implements MenuService {
                 stream().
                 filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId())).
                 peek(menu -> menu.setChildren(getChildren(menu, all))).
-                sorted(Comparator.comparingInt(menu -> (Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum()))).
+                sorted(Comparator.comparingInt(menu -> Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum())).
                 toList();
     }
 }

@@ -8,7 +8,7 @@ import com.chiu.megalith.ws.vo.InitCoopVo;
  * @create 2022-12-26 1:05 am
  */
 public interface CoopService {
-    InitCoopVo initCoop(Long blogId, Integer orderNumber);
+    InitCoopVo joinCoop(Long blogId, Integer orderNumber);
 
     void submit(Long blogId, BlogEntityVo blogEntityVo);
 

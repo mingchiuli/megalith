@@ -1,9 +1,11 @@
 package com.chiu.megalith.ws.dto.impl;
 
+import com.chiu.megalith.ws.dto.BaseBind;
 import com.chiu.megalith.ws.dto.Container;
 import com.chiu.megalith.ws.dto.MessageDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,24 +13,19 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ChatInfoDto implements Serializable, MessageDto {
-    private Container<Message> message;
+    private Container<Bind> message;
 
     @Override
     @SuppressWarnings("unchecked")
-    public Container<Message> getData() {
+    public Container<Bind> getData() {
         return message;
     }
 
+    @EqualsAndHashCode(callSuper = true)
     @Data
-    @AllArgsConstructor
-    @Builder
-    @NoArgsConstructor
+    @SuperBuilder
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Message implements Serializable {
-
-        private Long from;
-
-        private Long blogId;
+    public static class Bind extends BaseBind implements Serializable {
 
         private String username;
 

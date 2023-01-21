@@ -44,7 +44,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
-        return http.cors().and().csrf().disable().
+        return http.cors().
+                and().
+                csrf().
+                disable().
                 //登录配置
                 formLogin().
                 successHandler(loginSuccessHandler).

@@ -49,17 +49,32 @@ public class CoopServiceImpl implements CoopService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public InitCoopVo initCoop(Long blogId, Integer orderNumber) {
+    public InitCoopVo joinCoop(Long blogId, Integer orderNumber) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         UserEntity userEntity = userService.findById(userId);
         BlogEntity blogEntity = blogService.findById(blogId);
-        UserEntityVo userEntityVo = UserEntityVo.builder().
-                id(userEntity.getId()).
-                avatar(userEntity.getAvatar()).
-                username(userEntity.getUsername()).
+        UserEntityVo userEntityVo = UserEntityVo.
+                builder().
+                id(userEntity.
+                        getId()).
+                avatar(userEntity.
+                        getAvatar()).
+                username(userEntity.
+                        getUsername()).
                 orderNumber(orderNumber).
                 serverMark(CoopRabbitConfig.serverMark).
+                build();
+
+        JoinDto dto = JoinDto.builder().
+                data(new Container<>(
+                        JoinDto.Bind.
+                                builder().
+                                blogId(blogId).
+                                from(userId).
+                                user(userEntityVo).
+                                build()
+                )).
                 build();
 
         redisTemplate.execute(new SessionCallback<>() {
@@ -75,36 +90,27 @@ public class CoopServiceImpl implements CoopService {
         });
 
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> userMap = hashOperations.entries(Const.COOP_PREFIX.getInfo() + blogId);
+        List<String> usersStr = hashOperations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
-        List<UserEntityVo> userEntityInfos = userMap.values().
+        List<UserEntityVo> userEntityInfos = usersStr.
                 stream().
                 map(str -> redisUtils.readValue(str, UserEntityVo.class)).
+                filter(user -> user.getId() != userId).
                 sorted(Comparator.comparing(UserEntityVo::getOrderNumber)).
                 toList();
 
 
-        JoinDto dto = JoinDto.builder().
-                data(new Container<>(
-                        JoinDto.Bind.builder().
-                                blogId(blogId).
-                                user(userEntityVo).
-                                build()
-                )).
-                build();
-
         userEntityInfos.forEach(user -> {
-            if (user.getId() != userId) {
-                String serverMark = user.getServerMark();
-                user.setServerMark(null);
-                rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + serverMark,
-                        dto);
-            }
-        });
+                    String serverMark = user.getServerMark();
+                    user.setServerMark(null);
+                    rabbitTemplate.convertAndSend(
+                            CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                            CoopRabbitConfig.WS_BINDING_KEY + serverMark,
+                            dto);
+                });
 
-        return InitCoopVo.builder().
+        return InitCoopVo.
+                builder().
                 blogEntity(blogEntity).
                 userEntityVos(userEntityInfos).
                 build();
@@ -115,30 +121,29 @@ public class CoopServiceImpl implements CoopService {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
         blogService.saveOrUpdate(blogEntityVo);
 
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> userMap = hashOperations.entries(Const.COOP_PREFIX.getInfo() + blogId);
-
-        DestroyDto dto = DestroyDto.builder().
+        DestroyDto dto = DestroyDto.
+                builder().
                 data(new Container<>(
-                        DestroyDto.Bind.builder().
+                        DestroyDto.Bind.
+                                builder().
                                 blogId(blogId).
                                 from(userId).
-                                build()
-                )).
+                                build())
+                ).
                 build();
 
-        userMap.forEach((id, userStr) -> {
-            if (userId != Long.parseLong(id)) {
-                UserEntityVo userEntityVo = redisUtils.readValue(userStr, UserEntityVo.class);
-                String serverMark = userEntityVo.getServerMark();
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        List<String> usersStr = hashOperations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
-                rabbitTemplate.convertAndSend(
+        usersStr.
+                stream().
+                map(str -> redisUtils.readValue(str, UserEntityVo.class)).
+                filter(user -> userId != user.getId()).
+                map(UserEntityVo::getServerMark).
+                distinct().
+                forEach(serverMark -> rabbitTemplate.convertAndSend(
                         CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                         CoopRabbitConfig.WS_BINDING_KEY + serverMark,
-                        dto);
-            }
-        });
-
-        redisTemplate.delete(Const.COOP_PREFIX.getInfo() + blogId);
+                        dto));
     }
 }

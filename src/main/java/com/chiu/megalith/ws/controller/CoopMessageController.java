@@ -25,13 +25,13 @@ public class CoopMessageController {
 
     @MessageMapping("/chat")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void chat(ChatInfoDto.Message msg) {
+    public void chat(ChatInfoDto.Bind msg) {
         coopMessageService.chat(msg);
     }
 
     @MessageMapping("/sync")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void syncContent(SyncContentDto.Content msg) {
+    public void syncContent(SyncContentDto.Bind msg) {
         coopMessageService.sync(msg);
     }
 

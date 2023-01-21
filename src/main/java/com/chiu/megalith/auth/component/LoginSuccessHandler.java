@@ -53,10 +53,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
 
 		Result<LoginSuccessDto> success = Result.success(
-				LoginSuccessDto.builder().
-				user(user).
-				token(jwt).
-				build()
+				LoginSuccessDto.
+						builder().
+						user(user).
+						token(jwt).
+						build()
 		);
 
 		outputStream.write(

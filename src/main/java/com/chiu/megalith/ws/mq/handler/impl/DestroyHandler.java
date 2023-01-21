@@ -24,6 +24,6 @@ public class DestroyHandler implements CoopHandler {
         Container<DestroyDto.Bind> container = msg.getData();
         DestroyDto.Bind data = container.getData();
         Long blogId = data.getBlogId();
-        simpMessagingTemplate.convertAndSendToUser(blogId.toString(),"/topic/destroy", data);
+        simpMessagingTemplate.convertAndSend("/" + blogId + "/topic/destroy", data);
     }
 }

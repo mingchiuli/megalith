@@ -52,10 +52,11 @@ public class CachedAspect {
 
     private final RedissonClient redisson;
 
-    private final LoadingCache<String, RLock> lockCache = Caffeine.newBuilder()
-            .maximumSize(500)
-            .expireAfterWrite(Duration.ofMinutes(60))
-            .build(this::createRlock);
+    private final LoadingCache<String, RLock> lockCache = Caffeine.
+            newBuilder().
+            maximumSize(500).
+            expireAfterWrite(Duration.ofMinutes(60)).
+            build(this::createRlock);
 
 
     @Pointcut("@annotation(com.chiu.megalith.blog.cache.Cached)")

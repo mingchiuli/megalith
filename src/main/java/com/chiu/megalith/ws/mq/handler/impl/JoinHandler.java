@@ -28,6 +28,6 @@ public class JoinHandler implements CoopHandler {
         Container<JoinDto.Bind> container = msg.getData();
         JoinDto.Bind data = container.getData();
         Long blogId = data.getBlogId();
-        simpMessagingTemplate.convertAndSendToUser(blogId.toString(),"/topic/join", data);
+        simpMessagingTemplate.convertAndSend("/" + blogId + "/topic/join", data);
     }
 }

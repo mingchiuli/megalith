@@ -3,6 +3,7 @@ package com.chiu.megalith.ws.service.impl;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisUtils;
 import com.chiu.megalith.ws.config.CoopRabbitConfig;
+import com.chiu.megalith.ws.dto.BaseBind;
 import com.chiu.megalith.ws.dto.impl.*;
 import com.chiu.megalith.ws.service.CoopMessageService;
 import com.chiu.megalith.ws.vo.UserEntityVo;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -29,7 +31,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final RedisUtils redisUtils;
     @Override
-    public void chat(ChatInfoDto.Message msg) {
+    public void chat(ChatInfoDto.Bind msg) {
         msg.getToAll().forEach(userId -> {
             HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
             String obj = hashOperations.get(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
@@ -47,49 +49,36 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void sync(SyncContentDto.Content msg) {
-        Long from = msg.getFrom();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> users = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
-        users.forEach((k, v) -> {
-            if (from != Long.parseLong(k)) {
-                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
-                rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
-                        msg);
-            }
-        });    }
+    public void sync(SyncContentDto.Bind msg) {
+        sendToOtherUsers(msg);
+    }
 
     @Override
     public void destroy(DestroyDto.Bind msg) {
-        Long from = msg.getFrom();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> users = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
-        users.forEach((k, v) -> {
-            if (from != Long.parseLong(k)) {
-                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
-                rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
-                        msg);
-            }
-        });    }
+        sendToOtherUsers(msg);
+    }
 
     @Override
     public void quit(QuitDto.Bind msg) {
+        sendToOtherUsers(msg);
+        redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFrom());
+    }
+
+    private void sendToOtherUsers(BaseBind msg) {
         Long from = msg.getFrom();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> users = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
-        users.forEach((k, v) -> {
-            if (from != Long.parseLong(k)) {
-                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
-                rabbitTemplate.convertAndSend(
+
+        users.values().
+                stream().
+                map(userStr -> redisUtils.readValue(userStr, UserEntityVo.class)).
+                filter(user -> !Objects.equals(user.getId(), from)).
+                map(UserEntityVo::getServerMark).
+                distinct().
+                forEach(serverMark -> rabbitTemplate.convertAndSend(
                         CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
-                        msg);
-            }
-        });
+                        CoopRabbitConfig.WS_BINDING_KEY + serverMark,
+                        msg));
     }
 
 }

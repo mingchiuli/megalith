@@ -1,9 +1,12 @@
 package com.chiu.megalith.ws.dto.impl;
 
+import com.chiu.megalith.ws.dto.BaseBind;
 import com.chiu.megalith.ws.dto.Container;
 import com.chiu.megalith.ws.dto.MessageDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
@@ -21,11 +24,8 @@ public class QuitDto implements MessageDto, Serializable {
     }
 
 
+    @EqualsAndHashCode(callSuper = true)
     @Data
-    @AllArgsConstructor
-    public static class Bind implements Serializable {
-        private Long from;
-
-        private Long blogId;
-    }
+    @SuperBuilder
+    public static class Bind extends BaseBind implements Serializable {}
 }

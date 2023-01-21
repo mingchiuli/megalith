@@ -19,15 +19,15 @@ public class UserController {
 
     private final UserService userService;
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @PostMapping("/save")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> save(@Validated @RequestBody UserEntityVo userEntityVo) {
         userService.saveOrUpdate(userEntityVo);
         return Result.success();
     }
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/status/{id}/{status}")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> changeUserStatus(@PathVariable(value = "id") Long userId,
                                          @PathVariable(value = "status") Integer status) {
         userService.changeUserStatus(userId, status);
@@ -35,23 +35,23 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/page/{currentPage}")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<PageAdapter<UserEntity>> page(@PathVariable(value = "currentPage") Integer currentPage,
                                                 @RequestParam(value = "size", defaultValue = "5") Integer size) {
         PageAdapter<UserEntity> page = userService.listPage(currentPage, size);
         return Result.success(page);
     }
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @PostMapping("/delete")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> page(@RequestBody List<Long> ids) {
         userService.deleteUsers(ids);
         return Result.success();
     }
 
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     @GetMapping("/info/{id}")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<UserEntity> info(@PathVariable(value = "id") Long id) {
         UserEntity user = userService.findByIdWithoutPassword(id);
         return Result.success(user);

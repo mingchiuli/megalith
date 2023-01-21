@@ -30,19 +30,21 @@ public class JwtUtils {
         //过期时间
         Date expireDate = new Date(nowDate.getTime() + expire * 1000);
 
-        return Jwts.builder()
-                .setHeaderParam("typ", "JWT")
-                .claim("role", role)
-                .setSubject(userId)
-                .setIssuedAt(nowDate)
-                .setExpiration(expireDate)
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()) ,SignatureAlgorithm.HS512)
-                .compact();
+        return Jwts.
+                builder().
+                setHeaderParam("typ", "JWT").
+                claim("role", role).
+                setSubject(userId).
+                setIssuedAt(nowDate).
+                setExpiration(expireDate).
+                signWith(Keys.hmacShaKeyFor(secret.getBytes()) ,SignatureAlgorithm.HS512).
+                compact();
     }
 
     public Optional<Claims> getClaimByToken(String token) {
         return Optional.ofNullable(
-                Jwts.parserBuilder().
+                Jwts.
+                        parserBuilder().
                         setSigningKey(Keys.hmacShaKeyFor(secret.getBytes())).
                         build().
                         parseClaimsJws(token).

@@ -21,8 +21,8 @@ public class ChatHandler implements CoopHandler {
 
     @Override
     public void handle(MessageDto msg) {
-        Container<ChatInfoDto.Message> container = msg.getData();
-        ChatInfoDto.Message data = container.getData();
+        Container<ChatInfoDto.Bind> container = msg.getData();
+        ChatInfoDto.Bind data = container.getData();
         data.setToAll(null);
         Long id = data.getBlogId();
         Long to = data.getToOne();
