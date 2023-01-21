@@ -2,10 +2,7 @@ package com.chiu.megalith.websocket.dto.impl;
 
 import com.chiu.megalith.websocket.dto.Container;
 import com.chiu.megalith.websocket.dto.MessageDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -21,14 +18,13 @@ public class SyncContentDto implements Serializable, MessageDto {
         return content;
     }
 
+    @EqualsAndHashCode(callSuper = true)
     @Data
     @AllArgsConstructor
     @Builder
     @NoArgsConstructor
-    public static class Content implements Serializable {
+    public static class Content extends BaseDto implements Serializable {
         private String content;
-        private Long blogId;
 
-        private Long from;
     }
 }

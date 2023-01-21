@@ -3,10 +3,7 @@ package com.chiu.megalith.websocket.service.impl;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisUtils;
 import com.chiu.megalith.websocket.config.CoopRabbitConfig;
-import com.chiu.megalith.websocket.dto.impl.ChatInfoDto;
-import com.chiu.megalith.websocket.dto.impl.DestroyDto;
-import com.chiu.megalith.websocket.dto.impl.QuitDto;
-import com.chiu.megalith.websocket.dto.impl.SyncContentDto;
+import com.chiu.megalith.websocket.dto.impl.*;
 import com.chiu.megalith.websocket.service.CoopMessageService;
 import com.chiu.megalith.websocket.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +30,10 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     private final RedisUtils redisUtils;
     @Override
     public void chat(ChatInfoDto.Message msg) {
-
         msg.getToAll().forEach(userId -> {
-
             HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-            String o = hashOperations.get(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
-            Optional.ofNullable(o).ifPresent(str -> {
+            String s = hashOperations.get(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
+            Optional.ofNullable(s).ifPresent(str -> {
                 UserEntityVo userEntityVo = redisUtils.readValue(
                         str,
                         UserEntityVo.class);
@@ -53,28 +48,25 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     @Override
     public void sync(SyncContentDto.Content msg) {
-        Long from = msg.getFrom();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
-
-        entries.forEach((k, v) -> {
-            if (!from.equals(Long.parseLong(k))) {
-                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
-                rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
-                        msg);
-            }
-        });
+        sendToOtherUsers(msg);
     }
 
     @Override
     public void destroy(DestroyDto.Bind msg) {
+        sendToOtherUsers(msg);
+    }
+
+    @Override
+    public void quit(QuitDto.Bind msg) {
+        sendToOtherUsers(msg);
+    }
+
+    private void sendToOtherUsers(BaseDto msg) {
         Long from = msg.getFrom();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
-        entries.forEach((k, v) -> {
-            if (!from.equals(Long.parseLong(k))) {
+        Map<String, String> users = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
+        users.forEach((k, v) -> {
+            if (from != Long.parseLong(k)) {
                 UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
                 rabbitTemplate.convertAndSend(
                         CoopRabbitConfig.WS_TOPIC_EXCHANGE,
@@ -84,19 +76,4 @@ public class CoopMessageServiceImpl implements CoopMessageService {
         });
     }
 
-    @Override
-    public void quit(QuitDto.Bind msg) {
-        Long from = msg.getFrom();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
-        entries.forEach((k, v) -> {
-            if (!from.equals(Long.parseLong(k))) {
-                UserEntityVo userEntityVo = redisUtils.readValue(v, UserEntityVo.class);
-                rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
-                        msg);
-            }
-        });
-    }
 }

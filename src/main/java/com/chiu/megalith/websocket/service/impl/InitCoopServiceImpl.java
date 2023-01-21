@@ -48,7 +48,7 @@ public class InitCoopServiceImpl implements InitCoopService {
     @SuppressWarnings("unchecked")
     @Override
     public InitCoopVo initCoop(Long blogId, Integer orderNumber) {
-        Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         UserEntity userEntity = userService.findById(userId);
         BlogEntity blogEntity = blogService.findById(blogId);
@@ -65,7 +65,7 @@ public class InitCoopServiceImpl implements InitCoopService {
             public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                 operations.multi();
                 operations.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId,
-                        userId.toString(),
+                        String.valueOf(userId),
                         redisUtils.writeValueAsString(vo));
                 operations.expire(Const.COOP_PREFIX.getInfo() + blogId, 6 * 60, TimeUnit.MINUTES);
                 return operations.exec();

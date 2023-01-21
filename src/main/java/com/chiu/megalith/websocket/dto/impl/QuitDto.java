@@ -4,6 +4,7 @@ import com.chiu.megalith.websocket.dto.Container;
 import com.chiu.megalith.websocket.dto.MessageDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -21,10 +22,8 @@ public class QuitDto implements MessageDto, Serializable {
     }
 
 
+    @EqualsAndHashCode(callSuper = true)
     @Data
     @AllArgsConstructor
-    public static class Bind implements Serializable {
-        private Long blogId;
-        private Long from;
-    }
+    public static class Bind extends BaseDto implements Serializable {}
 }
