@@ -20,7 +20,6 @@ import org.springframework.data.elasticsearch.core.query.highlight.HighlightPara
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +38,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     private final StringRedisTemplate redisTemplate;
 
     @Value("${blog.blog-page-size}")
-    private Integer blogPageSize;
+    private int blogPageSize;
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keyword, Integer flag, Integer year) {

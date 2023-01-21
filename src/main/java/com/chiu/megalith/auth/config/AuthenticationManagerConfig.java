@@ -26,7 +26,10 @@ public class AuthenticationManagerConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        List<AuthenticationProvider> providers = Arrays.asList(passwordAuthenticationProvider, emailAuthenticationProvider);
+        List<AuthenticationProvider> providers = Arrays.asList(
+                passwordAuthenticationProvider,
+                emailAuthenticationProvider
+        );
         return new ProviderManager(providers, null);
     }
 }

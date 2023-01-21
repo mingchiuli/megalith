@@ -166,7 +166,7 @@ public class BlogServiceImpl implements BlogService {
             BlogIndexEnum type;
         };
 
-        Optional.ofNullable(blog.getId()).ifPresentOrElse((id) -> {
+        Optional.ofNullable(blog.getId()).ifPresentOrElse(id -> {
             ref.blogEntity = blogRepository.findById(blog.getId()).orElseThrow(() -> new NotFoundException("blog not exist"));
             Assert.isTrue(ref.blogEntity.getUserId().equals(userId), "must edit your blog!");
             ref.type = BlogIndexEnum.UPDATE;

@@ -42,7 +42,7 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 public class CachedAspect {
 
-    private static final String LOCK = "lock:";
+    private static final String LOCK = "blogLock:";
 
     private final StringRedisTemplate redisTemplate;
 

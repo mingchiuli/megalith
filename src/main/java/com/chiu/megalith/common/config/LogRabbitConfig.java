@@ -14,11 +14,11 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 public class LogRabbitConfig {
-    public static final String LOG_QUEUE = "log_queue";
+    public static final String LOG_QUEUE = "log.queue";
 
-    public static final String LOG_EXCHANGE = "log_exchange";
+    public static final String LOG_EXCHANGE = "log.exchange";
 
-    public static final String LOG_BINDING_KEY = "log_exchange";
+    public static final String LOG_BINDING_KEY = "log.binding";
 
     //ES队列
 

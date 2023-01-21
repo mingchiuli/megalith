@@ -40,7 +40,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     @Value("${blog.web-page-size}")
-    private Integer webPageSize;
+    private int webPageSize;
 
     @Override
     public String generateJwt() {

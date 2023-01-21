@@ -46,7 +46,7 @@ public class CacheSchedule {
     private final RedissonClient redisson;
 
     @Value("${blog.blog-page-size}")
-    private Integer blogPageSize;
+    private int blogPageSize;
 
 
     @SneakyThrows

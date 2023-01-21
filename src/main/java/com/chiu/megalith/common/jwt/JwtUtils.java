@@ -25,9 +25,6 @@ public class JwtUtils {
 
     private long expire;
 
-    /**
-     * 生成jwt token
-     */
     public String generateToken(String userId, String role) {
         Date nowDate = new Date();
         //过期时间
@@ -54,10 +51,6 @@ public class JwtUtils {
 
     }
 
-    /**
-     * token是否过期
-     * @return  true：过期
-     */
     public boolean isTokenExpired(Date expiration) {
         return expiration.before(new Date());
     }
