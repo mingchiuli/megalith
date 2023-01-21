@@ -25,21 +25,21 @@ public class PasswordAuthenticationProvider extends DaoAuthenticationProvider {
                                                   UsernamePasswordAuthenticationToken authentication) {
         LoginUser user = (LoginUser) userDetails;
 
-        Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
-            if (Const.GRANT_TYPE_PASSWORD.getInfo().equals(user.getGrantType())) {
+        if (Const.GRANT_TYPE_PASSWORD.getInfo().equals(user.getGrantType())) {
+            Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
                 String presentedPassword = credentials.toString();
                 if (!passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
                     BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since password does not match stored value");
                     LoginUser.loginException.set(exception);
                     throw exception;
                 }
-            } else {
-                throw new BadCredentialsException("go next provider");
-            }
-        }, () -> {
-            BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since no credentials provided");
-            LoginUser.loginException.set(exception);
-            throw exception;
-        });
+            }, () -> {
+                BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since no credentials provided");
+                LoginUser.loginException.set(exception);
+                throw exception;
+            });
+        } else {
+            throw new BadCredentialsException("go next provider");
+        }
     }
 }
