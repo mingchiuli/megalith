@@ -320,8 +320,10 @@ public class BlogServiceImpl implements BlogService {
                             pageSize(size).
                             totalElements(total).
                             empty(total == 0).
-                            build(), () -> ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
-        }, () -> ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
+                            build(), () ->
+                    ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
+        }, () ->
+                ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
 
         return ref.pageAdapter;
     }

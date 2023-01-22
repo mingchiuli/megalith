@@ -60,10 +60,12 @@ public class RoleServiceImpl implements RoleService {
             ref.roleEntity = roleRepository.findById(id).
                     orElseThrow(() -> new NotFoundException("role not exist"));
             ref.roleEntity.setUpdated(now);
-        }, () -> ref.roleEntity = RoleEntity.builder().
-                created(now).
-                updated(now).
-                build());
+        }, () ->
+                ref.roleEntity = RoleEntity.
+                        builder().
+                        created(now).
+                        updated(now).
+                        build());
 
         BeanUtils.copyProperties(roleVo, ref.roleEntity);
         roleRepository.save(ref.roleEntity);
@@ -94,10 +96,12 @@ public class RoleServiceImpl implements RoleService {
         roleMenuService.deleteByRoleId(roleId);
         List<RoleMenuEntity> roleMenuEntities = menuIds.
                 stream().
-                map(menuId -> RoleMenuEntity.builder().
-                        menuId(menuId).
-                        roleId(roleId).
-                        build()
+                map(menuId ->
+                        RoleMenuEntity.
+                                builder().
+                                menuId(menuId).
+                                roleId(roleId).
+                                build()
                 ).
                 toList();
 

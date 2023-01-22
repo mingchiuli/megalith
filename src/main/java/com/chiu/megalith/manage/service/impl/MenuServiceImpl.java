@@ -38,7 +38,9 @@ public class MenuServiceImpl implements MenuService {
 
         List<MenuEntityVo> menuEntityVos = menus.
                 stream().
-                map(menu -> MenuEntityVo.builder().
+                map(menu ->
+                        MenuEntityVo.
+                        builder().
                         menuId(menu.
                                 getMenuId()).
                         parentId(menu.
@@ -78,7 +80,9 @@ public class MenuServiceImpl implements MenuService {
 
         List<MenuEntityVo> menuEntityVos = menus.
                 stream().
-                map(menu -> MenuEntityVo.builder().
+                map(menu ->
+                        MenuEntityVo.
+                        builder().
                         menuId(menu.
                                 getMenuId()).
                         parentId(menu.
@@ -107,7 +111,8 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void saveOrUpdate(MenuEntityVo menu) {
-        MenuEntity menuEntity = MenuEntity.builder().
+        MenuEntity menuEntity = MenuEntity.
+                builder().
                 menuId(menu.
                         getMenuId()).
                 parentId(menu.

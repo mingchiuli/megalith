@@ -65,17 +65,6 @@ public class CoopServiceImpl implements CoopService {
                 serverMark(CoopRabbitConfig.serverMark).
                 build();
 
-        JoinDto dto = JoinDto.builder().
-                data(new Container<>(
-                        JoinDto.Bind.
-                                builder().
-                                blogId(blogId).
-                                from(userId).
-                                user(userEntityVo).
-                                build()
-                )).
-                build();
-
         redisTemplate.execute(new SessionCallback<>() {
             @Override
             public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
@@ -88,6 +77,19 @@ public class CoopServiceImpl implements CoopService {
             }
         });
 
+        userEntityVo.setServerMark(null);
+
+        JoinDto dto = JoinDto.builder().
+                data(new Container<>(
+                        JoinDto.Bind.
+                                builder().
+                                blogId(blogId).
+                                from(userId).
+                                user(userEntityVo).
+                                build()
+                )).
+                build();
+
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         List<String> usersStr = hashOperations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
@@ -98,15 +100,17 @@ public class CoopServiceImpl implements CoopService {
                 sorted(Comparator.comparing(UserEntityVo::getOrderNumber)).
                 toList();
 
+        userEntityInfos.
+                stream().
+                map(UserEntityVo::getServerMark).
+                distinct().
+                forEach(serverMark ->
+                        rabbitTemplate.convertAndSend(
+                                CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                                CoopRabbitConfig.WS_BINDING_KEY + serverMark,
+                                dto));
 
-        userEntityInfos.forEach(user -> {
-                    String serverMark = user.getServerMark();
-                    user.setServerMark(null);
-                    rabbitTemplate.convertAndSend(
-                            CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                            CoopRabbitConfig.WS_BINDING_KEY + serverMark,
-                            dto);
-                });
+        userEntityInfos.forEach(user -> user.setServerMark(null));
 
         return InitCoopVo.
                 builder().

@@ -45,22 +45,23 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         NativeQuery matchQuery = NativeQuery.
                 builder().
-                withQuery(query -> query.
-                        bool(boolQuery -> boolQuery.
-                                must(mustQuery1 -> mustQuery1.
-                                        multiMatch(multiQuery -> multiQuery.
-                                                fields(Arrays.asList("title", "description", "content")).query(keyword))).
-                                must(mustQuery2 -> mustQuery2.
-                                        term(termQuery -> termQuery.
-                                                field("status").value(0))).
-                                must(mustQuery3 -> mustQuery3.
-                                        range(rangeQuery -> rangeQuery.
-                                                field("created").
-                                                from(Optional.ofNullable(year).isPresent() ? year + "-01-01T00:00:00.000" : null).
-                                                to(Optional.ofNullable(year).isPresent() ? year + "-12-31T23:59:59.999" : null))))).
-                withSort(sort -> sort.
-                        score(score -> score.
-                                order(SortOrder.Desc))).
+                withQuery(query ->
+                        query.bool(boolQuery ->
+                                boolQuery.
+                                        must(mustQuery1 ->
+                                                mustQuery1.multiMatch(multiQuery ->
+                                                        multiQuery.fields(Arrays.asList("title", "description", "content")).query(keyword))).
+                                        must(mustQuery2 ->
+                                                mustQuery2.term(termQuery ->
+                                                        termQuery.field("status").value(0))).
+                                        must(mustQuery3 ->
+                                                mustQuery3.range(rangeQuery ->
+                                                        rangeQuery.field("created").
+                                                                from(Optional.ofNullable(year).isPresent() ? year + "-01-01T00:00:00.000" : null).
+                                                                to(Optional.ofNullable(year).isPresent() ? year + "-12-31T23:59:59.999" : null))))).
+                withSort(sort ->
+                        sort.score(score ->
+                                score.order(SortOrder.Desc))).
                 withPageable(PageRequest.of(currentPage - 1, blogPageSize)).
                 withHighlightQuery(new HighlightQuery(
                         new Highlight(flag == 0 ?
@@ -89,7 +90,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         List<BlogDocumentVo> vos = search.getSearchHits().
                 stream().
-                map(hit -> BlogDocumentVo.builder().
+                map(hit -> BlogDocumentVo.
+                        builder().
                         id(hit.getContent().
                                 getId()).
                         userId(hit.getContent().
@@ -130,18 +132,19 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         NativeQuery nativeQuery = NativeQuery.
                 builder().
-                withQuery(query -> query.
-                        bool(boolQuery -> boolQuery.
-                                must(mustQuery1 -> mustQuery1.
-                                        multiMatch(multiQuery -> multiQuery.
-                                                fields(Arrays.asList("title", "description", "content")).query(keyword))).
-                                must(mustQuery2 -> mustQuery2.
-                                        term(termQuery -> termQuery.
-                                                field("userId").value(userId))))).
+                withQuery(query ->
+                        query.bool(boolQuery ->
+                                boolQuery.
+                                        must(mustQuery1 ->
+                                                mustQuery1.multiMatch(multiQuery -> multiQuery.
+                                                        fields(Arrays.asList("title", "description", "content")).query(keyword))).
+                                        must(mustQuery2 ->
+                                                mustQuery2.term(termQuery ->
+                                                        termQuery.field("userId").value(userId))))).
                 withPageable(PageRequest.of(currentPage - 1, size)).
-                withSort(sortQuery -> sortQuery.
-                        field(fieldQuery -> fieldQuery.
-                                field("created").order(SortOrder.Desc))).
+                withSort(sortQuery ->
+                        sortQuery.field(fieldQuery ->
+                                fieldQuery.field("created").order(SortOrder.Desc))).
                 build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
@@ -150,7 +153,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         List<BlogEntityDto> entities = search.getSearchHits().
                 stream().
-                map(hit -> BlogEntityDto.builder().
+                map(hit -> BlogEntityDto.
+                        builder().
                         id(hit.getContent().
                                 getId()).
                         title(hit.getContent().

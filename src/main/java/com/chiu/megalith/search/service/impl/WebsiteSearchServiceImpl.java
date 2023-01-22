@@ -73,14 +73,14 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         NativeQuery matchQuery = NativeQuery.
                 builder().
-                withQuery(query -> query.
-                        bool(boolQuery -> boolQuery.
-                                must(mustQuery1 -> mustQuery1.
-                                        multiMatch(multiQuery -> multiQuery.
-                                                fields(Arrays.asList("title", "description")).query(keyword))))).
-                withSort(sort -> sort.
-                        score(score -> score.
-                                order(SortOrder.Desc))).
+                withQuery(query ->
+                        query.bool(boolQuery ->
+                                boolQuery.must(mustQuery ->
+                                        mustQuery.multiMatch(multiQuery ->
+                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword))))).
+                withSort(sort ->
+                        sort.score(score ->
+                                score.order(SortOrder.Desc))).
                 withPageable(PageRequest.of(currentPage - 1, webPageSize)).
                 withHighlightQuery(
                         new HighlightQuery(
@@ -103,7 +103,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         List<WebsiteDocumentVo> vos = search.getSearchHits().
                 stream().
-                map(hit -> WebsiteDocumentVo.builder().
+                map(hit -> WebsiteDocumentVo.
+                        builder().
                         id(hit.getContent().
                                 getId()).
                         title(hit.getContent().
@@ -142,9 +143,9 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         Optional.ofNullable(keyword).ifPresentOrElse(word ->
                 nativeQueryBuilder.
-                        withSort(sort -> sort.
-                                score(score -> score.
-                                        order(SortOrder.Desc))).
+                        withSort(sort ->
+                                sort.score(score ->
+                                        score.order(SortOrder.Desc))).
                         withHighlightQuery(
                                 new HighlightQuery(
                                         new Highlight(
@@ -157,14 +158,15 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                                                         new HighlightField("title"),
                                                         new HighlightField("description"))
                                         ), null)).
-                        withQuery(query -> query.
-                                bool(boolQuery -> boolQuery.
-                                        must(mustQuery1 -> mustQuery1.
-                                                multiMatch(multiQuery -> multiQuery.
-                                                        fields(Arrays.asList("title", "description")).query(keyword))).
-                                        must(mustQuery2 ->
-                                                mustQuery2.term(termQuery ->
-                                                        termQuery.field("status").value(0))))), () ->
+                        withQuery(query ->
+                                query.bool(boolQuery ->
+                                        boolQuery.
+                                                must(mustQuery1 ->
+                                                        mustQuery1.multiMatch(multiQuery ->
+                                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword))).
+                                                must(mustQuery2 ->
+                                                        mustQuery2.term(termQuery ->
+                                                                termQuery.field("status").value(0))))), () ->
                 nativeQueryBuilder.
                         withSort(sortQuery ->
                                 sortQuery.field(fieldQuery ->
@@ -184,7 +186,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         List<WebsiteDocumentVo> vos = search.getSearchHits().
                 stream().
-                map(hit -> WebsiteDocumentVo.builder().
+                map(hit -> WebsiteDocumentVo.
+                        builder().
                         id(hit.getContent().
                                 getId()).
                         title(hit.getContent().
