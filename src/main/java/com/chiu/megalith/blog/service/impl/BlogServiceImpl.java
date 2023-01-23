@@ -73,12 +73,12 @@ public class BlogServiceImpl implements BlogService {
 
     @Async(value = "readCountThreadPoolExecutor")
     @Override
-    @SuppressWarnings("unchecked")
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
         try {
             redisTemplate.execute(new SessionCallback<>() {
                 @Override
+                @SuppressWarnings("unchecked")
                 public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                     operations.multi();
                     operations.opsForValue().setIfAbsent(Const.READ_RECENT.getInfo() + id, "0", 7, TimeUnit.DAYS);
@@ -254,18 +254,12 @@ public class BlogServiceImpl implements BlogService {
                 stream().
                 map(blogEntity ->
                         BlogEntityDto.builder().
-                                id(blogEntity.
-                                        getId()).
-                                title(blogEntity.
-                                        getTitle()).
-                                description(blogEntity.
-                                        getDescription()).
-                                status(blogEntity.
-                                        getStatus()).
-                                created(blogEntity.
-                                        getCreated()).
-                                content(blogEntity.
-                                        getContent()).
+                                id(blogEntity.getId()).
+                                title(blogEntity.getTitle()).
+                                description(blogEntity.getDescription()).
+                                status(blogEntity.getStatus()).
+                                created(blogEntity.getCreated()).
+                                content(blogEntity.getContent()).
                                 readRecent(Integer.valueOf(
                                         Optional.ofNullable(
                                                 redisTemplate.opsForValue().get(Const.READ_RECENT.getInfo() + blogEntity.getId())

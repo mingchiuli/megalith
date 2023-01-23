@@ -46,7 +46,6 @@ public class CoopServiceImpl implements CoopService {
 
     private final RedisUtils redisUtils;
 
-    @SuppressWarnings("unchecked")
     @Override
     public InitCoopVo joinCoop(Long blogId, Integer orderNumber) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -64,6 +63,7 @@ public class CoopServiceImpl implements CoopService {
 
         redisTemplate.execute(new SessionCallback<>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                 operations.multi();
                 operations.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId,

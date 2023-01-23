@@ -65,7 +65,6 @@ public class CaptchaServiceImpl implements CaptchaService {
 
 
     @Override
-    @SuppressWarnings("unchecked")
     public void createEmailCode(String loginEmail) {
         String prefix = Const.EMAIL_KEY.getInfo() + loginEmail;
         String code = producer.createText();
@@ -76,6 +75,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         redisTemplate.execute(new SessionCallback<>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                 operations.multi();
                 operations.opsForHash().putAll(prefix, map);
