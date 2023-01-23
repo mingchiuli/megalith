@@ -41,26 +41,16 @@ public class MenuServiceImpl implements MenuService {
                 map(menu ->
                         MenuEntityVo.
                         builder().
-                        menuId(menu.
-                                getMenuId()).
-                        parentId(menu.
-                                getParentId()).
-                        icon(menu.
-                                getIcon()).
-                        url(menu.
-                                getUrl()).
-                        title(menu.
-                                getTitle()).
-                        name(menu.
-                                getName()).
-                        component(menu.
-                                getComponent()).
-                        type(menu.
-                                getType()).
-                        orderNum(menu.
-                                getOrderNum()).
-                        status(menu.
-                                getStatus()).
+                        menuId(menu.getMenuId()).
+                        parentId(menu.getParentId()).
+                        icon(menu.getIcon()).
+                        url(menu.getUrl()).
+                        title(menu.getTitle()).
+                        name(menu.getName()).
+                        component(menu.getComponent()).
+                        type(menu.getType()).
+                        orderNum(menu.getOrderNum()).
+                        status(menu.getStatus()).
                         build()).
                 toList();
 
@@ -83,26 +73,16 @@ public class MenuServiceImpl implements MenuService {
                 map(menu ->
                         MenuEntityVo.
                         builder().
-                        menuId(menu.
-                                getMenuId()).
-                        parentId(menu.
-                                getParentId()).
-                        icon(menu.
-                                getIcon()).
-                        url(menu.
-                                getUrl()).
-                        title(menu.
-                                getTitle()).
-                        name(menu.
-                                getName()).
-                        component(menu.
-                                getComponent()).
-                        type(menu.
-                                getType()).
-                        orderNum(menu.
-                                getOrderNum()).
-                        status(menu.
-                                getStatus()).
+                        menuId(menu.getMenuId()).
+                        parentId(menu.getParentId()).
+                        icon(menu.getIcon()).
+                        url(menu.getUrl()).
+                        title(menu.getTitle()).
+                        name(menu.getName()).
+                        component(menu.getComponent()).
+                        type(menu.getType()).
+                        orderNum(menu.getOrderNum()).
+                        status(menu.getStatus()).
                         build())
                 .toList();
 
@@ -113,26 +93,16 @@ public class MenuServiceImpl implements MenuService {
     public void saveOrUpdate(MenuEntityVo menu) {
         MenuEntity menuEntity = MenuEntity.
                 builder().
-                menuId(menu.
-                        getMenuId()).
-                parentId(menu.
-                        getParentId()).
-                icon(menu.
-                        getIcon()).
-                url(menu.
-                        getUrl()).
-                title(menu.
-                        getTitle()).
-                name(menu.
-                        getName()).
-                component(menu.
-                        getComponent()).
-                type(menu.
-                        getType()).
-                orderNum(menu.
-                        getOrderNum()).
-                status(menu.
-                        getStatus()).
+                menuId(menu.getMenuId()).
+                parentId(menu.getParentId()).
+                icon(menu.getIcon()).
+                url(menu.getUrl()).
+                title(menu.getTitle()).
+                name(menu.getName()).
+                component(menu.getComponent()).
+                type(menu.getType()).
+                orderNum(menu.getOrderNum()).
+                status(menu.getStatus()).
                 build();
 
         menuRepository.save(menuEntity);

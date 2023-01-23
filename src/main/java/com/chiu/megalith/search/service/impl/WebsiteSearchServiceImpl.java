@@ -103,23 +103,20 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         List<WebsiteDocumentVo> vos = search.getSearchHits().
                 stream().
-                map(hit -> WebsiteDocumentVo.
-                        builder().
-                        id(hit.getContent().
-                                getId()).
-                        title(hit.getContent().
-                                getTitle()).
-                        description(hit.getContent().
-                                getDescription()).
-                        link(hit.getContent().
-                                getLink()).
-                        status(hit.getContent().
-                                getStatus()).
-                        created(hit.getContent().
-                                getCreated()).
-                        highlight(hit.getHighlightFields().values().toString()).
-                        score(hit.getScore()).
-                        build()).
+                map(hit -> {
+                    WebsiteDocument document = hit.getContent();
+                    return WebsiteDocumentVo.
+                            builder().
+                            id(document.getId()).
+                            title(document.getTitle()).
+                            description(document.getDescription()).
+                            link(document.getLink()).
+                            status(document.getStatus()).
+                            created(document.getCreated()).
+                            highlight(hit.getHighlightFields().values().toString()).
+                            score(hit.getScore()).
+                            build();
+                }).
                 toList();
 
         return PageAdapter.
@@ -186,27 +183,24 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         List<WebsiteDocumentVo> vos = search.getSearchHits().
                 stream().
-                map(hit -> WebsiteDocumentVo.
-                        builder().
-                        id(hit.getContent().
-                                getId()).
-                        title(hit.getContent().
-                                getTitle()).
-                        description(hit.getContent().
-                                getDescription()).
-                        link(hit.getContent().
-                                getLink()).
-                        status(hit.getContent().
-                                getStatus()).
-                        created(hit.getContent().
-                                getCreated()).
-                        highlight(!hit.getHighlightFields().values().isEmpty() ?
-                                hit.getHighlightFields().values().toString() :
-                                null).
-                        score(!Float.isNaN(hit.getScore()) ?
-                                hit.getScore() :
-                                null).
-                        build()).
+                map(hit -> {
+                    WebsiteDocument document = hit.getContent();
+                    return WebsiteDocumentVo.
+                            builder().
+                            id(document.getId()).
+                            title(document.getTitle()).
+                            description(document.getDescription()).
+                            link(document.getLink()).
+                            status(document.getStatus()).
+                            created(document.getCreated()).
+                            highlight(!hit.getHighlightFields().values().isEmpty() ?
+                                    hit.getHighlightFields().values().toString() :
+                                    null).
+                            score(!Float.isNaN(hit.getScore()) ?
+                                    hit.getScore() :
+                                    null).
+                            build();
+                }).
                 toList();
 
         return PageAdapter.

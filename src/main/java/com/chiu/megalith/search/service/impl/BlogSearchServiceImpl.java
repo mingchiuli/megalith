@@ -90,27 +90,22 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         List<BlogDocumentVo> vos = search.getSearchHits().
                 stream().
-                map(hit -> BlogDocumentVo.
-                        builder().
-                        id(hit.getContent().
-                                getId()).
-                        userId(hit.getContent().
-                                getUserId()).
-                        status(hit.getContent().
-                                getStatus()).
-                        title(hit.getContent().
-                                getTitle()).
-                        description(hit.getContent().
-                                getDescription()).
-                        content(hit.getContent().
-                                getContent()).
-                        link(hit.getContent().
-                                getLink()).
-                        created(hit.getContent().
-                                getCreated()).
-                        score(hit.getScore()).
-                        highlight(hit.getHighlightFields().values().toString()).
-                        build()).
+                map(hit -> {
+                    BlogDocument document = hit.getContent();
+                    return BlogDocumentVo.
+                            builder().
+                            id(document.getId()).
+                            userId(document.getUserId()).
+                            status(document.getStatus()).
+                            title(document.getTitle()).
+                            description(document.getDescription()).
+                            content(document.getContent()).
+                            link(document.getLink()).
+                            created(document.getCreated()).
+                            score(hit.getScore()).
+                            highlight(hit.getHighlightFields().values().toString()).
+                            build();
+                }).
                 toList();
 
         return PageAdapter.
@@ -153,29 +148,25 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         List<BlogEntityDto> entities = search.getSearchHits().
                 stream().
-                map(hit -> BlogEntityDto.
-                        builder().
-                        id(hit.getContent().
-                                getId()).
-                        title(hit.getContent().
-                                getTitle()).
-                        description(hit.getContent().
-                                getDescription()).
-                        content(hit.getContent().
-                                getContent()).
-                        created(hit.getContent().
-                                getCreated().toLocalDateTime()).
-                        status(hit.getContent().
-                                getStatus()).
-                        readRecent(Integer.valueOf(
-                                Optional.ofNullable(
-                                        redisTemplate.opsForValue().get(
-                                                Const.READ_RECENT.getInfo() + hit.getContent().getId()
-                                        )).
-                                        orElse("0")
-                        )).
-                        build()
-                ).
+                map(hit -> {
+                    BlogDocument document = hit.getContent();
+                    return BlogEntityDto.
+                            builder().
+                            id(document.getId()).
+                            title(document.getTitle()).
+                            description(document.getDescription()).
+                            content(document.getContent()).
+                            created(document.getCreated().toLocalDateTime()).
+                            status(document.getStatus()).
+                            readRecent(Integer.valueOf(
+                                    Optional.ofNullable(
+                                            redisTemplate.opsForValue().get(
+                                                    Const.READ_RECENT.getInfo() + document.getId()
+                                            )).
+                                            orElse("0")
+                            )).
+                            build();
+                }).
                 toList();
 
         return PageAdapter.

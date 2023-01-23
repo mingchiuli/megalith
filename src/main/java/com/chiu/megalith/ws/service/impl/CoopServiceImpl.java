@@ -55,12 +55,9 @@ public class CoopServiceImpl implements CoopService {
         BlogEntity blogEntity = blogService.findById(blogId);
         UserEntityVo userEntityVo = UserEntityVo.
                 builder().
-                id(userEntity.
-                        getId()).
-                avatar(userEntity.
-                        getAvatar()).
-                username(userEntity.
-                        getUsername()).
+                id(userEntity.getId()).
+                avatar(userEntity.getAvatar()).
+                username(userEntity.getUsername()).
                 orderNumber(orderNumber).
                 serverMark(CoopRabbitConfig.serverMark).
                 build();
