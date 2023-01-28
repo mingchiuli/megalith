@@ -32,8 +32,8 @@
 
         <declareExchange>false</declareExchange>
         <exchangeType>direct</exchangeType>
-        <exchangeName>log_exchange</exchangeName>
-        <routingKeyPattern>log_exchange</routingKeyPattern>
+        <exchangeName>log.exchange</exchangeName>
+        <routingKeyPattern>log.binding</routingKeyPattern>
         <generateId>true</generateId>
         <charset>UTF-8</charset>
         <durable>false</durable>
