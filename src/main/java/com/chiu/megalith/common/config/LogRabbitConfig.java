@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class LogRabbitConfig {
     public static final String LOG_QUEUE = "log.queue";
 
-    public static final String LOG_EXCHANGE = "log.exchange";
+    public static final String LOG_EXCHANGE = "log.direct.exchange";
 
     public static final String LOG_BINDING_KEY = "log.binding";
 

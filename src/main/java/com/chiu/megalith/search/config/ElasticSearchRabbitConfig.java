@@ -17,7 +17,7 @@ public class ElasticSearchRabbitConfig {
 
     public static final String ES_QUEUE = "es.queue";
 
-    public static final String ES_EXCHANGE = "es.exchange";
+    public static final String ES_EXCHANGE = "es.direct.exchange";
 
     public static final String ES_BINDING_KEY = "es.binding";
 
