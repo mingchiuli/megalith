@@ -8,6 +8,7 @@ import com.chiu.megalith.ws.dto.impl.*;
 import com.chiu.megalith.ws.service.CoopMessageService;
 import com.chiu.megalith.ws.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,6 +22,7 @@ import java.util.Optional;
  * @create 2022-12-28 3:43 pm
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CoopMessageServiceImpl implements CoopMessageService {
 
@@ -32,18 +34,19 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     @Override
     public void chat(ChatDto.Bind msg) {
         msg.getToAll().forEach(userId -> {
+
             HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
             String obj = hashOperations.get(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
-            Optional.ofNullable(obj).ifPresent(userStr -> {
-                UserEntityVo userEntityVo = redisUtils.readValue(
-                        userStr,
-                        UserEntityVo.class);
+
+            Optional.ofNullable(obj).ifPresentOrElse(userStr -> {
+                UserEntityVo userEntityVo = redisUtils.readValue(userStr, UserEntityVo.class);
                 msg.setToOne(userId);
                 rabbitTemplate.convertAndSend(
                         CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                         CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
                         msg);
-            });
+            }, () ->
+                    log.error("user's session error"));
         });
     }
 

@@ -1,4 +1,4 @@
-package com.chiu.megalith.auth.provider;
+package com.chiu.megalith.auth.component.provider;
 
 import com.chiu.megalith.auth.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
