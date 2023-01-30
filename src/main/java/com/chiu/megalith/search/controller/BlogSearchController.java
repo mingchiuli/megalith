@@ -1,6 +1,6 @@
 package com.chiu.megalith.search.controller;
 
-import com.chiu.megalith.blog.dto.BlogEntityDto;
+import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
 import com.chiu.megalith.common.valid.ListValue;

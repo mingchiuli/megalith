@@ -1,6 +1,6 @@
 package com.chiu.megalith.ws.service;
 
-import com.chiu.megalith.blog.vo.BlogEntityVo;
+import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.ws.vo.InitCoopVo;
 
 /**

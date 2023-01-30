@@ -22,7 +22,7 @@ import java.util.List;
  * @create 2022-12-04 2:22 am
  */
 @RestController
-@RequestMapping("/sys/menu")
+@RequestMapping(value = "/sys/menu")
 @RequiredArgsConstructor
 public class MenuController {
 
@@ -33,7 +33,7 @@ public class MenuController {
     @GetMapping("/nav")
     public Result<List<MenuEntityVo>> nav(HttpServletRequest request) {
         String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
-        Claims claim = jwtUtils.getClaimByToken(jwt).orElseThrow(() -> new JwtException("invalid token"));;
+        Claims claim = jwtUtils.getClaimByToken(jwt).orElseThrow(() -> new JwtException("invalid token"));
         Long userId = Long.parseLong(claim.getSubject());
         List<MenuEntityVo> navs = menuService.getCurrentUserNav(userId);
         return Result.success(navs);

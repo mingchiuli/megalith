@@ -1,6 +1,6 @@
 package com.chiu.megalith.search.controller;
 
-import com.chiu.megalith.blog.cache.Cached;
+import com.chiu.megalith.exhibit.cache.Cached;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;

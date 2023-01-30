@@ -16,30 +16,41 @@ import java.util.Optional;
  * @create 2023-01-14 9:02
  */
 @RequiredArgsConstructor
-public class PasswordAuthenticationProvider extends DaoAuthenticationProvider {
+public class PasswordAuthenticationProvider extends DaoAuthenticationProvider implements ProviderSupport {
 
     private final PasswordEncoder passwordEncoder;
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication) {
-        LoginUser user = (LoginUser) userDetails;
+        providerProcess(userDetails, authentication);
+    }
 
-        if (Const.GRANT_TYPE_PASSWORD.getInfo().equals(user.getGrantType())) {
-            Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
-                String presentedPassword = credentials.toString();
-                if (!passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
-                    BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since password does not match stored value");
-                    LoginUser.loginException.set(exception);
-                    throw exception;
-                }
-            }, () -> {
-                BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since no credentials provided");
+    @Override
+    public boolean supports(String grantType) {
+        return Const.GRANT_TYPE_PASSWORD.getInfo().equals(grantType);
+    }
+
+    @Override
+    public void authProcess(LoginUser user,
+                            UsernamePasswordAuthenticationToken authentication) {
+
+        Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
+            String presentedPassword = credentials.toString();
+            if (!passwordEncoder.matches(presentedPassword, user.getPassword())) {
+                BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since password does not match stored value");
                 LoginUser.loginException.set(exception);
                 throw exception;
-            });
-        } else {
-            throw new BadCredentialsException("go next provider");
-        }
+            }
+        }, () -> {
+            BadCredentialsException exception = new BadCredentialsException("Failed to authenticate since no credentials provided");
+            LoginUser.loginException.set(exception);
+            throw exception;
+        });
+    }
+
+    @Override
+    public void mismatchProcess() {
+        throw new BadCredentialsException("go next provider");
     }
 }

@@ -1,6 +1,6 @@
 package com.chiu.megalith.ws.controller;
 
-import com.chiu.megalith.blog.vo.BlogEntityVo;
+import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.valid.CoopBlogId;
 import com.chiu.megalith.ws.service.CoopService;

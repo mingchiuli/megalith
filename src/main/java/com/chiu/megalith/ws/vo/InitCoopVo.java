@@ -1,6 +1,6 @@
 package com.chiu.megalith.ws.vo;
 
-import com.chiu.megalith.blog.entity.BlogEntity;
+import com.chiu.megalith.exhibit.entity.BlogEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

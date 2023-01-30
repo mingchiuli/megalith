@@ -1,7 +1,7 @@
 package com.chiu.megalith.search.mq.handler.impl;
 
-import com.chiu.megalith.blog.entity.BlogEntity;
-import com.chiu.megalith.blog.repository.BlogRepository;
+import com.chiu.megalith.exhibit.entity.BlogEntity;
+import com.chiu.megalith.exhibit.repository.BlogRepository;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;

@@ -19,7 +19,7 @@ import java.util.Map;
  * @create 2022-12-30 10:57 am
  */
 @RequiredArgsConstructor
-public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
+public class EmailAuthenticationProvider extends DaoAuthenticationProvider implements ProviderSupport {
 
     private final StringRedisTemplate redisTemplate;
 
@@ -27,38 +27,50 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider {
     private int maxTryNum;
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
+    protected void additionalAuthenticationChecks(UserDetails userDetails,
+                                                  UsernamePasswordAuthenticationToken authentication) {
+        providerProcess(userDetails, authentication);
+    }
 
-        LoginUser user = (LoginUser) userDetails;
+    @Override
+    public boolean supports(String grantType) {
+        return Const.GRANT_TYPE_EMAIL.getInfo().equals(grantType);
+    }
 
-        if (Const.GRANT_TYPE_EMAIL.getInfo().equals(user.getGrantType())) {
-            //username is login email
-            String prefix = Const.EMAIL_KEY.getInfo() + user.getUsername();
-            HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-            Map<String, String> entries = hashOperations.entries(prefix);
+    @Override
+    public void authProcess(LoginUser user,
+                            UsernamePasswordAuthenticationToken authentication) {
 
-            if (entries.size() == 2) {
-                String code = entries.get("code");
-                String tryCount = entries.get("tryCount");
+        //username is login email
+        String prefix = Const.EMAIL_KEY.getInfo() + user.getUsername();
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> entries = hashOperations.entries(prefix);
 
-                if (Integer.parseInt(tryCount) >= maxTryNum) {
-                    redisTemplate.delete(prefix);
-                    throw new BadCredentialsException("code reach max try number");
-                }
+        if (entries.size() == 2) {
+            String code = entries.get("code");
+            String tryCount = entries.get("tryCount");
 
-                if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
-                    redisTemplate.opsForHash().increment(prefix, "tryCount", 1);
-                    throw new BadCredentialsException("code mismatch");
-                }
-
+            if (Integer.parseInt(tryCount) >= maxTryNum) {
                 redisTemplate.delete(prefix);
-            } else {
-                throw new BadCredentialsException("code not exist");
+                throw new BadCredentialsException("code reach max try number");
             }
+
+            if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
+                redisTemplate.opsForHash().increment(prefix, "tryCount", 1);
+                throw new BadCredentialsException("code mismatch");
+            }
+
+            redisTemplate.delete(prefix);
         } else {
-            AuthenticationException exception = LoginUser.loginException.get();
-            LoginUser.loginException.remove();
-            throw exception;
+            throw new BadCredentialsException("code not exist");
         }
     }
+
+    @Override
+    public void mismatchProcess() {
+        AuthenticationException exception = LoginUser.loginException.get();
+        LoginUser.loginException.remove();
+        throw exception;
+    }
+
 }

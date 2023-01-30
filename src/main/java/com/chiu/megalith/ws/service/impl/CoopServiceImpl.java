@@ -1,8 +1,8 @@
 package com.chiu.megalith.ws.service.impl;
 
-import com.chiu.megalith.blog.entity.BlogEntity;
-import com.chiu.megalith.blog.service.BlogService;
-import com.chiu.megalith.blog.vo.BlogEntityVo;
+import com.chiu.megalith.exhibit.entity.BlogEntity;
+import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
@@ -69,7 +69,7 @@ public class CoopServiceImpl implements CoopService {
                 operations.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId,
                         String.valueOf(userId),
                         redisUtils.writeValueAsString(userEntityVo));
-                operations.expire(Const.COOP_PREFIX.getInfo() + blogId, 6 * 60, TimeUnit.MINUTES);
+                operations.expire(Const.COOP_PREFIX.getInfo() + blogId, 6, TimeUnit.HOURS);
                 return operations.exec();
             }
         });
