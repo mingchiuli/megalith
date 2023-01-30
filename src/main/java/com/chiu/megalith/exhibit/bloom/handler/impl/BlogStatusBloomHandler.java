@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * 这个bloom和查blog存在不存在是一样的
+ * 这个bloom和查DetailBloomHandler是一样的
  */
 @Component
 @RequiredArgsConstructor
