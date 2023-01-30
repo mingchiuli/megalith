@@ -57,4 +57,5 @@ public abstract class BlogIndexAbstractHandler {
             channel.basicNack(deliveryTag, false, false);
         }
     }
+
 }

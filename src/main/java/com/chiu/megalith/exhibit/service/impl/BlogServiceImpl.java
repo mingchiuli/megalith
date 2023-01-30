@@ -99,6 +99,12 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public PageAdapter<BlogEntity> listPageCustom(Pageable pageRequest) {
+        Page<BlogEntity> page = blogRepository.findAll(pageRequest);
+        return new PageAdapter<>(page);
+    }
+
+    @Override
     public PageAdapter<BlogEntity> listPage(Integer currentPage) {
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,

@@ -6,11 +6,14 @@ import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
 import com.chiu.megalith.search.mq.handler.BlogIndexAbstractHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,6 +29,9 @@ public class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
         super(redisTemplate, blogRepository);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
+
+    @Value("${blog.blog-page-size}")
+    private int blogPageSize;
 
     @Override
     public boolean supports(BlogIndexEnum blogIndexEnum) {
@@ -53,11 +59,38 @@ public class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
         keys.add(contentKey);
         keys.add(statusKey);
         keys.add(blogReadKey);
+        //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
+        keys.add(Const.BLOOM_FILTER_PAGE.getInfo());
+        keys.add(Const.BLOOM_FILTER_YEARS.getInfo());
         redisTemplate.unlink(keys);
 
+        int year = blog.getCreated().getYear();
+        //设置getBlogDetail的bloom
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);
-        redisTemplate.delete(Const.READ_RECENT.getInfo() + blog.getId());
+        //重置该年份的页面bloom
+        LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
+        LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
+        Integer countByPeriod = blogRepository.countByPeriod(start, end);
+        int totalPageByPeriod = countByPeriod % blogPageSize == 0 ? countByPeriod / blogPageSize : countByPeriod / blogPageSize + 1;
+        for (int i = 1; i <= totalPageByPeriod; i++) {
+            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, i, true);
+        }
+
+        //listPage的bloom
+        long count = blogRepository.count();
+        int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
+        for (int i = 1; i <= totalPage; i++) {
+            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), i, true);
+        }
+
+        //getCountByYear的bloom
+        List<Integer> years = blogRepository.searchYears();
+        years.forEach(y -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), y, true));
+
+
+
+
     }
 
     @Override

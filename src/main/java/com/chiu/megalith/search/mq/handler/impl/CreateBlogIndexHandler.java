@@ -75,11 +75,8 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
         long count = blogRepository.count();
         int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
         for (int i = 1; i <= totalPage; i++) {
-            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo() + year, i, true);
+            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), i, true);
         }
-
-        //getCountByYear的bloom
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
 
         //设置getBlogDetail的bloom, getBlogStatus的bloom(其实同一个bloom)和最近阅读数
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true);
@@ -88,7 +85,7 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
                 7,
                 TimeUnit.DAYS);
 
-        //年份过滤bloom更新
+        //年份过滤bloom更新,getCountByYear的bloom
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
     }
 

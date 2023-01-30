@@ -4,6 +4,7 @@ import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.common.page.PageAdapter;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -17,6 +18,9 @@ public interface BlogService {
     void setReadCount(Long id);
 
     BlogEntity findById(Long id);
+
+    PageAdapter<BlogEntity> listPageCustom(Pageable pageRequest);
+
 
     PageAdapter<BlogEntity> listPage(Integer currentPage);
 

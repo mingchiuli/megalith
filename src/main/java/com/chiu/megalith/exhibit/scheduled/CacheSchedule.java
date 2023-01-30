@@ -14,6 +14,9 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -71,34 +74,43 @@ public class CacheSchedule {
                 List<Integer> years = blogService.searchYears();
                 CompletableFuture<Void> var1 = CompletableFuture.runAsync(() -> {
                     //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
-                    List<BlogEntity> allBlogs = blogService.findAll();
-                    List<BlogEntity> blogs = allBlogs.
-                            stream().
-                            filter(blog -> blog.getStatus() == 0).
-                            toList();
+                    Long count = blogService.count();
+                    long totalPage = count % 30 == 0 ? count / 30 : count / 30 + 1;
 
-                    blogs.forEach(blog -> {
+                    for (int no = 1; no <= totalPage; no++) {
+                        Pageable pageRequest = PageRequest.of(no - 1,
+                                30,
+                                Sort.by("created").descending());
 
-                        StringBuilder builder = new StringBuilder();
-                        builder.append("::").append(blog.getId());
-                        String contentPrefix = Const.HOT_BLOG + "::BlogServiceImpl::getBlogDetail" + builder;
-                        String statusPrefix = Const.BLOG_STATUS + "::BlogController::getBlogStatus" + builder;
+                        PageAdapter<BlogEntity> pageAdapter = blogService.listPageCustom(pageRequest);
+                        List<BlogEntity> allBlogs = pageAdapter.getContent();
+                        List<BlogEntity> blogs = allBlogs.
+                                stream().
+                                filter(blog -> blog.getStatus() == 0).
+                                toList();
 
-                        try {
-                            redisTemplate.opsForValue().set(contentPrefix, objectMapper.writeValueAsString(blog),
-                                    ThreadLocalRandom.current().nextInt(120) + 1,
-                                    TimeUnit.MINUTES);
-                            redisTemplate.opsForValue().set(statusPrefix, objectMapper.writeValueAsString(Result.success(blog.getStatus())),
-                                    ThreadLocalRandom.current().nextInt(120) + 1,
-                                    TimeUnit.MINUTES);
-                        } catch (JsonProcessingException e) {
-                            log.info(e.getMessage());
-                        }
-                    });
+                        blogs.forEach(blog -> {
 
-                    //bloomFilter
-                    allBlogs.forEach(blog -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true));
+                            StringBuilder builder = new StringBuilder();
+                            builder.append("::").append(blog.getId());
+                            String contentPrefix = Const.HOT_BLOG + "::BlogServiceImpl::getBlogDetail" + builder;
+                            String statusPrefix = Const.BLOG_STATUS + "::BlogController::getBlogStatus" + builder;
 
+                            try {
+                                redisTemplate.opsForValue().set(contentPrefix, objectMapper.writeValueAsString(blog),
+                                        ThreadLocalRandom.current().nextInt(120) + 1,
+                                        TimeUnit.MINUTES);
+                                redisTemplate.opsForValue().set(statusPrefix, objectMapper.writeValueAsString(Result.success(blog.getStatus())),
+                                        ThreadLocalRandom.current().nextInt(120) + 1,
+                                        TimeUnit.MINUTES);
+                            } catch (JsonProcessingException e) {
+                                log.info(e.getMessage());
+                            }
+                        });
+
+                        //bloomFilter
+                        allBlogs.forEach(blog -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true));
+                    }
 
                 }, executor);
 
