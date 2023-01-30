@@ -15,7 +15,7 @@ public interface ProviderSupport {
 
     void mismatchProcess();
 
-    default void providerProcess(UserDetails userDetails,
+    default void mainProcess(UserDetails userDetails,
                                  UsernamePasswordAuthenticationToken authentication) {
         LoginUser user = (LoginUser) userDetails;
         if (supports(user.getGrantType())) {

@@ -30,7 +30,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider imple
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication) {
-        providerProcess(userDetails, authentication);
+        mainProcess(userDetails, authentication);
     }
 
     @Override
