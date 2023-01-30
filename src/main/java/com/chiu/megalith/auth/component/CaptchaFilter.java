@@ -30,7 +30,8 @@ public class CaptchaFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-		if (Const.GRANT_TYPE_PASSWORD.getInfo().equals(request.getHeader("Grant-Type"))) {
+		String username = request.getParameter("username");
+		if (StringUtils.hasLength(username) && !username.contains("@")) {
 			// 校验验证码
 			try {
 				validate(request);
