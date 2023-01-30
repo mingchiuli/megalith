@@ -155,11 +155,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public List<BlogEntity> findAll() {
-        return blogRepository.findAll();
-    }
-
-    @Override
     public Long count() {
         return blogRepository.count();
     }

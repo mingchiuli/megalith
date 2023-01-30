@@ -34,8 +34,6 @@ public interface BlogService {
 
     List<Integer> searchYears();
 
-    List<BlogEntity> findAll();
-
     Long count();
 
     void saveOrUpdate(BlogEntityVo blog);
