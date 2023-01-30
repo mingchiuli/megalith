@@ -87,10 +87,6 @@ public class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
         //getCountByYear的bloom
         List<Integer> years = blogRepository.searchYears();
         years.forEach(y -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), y, true));
-
-
-
-
     }
 
     @Override
