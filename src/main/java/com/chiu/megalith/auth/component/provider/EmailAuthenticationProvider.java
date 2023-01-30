@@ -9,11 +9,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -69,10 +67,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider imple
 
     @Override
     public void mismatchProcess() {
-        AuthenticationException exception = LoginUser.loginException.get();
-        LoginUser.loginException.remove();
-        throw Optional.ofNullable(exception).
-                orElseGet(() -> new BadCredentialsException("miss grant type"));
+        mismatchProcess(true);
     }
 
 }

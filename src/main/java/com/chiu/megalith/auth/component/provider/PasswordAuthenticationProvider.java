@@ -51,6 +51,6 @@ public class PasswordAuthenticationProvider extends DaoAuthenticationProvider im
 
     @Override
     public void mismatchProcess() {
-        throw new BadCredentialsException("go next provider");
+        mismatchProcess(false);
     }
 }

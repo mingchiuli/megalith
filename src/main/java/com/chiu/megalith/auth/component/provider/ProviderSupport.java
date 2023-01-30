@@ -1,8 +1,12 @@
 package com.chiu.megalith.auth.component.provider;
 
 import com.chiu.megalith.auth.user.LoginUser;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -14,6 +18,17 @@ public interface ProviderSupport {
     void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
 
     void mismatchProcess();
+
+    default void mismatchProcess(boolean lastProvider) {
+        if (lastProvider) {
+            AuthenticationException exception = LoginUser.loginException.get();
+            LoginUser.loginException.remove();
+            throw Optional.ofNullable(exception).
+                    orElseGet(() -> new BadCredentialsException("miss grant type"));
+        } else {
+            throw new BadCredentialsException("go next provider");
+        }
+    }
 
     default void mainProcess(UserDetails userDetails,
                                  UsernamePasswordAuthenticationToken authentication) {
