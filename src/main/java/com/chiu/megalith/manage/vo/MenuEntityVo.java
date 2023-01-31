@@ -45,5 +45,6 @@ public class MenuEntityVo implements Serializable {
     @NotNull
     private Integer status;
 
+    @Builder.Default
     private List<MenuEntityVo> children = new ArrayList<>();
 }
