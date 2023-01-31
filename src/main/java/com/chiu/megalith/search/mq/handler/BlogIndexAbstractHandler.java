@@ -18,7 +18,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 
-public abstract class BlogIndexAbstractHandler {
+public abstract sealed class BlogIndexAbstractHandler permits
+        CreateBlogIndexHandler,
+        RemoveBlogIndexHandler,
+        UpdateBlogIndexHandler {
 
     protected StringRedisTemplate redisTemplate;
 

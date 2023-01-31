@@ -1,14 +1,10 @@
-package com.chiu.megalith.search.mq.handler.impl;
+package com.chiu.megalith.search.mq.handler;
 
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
-import com.chiu.megalith.search.mq.handler.BlogIndexAbstractHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
@@ -16,26 +12,24 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+/**
+ * @author mingchiuli
+ * @create 2022-12-03 3:55 pm
+ */
 @Component
-@Slf4j
-public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
-    private final ObjectMapper objectMapper;
+public final class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
-    public CreateBlogIndexHandler(StringRedisTemplate redisTemplate,
+    public RemoveBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
-                                  ObjectMapper objectMapper,
                                   ElasticsearchTemplate elasticsearchTemplate,
                                   RedissonClient redisson) {
         super(redisTemplate, blogRepository, redisson);
-        this.objectMapper = objectMapper;
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -44,27 +38,40 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
 
     @Override
     public boolean supports(BlogIndexEnum blogIndexEnum) {
-        return BlogIndexEnum.CREATE.equals(blogIndexEnum);
+        return BlogIndexEnum.REMOVE.equals(blogIndexEnum);
     }
 
-
-    //    getBlogDetail: 通过id查博客细节
-//    listPage：全体博客，查当前页的摘要
-//    listPageByYear：年份博客，查当前页的摘要
-//    getCountByYear：计算当前年份的博客数量
-//    getBlogStatus：当前博客是否可见
-    @SneakyThrows
     @Override
     protected void redisProcess(BlogEntity blog) {
-        //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom
+        //博客对象本身缓存
+        StringBuilder builder = new StringBuilder();
+        builder.append("::");
+        builder.append(blog.getId());
+        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndStatus" + builder;
+        String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
+        //年份缓存
+        String yearsKey = Const.YEARS.getInfo() + "::BlogController::searchYears";
+        String blogReadKey = Const.READ_RECENT.getInfo() + blog.getId();
+
+        //删掉所有摘要缓存
         Set<String> keys = Optional.ofNullable(
                 redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())
         ).orElseGet(HashSet::new);
-        int year = blog.getCreated().getYear();
-        keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
+
+        keys.add(yearsKey);
+        keys.add(contentKey);
+        keys.add(statusKey);
+        keys.add(blogReadKey);
+        //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom
+        keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
+        keys.add(Const.BLOOM_FILTER_PAGE.getInfo());
+        keys.add(Const.BLOOM_FILTER_YEARS.getInfo());
         redisTemplate.unlink(keys);
 
-        //重新构建该年份的页面bloom
+        int year = blog.getCreated().getYear();
+        //设置getBlogDetail的bloom
+        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);
+        //重置该年份的页面bloom
         LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
         Integer countByPeriod = blogRepository.countByPeriod(start, end);
@@ -80,32 +87,13 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
             redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), i, true);
         }
 
-        //设置getBlogDetail的bloom, getBlogStatus的bloom(其实同一个bloom)和最近阅读数
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true);
-        redisTemplate.opsForValue().set(Const.READ_RECENT.getInfo() + blog.getId(),
-                objectMapper.writeValueAsString(0),
-                7,
-                TimeUnit.DAYS);
-
-        //年份过滤bloom更新,getCountByYear的bloom
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
+        //getCountByYear的bloom
+        List<Integer> years = blogRepository.searchYears();
+        years.forEach(y -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), y, true));
     }
 
     @Override
     protected void elasticSearchProcess(BlogEntity blog) {
-        BlogDocument blogDocument = BlogDocument.
-                builder().
-                id(blog.getId()).
-                userId(blog.getUserId()).
-                title(blog.getTitle()).
-                description(blog.getDescription()).
-                content(blog.getContent()).
-                status(blog.getStatus()).
-                link(blog.getLink()).
-                created(ZonedDateTime.of(blog.getCreated(), ZoneId.of("Asia/Shanghai"))).
-                build();
-
-        elasticsearchTemplate.save(blogDocument);
+        elasticsearchTemplate.delete(blog.getId().toString(), BlogDocument.class);
     }
-
 }

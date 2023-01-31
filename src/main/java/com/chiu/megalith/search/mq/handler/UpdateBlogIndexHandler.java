@@ -1,11 +1,10 @@
-package com.chiu.megalith.search.mq.handler.impl;
+package com.chiu.megalith.search.mq.handler;
 
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
-import com.chiu.megalith.search.mq.handler.BlogIndexAbstractHandler;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
@@ -23,7 +22,7 @@ import java.util.Set;
  * @create 2022-12-03 4:50 pm
  */
 @Component
-public class UpdateBlogIndexHandler extends BlogIndexAbstractHandler {
+public final class UpdateBlogIndexHandler extends BlogIndexAbstractHandler {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
