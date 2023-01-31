@@ -32,7 +32,7 @@
 
         <declareExchange>false</declareExchange>
         <exchangeType>direct</exchangeType>
-        <exchangeName>log.exchange</exchangeName>
+        <exchangeName>log.direct.exchange</exchangeName>
         <routingKeyPattern>log.binding</routingKeyPattern>
         <generateId>true</generateId>
         <charset>UTF-8</charset>

@@ -23,7 +23,7 @@ public class PasswordAuthenticationProvider extends DaoAuthenticationProvider im
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication) {
-        mainProcess(userDetails, authentication);
+        additionalAuthenticationChecks(userDetails, authentication, false);
     }
 
     @Override
@@ -47,10 +47,5 @@ public class PasswordAuthenticationProvider extends DaoAuthenticationProvider im
             LoginUser.loginException.set(exception);
             throw exception;
         });
-    }
-
-    @Override
-    public void mismatchProcess() {
-        mismatchProcess(false);
     }
 }

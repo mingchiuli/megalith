@@ -127,9 +127,7 @@ public class CachedAspect {
         //已经线程安全
         RLock rLock = lockCache.get(lock);
 
-        boolean locked = rLock.tryLock(5000, TimeUnit.MILLISECONDS);
-
-        if (!locked) {
+        if (!rLock.tryLock(5000, TimeUnit.MILLISECONDS)) {
             throw new TimeoutException("request timeout");
         }
 

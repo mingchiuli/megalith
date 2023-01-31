@@ -8,21 +8,34 @@ import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 public abstract class BlogIndexAbstractHandler {
 
-    protected BlogIndexAbstractHandler(StringRedisTemplate redisTemplate, BlogRepository blogRepository) {
+    protected StringRedisTemplate redisTemplate;
+
+    protected BlogRepository blogRepository;
+
+    protected RedissonClient redisson;
+
+    protected final RLock rLock;
+
+    protected BlogIndexAbstractHandler(StringRedisTemplate redisTemplate,
+                                       BlogRepository blogRepository,
+                                       RedissonClient redisson) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
+        this.redisson = redisson;
+        rLock = redisson.getLock("redisBlogProcess");
     }
-
-    protected StringRedisTemplate redisTemplate;
-    protected BlogRepository blogRepository;
 
     public abstract boolean supports(BlogIndexEnum blogIndexEnum);
     protected abstract void redisProcess(BlogEntity blog);
@@ -43,7 +56,16 @@ public abstract class BlogIndexAbstractHandler {
                                 build()
                         );
 
-                redisProcess(blogEntity);
+                if (!rLock.tryLock(5, TimeUnit.SECONDS)) {
+                    throw new TimeoutException("get lock timeout");
+                }
+
+                try {
+                    redisProcess(blogEntity);
+                } finally {
+                    rLock.unlock();
+                }
+
                 elasticSearchProcess(blogEntity);
                 //手动签收消息
                 //false代表不是批量签收模式
@@ -57,5 +79,4 @@ public abstract class BlogIndexAbstractHandler {
             channel.basicNack(deliveryTag, false, false);
         }
     }
-
 }

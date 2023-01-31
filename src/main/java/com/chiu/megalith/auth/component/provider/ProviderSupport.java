@@ -17,9 +17,7 @@ public interface ProviderSupport {
 
     void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
 
-    void mismatchProcess();
-
-    default void mismatchProcess(boolean lastProvider) {
+    private void mismatchProcess(boolean lastProvider) {
         if (lastProvider) {
             AuthenticationException exception = LoginUser.loginException.get();
             LoginUser.loginException.remove();
@@ -30,13 +28,14 @@ public interface ProviderSupport {
         }
     }
 
-    default void mainProcess(UserDetails userDetails,
-                                 UsernamePasswordAuthenticationToken authentication) {
+    default void additionalAuthenticationChecks(UserDetails userDetails,
+                                                UsernamePasswordAuthenticationToken authentication,
+                                                boolean lastProvider) {
         LoginUser user = (LoginUser) userDetails;
         if (supports(user.getGrantType())) {
             authProcess(user, authentication);
         } else {
-            mismatchProcess();
+            mismatchProcess(lastProvider);
         }
     }
 }

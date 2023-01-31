@@ -28,7 +28,7 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider imple
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication) {
-        mainProcess(userDetails, authentication);
+        additionalAuthenticationChecks(userDetails, authentication, true);
     }
 
     @Override
@@ -63,11 +63,6 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider imple
         } else {
             throw new BadCredentialsException("code not exist");
         }
-    }
-
-    @Override
-    public void mismatchProcess() {
-        mismatchProcess(true);
     }
 
 }

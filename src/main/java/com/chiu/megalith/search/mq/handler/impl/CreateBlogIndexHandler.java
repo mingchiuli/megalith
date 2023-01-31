@@ -9,6 +9,7 @@ import com.chiu.megalith.search.mq.handler.BlogIndexAbstractHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,8 +32,9 @@ public class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
     public CreateBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ObjectMapper objectMapper,
-                                  ElasticsearchTemplate elasticsearchTemplate) {
-        super(redisTemplate, blogRepository);
+                                  ElasticsearchTemplate elasticsearchTemplate,
+                                  RedissonClient redisson) {
+        super(redisTemplate, blogRepository, redisson);
         this.objectMapper = objectMapper;
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
