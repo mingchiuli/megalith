@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -31,6 +33,6 @@ public class WebsiteDocumentVo {
 
     private Float score;
 
-    private String highlight;
+    private Collection<List<String>> highlight;
 
 }

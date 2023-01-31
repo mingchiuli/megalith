@@ -103,7 +103,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                             link(document.getLink()).
                             created(document.getCreated()).
                             score(hit.getScore()).
-                            highlight(hit.getHighlightFields().values().toString()).
+                            highlight(hit.getHighlightFields().values()).
                             build();
                 }).
                 toList();

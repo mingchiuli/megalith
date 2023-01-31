@@ -113,7 +113,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                             link(document.getLink()).
                             status(document.getStatus()).
                             created(document.getCreated()).
-                            highlight(hit.getHighlightFields().values().toString()).
+                            highlight(hit.getHighlightFields().values()).
                             score(hit.getScore()).
                             build();
                 }).
@@ -194,7 +194,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                             status(document.getStatus()).
                             created(document.getCreated()).
                             highlight(!hit.getHighlightFields().values().isEmpty() ?
-                                    hit.getHighlightFields().values().toString() :
+                                    hit.getHighlightFields().values() :
                                     null).
                             score(!Float.isNaN(hit.getScore()) ?
                                     hit.getScore() :
