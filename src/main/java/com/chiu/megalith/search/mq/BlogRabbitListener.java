@@ -23,7 +23,10 @@ public class BlogRabbitListener {
         private static final Map<String, BlogIndexAbstractHandler> cacheHandlers = SpringUtils.getHandlers(BlogIndexAbstractHandler.class);
     }
 
-    @RabbitListener(queues = ElasticSearchRabbitConfig.ES_QUEUE, concurrency = "1")
+    @RabbitListener(
+            queues = ElasticSearchRabbitConfig.ES_QUEUE,
+            concurrency = "1",
+            messageConverter = "jsonMessageConverter")
     public void handler(BlogSearchIndexMessage message, Channel channel, Message msg) {
         for (BlogIndexAbstractHandler handler : CacheHandlers.cacheHandlers.values()) {
             if (handler.supports(message.typeEnum)) {

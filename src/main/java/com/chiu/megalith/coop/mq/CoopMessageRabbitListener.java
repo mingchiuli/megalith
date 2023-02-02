@@ -3,12 +3,14 @@ package com.chiu.megalith.coop.mq;
 import com.chiu.megalith.common.utils.SpringUtils;
 import com.chiu.megalith.coop.dto.MessageDto;
 import com.chiu.megalith.coop.mq.handler.CoopHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -17,11 +19,14 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CoopMessageRabbitListener {
 
     private static class CacheHandlers {
         private static final Map<String, CoopHandler> cacheHandlers = SpringUtils.getHandlers(CoopHandler.class);
     }
+
+    private final Jackson2JsonMessageConverter jsonMessageConverter;
 
 
     @Bean("CoopMessageListener")
@@ -37,6 +42,7 @@ public class CoopMessageRabbitListener {
                                                                      @Qualifier("COOP_QUEUE") Queue queue) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         listenerAdapter.containerAckMode(AcknowledgeMode.AUTO);
+        listenerAdapter.setMessageConverter(jsonMessageConverter);
         container.setConcurrency("5-10");
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queue.getName());

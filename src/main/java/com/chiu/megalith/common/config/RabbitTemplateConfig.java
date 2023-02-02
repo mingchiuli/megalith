@@ -21,6 +21,8 @@ public class RabbitTemplateConfig {
 
     private final RabbitTemplate rabbitTemplate;
 
+    private final Jackson2JsonMessageConverter jsonMessageConverter;
+
     @PostConstruct
     public void initRabbitTemplate() {
         //设置抵达broker服务器的回掉
@@ -31,7 +33,7 @@ public class RabbitTemplateConfig {
         //只要消息没有投递给指定的队列，就触发这个失败回调
         rabbitTemplate.setReturnsCallback(returned -> log.info("message not come to queue {}", returned));
 
-        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(jsonMessageConverter);
 
         RetryTemplate retryTemplate = new RetryTemplate();
         CircuitBreakerRetryPolicy circuitBreakerRetryPolicy = new CircuitBreakerRetryPolicy(new SimpleRetryPolicy(10));
