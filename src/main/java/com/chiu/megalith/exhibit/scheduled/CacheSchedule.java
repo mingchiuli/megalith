@@ -20,8 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -51,6 +49,8 @@ public class CacheSchedule {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
+    private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
+
 
 //    getBlogDetail: 通过id查博客细节
 //    listPage：全体博客，查当前页的摘要
@@ -62,13 +62,14 @@ public class CacheSchedule {
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
+        boolean locked = rLock.tryLock(100, TimeUnit.MILLISECONDS);
 
-        if (rLock.tryLock(10, TimeUnit.SECONDS)) {
+        if (!locked) {
+            return;
+        }
 
-            String CACHE_FINISH_FLAG = "cache_finish_flag";
-            String flag = redisTemplate.opsForValue().get(CACHE_FINISH_FLAG);
-
-            if (!StringUtils.hasLength(flag)) {
+        try {
+            if (Boolean.FALSE.equals(redisTemplate.hasKey(CACHE_FINISH_FLAG))) {
                 long startMillis = System.currentTimeMillis();
 
                 List<Integer> years = blogService.searchYears();
@@ -207,11 +208,13 @@ public class CacheSchedule {
                 long endMillis = System.currentTimeMillis();
                 redisTemplate.opsForValue().set(CACHE_FINISH_FLAG,
                         CACHE_FINISH_FLAG,
-                        1,
-                        TimeUnit.HOURS);
+                        10,
+                        TimeUnit.MINUTES);
 
                 log.info("定时任务执行用时{}毫秒", endMillis - startMillis);
             }
+        } finally {
+            rLock.unlock();
         }
 
     }
