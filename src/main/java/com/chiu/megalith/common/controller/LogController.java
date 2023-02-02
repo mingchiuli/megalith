@@ -4,25 +4,24 @@ import com.chiu.megalith.common.lang.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
 
 /**
  * @author mingchiuli
  * @create 2022-01-04 4:35 PM
  */
-@RestController
-@RequestMapping("/log")
+@Controller
+@MessageMapping("/log")
 @RequiredArgsConstructor
 public class LogController {
 
     private final RabbitListenerEndpointRegistry registry;
 
 
-    @GetMapping("/startMQ")
+    @MessageMapping("/startMQ")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> start() {
         MessageListenerContainer logContainer = registry.getListenerContainer("log");
@@ -34,7 +33,7 @@ public class LogController {
         return Result.success();
     }
 
-    @GetMapping("/stopMQ")
+    @MessageMapping("/stopMQ")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> stop() {
         MessageListenerContainer logContainer = registry.getListenerContainer("log");
