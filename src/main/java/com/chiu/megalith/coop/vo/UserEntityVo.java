@@ -22,7 +22,5 @@ public class UserEntityVo implements Serializable {
 
     private String avatar;
 
-    private Integer orderNumber;
-
     private String serverMark;
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author mingchiuli
@@ -64,6 +65,17 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     public void quit(QuitDto.Bind msg) {
         sendToOtherUsers(msg);
         redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFrom());
+    }
+
+    @Override
+    public void setServerMark(Long userId, Long blogId) {
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        String userStr = hashOperations.get(Const.COOP_PREFIX.getInfo() + blogId, blogId);
+        UserEntityVo userEntityVo = redisUtils.readValue(userStr, UserEntityVo.class);
+        userEntityVo.setServerMark(CoopRabbitConfig.serverMark);
+
+        redisTemplate.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId, userId, userEntityVo);
+        redisTemplate.expire(Const.COOP_PREFIX.getInfo() + blogId, 6, TimeUnit.HOURS);
     }
 
     private void sendToOtherUsers(BaseBind msg) {

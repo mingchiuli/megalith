@@ -18,4 +18,7 @@ public interface CoopMessageService {
     void destroy(DestroyDto.Bind msg);
 
     void quit(QuitDto.Bind msg);
+
+    void setServerMark(Long userId, Long blogId);
+
 }

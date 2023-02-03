@@ -16,16 +16,11 @@ import com.chiu.megalith.coop.vo.InitCoopVo;
 import com.chiu.megalith.coop.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -58,24 +53,7 @@ public class CoopServiceImpl implements CoopService {
                 id(userEntity.getId()).
                 avatar(userEntity.getAvatar()).
                 username(userEntity.getUsername()).
-                orderNumber(orderNumber).
-                serverMark(CoopRabbitConfig.serverMark).
                 build();
-
-        redisTemplate.execute(new SessionCallback<>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
-                operations.multi();
-                operations.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId,
-                        String.valueOf(userId),
-                        redisUtils.writeValueAsString(userEntityVo));
-                operations.expire(Const.COOP_PREFIX.getInfo() + blogId, 6, TimeUnit.HOURS);
-                return operations.exec();
-            }
-        });
-
-        userEntityVo.setServerMark(null);
 
         JoinDto dto = JoinDto.builder().
                 data(new Container<>(
@@ -91,16 +69,9 @@ public class CoopServiceImpl implements CoopService {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         List<String> usersStr = hashOperations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
-        List<UserEntityVo> userEntityInfos = usersStr.
+        usersStr.
                 stream().
-                map(str -> redisUtils.readValue(str, UserEntityVo.class)).
-                filter(user -> user.getId() != userId).
-                sorted(Comparator.comparing(UserEntityVo::getOrderNumber)).
-                toList();
-
-        userEntityInfos.
-                stream().
-                map(UserEntityVo::getServerMark).
+                map(str -> redisUtils.readValue(str, UserEntityVo.class).getServerMark()).
                 distinct().
                 forEach(serverMark ->
                         rabbitTemplate.convertAndSend(
@@ -108,12 +79,10 @@ public class CoopServiceImpl implements CoopService {
                                 CoopRabbitConfig.WS_BINDING_KEY + serverMark,
                                 dto));
 
-        userEntityInfos.forEach(user -> user.setServerMark(null));
-
         return InitCoopVo.
                 builder().
                 blogEntity(blogEntity).
-                userEntityVos(userEntityInfos).
+                userEntityVos(usersStr).
                 build();
     }
 

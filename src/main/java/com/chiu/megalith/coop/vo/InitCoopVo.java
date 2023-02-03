@@ -21,5 +21,5 @@ public class InitCoopVo implements Serializable {
 
     private BlogEntity blogEntity;
 
-    private List<UserEntityVo> userEntityVos;
+    private List<String> userEntityVos;
 }
