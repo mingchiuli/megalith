@@ -21,7 +21,8 @@ public class CoopBlogIdConstraintValidator implements ConstraintValidator<CoopBl
     }
 
     @Override
-    public boolean isValid(Long blogId, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Long blogId,
+                           ConstraintValidatorContext constraintValidatorContext) {
         return blogService.exist(blogId) &&
                 redisTemplate.opsForHash().size(Const.COOP_PREFIX.getInfo() + blogId) < 3;
     }

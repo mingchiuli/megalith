@@ -25,7 +25,9 @@ public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
 	private final static LogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
 	@Override
-	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+	public void onLogoutSuccess(HttpServletRequest request,
+								HttpServletResponse response,
+								Authentication authentication) throws IOException {
 		logoutHandler.logout(request, response, authentication);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();

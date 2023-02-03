@@ -69,7 +69,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     }
 
     @Override
-    public PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage, String keyword) {
+    public PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage,
+                                                     String keyword) {
 
         NativeQuery matchQuery = NativeQuery.
                 builder().
@@ -133,7 +134,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     }
 
     @Override
-    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword) {
+    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage,
+                                                 String keyword) {
 
         NativeQueryBuilder nativeQueryBuilder = NativeQuery.builder()
                 .withPageable(PageRequest.of(currentPage - 1, webPageSize));

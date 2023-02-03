@@ -38,8 +38,8 @@ public class CoopMessageRabbitListener {
     //在container内将queue和listener绑定
     @Bean("CoopMessageListenerContainer")
     public SimpleMessageListenerContainer coopMessageListenerContainer(ConnectionFactory connectionFactory,
-                                                                     @Qualifier("CoopMessageListener") MessageListenerAdapter listenerAdapter,
-                                                                     @Qualifier("COOP_QUEUE") Queue queue) {
+                                                                       @Qualifier("CoopMessageListener") MessageListenerAdapter listenerAdapter,
+                                                                       @Qualifier("COOP_QUEUE") Queue queue) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         listenerAdapter.containerAckMode(AcknowledgeMode.AUTO);
         listenerAdapter.setMessageConverter(jsonMessageConverter);

@@ -19,7 +19,8 @@ public class ListValueConstraintValidator implements ConstraintValidator<ListVal
     }
 
     @Override
-    public boolean isValid(Integer value, ConstraintValidatorContext context) {
+    public boolean isValid(Integer value,
+                           ConstraintValidatorContext context) {
         return set.contains(value);
     }
 }

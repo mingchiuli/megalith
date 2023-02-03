@@ -29,7 +29,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
 	private final JwtUtils jwtUtils;
 
-	public JwtAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, JwtUtils jwtUtils) {
+	public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
+								   ObjectMapper objectMapper,
+								   JwtUtils jwtUtils) {
 		super(authenticationManager);
 		this.objectMapper = objectMapper;
 		this.jwtUtils = jwtUtils;
@@ -37,7 +39,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+	protected void doFilterInternal(HttpServletRequest request,
+									HttpServletResponse response,
+									FilterChain chain) throws IOException, ServletException {
 
 		String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (!StringUtils.hasLength(jwt)) {

@@ -45,7 +45,9 @@ public abstract sealed class BlogIndexAbstractHandler permits
     protected abstract void elasticSearchProcess(BlogEntity blog);
 
     @SneakyThrows
-    public void handle(BlogSearchIndexMessage message, Channel channel, Message msg) {
+    public void handle(BlogSearchIndexMessage message,
+                       Channel channel,
+                       Message msg) {
         String createUUID = msg.getMessageProperties().getHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY);
         long deliveryTag = msg.getMessageProperties().getDeliveryTag();
         if (Boolean.TRUE.equals(redisTemplate.hasKey(Const.CONSUME_MONITOR.getInfo()  + createUUID))) {

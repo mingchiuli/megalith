@@ -39,7 +39,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateLoginTime(String username, LocalDateTime time) {
+    public void updateLoginTime(String username,
+                                LocalDateTime time) {
         userRepository.updateLoginTime(username, time);
     }
 
@@ -82,12 +83,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUserStatus(Long userId, Integer status) {
+    public void changeUserStatus(Long userId,
+                                 Integer status) {
         userRepository.setUserStatus(userId, status);
     }
 
     @Override
-    public PageAdapter<UserEntity> listPage(Integer currentPage, Integer size) {
+    public PageAdapter<UserEntity> listPage(Integer currentPage,
+                                            Integer size) {
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 size,
                 Sort.by("created").ascending());

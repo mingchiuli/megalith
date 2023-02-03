@@ -41,7 +41,10 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     private int blogPageSize;
 
     @Override
-    public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keyword, Integer flag, Integer year) {
+    public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage,
+                                                       String keyword,
+                                                       Integer flag,
+                                                       Integer year) {
 
         NativeQuery matchQuery = NativeQuery.
                 builder().
@@ -122,7 +125,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     }
 
     @Override
-    public PageAdapter<BlogEntityDto> searchAllBlogs(String keyword, Integer currentPage, Integer size) {
+    public PageAdapter<BlogEntityDto> searchAllBlogs(String keyword,
+                                                     Integer currentPage,
+                                                     Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         NativeQuery nativeQuery = NativeQuery.

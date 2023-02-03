@@ -66,7 +66,8 @@ public class BlogServiceImpl implements BlogService {
 
 
     @Cached(prefix = Const.HOT_BLOG)
-    public BlogEntity findByIdAndStatus(Long id, Integer status) {
+    public BlogEntity findByIdAndStatus(Long id,
+                                        Integer status) {
         return blogRepository.findByIdAndStatus(id, status).
                 orElseThrow(() -> new NotFoundException("blog not found"));
     }
@@ -114,7 +115,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntity> listPageByYear(Integer currentPage, Integer year) {
+    public PageAdapter<BlogEntity> listPageByYear(Integer currentPage,
+                                                  Integer year) {
         LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
         Pageable pageRequest = PageRequest.of(currentPage - 1,
@@ -132,7 +134,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity getLockedBlog(Long blogId, String token) {
+    public BlogEntity getLockedBlog(Long blogId,
+                                    String token) {
         token = token.trim();
         String password = redisTemplate.opsForValue().get(Const.READ_TOKEN);
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
@@ -245,7 +248,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntityDto> getAllABlogs(Integer currentPage, Integer size) {
+    public PageAdapter<BlogEntityDto> getAllABlogs(Integer currentPage,
+                                                   Integer size) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
@@ -286,7 +290,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage, Integer size) {
+    public PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage,
+                                                    Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         Set<String> set = redisTemplate.keys(userId + Const.QUERY_DELETED.getInfo() + "*");
@@ -352,7 +357,9 @@ public class BlogServiceImpl implements BlogService {
 
 
     @Override
-    public void changeBlogStatus(Long id, Integer status, Integer year) {
+    public void changeBlogStatus(Long id,
+                                 Integer status,
+                                 Integer year) {
         blogRepository.setStatus(id, status);
 
         CorrelationData correlationData = new CorrelationData();

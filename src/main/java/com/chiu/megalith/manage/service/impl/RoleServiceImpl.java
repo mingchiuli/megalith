@@ -40,7 +40,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PageAdapter<RoleEntity> listPage(Integer currentPage, Integer size) {
+    public PageAdapter<RoleEntity> listPage(Integer currentPage,
+                                            Integer size) {
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 size,
                 Sort.by("created").ascending());
@@ -92,7 +93,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public List<Long> perm(Long roleId, List<Long> menuIds) {
+    public List<Long> perm(Long roleId,
+                           List<Long> menuIds) {
         roleMenuService.deleteByRoleId(roleId);
         List<RoleMenuEntity> roleMenuEntities = menuIds.
                 stream().

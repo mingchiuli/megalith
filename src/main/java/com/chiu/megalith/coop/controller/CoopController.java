@@ -24,14 +24,16 @@ public class CoopController {
 
     @GetMapping("/init/{blogId}/{orderNumber}")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public Result<InitCoopVo> joinCoop(@PathVariable @CoopBlogId Long blogId, @PathVariable Integer orderNumber) {
+    public Result<InitCoopVo> joinCoop(@PathVariable @CoopBlogId Long blogId,
+                                       @PathVariable Integer orderNumber) {
         InitCoopVo initCoopVo = coopService.joinCoop(blogId, orderNumber);
         return Result.success(initCoopVo);
     }
 
     @PostMapping("/submit/{blogId}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> submit(@PathVariable @CoopBlogId Long blogId, @RequestBody @Validated BlogEntityVo blogEntityVo) {
+    public Result<Void> submit(@PathVariable @CoopBlogId Long blogId,
+                               @RequestBody @Validated BlogEntityVo blogEntityVo) {
         coopService.submit(blogId, blogEntityVo);
         return Result.success();
     }

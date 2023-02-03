@@ -47,7 +47,8 @@ public class CoopServiceImpl implements CoopService {
     private final RedisUtils redisUtils;
 
     @Override
-    public InitCoopVo joinCoop(Long blogId, Integer orderNumber) {
+    public InitCoopVo joinCoop(Long blogId,
+                               Integer orderNumber) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         UserEntity userEntity = userService.findById(userId);
@@ -117,7 +118,8 @@ public class CoopServiceImpl implements CoopService {
     }
 
     @Override
-    public void submit(Long blogId, BlogEntityVo blogEntityVo) {
+    public void submit(Long blogId,
+                       BlogEntityVo blogEntityVo) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
         blogService.saveOrUpdate(blogEntityVo);
 

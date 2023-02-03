@@ -34,7 +34,8 @@ public class ElasticSearchRabbitConfig {
 
     //绑定ES队列和ES交换机
     @Bean("ES_BINDING")
-    public Binding binding(@Qualifier("ES_QUEUE") Queue esQueue, @Qualifier("ES_EXCHANGE") DirectExchange esExchange) {
+    public Binding binding(@Qualifier("ES_QUEUE") Queue esQueue,
+                           @Qualifier("ES_EXCHANGE") DirectExchange esExchange) {
         return BindingBuilder.bind(esQueue).to(esExchange).with(ES_BINDING_KEY);
     }
 }

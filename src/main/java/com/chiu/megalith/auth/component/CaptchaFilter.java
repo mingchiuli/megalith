@@ -28,7 +28,9 @@ public class CaptchaFilter extends OncePerRequestFilter {
 
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request,
+									@NonNull HttpServletResponse response,
+									@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		String username = request.getParameter("username");
 		if (StringUtils.hasLength(username) && !username.contains("@")) {

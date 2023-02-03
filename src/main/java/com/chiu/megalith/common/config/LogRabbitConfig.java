@@ -35,7 +35,8 @@ public class LogRabbitConfig {
     }
 
     @Bean("LOG_BINDING")
-    public Binding binding(@Qualifier("LOG_QUEUE") Queue logQueue, @Qualifier("LOG_EXCHANGE") DirectExchange logExchange) {
+    public Binding binding(@Qualifier("LOG_QUEUE") Queue logQueue,
+                           @Qualifier("LOG_EXCHANGE") DirectExchange logExchange) {
         return BindingBuilder.bind(logQueue).to(logExchange).with(LOG_BINDING_KEY);
     }
 }
