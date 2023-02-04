@@ -16,7 +16,6 @@ import com.chiu.megalith.coop.vo.InitCoopVo;
 import com.chiu.megalith.coop.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -66,8 +65,7 @@ public class CoopServiceImpl implements CoopService {
                 )).
                 build();
 
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        List<String> usersStr = hashOperations.values(Const.COOP_PREFIX.getInfo() + blogId);
+        List<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
@@ -103,8 +101,7 @@ public class CoopServiceImpl implements CoopService {
                 ).
                 build();
 
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        List<String> usersStr = hashOperations.values(Const.COOP_PREFIX.getInfo() + blogId);
+        List<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().

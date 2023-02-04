@@ -10,11 +10,10 @@ import com.chiu.megalith.coop.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -36,8 +35,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     public void chat(ChatDto.Bind msg) {
         msg.getToAll().forEach(userId -> {
 
-            HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-            String obj = hashOperations.get(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
+            String obj = redisUtils.opsForHashGet(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
 
             Optional.ofNullable(obj).ifPresentOrElse(userStr -> {
                 UserEntityVo userEntityVo = redisUtils.readValue(userStr, UserEntityVo.class);
@@ -69,9 +67,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     @Override
     public void setServerMark(Long userId, Long blogId) {
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String userStr = hashOperations.get(Const.COOP_PREFIX.getInfo() + blogId, blogId);
-        UserEntityVo userEntityVo = redisUtils.readValue(userStr, UserEntityVo.class);
+        UserEntityVo userEntityVo = redisUtils.opsForHashToObj(Const.COOP_PREFIX.getInfo() + blogId, userId, UserEntityVo.class);
         userEntityVo.setServerMark(CoopRabbitConfig.serverMark);
 
         redisTemplate.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId, userId, userEntityVo);
@@ -80,10 +76,9 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private void sendToOtherUsers(BaseBind msg) {
         Long from = msg.getFrom();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> users = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
+        List<String> users = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
 
-        users.values().
+        users.
                 stream().
                 map(userStr -> redisUtils.readValue(userStr, UserEntityVo.class)).
                 filter(user -> !from.equals(user.getId())).
