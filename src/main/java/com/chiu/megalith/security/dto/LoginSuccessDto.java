@@ -1,4 +1,4 @@
-package com.chiu.megalith.auth.dto;
+package com.chiu.megalith.security.dto;
 
 import com.chiu.megalith.manage.entity.UserEntity;
 import lombok.AllArgsConstructor;
