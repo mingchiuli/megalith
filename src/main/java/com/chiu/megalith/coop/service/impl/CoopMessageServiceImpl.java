@@ -13,7 +13,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +62,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     @Override
     public void quit(QuitDto.Bind msg) {
         sendToOtherUsers(msg);
-        redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFrom());
+        redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
     }
 
     @Override
@@ -75,8 +75,8 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     private void sendToOtherUsers(BaseBind msg) {
-        Long from = msg.getFrom();
-        List<String> users = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
+        Long from = msg.getFromId();
+        Collection<String> users = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
 
         users.
                 stream().

@@ -17,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class BaseBind implements Serializable {
 
-    protected Long from;
+    protected Long fromId;
 
     protected Long blogId;
 }

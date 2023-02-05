@@ -7,12 +7,10 @@ import lombok.SneakyThrows;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -24,11 +22,6 @@ public class RedisUtils {
 
     private final ObjectMapper objectMapper;
 
-    public Long delete(String key, String val){
-        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-        RedisScript<Long> redisScript = new DefaultRedisScript<>(script, Long.class);
-        return redisTemplate.execute(redisScript, Collections.singletonList(key), val);
-    }
 
     @SneakyThrows
     public <T> T readValue(String str, Class<T> clazz) {
@@ -51,9 +44,16 @@ public class RedisUtils {
         return readValue(objStr, tClass);
     }
 
-    public List<String> opsForHashValues(String key) {
+    public Collection<String> opsForHashValues(String key) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         return hashOperations.values(key);
+    }
+
+    public Collection<String> opsForHashValues(String key, String exceptKey) {
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> entries = hashOperations.entries(key);
+        entries.remove(exceptKey);
+        return entries.values();
     }
 
     public CorrelationData setBlogRedisKeyForEsProcess(String type, Long blogId) {

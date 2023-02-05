@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author mingchiuli
@@ -21,5 +21,5 @@ public class InitCoopVo implements Serializable {
 
     private BlogEntity blogEntity;
 
-    private List<String> userEntityVos;
+    private Collection<String> userEntityVos;
 }

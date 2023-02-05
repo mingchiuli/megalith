@@ -20,7 +20,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,13 +59,13 @@ public class CoopServiceImpl implements CoopService {
                         JoinDto.Bind.
                                 builder().
                                 blogId(blogId).
-                                from(userId).
+                                fromId(userId).
                                 user(userEntityVo).
                                 build()
                 )).
                 build();
 
-        List<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
+        Collection<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
@@ -96,12 +96,12 @@ public class CoopServiceImpl implements CoopService {
                         DestroyDto.Bind.
                                 builder().
                                 blogId(blogId).
-                                from(userId).
+                                fromId(userId).
                                 build())
                 ).
                 build();
 
-        List<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
+        Collection<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
