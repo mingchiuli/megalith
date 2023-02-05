@@ -250,7 +250,8 @@ public class BlogServiceImpl implements BlogService {
         List<BlogEntityDto> entities = page.getContent().
                 stream().
                 map(blogEntity ->
-                        BlogEntityDto.builder().
+                        BlogEntityDto.
+                                builder().
                                 id(blogEntity.getId()).
                                 title(blogEntity.getTitle()).
                                 description(blogEntity.getDescription()).
@@ -281,43 +282,34 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage,
                                                     Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        Set<String> set = redisTemplate.keys(userId + Const.QUERY_DELETED.getInfo() + "*");
-        var ref = new Object() {
-            PageAdapter<BlogEntity> pageAdapter;
-        };
+        Set<String> keys = redisTemplate.keys(userId + Const.QUERY_DELETED.getInfo() + "*");
 
-        Optional.ofNullable(set).ifPresentOrElse(keys -> {
-            int total = keys.size();
-            int totalPages = total % size == 0 ? total / size : total / size + 1;
+        int total = keys.size();
+        int totalPages = total % size == 0 ? total / size : total / size + 1;
 
-            List<String> stringList = redisTemplate.opsForValue().multiGet(keys);
-            Optional.ofNullable(stringList).ifPresentOrElse(list ->
-                    ref.pageAdapter = PageAdapter.
-                            <BlogEntity>builder().
-                            content(list.
-                                    stream().
-                                    map(str -> redisUtils.readValue(str, BlogEntity.class)).
-                                    sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
-                                    limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
-                                    toList()).
-                            last(currentPage == totalPages).
-                            first(currentPage == 1).
-                            pageNumber(currentPage).
-                            totalPages(totalPages).
-                            pageSize(size).
-                            totalElements(total).
-                            empty(total == 0).
-                            build(), () ->
-                    ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
-        }, () ->
-                ref.pageAdapter = PageAdapter.emptyPage(blogPageSize));
+        List<String> list = redisTemplate.opsForValue().multiGet(keys);
 
-        return ref.pageAdapter;
+        return PageAdapter.
+                <BlogEntity>builder().
+                content(list.
+                        stream().
+                        filter(Objects::nonNull).
+                        map(str -> redisUtils.readValue(str, BlogEntity.class)).
+                        sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
+                        limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
+                        toList()).
+                last(currentPage == totalPages).
+                first(currentPage == 1).
+                pageNumber(currentPage).
+                totalPages(totalPages).
+                pageSize(size).
+                totalElements(total).
+                empty(total == 0).
+                build();
     }
 
     @SneakyThrows
