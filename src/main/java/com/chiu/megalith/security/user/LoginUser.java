@@ -1,4 +1,4 @@
-package com.chiu.megalith.auth.user;
+package com.chiu.megalith.security.user;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;

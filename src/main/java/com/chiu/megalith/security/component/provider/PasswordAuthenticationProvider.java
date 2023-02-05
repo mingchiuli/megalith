@@ -1,6 +1,6 @@
-package com.chiu.megalith.auth.component.provider;
+package com.chiu.megalith.security.component.provider;
 
-import com.chiu.megalith.auth.user.LoginUser;
+import com.chiu.megalith.security.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;

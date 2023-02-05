@@ -1,4 +1,4 @@
-package com.chiu.megalith.auth.component;
+package com.chiu.megalith.security.component;
 
 import com.chiu.megalith.common.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;

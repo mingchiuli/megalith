@@ -1,8 +1,8 @@
-package com.chiu.megalith.auth.component;
+package com.chiu.megalith.security.component;
 
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
-import com.chiu.megalith.auth.dto.LoginSuccessDto;
+import com.chiu.megalith.security.dto.LoginSuccessDto;
 import com.chiu.megalith.common.jwt.JwtUtils;
 import com.chiu.megalith.common.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
