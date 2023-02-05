@@ -32,8 +32,5 @@ public class ChatDto implements Serializable, MessageDto {
 
         private String message;
 
-        private List<Long> toAll;
-
-        private Long toOne;
     }
 }

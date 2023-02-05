@@ -14,7 +14,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,20 +32,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     private final RedisUtils redisUtils;
     @Override
     public void chat(ChatDto.Bind msg) {
-        msg.getToAll().forEach(userId -> {
-
-            String obj = redisUtils.opsForHashGet(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), userId);
-
-            Optional.ofNullable(obj).ifPresentOrElse(userStr -> {
-                UserEntityVo userEntityVo = redisUtils.readValue(userStr, UserEntityVo.class);
-                msg.setToOne(userId);
-                rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + userEntityVo.getServerMark(),
-                        msg);
-            }, () ->
-                    log.error("user's session error"));
-        });
+        sendToOtherUsers(msg);
     }
 
     @Override
@@ -75,13 +61,14 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     private void sendToOtherUsers(BaseBind msg) {
-        Long from = msg.getFromId();
+        Long fromId = msg.getFromId();
         Collection<String> users = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
 
         users.
                 stream().
                 map(userStr -> redisUtils.readValue(userStr, UserEntityVo.class)).
-                filter(user -> !from.equals(user.getId())).
+                filter(user -> !fromId.equals(user.getId())).
+                peek(user -> msg.setToOne(user.getId())).
                 map(UserEntityVo::getServerMark).
                 distinct().
                 forEach(serverMark -> rabbitTemplate.convertAndSend(

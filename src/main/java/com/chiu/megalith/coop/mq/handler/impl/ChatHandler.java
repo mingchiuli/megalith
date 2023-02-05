@@ -23,7 +23,6 @@ public class ChatHandler implements CoopHandler {
     public void handle(MessageDto msg) {
         Container<ChatDto.Bind> container = msg.getData();
         ChatDto.Bind data = container.getData();
-        data.setToAll(null);
         Long id = data.getBlogId();
         Long to = data.getToOne();
         simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + "/queue/chat", data);

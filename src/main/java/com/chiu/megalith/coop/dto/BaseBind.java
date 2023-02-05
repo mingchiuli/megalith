@@ -20,4 +20,6 @@ public class BaseBind implements Serializable {
     protected Long fromId;
 
     protected Long blogId;
+
+    protected Long toOne;
 }

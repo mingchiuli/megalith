@@ -30,12 +30,10 @@ public class CoopMessageRabbitListener {
 
 
     @Bean("CoopMessageListener")
-    //processMessage作为listener
     public MessageListenerAdapter coopMessageListener(CoopMessageRabbitListener coopMessageRabbitListener) {
         return new MessageListenerAdapter(coopMessageRabbitListener, "processMessage");
     }
 
-    //在container内将queue和listener绑定
     @Bean("CoopMessageListenerContainer")
     public SimpleMessageListenerContainer coopMessageListenerContainer(ConnectionFactory connectionFactory,
                                                                        @Qualifier("CoopMessageListener") MessageListenerAdapter listenerAdapter,
