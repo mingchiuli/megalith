@@ -22,7 +22,6 @@ public class SyncContentHandler implements CoopHandler {
     public void handle(MessageDto msg) {
         Container<SyncContentDto.Bind> container = msg.getData();
         SyncContentDto.Bind content = container.getData();
-        content.getTos().forEach(id ->
-                simpMessagingTemplate.convertAndSendToUser(id.toString(),"/topic/content/" + content.getBlogId(), content));
+        simpMessagingTemplate.convertAndSend("/topic/content/" + content.getBlogId(), content);
     }
 }
