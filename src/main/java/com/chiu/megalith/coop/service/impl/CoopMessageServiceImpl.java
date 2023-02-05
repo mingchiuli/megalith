@@ -68,13 +68,13 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 stream().
                 map(userStr -> redisUtils.readValue(userStr, UserEntityVo.class)).
                 filter(user -> !fromId.equals(user.getId())).
-                peek(user -> msg.setToOne(user.getId())).
-                map(UserEntityVo::getServerMark).
-                distinct().
-                forEach(serverMark -> rabbitTemplate.convertAndSend(
+                forEach(user -> {
+                    msg.setToOne(user.getId());
+                    rabbitTemplate.convertAndSend(
                         CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + serverMark,
-                        msg));
+                        CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
+                        msg);
+                });
     }
 
 }
