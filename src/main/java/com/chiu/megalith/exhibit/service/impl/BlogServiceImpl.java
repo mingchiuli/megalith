@@ -14,9 +14,7 @@ import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
 import com.chiu.megalith.common.utils.RedisUtils;
 import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -54,8 +52,6 @@ public class BlogServiceImpl implements BlogService {
     private final BlogRepository blogRepository;
 
     private final StringRedisTemplate redisTemplate;
-
-    private final ObjectMapper objectMapper;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -312,7 +308,6 @@ public class BlogServiceImpl implements BlogService {
                 build();
     }
 
-    @SneakyThrows
     @Override
     public void recoverDeletedBlog(Long id) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -322,7 +317,7 @@ public class BlogServiceImpl implements BlogService {
                 ).
                 orElseThrow(() -> new NotFoundException("blog is expired"));
 
-        BlogEntity tempBlog = objectMapper.readValue(blogStr, BlogEntity.class);
+        BlogEntity tempBlog = redisUtils.readValue(blogStr, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
         redisTemplate.delete(userId + Const.QUERY_DELETED.getInfo() + id);
 
