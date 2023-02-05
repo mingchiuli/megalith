@@ -19,6 +19,6 @@ public interface CoopMessageService {
 
     void quit(QuitDto.Bind msg);
 
-    void setServerMark(Long userId, Long blogId);
+    void setUserToRedisSession(Long userId, Long blogId);
 
 }

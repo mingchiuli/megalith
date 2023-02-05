@@ -7,6 +7,8 @@ import com.chiu.megalith.coop.dto.BaseBind;
 import com.chiu.megalith.coop.dto.impl.*;
 import com.chiu.megalith.coop.service.CoopMessageService;
 import com.chiu.megalith.coop.vo.UserEntityVo;
+import com.chiu.megalith.manage.entity.UserEntity;
+import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RequiredArgsConstructor
 public class CoopMessageServiceImpl implements CoopMessageService {
+
+    private final UserService userService;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -52,9 +56,15 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void setServerMark(Long userId, Long blogId) {
-        UserEntityVo userEntityVo = redisUtils.opsForHashToObj(Const.COOP_PREFIX.getInfo() + blogId, userId, UserEntityVo.class);
-        userEntityVo.setServerMark(CoopRabbitConfig.serverMark);
+    public void setUserToRedisSession(Long userId, Long blogId) {
+        UserEntity userEntity = userService.findById(userId);
+        UserEntityVo userEntityVo = UserEntityVo.
+                builder().
+                id(userEntity.getId()).
+                avatar(userEntity.getAvatar()).
+                username(userEntity.getUsername()).
+                serverMark(CoopRabbitConfig.serverMark).
+                build();
 
         redisTemplate.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId, userId, userEntityVo);
         redisTemplate.expire(Const.COOP_PREFIX.getInfo() + blogId, 6, TimeUnit.HOURS);

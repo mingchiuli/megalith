@@ -48,11 +48,11 @@ public class CoopMessageController {
         coopMessageService.quit(msg);
     }
 
-    @MessageMapping("/mark/{userId}/{blogId}")
+    @MessageMapping("/session/{userId}/{blogId}")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void setServerMark(@DestinationVariable Long userId,
+    public void setUserToRedisSession(@DestinationVariable Long userId,
                               @DestinationVariable Long blogId) {
-        coopMessageService.setServerMark(userId, blogId);
+        coopMessageService.setUserToRedisSession(userId, blogId);
     }
 
 }
