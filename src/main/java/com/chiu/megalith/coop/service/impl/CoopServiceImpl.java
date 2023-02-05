@@ -54,28 +54,32 @@ public class CoopServiceImpl implements CoopService {
                 username(userEntity.getUsername()).
                 build();
 
-        JoinDto dto = JoinDto.builder().
-                data(new Container<>(
-                        JoinDto.Bind.
-                                builder().
-                                blogId(blogId).
-                                fromId(userId).
-                                user(userEntityVo).
-                                build()
-                )).
+        JoinDto.Bind bind = JoinDto.
+                Bind.
+                builder().
+                blogId(blogId).
+                fromId(userId).
+                user(userEntityVo).
+                build();
+
+        JoinDto dto = JoinDto.
+                builder().
+                data(new Container<>(bind)).
                 build();
 
         Collection<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
-                map(str -> redisUtils.readValue(str, UserEntityVo.class).getServerMark()).
-                distinct().
-                forEach(serverMark ->
-                        rabbitTemplate.convertAndSend(
-                                CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                                CoopRabbitConfig.WS_BINDING_KEY + serverMark,
-                                dto));
+                map(str -> redisUtils.readValue(str, UserEntityVo.class)).
+                forEach(user -> {
+                    bind.setToOne(user.getId());
+                    rabbitTemplate.convertAndSend(
+                            CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                            CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
+                            dto);
+
+                });
 
         return InitCoopVo.
                 builder().
@@ -90,15 +94,17 @@ public class CoopServiceImpl implements CoopService {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
         blogService.saveOrUpdate(blogEntityVo);
 
+
+        DestroyDto.Bind bind = DestroyDto.
+                Bind.
+                builder().
+                blogId(blogId).
+                fromId(userId).
+                build();
+
         DestroyDto dto = DestroyDto.
                 builder().
-                data(new Container<>(
-                        DestroyDto.Bind.
-                                builder().
-                                blogId(blogId).
-                                fromId(userId).
-                                build())
-                ).
+                data(new Container<>(bind)).
                 build();
 
         Collection<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
@@ -107,12 +113,13 @@ public class CoopServiceImpl implements CoopService {
                 stream().
                 map(str -> redisUtils.readValue(str, UserEntityVo.class)).
                 filter(user -> userId != user.getId()).
-                map(UserEntityVo::getServerMark).
-                distinct().
-                forEach(serverMark -> rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + serverMark,
-                        dto));
+                forEach(user -> {
+                    bind.setToOne(user.getId());
+                    rabbitTemplate.convertAndSend(
+                            CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                            CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
+                            dto);
+                });
 
         redisTemplate.expire(Const.COOP_PREFIX.getInfo() + blogId, 10 , TimeUnit.SECONDS);
     }

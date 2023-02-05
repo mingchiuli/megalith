@@ -71,9 +71,9 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 forEach(user -> {
                     msg.setToOne(user.getId());
                     rabbitTemplate.convertAndSend(
-                        CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                        CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
-                        msg);
+                            CoopRabbitConfig.WS_TOPIC_EXCHANGE,
+                            CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
+                            msg);
                 });
     }
 
