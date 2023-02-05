@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -20,4 +21,5 @@ public class BaseBind implements Serializable {
     protected Long from;
 
     protected Long blogId;
+    protected List<Long> tos;
 }
