@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -56,9 +54,7 @@ public final class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
     @Override
     protected void redisProcess(BlogEntity blog) {
         //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom
-        Set<String> keys = Optional.ofNullable(
-                redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())
-        ).orElseGet(HashSet::new);
+        Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo());
         int year = blog.getCreated().getYear();
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
         redisTemplate.unlink(keys);

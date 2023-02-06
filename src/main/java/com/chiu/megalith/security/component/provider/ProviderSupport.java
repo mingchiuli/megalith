@@ -6,7 +6,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -21,8 +20,7 @@ public interface ProviderSupport {
         if (lastProvider) {
             AuthenticationException exception = LoginUser.loginException.get();
             LoginUser.loginException.remove();
-            throw Optional.ofNullable(exception).
-                    orElseGet(() -> new BadCredentialsException("miss grant type"));
+            throw exception;
         } else {
             throw new BadCredentialsException("go next provider");
         }
