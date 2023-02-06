@@ -62,7 +62,7 @@ public class CacheSchedule {
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
-        boolean locked = rLock.tryLock(100, TimeUnit.MILLISECONDS);
+        boolean locked = rLock.tryLock();
 
         if (!locked) {
             return;
