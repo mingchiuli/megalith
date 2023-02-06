@@ -12,10 +12,15 @@ import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,8 +71,16 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 serverMark(CoopRabbitConfig.serverMark).
                 build();
 
-        redisTemplate.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId, userId, userEntityVo);
-        redisTemplate.expire(Const.COOP_PREFIX.getInfo() + blogId, 6, TimeUnit.HOURS);
+        redisTemplate.execute(new SessionCallback<>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
+                operations.multi();
+                operations.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId, userId, userEntityVo);
+                operations.expire(Const.COOP_PREFIX.getInfo() + blogId, 6, TimeUnit.HOURS);
+                return operations.exec();
+            }
+        });
     }
 
     private void sendToOtherUsers(BaseBind msg) {

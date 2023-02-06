@@ -81,7 +81,8 @@ public final class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
 
         //设置getBlogDetail的bloom, getBlogStatus的bloom(其实同一个bloom)和最近阅读数
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true);
-        redisTemplate.opsForValue().set(Const.READ_RECENT.getInfo() + blog.getId(),
+        redisTemplate.opsForValue().set(
+                Const.READ_RECENT.getInfo() + blog.getId(),
                 objectMapper.writeValueAsString(0),
                 7,
                 TimeUnit.DAYS);

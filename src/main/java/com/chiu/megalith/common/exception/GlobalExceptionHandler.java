@@ -22,9 +22,9 @@ import java.util.Optional;
 @RestControllerAdvice(basePackages = {
         "com.chiu.megalith.manage.controller",
         "com.chiu.megalith.captcha.controller",
-        "com.chiu.megalith.blog.controller",
+        "com.chiu.megalith.exhibit.controller",
         "com.chiu.megalith.search.controller",
-        "com.chiu.megalith.websocket.controller"})
+        "com.chiu.megalith.coop.controller"})
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

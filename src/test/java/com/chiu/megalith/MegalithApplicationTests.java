@@ -2,7 +2,6 @@ package com.chiu.megalith;
 
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.repository.UserRepository;
-import org.aspectj.lang.annotation.Around;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,10 +9,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootTest
 class MegalithApplicationTests {
@@ -50,6 +46,13 @@ class MegalithApplicationTests {
 		strings.add("aaa");
 		strings.add("bbb");
 		List<String> strings1 = redisTemplate.opsForValue().multiGet(strings);
+
+		ArrayList<Object> objects = new ArrayList<>();
+		objects.add(null);
+		objects.add(null);
+
+
+		List<Object> o = objects.stream().filter(Objects::nonNull).toList();
 		System.out.println(aaa);
 	}
 

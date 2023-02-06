@@ -78,7 +78,6 @@ public class CoopServiceImpl implements CoopService {
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                             CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
                             dto);
-
                 });
 
         return InitCoopVo.

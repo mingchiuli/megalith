@@ -206,7 +206,8 @@ public class CacheSchedule {
 
                 CompletableFuture.allOf(var1, var2, var3, var4, var5).get();
                 long endMillis = System.currentTimeMillis();
-                redisTemplate.opsForValue().set(CACHE_FINISH_FLAG,
+                redisTemplate.opsForValue().set(
+                        CACHE_FINISH_FLAG,
                         CACHE_FINISH_FLAG,
                         10,
                         TimeUnit.MINUTES);
