@@ -51,19 +51,4 @@ public class PageAdapter<T> implements Serializable {
         this.totalPages = page.getTotalPages();
     }
 
-    @SuppressWarnings("rawtypes")
-    public static PageAdapter emptyPage(Integer pageSize) {
-        return PageAdapter.
-                builder().
-                content(null).
-                empty(true).
-                first(true).
-                last(true).
-                pageNumber(1).
-                pageSize(pageSize).
-                totalElements(0).
-                totalPages(0).
-                build();
-    }
-
 }
