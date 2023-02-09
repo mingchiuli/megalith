@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CaptchaDto {
 
-    String key;
+    private String key;
 
-    String captchaImg;
+    private String captchaImg;
 }

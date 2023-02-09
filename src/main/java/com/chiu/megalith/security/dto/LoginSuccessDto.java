@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class LoginSuccessDto implements Serializable {
 
-    UserEntity user;
+    private UserEntity user;
 
-    String token;
+    private String token;
 }
