@@ -19,7 +19,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -85,9 +84,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private void sendToOtherUsers(BaseBind msg) {
         Long fromId = msg.getFromId();
-        Collection<String> users = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
-
-        users.
+        redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString()).
                 stream().
                 map(userStr -> redisUtils.readValue(userStr, UserEntityVo.class)).
                 filter(user -> !fromId.equals(user.getId())).
