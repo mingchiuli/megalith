@@ -1,12 +1,11 @@
 package com.chiu.megalith.exhibit.scheduled;
 
+import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +41,9 @@ public class CacheSchedule {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final ObjectMapper objectMapper;
-
     private final RedissonClient redisson;
+
+    private final RedisJsonUtils redisJsonUtils;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -97,16 +96,12 @@ public class CacheSchedule {
                             String contentPrefix = Const.HOT_BLOG + "::BlogServiceImpl::getBlogDetail" + builder;
                             String statusPrefix = Const.BLOG_STATUS + "::BlogController::getBlogStatus" + builder;
 
-                            try {
-                                redisTemplate.opsForValue().set(contentPrefix, objectMapper.writeValueAsString(blog),
-                                        ThreadLocalRandom.current().nextInt(120) + 1,
-                                        TimeUnit.MINUTES);
-                                redisTemplate.opsForValue().set(statusPrefix, objectMapper.writeValueAsString(Result.success(blog.getStatus())),
-                                        ThreadLocalRandom.current().nextInt(120) + 1,
-                                        TimeUnit.MINUTES);
-                            } catch (JsonProcessingException e) {
-                                log.info(e.getMessage());
-                            }
+                            redisTemplate.opsForValue().set(contentPrefix, redisJsonUtils.writeValueAsString(blog),
+                                    ThreadLocalRandom.current().nextInt(120) + 1,
+                                    TimeUnit.MINUTES);
+                            redisTemplate.opsForValue().set(statusPrefix, redisJsonUtils.writeValueAsString(Result.success(blog.getStatus())),
+                                    ThreadLocalRandom.current().nextInt(120) + 1,
+                                    TimeUnit.MINUTES);
                         });
 
                         //bloomFilter
@@ -123,14 +118,10 @@ public class CacheSchedule {
                     for (int no = 1; no <= totalPage; no++) {
                         PageAdapter<BlogEntity> page = blogService.listPage(no);
                         String pagesPrefix = Const.HOT_BLOGS + "::BlogController::listPage" + "::" + no;
-                        try {
-                            redisTemplate.opsForValue().set(pagesPrefix,
-                                    objectMapper.writeValueAsString(Result.success(page)),
-                                    ThreadLocalRandom.current().nextInt(120) + 1,
-                                    TimeUnit.MINUTES);
-                        } catch (JsonProcessingException e) {
-                            log.info(e.getMessage());
-                        }
+                        redisTemplate.opsForValue().set(pagesPrefix,
+                                redisJsonUtils.writeValueAsString(Result.success(page)),
+                                ThreadLocalRandom.current().nextInt(120) + 1,
+                                TimeUnit.MINUTES);
                         //bloomFilter
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
                     }
@@ -142,14 +133,10 @@ public class CacheSchedule {
                     years.forEach(year -> {
                         Integer countYear = blogService.getCountByYear(year);
                         String yearCountPrefix = Const.HOT_BLOGS + "::BlogController::getCountByYear" + "::" + year;
-                        try {
-                            redisTemplate.opsForValue().set(yearCountPrefix,
-                                    objectMapper.writeValueAsString(Result.success(countYear)),
-                                    ThreadLocalRandom.current().nextInt(120) + 1,
-                                    TimeUnit.MINUTES);
-                        } catch (JsonProcessingException e) {
-                            log.info(e.getMessage());
-                        }
+                        redisTemplate.opsForValue().set(yearCountPrefix,
+                                redisJsonUtils.writeValueAsString(Result.success(countYear)),
+                                ThreadLocalRandom.current().nextInt(120) + 1,
+                                TimeUnit.MINUTES);
                     });
                 }, executor);
 
@@ -165,11 +152,8 @@ public class CacheSchedule {
                             //每一页的缓存
                             PageAdapter<BlogEntity> page = blogService.listPageByYear(no, year);
                             String yearListPrefix = Const.HOT_BLOGS + "::BlogController::listPageByYear" + "::" + no + "::" + year;
-                            try {
-                                redisTemplate.opsForValue().set(yearListPrefix, objectMapper.writeValueAsString(Result.success(page)), ThreadLocalRandom.current().nextInt(120) + 1, TimeUnit.MINUTES);
-                            } catch (JsonProcessingException e) {
-                                log.info(e.getMessage());
-                            }
+                            redisTemplate.opsForValue().set(yearListPrefix, redisJsonUtils.writeValueAsString(Result.success(page)), ThreadLocalRandom.current().nextInt(120) + 1, TimeUnit.MINUTES);
+
                             //bloom过滤器
                             redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
                         }
@@ -180,26 +164,20 @@ public class CacheSchedule {
                 //searchYears和getCountByYear
                 CompletableFuture<Void> var5 = CompletableFuture.runAsync(() -> {
                     String yearKey = Const.YEARS + "::BlogController::searchYears";
-                    try {
-                        redisTemplate.opsForValue().set(yearKey,
-                                objectMapper.writeValueAsString(Result.success(years)),
-                                ThreadLocalRandom.current().nextInt(120) + 1,
-                                TimeUnit.MINUTES);
-                    } catch (JsonProcessingException e) {
-                        log.info(e.getMessage());
-                    }
+
+                    redisTemplate.opsForValue().set(yearKey,
+                            redisJsonUtils.writeValueAsString(Result.success(years)),
+                            ThreadLocalRandom.current().nextInt(120) + 1,
+                            TimeUnit.MINUTES);
                     //getCountByYear的bloom和缓存
                     years.forEach(year -> {
                         String countKey = Const.HOT_BLOGS + "::BlogController::getCountByYear::" + year;
                         Integer count = blogService.getCountByYear(year);
-                        try {
-                            redisTemplate.opsForValue().set(countKey,
-                                    objectMapper.writeValueAsString(Result.success(count)),
-                                    ThreadLocalRandom.current().nextInt(120) + 1,
-                                    TimeUnit.MINUTES);
-                        } catch (JsonProcessingException e) {
-                            log.info(e.getMessage());
-                        }
+                        redisTemplate.opsForValue().set(countKey,
+                                redisJsonUtils.writeValueAsString(Result.success(count)),
+                                ThreadLocalRandom.current().nextInt(120) + 1,
+                                TimeUnit.MINUTES);
+
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
                     });
                 }, executor);

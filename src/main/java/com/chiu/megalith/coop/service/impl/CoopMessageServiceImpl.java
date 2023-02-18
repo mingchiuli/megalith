@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.service.impl;
 
 import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.utils.RedisUtils;
+import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
 import com.chiu.megalith.coop.dto.BaseBind;
 import com.chiu.megalith.coop.dto.impl.*;
@@ -37,7 +37,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final RedisUtils redisUtils;
+    private final RedisJsonUtils redisJsonUtils;
     @Override
     public void chat(ChatDto.Bind msg) {
         sendToOtherUsers(msg);
@@ -84,9 +84,9 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private void sendToOtherUsers(BaseBind msg) {
         Long fromId = msg.getFromId();
-        redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString()).
+        redisJsonUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString()).
                 stream().
-                map(userStr -> redisUtils.readValue(userStr, UserEntityVo.class)).
+                map(userStr -> redisJsonUtils.readValue(userStr, UserEntityVo.class)).
                 filter(user -> !fromId.equals(user.getId())).
                 forEach(user -> {
                     msg.setToOne(user.getId());

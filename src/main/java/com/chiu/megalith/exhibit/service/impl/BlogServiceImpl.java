@@ -12,7 +12,7 @@ import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.page.PageAdapter;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
-import com.chiu.megalith.common.utils.RedisUtils;
+import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class BlogServiceImpl implements BlogService {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final RedisUtils redisUtils;
+    private final RedisJsonUtils redisJsonUtils;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -185,7 +185,7 @@ public class BlogServiceImpl implements BlogService {
 
         //通知消息给mq,更新并删除缓存
         //防止重复消费
-        CorrelationData correlationData = redisUtils.setBlogRedisKeyForEsProcess(ref.type.name(), ref.blogEntity.getId());
+        CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(ref.type.name(), ref.blogEntity.getId());
 
         rabbitTemplate.convertAndSend(
                 ElasticSearchRabbitConfig.ES_EXCHANGE,
@@ -207,12 +207,12 @@ public class BlogServiceImpl implements BlogService {
             blogRepository.delete(blogEntity);
 
             redisTemplate.opsForValue().set(userId + Const.QUERY_DELETED.getInfo() + id,
-                    redisUtils.writeValueAsString(blogEntity),
+                    redisJsonUtils.writeValueAsString(blogEntity),
                     7,
                     TimeUnit.DAYS);
 
             //防止重复消费
-            CorrelationData correlationData = redisUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.REMOVE.name(), id);
+            CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.REMOVE.name(), id);
 
             rabbitTemplate.convertAndSend(
                     ElasticSearchRabbitConfig.ES_EXCHANGE,
@@ -294,7 +294,7 @@ public class BlogServiceImpl implements BlogService {
                 content(list.
                         stream().
                         filter(Objects::nonNull).
-                        map(str -> redisUtils.readValue(str, BlogEntity.class)).
+                        map(str -> redisJsonUtils.readValue(str, BlogEntity.class)).
                         sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
                         limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
                         toList()).
@@ -317,11 +317,11 @@ public class BlogServiceImpl implements BlogService {
                 ).
                 orElseThrow(() -> new NotFoundException("blog is expired"));
 
-        BlogEntity tempBlog = redisUtils.readValue(blogStr, BlogEntity.class);
+        BlogEntity tempBlog = redisJsonUtils.readValue(blogStr, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
         redisTemplate.delete(userId + Const.QUERY_DELETED.getInfo() + id);
 
-        CorrelationData correlationData = redisUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.CREATE.name(), blog.getId());
+        CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.CREATE.name(), blog.getId());
 
         rabbitTemplate.convertAndSend(
                 ElasticSearchRabbitConfig.ES_EXCHANGE,
@@ -337,7 +337,7 @@ public class BlogServiceImpl implements BlogService {
                                  Integer year) {
         blogRepository.setStatus(id, status);
 
-        CorrelationData correlationData = redisUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.UPDATE.name(), id);
+        CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.UPDATE.name(), id);
 
         rabbitTemplate.convertAndSend(
                 ElasticSearchRabbitConfig.ES_EXCHANGE,

@@ -1,6 +1,6 @@
 package com.chiu.megalith;
 
-import com.chiu.megalith.common.utils.RedisUtils;
+import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class MegalithApplicationTests {
 	StringRedisTemplate redisTemplate;
 
 	@Autowired
-	RedisUtils redisUtils;
+    RedisJsonUtils redisJsonUtils;
 
 	@Test
 	void contextLoads() {
@@ -59,7 +59,7 @@ class MegalithApplicationTests {
 		List<Object> o = objects.stream().filter(Objects::nonNull).toList();
 		System.out.println(aaa);
 
-		Collection<String> dadw = redisUtils.opsForHashValues("dadw");
+		Collection<String> dadw = redisJsonUtils.opsForHashValues("dadw");
 		System.out.println(dadw);
 
 	}

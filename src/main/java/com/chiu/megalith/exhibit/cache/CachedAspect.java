@@ -1,6 +1,6 @@
 package com.chiu.megalith.exhibit.cache;
 
-import com.chiu.megalith.common.utils.RedisUtils;
+import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -46,7 +46,7 @@ public class CachedAspect {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final RedisUtils redisUtils;
+    private final RedisJsonUtils redisJsonUtils;
 
     private final ObjectMapper objectMapper;
 
@@ -82,7 +82,7 @@ public class CachedAspect {
                 if (arg instanceof String) {
                     params.append(arg);
                 } else {
-                    params.append(redisUtils.writeValueAsString(arg));
+                    params.append(redisJsonUtils.writeValueAsString(arg));
                 }
             }, () -> {
                 throw new AspectException("argument can't be null");

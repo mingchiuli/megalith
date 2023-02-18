@@ -4,7 +4,7 @@ import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.utils.RedisUtils;
+import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
@@ -38,7 +38,7 @@ public class CoopServiceImpl implements CoopService {
 
     private final BlogService blogService;
 
-    private final RedisUtils redisUtils;
+    private final RedisJsonUtils redisJsonUtils;
 
     @Override
     public InitCoopVo joinCoop(Long blogId,
@@ -67,11 +67,11 @@ public class CoopServiceImpl implements CoopService {
                 data(new Container<>(bind)).
                 build();
 
-        Collection<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
+        Collection<String> usersStr = redisJsonUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
-                map(str -> redisUtils.readValue(str, UserEntityVo.class)).
+                map(str -> redisJsonUtils.readValue(str, UserEntityVo.class)).
                 forEach(user -> {
                     bind.setToOne(user.getId());
                     rabbitTemplate.convertAndSend(
@@ -106,11 +106,11 @@ public class CoopServiceImpl implements CoopService {
                 data(new Container<>(bind)).
                 build();
 
-        Collection<String> usersStr = redisUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
+        Collection<String> usersStr = redisJsonUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
-                map(str -> redisUtils.readValue(str, UserEntityVo.class)).
+                map(str -> redisJsonUtils.readValue(str, UserEntityVo.class)).
                 filter(user -> userId != user.getId()).
                 forEach(user -> {
                     bind.setToOne(user.getId());
