@@ -49,7 +49,7 @@ public class CacheSchedule {
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
     @SneakyThrows
-    @Scheduled(cron = "2 0 0/24 * * ?")
+    @Scheduled(cron = "0 0 0/1 * * ?")
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
@@ -76,7 +76,7 @@ public class CacheSchedule {
 
                         String statusPrefix = Const.BLOG_STATUS + "::BlogController::getBlogStatus::" + id;
                         redisTemplate.opsForValue().set(statusPrefix, resultUnlocked,
-                                ThreadLocalRandom.current().nextInt(720) + 1,
+                                ThreadLocalRandom.current().nextInt(60) + 1,
                                 TimeUnit.MINUTES);
                     });
 
@@ -84,7 +84,7 @@ public class CacheSchedule {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
                         String statusPrefix = Const.BLOG_STATUS + "::BlogController::getBlogStatus::" + id;
                         redisTemplate.opsForValue().set(statusPrefix, resultLocked,
-                                ThreadLocalRandom.current().nextInt(720) + 1,
+                                ThreadLocalRandom.current().nextInt(60) + 1,
                                 TimeUnit.MINUTES);
                     });
 
@@ -129,7 +129,7 @@ public class CacheSchedule {
 
                     redisTemplate.opsForValue().set(yearKey,
                             redisJsonUtils.writeValueAsString(Result.success(years)),
-                            ThreadLocalRandom.current().nextInt(720) + 1,
+                            ThreadLocalRandom.current().nextInt(60) + 1,
                             TimeUnit.MINUTES);
                     //getCountByYear的bloom和缓存
                     years.forEach(year -> {
