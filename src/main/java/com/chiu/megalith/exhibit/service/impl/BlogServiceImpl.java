@@ -60,6 +60,9 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
+    public List<Long> findIdsByStatus(Integer status) {
+        return blogRepository.findIdsByStatus(status);
+    }
 
     @Cached(prefix = Const.HOT_BLOG)
     public BlogEntity findByIdAndStatus(Long id,
@@ -118,7 +121,7 @@ public class BlogServiceImpl implements BlogService {
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findAllByYear(pageRequest, start, end);
+        Page<BlogEntity> page = blogRepository.findAllByCreatedBetween(pageRequest, start, end);
         return new PageAdapter<>(page);
     }
 
@@ -126,7 +129,7 @@ public class BlogServiceImpl implements BlogService {
     public Integer getCountByYear(Integer year) {
         LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
-        return blogRepository.countByPeriod(start, end);
+        return blogRepository.countByCreatedBetween(start, end);
     }
 
     @Override
@@ -241,7 +244,7 @@ public class BlogServiceImpl implements BlogService {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findAllAdmin(pageRequest, userId);
+        Page<BlogEntity> page = blogRepository.findAllByUserId(pageRequest, userId);
 
         List<BlogEntityDto> entities = page.getContent().
                 stream().

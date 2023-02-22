@@ -76,7 +76,7 @@ public class CoopServiceImpl implements CoopService {
                     bind.setToOne(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                            CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
+                            CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
                             dto);
                 });
 
@@ -116,7 +116,7 @@ public class CoopServiceImpl implements CoopService {
                     bind.setToOne(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                            CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
+                            CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
                             dto);
                 });
 

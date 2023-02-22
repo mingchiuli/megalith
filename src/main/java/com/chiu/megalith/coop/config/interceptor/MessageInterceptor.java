@@ -1,6 +1,5 @@
 package com.chiu.megalith.coop.config.interceptor;
 
-import com.chiu.megalith.common.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.common.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -17,7 +16,6 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
 
 /**
  * @author mingchiuli
@@ -33,29 +31,24 @@ public class MessageInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(@NonNull Message<?> message,
                               @NonNull MessageChannel channel) {
-        StompHeaderAccessor stompHeaderAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
-        Optional.ofNullable(stompHeaderAccessor).ifPresentOrElse(accessor -> {
-            if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+            String token = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
+            Claims claim = jwtUtils.getClaimByToken(token).
+                    orElseThrow(() -> new JwtException("token invalid"));
 
-                String token = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
-                Claims claim = jwtUtils.getClaimByToken(token).
-                        orElseThrow(() -> new JwtException("token invalid"));
-
-                if (jwtUtils.isTokenExpired(claim.getExpiration())) {
-                    throw new JwtException("token expired");
-                }
-
-                String userId = claim.getSubject();
-                String role = (String) claim.get("role");
-
-                accessor.setUser(new PreAuthenticatedAuthenticationToken(userId,
-                        null,
-                        AuthorityUtils.createAuthorityList(role)));
+            if (jwtUtils.isTokenExpired(claim.getExpiration())) {
+                throw new JwtException("token expired");
             }
-        }, () -> {
-            throw new AuthenticationExceptionImpl("please reconnect");
-        });
+
+            String userId = claim.getSubject();
+            String role = (String) claim.get("role");
+
+            accessor.setUser(new PreAuthenticatedAuthenticationToken(userId,
+                    null,
+                    AuthorityUtils.createAuthorityList(role)));
+        }
 
         return message;
     }

@@ -2,7 +2,6 @@ package com.chiu.megalith.manage.repository;
 
 import com.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,6 @@ import java.util.List;
  */
 @Repository
 public interface RoleMenuRepository extends JpaRepository<RoleMenuEntity, Long> {
-    @Query(value = "SELECT roleMenuEntity.menuId from RoleMenuEntity roleMenuEntity where roleMenuEntity.menuId = ?1")
     List<Long> findMenuIdsByRoleId(Long id);
 
     @Transactional

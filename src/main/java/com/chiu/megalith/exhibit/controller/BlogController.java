@@ -27,13 +27,6 @@ public class BlogController {
 
     private final BlogService blogService;
 
-    /*
-    getBlogDetail: 通过id查博客细节
-    listPage：全体博客，查当前页的摘要
-    listPageByYear：年份博客，查当前页的摘要
-    getCountByYear：计算当前年份的博客数量
-    getBlogStatus：当前博客是否可见
-     */
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailBloomHandler.class)
     public Result<BlogEntity> getBlogDetail(@PathVariable(name = "id") Long id) {

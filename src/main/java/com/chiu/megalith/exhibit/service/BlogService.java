@@ -13,6 +13,8 @@ import java.util.List;
  * @create 2022-11-27 2:12 pm
  */
 public interface BlogService {
+
+    List<Long> findIdsByStatus(Integer status);
     BlogEntity findByIdAndStatus(Long id, Integer status);
 
     void setReadCount(Long id);

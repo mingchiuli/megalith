@@ -67,7 +67,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 id(userEntity.getId()).
                 avatar(userEntity.getAvatar()).
                 username(userEntity.getUsername()).
-                serverMark(CoopRabbitConfig.serverMark).
+                nodeMark(CoopRabbitConfig.serverMark).
                 build();
 
         redisTemplate.execute(new SessionCallback<>() {
@@ -92,7 +92,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                     msg.setToOne(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                            CoopRabbitConfig.WS_BINDING_KEY + user.getServerMark(),
+                            CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
                             msg);
                 });
     }

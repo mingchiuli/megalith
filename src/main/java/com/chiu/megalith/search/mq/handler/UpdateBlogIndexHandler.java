@@ -43,7 +43,7 @@ public final class UpdateBlogIndexHandler extends BlogIndexAbstractHandler {
     @Override
     protected void redisProcess(BlogEntity blog) {
         //不分年份的页数
-        long count = blogRepository.getPageCount(blog.getCreated());
+        long count = blogRepository.countByCreatedAfter(blog.getCreated());
         count++;
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
         String sb = "::" + pageNo;

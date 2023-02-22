@@ -140,7 +140,7 @@ public class CachedAspect {
             }
             //执行目标方法
             Object proceed = pjp.proceed();
-            redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(proceed), expire, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(proceed), expire, TimeUnit.MINUTES);
             return proceed;
         } finally {
             rLock.unlock();
