@@ -25,7 +25,7 @@ public class BlogRabbitListener {
 
     @RabbitListener(
             queues = ElasticSearchRabbitConfig.ES_QUEUE,
-            concurrency = "1",
+            concurrency = "5-10",
             messageConverter = "jsonMessageConverter")
     public void handler(BlogSearchIndexMessage message, Channel channel, Message msg) {
         for (BlogIndexAbstractHandler handler : CacheHandlers.cacheHandlers.values()) {
