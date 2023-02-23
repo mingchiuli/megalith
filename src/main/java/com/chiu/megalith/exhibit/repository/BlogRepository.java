@@ -28,10 +28,12 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     Integer countByCreatedBetween(LocalDateTime start, LocalDateTime end);
 
-    Integer findStatusById(Long blogId);
-
     Long countByCreatedAfter(LocalDateTime created);
 
+    @Query(value = "SELECT blog.status from BlogEntity blog where blog.id = ?1")
+    Integer findStatusById(Long blogId);
+
+    @Query(value = "SELECT blog.id from BlogEntity blog where blog.status = ?1")
     List<Long> findIdsByStatus(Integer status);
 
     @Query(value = "SELECT distinct year(blog.created) from BlogEntity blog order by year(blog.created)")

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * @author mingchiuli
@@ -63,10 +64,25 @@ public class CacheSchedule {
                     //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
                     List<Long> idsUnlocked = blogService.findIdsByStatus(0);
                     List<Long> idsLocked = blogService.findIdsByStatus(1);
+                    Thread thread = Thread.currentThread();
                     idsUnlocked.forEach(id -> {
-                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                        blogController.getBlogDetail(id);
-                        blogController.getBlogStatus(id);
+                        for (;;) {
+                            if (executor.getMaximumPoolSize() > executor.getActiveCount()) {
+                                executor.execute(() -> {
+                                    redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
+                                    blogController.getBlogDetail(id);
+                                    blogController.getBlogStatus(id);
+                                    synchronized (thread) {
+                                        if (!thread.isAlive() && executor.getMaximumPoolSize() >> 1 > executor.getActiveCount()) {
+                                            LockSupport.unpark(thread);
+                                        }
+                                    }
+                                });
+                                break;
+                            } else {
+                                LockSupport.park();
+                            }
+                        }
                     });
 
                     idsLocked.forEach(id -> {
@@ -119,13 +135,15 @@ public class CacheSchedule {
                     });
                 }, executor);
 
-                CompletableFuture.allOf(var1, var2, var3, var4, var5).get();
+
+                CompletableFuture.allOf(var1, var2, var3, var4, var5).get(10, TimeUnit.SECONDS);
+
                 long endMillis = System.currentTimeMillis();
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,
                         CACHE_FINISH_FLAG,
                         10,
-                        TimeUnit.MINUTES);
+                        TimeUnit.SECONDS);
 
                 log.info("定时任务执行用时{}毫秒", endMillis - startMillis);
             }
