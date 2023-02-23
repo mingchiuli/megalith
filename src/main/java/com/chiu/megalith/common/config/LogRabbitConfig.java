@@ -20,8 +20,6 @@ public class LogRabbitConfig {
 
     public static final String LOG_BINDING_KEY = "log.binding";
 
-    //ES队列
-
     //LOG队列
     @Bean("LOG_QUEUE")
     public Queue queue() {

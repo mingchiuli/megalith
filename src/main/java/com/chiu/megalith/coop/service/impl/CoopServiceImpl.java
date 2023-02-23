@@ -72,6 +72,7 @@ public class CoopServiceImpl implements CoopService {
         usersStr.
                 stream().
                 map(str -> redisJsonUtils.readValue(str, UserEntityVo.class)).
+                filter(user -> !user.getId().equals(userId)).
                 forEach(user -> {
                     bind.setToOne(user.getId());
                     rabbitTemplate.convertAndSend(
@@ -120,6 +121,6 @@ public class CoopServiceImpl implements CoopService {
                             dto);
                 });
 
-        redisTemplate.expire(Const.COOP_PREFIX.getInfo() + blogId, 10 , TimeUnit.SECONDS);
+        redisTemplate.expire(Const.COOP_PREFIX.getInfo() + blogId, 5 , TimeUnit.SECONDS);
     }
 }

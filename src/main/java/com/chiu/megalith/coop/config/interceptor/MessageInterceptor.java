@@ -45,9 +45,7 @@ public class MessageInterceptor implements ChannelInterceptor {
             String userId = claim.getSubject();
             String role = (String) claim.get("role");
 
-            accessor.setUser(new PreAuthenticatedAuthenticationToken(userId,
-                    null,
-                    AuthorityUtils.createAuthorityList(role)));
+            accessor.setUser(new PreAuthenticatedAuthenticationToken(userId, null, AuthorityUtils.createAuthorityList(role)));
         }
 
         return message;

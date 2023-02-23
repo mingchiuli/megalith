@@ -33,17 +33,6 @@ public class RedisJsonUtils {
         return objectMapper.writeValueAsString(obj);
     }
 
-    public String opsForHashGet(String key, Object hashKey) {
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        return hashOperations.get(key, hashKey);
-    }
-
-    public <T> T opsForHashToObj(String key, Object hashKey, Class<T> tClass) {
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        String objStr = hashOperations.get(key, hashKey);
-        return readValue(objStr, tClass);
-    }
-
     public Collection<String> opsForHashValues(String key) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         return hashOperations.values(key);
