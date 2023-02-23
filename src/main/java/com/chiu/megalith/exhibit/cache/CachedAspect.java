@@ -8,7 +8,6 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.aopalliance.aop.AspectException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -25,7 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -78,16 +76,12 @@ public class CachedAspect {
         StringBuilder params = new StringBuilder();
 
         for (int i = 0; i < args.length; i++) {
-            Optional.ofNullable(args[i]).ifPresentOrElse(arg -> {
-                params.append("::");
-                if (arg instanceof String) {
-                    params.append(arg);
-                } else {
-                    params.append(redisJsonUtils.writeValueAsString(arg));
-                }
-            }, () -> {
-                throw new AspectException("argument can't be null");
-            });
+            params.append("::");
+            if (args[i] instanceof String) {
+                params.append(args[i]);
+            } else {
+                params.append(redisJsonUtils.writeValueAsString(args[i]));
+            }
             parameterTypes[i] = args[i].getClass();
         }
 
