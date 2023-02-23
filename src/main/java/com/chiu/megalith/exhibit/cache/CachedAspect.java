@@ -26,6 +26,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -94,7 +95,7 @@ public class CachedAspect {
         Method method = declaringType.getMethod(methodName, parameterTypes);
 
         Cached annotation = method.getAnnotation(Cached.class);
-        long expire = annotation.expire();
+        int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
         String prefix = annotation.prefix().getInfo();
 
         Type genericReturnType = method.getGenericReturnType();

@@ -1,10 +1,8 @@
 package com.chiu.megalith.exhibit.scheduled;
 
-import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.chiu.megalith.exhibit.controller.BlogController;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.lang.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -40,8 +37,6 @@ public class CacheSchedule {
     private final StringRedisTemplate redisTemplate;
 
     private final RedissonClient redisson;
-
-    private final RedisJsonUtils redisJsonUtils;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -67,25 +62,16 @@ public class CacheSchedule {
                 CompletableFuture<Void> var1 = CompletableFuture.runAsync(() -> {
                     //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
                     List<Long> idsUnlocked = blogService.findIdsByStatus(0);
-                    String resultUnlocked = redisJsonUtils.writeValueAsString((Result.success(0)));
                     List<Long> idsLocked = blogService.findIdsByStatus(1);
-                    String resultLocked = redisJsonUtils.writeValueAsString((Result.success(1)));
                     idsUnlocked.forEach(id -> {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
                         blogController.getBlogDetail(id);
-
-                        String statusPrefix = Const.BLOG_STATUS + "::BlogController::getBlogStatus::" + id;
-                        redisTemplate.opsForValue().set(statusPrefix, resultUnlocked,
-                                ThreadLocalRandom.current().nextInt(60) + 1,
-                                TimeUnit.MINUTES);
+                        blogController.getBlogStatus(id);
                     });
 
                     idsLocked.forEach(id -> {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                        String statusPrefix = Const.BLOG_STATUS + "::BlogController::getBlogStatus::" + id;
-                        redisTemplate.opsForValue().set(statusPrefix, resultLocked,
-                                ThreadLocalRandom.current().nextInt(60) + 1,
-                                TimeUnit.MINUTES);
+                        blogController.getBlogStatus(id);
                     });
 
                 }, executor);
@@ -125,12 +111,7 @@ public class CacheSchedule {
 
                 //searchYears和getCountByYear
                 CompletableFuture<Void> var5 = CompletableFuture.runAsync(() -> {
-                    String yearKey = Const.YEARS + "::BlogController::searchYears";
-
-                    redisTemplate.opsForValue().set(yearKey,
-                            redisJsonUtils.writeValueAsString(Result.success(years)),
-                            ThreadLocalRandom.current().nextInt(60) + 1,
-                            TimeUnit.MINUTES);
+                    blogController.searchYears();
                     //getCountByYear的bloom和缓存
                     years.forEach(year -> {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
