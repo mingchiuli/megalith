@@ -17,7 +17,7 @@ import java.util.UUID;
 @Configuration(proxyBeanMethods = false)
 public class CoopRabbitConfig {
 
-    public static String serverMark;
+    public static String nodeMark;
 
     public static String WS_QUEUE = "coop.queue.";
 
@@ -27,8 +27,8 @@ public class CoopRabbitConfig {
 
     @Bean("COOP_QUEUE")
     public Queue queue() {
-        serverMark = UUID.randomUUID().toString();
-        WS_QUEUE += serverMark;
+        nodeMark = UUID.randomUUID().toString();
+        WS_QUEUE += nodeMark;
         return new Queue(WS_QUEUE, true, false, true);
     }
 
@@ -40,7 +40,7 @@ public class CoopRabbitConfig {
     @Bean("COOP_BINDING")
     public Binding binding(@Qualifier("COOP_QUEUE") Queue wsQueue,
                            @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
-        return BindingBuilder.bind(wsQueue).to(wsExchange).with(WS_BINDING_KEY + serverMark);
+        return BindingBuilder.bind(wsQueue).to(wsExchange).with(WS_BINDING_KEY + nodeMark);
     }
 
 }

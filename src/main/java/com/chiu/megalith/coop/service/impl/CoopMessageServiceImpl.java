@@ -67,7 +67,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 id(userEntity.getId()).
                 avatar(userEntity.getAvatar()).
                 username(userEntity.getUsername()).
-                nodeMark(CoopRabbitConfig.serverMark).
+                nodeMark(CoopRabbitConfig.nodeMark).
                 build();
 
         redisTemplate.execute(new SessionCallback<>() {
