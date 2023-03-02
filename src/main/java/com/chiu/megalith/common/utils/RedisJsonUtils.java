@@ -1,17 +1,14 @@
 package com.chiu.megalith.common.utils;
 
-import com.chiu.megalith.common.lang.Const;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 
 @Component
@@ -43,14 +40,5 @@ public class RedisJsonUtils {
         Map<String, String> entries = hashOperations.entries(key);
         entries.remove(exceptKey);
         return entries.values();
-    }
-
-    public CorrelationData setBlogRedisKeyForEsProcess(String type, Long blogId) {
-        CorrelationData correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                type + "_" + blogId,
-                30,
-                TimeUnit.MINUTES);
-        return correlationData;
     }
 }

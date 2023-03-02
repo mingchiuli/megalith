@@ -188,7 +188,11 @@ public class BlogServiceImpl implements BlogService {
 
         //通知消息给mq,更新并删除缓存
         //防止重复消费
-        CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(ref.type.name(), ref.blogEntity.getId());
+        CorrelationData correlationData = new CorrelationData();
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                ref.type + "_" + ref.blogEntity.getId(),
+                30,
+                TimeUnit.MINUTES);
 
         rabbitTemplate.convertAndSend(
                 ElasticSearchRabbitConfig.ES_EXCHANGE,
@@ -215,7 +219,11 @@ public class BlogServiceImpl implements BlogService {
                     TimeUnit.DAYS);
 
             //防止重复消费
-            CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.REMOVE.name(), id);
+            CorrelationData correlationData = new CorrelationData();
+            redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                    BlogIndexEnum.REMOVE.name() + "_" + id,
+                    30,
+                    TimeUnit.MINUTES);
 
             rabbitTemplate.convertAndSend(
                     ElasticSearchRabbitConfig.ES_EXCHANGE,
@@ -324,7 +332,11 @@ public class BlogServiceImpl implements BlogService {
         BlogEntity blog = blogRepository.save(tempBlog);
         redisTemplate.delete(userId + Const.QUERY_DELETED.getInfo() + id);
 
-        CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.CREATE.name(), blog.getId());
+        CorrelationData correlationData = new CorrelationData();
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                BlogIndexEnum.CREATE.name() + "_" + id,
+                30,
+                TimeUnit.MINUTES);
 
         rabbitTemplate.convertAndSend(
                 ElasticSearchRabbitConfig.ES_EXCHANGE,
@@ -340,7 +352,11 @@ public class BlogServiceImpl implements BlogService {
                                  Integer year) {
         blogRepository.setStatus(id, status);
 
-        CorrelationData correlationData = redisJsonUtils.setBlogRedisKeyForEsProcess(BlogIndexEnum.UPDATE.name(), id);
+        CorrelationData correlationData = new CorrelationData();
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                BlogIndexEnum.UPDATE.name() + "_" + id,
+                30,
+                TimeUnit.MINUTES);
 
         rabbitTemplate.convertAndSend(
                 ElasticSearchRabbitConfig.ES_EXCHANGE,
