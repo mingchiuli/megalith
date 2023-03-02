@@ -69,7 +69,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         String prefix = Const.EMAIL_KEY.getInfo() + loginEmail;
         String code = producer.createText();
 
-        Map<String, Object> map = new HashMap<>(2);
+        Map<String, Object> map = new HashMap<>(3);
         map.put("code", code);
         map.put("tryCount", "0");
 
