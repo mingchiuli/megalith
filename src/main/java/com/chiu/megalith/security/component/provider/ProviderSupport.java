@@ -16,26 +16,27 @@ import java.util.List;
 public abstract class ProviderSupport extends DaoAuthenticationProvider {
 
     private static class ProviderList {
-        private static final List<AuthenticationProvider> providers;
+        private static final AuthenticationProvider lastProvider;
 
         static {
             ProviderManager manager = SpringUtils.getBean(ProviderManager.class);
-            providers = manager.getProviders();
+            List<AuthenticationProvider> providers = manager.getProviders();
+            lastProvider = providers.get(providers.size() - 1);
         }
     }
 
     protected abstract boolean supports(String grantType);
 
-    protected abstract void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
+    protected abstract void authProcess(LoginUser user,
+                                        UsernamePasswordAuthenticationToken authentication);
 
     private boolean lastProvider() {
-        List<AuthenticationProvider> providers = ProviderList.providers;
-        AuthenticationProvider provider = providers.get(providers.size() - 1);
-        return provider.getClass().equals(this.getClass());
+        return ProviderList.lastProvider.getClass().equals(this.getClass());
     }
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected void additionalAuthenticationChecks(UserDetails userDetails,
+                                                  UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         LoginUser user = (LoginUser) userDetails;
         if (supports(user.getGrantType())) {
             authProcess(user, authentication);

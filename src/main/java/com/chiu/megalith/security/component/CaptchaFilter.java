@@ -56,11 +56,11 @@ public class CaptchaFilter extends OncePerRequestFilter {
 		String key = request.getParameter("key");
 
 		if (!StringUtils.hasLength(code) || !StringUtils.hasLength(key)) {
-			throw new CaptchaException("pin_code invalid");
+			throw new CaptchaException("captcha invalid");
 		}
 		if (!code.equals(redisTemplate.opsForValue().get(Const.CAPTCHA_KEY.getInfo() + key))) {
 			redisTemplate.delete(Const.CAPTCHA_KEY.getInfo() + key);
-			throw new CaptchaException("pin_code error");
+			throw new CaptchaException("captcha error");
 		}
 	}
 
