@@ -8,8 +8,6 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Map;
 
@@ -18,7 +16,7 @@ import java.util.Map;
  * @create 2022-12-30 10:57 am
  */
 @RequiredArgsConstructor
-public class EmailAuthenticationProvider extends DaoAuthenticationProvider implements ProviderSupport {
+public class EmailAuthenticationProvider extends ProviderSupport {
 
     private final StringRedisTemplate redisTemplate;
 
@@ -26,14 +24,13 @@ public class EmailAuthenticationProvider extends DaoAuthenticationProvider imple
     private int maxTryNum;
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails,
-                                                  UsernamePasswordAuthenticationToken authentication) {
-        additionalAuthenticationChecks(userDetails, authentication, true);
+    public boolean supports(String grantType) {
+        return Const.GRANT_TYPE_EMAIL.getInfo().equals(grantType);
     }
 
     @Override
-    public boolean supports(String grantType) {
-        return Const.GRANT_TYPE_EMAIL.getInfo().equals(grantType);
+    protected boolean lastProvider() {
+        return true;
     }
 
     @Override

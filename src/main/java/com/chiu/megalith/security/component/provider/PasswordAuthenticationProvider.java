@@ -5,8 +5,6 @@ import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -16,19 +14,18 @@ import java.util.Optional;
  * @create 2023-01-14 9:02
  */
 @RequiredArgsConstructor
-public class PasswordAuthenticationProvider extends DaoAuthenticationProvider implements ProviderSupport {
+public class PasswordAuthenticationProvider extends ProviderSupport {
 
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails,
-                                                  UsernamePasswordAuthenticationToken authentication) {
-        additionalAuthenticationChecks(userDetails, authentication, false);
+    public boolean supports(String grantType) {
+        return Const.GRANT_TYPE_PASSWORD.getInfo().equals(grantType);
     }
 
     @Override
-    public boolean supports(String grantType) {
-        return Const.GRANT_TYPE_PASSWORD.getInfo().equals(grantType);
+    protected boolean lastProvider() {
+        return false;
     }
 
     @Override
