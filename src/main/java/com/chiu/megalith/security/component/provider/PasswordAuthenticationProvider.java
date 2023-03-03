@@ -24,11 +24,6 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
     }
 
     @Override
-    protected boolean lastProvider() {
-        return false;
-    }
-
-    @Override
     public void authProcess(LoginUser user,
                             UsernamePasswordAuthenticationToken authentication) {
 

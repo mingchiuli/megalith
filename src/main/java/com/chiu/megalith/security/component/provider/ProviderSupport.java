@@ -1,11 +1,13 @@
 package com.chiu.megalith.security.component.provider;
 
+import com.chiu.megalith.common.utils.SpringUtils;
 import com.chiu.megalith.security.user.LoginUser;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -13,11 +15,24 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public abstract class ProviderSupport extends DaoAuthenticationProvider {
 
+    private static class ProviderList {
+        private static final List<AuthenticationProvider> providers;
+
+        static {
+            ProviderManager manager = SpringUtils.getBean(ProviderManager.class);
+            providers = manager.getProviders();
+        }
+    }
+
     protected abstract boolean supports(String grantType);
 
     protected abstract void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
 
-    protected abstract boolean lastProvider();
+    private boolean lastProvider() {
+        List<AuthenticationProvider> providers = ProviderList.providers;
+        AuthenticationProvider provider = providers.get(providers.size() - 1);
+        return provider.getClass().equals(this.getClass());
+    }
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {

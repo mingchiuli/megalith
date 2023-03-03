@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class SyncContentHandler implements CoopHandler {
+public class SyncHandler implements CoopHandler {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override

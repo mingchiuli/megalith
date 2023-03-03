@@ -29,11 +29,6 @@ public class EmailAuthenticationProvider extends ProviderSupport {
     }
 
     @Override
-    protected boolean lastProvider() {
-        return true;
-    }
-
-    @Override
     public void authProcess(LoginUser user,
                             UsernamePasswordAuthenticationToken authentication) {
 
