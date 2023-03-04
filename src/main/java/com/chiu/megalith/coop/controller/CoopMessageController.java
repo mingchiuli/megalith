@@ -3,7 +3,7 @@ package com.chiu.megalith.coop.controller;
 import com.chiu.megalith.coop.dto.impl.ChatDto;
 import com.chiu.megalith.coop.dto.impl.DestroyDto;
 import com.chiu.megalith.coop.dto.impl.QuitDto;
-import com.chiu.megalith.coop.dto.impl.SyncContentDto;
+import com.chiu.megalith.coop.dto.impl.SyncDto;
 import com.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -32,7 +32,7 @@ public class CoopMessageController {
 
     @MessageMapping("/sync")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void syncContent(@RequestBody SyncContentDto.Bind msg) {
+    public void syncContent(@RequestBody SyncDto.Bind msg) {
         coopMessageService.syncContent(msg);
     }
 

@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-public class SyncContentDto implements Serializable, MessageDto {
+public class SyncDto implements Serializable, MessageDto {
 
     private Container<Bind> content;
 

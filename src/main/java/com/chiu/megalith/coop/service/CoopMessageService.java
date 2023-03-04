@@ -3,7 +3,7 @@ package com.chiu.megalith.coop.service;
 import com.chiu.megalith.coop.dto.impl.ChatDto;
 import com.chiu.megalith.coop.dto.impl.DestroyDto;
 import com.chiu.megalith.coop.dto.impl.QuitDto;
-import com.chiu.megalith.coop.dto.impl.SyncContentDto;
+import com.chiu.megalith.coop.dto.impl.SyncDto;
 
 
 /**
@@ -13,7 +13,7 @@ import com.chiu.megalith.coop.dto.impl.SyncContentDto;
 public interface CoopMessageService {
     void chat(ChatDto.Bind msg);
 
-    void syncContent(SyncContentDto.Bind msg);
+    void syncContent(SyncDto.Bind msg);
 
     void destroy(DestroyDto.Bind msg);
 

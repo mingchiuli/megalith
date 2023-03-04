@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public final class CreateBlogIndexHandler extends BlogIndexAbstractHandler {
+public final class CreateBlogIndexHandler extends BlogIndexSupport {
     private final ObjectMapper objectMapper;
     private final ElasticsearchTemplate elasticsearchTemplate;
 

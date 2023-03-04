@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 
-public abstract sealed class BlogIndexAbstractHandler permits
+public abstract sealed class BlogIndexSupport permits
         CreateBlogIndexHandler,
         RemoveBlogIndexHandler,
         UpdateBlogIndexHandler {
@@ -31,9 +31,9 @@ public abstract sealed class BlogIndexAbstractHandler permits
 
     protected final RLock rLock;
 
-    protected BlogIndexAbstractHandler(StringRedisTemplate redisTemplate,
-                                       BlogRepository blogRepository,
-                                       RedissonClient redisson) {
+    protected BlogIndexSupport(StringRedisTemplate redisTemplate,
+                               BlogRepository blogRepository,
+                               RedissonClient redisson) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
         this.redisson = redisson;

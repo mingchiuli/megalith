@@ -44,7 +44,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void syncContent(SyncContentDto.Bind msg) {
+    public void syncContent(SyncDto.Bind msg) {
         sendToOtherUsers(msg);
     }
 

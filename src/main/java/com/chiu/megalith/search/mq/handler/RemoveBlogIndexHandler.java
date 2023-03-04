@@ -20,7 +20,7 @@ import java.util.Set;
  * @create 2022-12-03 3:55 pm
  */
 @Component
-public final class RemoveBlogIndexHandler extends BlogIndexAbstractHandler {
+public final class RemoveBlogIndexHandler extends BlogIndexSupport {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     public RemoveBlogIndexHandler(StringRedisTemplate redisTemplate,
