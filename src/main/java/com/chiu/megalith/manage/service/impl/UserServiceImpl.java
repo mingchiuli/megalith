@@ -114,4 +114,11 @@ public class UserServiceImpl implements UserService {
         userEntity.setPassword(null);
         return userEntity;
     }
+
+    @Override
+    public List<Long> findIdsByStatus(Integer status) {
+        return userRepository.findByStatus(status);
+    }
+
+
 }

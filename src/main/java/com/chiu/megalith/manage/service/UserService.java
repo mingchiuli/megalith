@@ -32,4 +32,6 @@ public interface UserService {
     void deleteUsers(List<Long> ids);
 
     UserEntity findByIdWithoutPassword(Long id);
+
+    List<Long> findIdsByStatus(Integer status);
 }

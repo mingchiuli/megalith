@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +19,11 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUsernameOrEmail(String username, String email);
+
+
+    @Query(value = "SELECT user.id from UserEntity user where user.status = :status")
+    List<Long> findByStatus(Integer status);
+
 
     @Query(value = "UPDATE UserEntity user set user.lastLogin = ?2 where user.username = ?1")
     @Modifying

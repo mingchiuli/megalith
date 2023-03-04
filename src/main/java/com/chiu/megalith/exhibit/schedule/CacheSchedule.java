@@ -3,6 +3,7 @@ package com.chiu.megalith.exhibit.schedule;
 import com.chiu.megalith.exhibit.controller.BlogController;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +40,15 @@ public class CacheSchedule {
 
     private final RedissonClient redisson;
 
+    private final UserService userService;
+
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
     @SneakyThrows
-    @Scheduled(cron = "0 0 0/1 * * ?")
+    @Scheduled(cron = "0 0 0/2 * * ?")
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
@@ -66,7 +69,7 @@ public class CacheSchedule {
                     List<Long> idsLocked = blogService.findIdsByStatus(1);
                     Thread thread = Thread.currentThread();
                     idsUnlocked.forEach(id -> {
-                        for (;;) {
+                        for (; ; ) {
                             if (executor.getMaximumPoolSize() > executor.getActiveCount()) {
                                 executor.execute(() -> {
                                     redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
@@ -136,13 +139,19 @@ public class CacheSchedule {
                 }, executor);
 
 
-                CompletableFuture.allOf(var1, var2, var3, var4, var5).get(10, TimeUnit.SECONDS);
+                //unlock user
+                CompletableFuture<Void> var6 = CompletableFuture.runAsync(() -> {
+                    List<Long> ids = userService.findIdsByStatus(1);
+                    ids.forEach(id -> userService.changeUserStatusById(id, 0));
+                }, executor);
+
+                CompletableFuture.allOf(var1, var2, var3, var4, var5, var6).get(20, TimeUnit.SECONDS);
 
                 long endMillis = System.currentTimeMillis();
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,
                         CACHE_FINISH_FLAG,
-                        10,
+                        5,
                         TimeUnit.SECONDS);
 
                 log.info("定时任务执行用时{}毫秒", endMillis - startMillis);
@@ -150,7 +159,6 @@ public class CacheSchedule {
         } finally {
             rLock.unlock();
         }
-
     }
 
 }
