@@ -71,8 +71,8 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
             }
         }
 
-        if (r >= 3) {
-            userService.changeUserStatus(username, 1);
+        if (r >= 2) {
+            userService.changeUserStatusByUsername(username, 1);
         }
 
         int rEnd = r - 1;

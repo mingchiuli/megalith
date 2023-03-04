@@ -83,9 +83,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUserStatus(String identity,
+    public void changeUserStatusById(Long id, Integer status) {
+        userRepository.setUserStatusById(id, status);
+    }
+
+    @Override
+    public void changeUserStatusByUsername(String username,
                                  Integer status) {
-        userRepository.setUserStatus(identity, status);
+        userRepository.setUserStatusByUsername(username, status);
     }
 
     @Override
