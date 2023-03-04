@@ -28,12 +28,11 @@ public class UserController {
 
     @GetMapping("/status/{id}/{status}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> changeUserStatus(@PathVariable(value = "id") Long userId,
+    public Result<Void> changeUserStatus(@PathVariable(value = "id") String userId,
                                          @PathVariable(value = "status") Integer status) {
         userService.changeUserStatus(userId, status);
         return Result.success();
     }
-
 
     @GetMapping("/page/{currentPage}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")

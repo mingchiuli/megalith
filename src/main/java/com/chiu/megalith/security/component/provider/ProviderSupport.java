@@ -15,7 +15,7 @@ import java.util.List;
  */
 public abstract class ProviderSupport extends DaoAuthenticationProvider {
 
-    private static class ProviderList {
+    private static class LastProvider {
         private static final AuthenticationProvider lastProvider;
 
         static {
@@ -31,7 +31,7 @@ public abstract class ProviderSupport extends DaoAuthenticationProvider {
                                         UsernamePasswordAuthenticationToken authentication);
 
     private boolean lastProvider() {
-        return ProviderList.lastProvider.getClass().equals(this.getClass());
+        return LastProvider.lastProvider.getClass().equals(this.getClass());
     }
 
     @Override
@@ -39,12 +39,19 @@ public abstract class ProviderSupport extends DaoAuthenticationProvider {
                                                   UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         LoginUser user = (LoginUser) userDetails;
         if (supports(user.getGrantType())) {
-            authProcess(user, authentication);
+            try {
+                authProcess(user, authentication);
+            } catch (AuthenticationException e) {
+                if (!lastProvider()) {
+                    LoginUser.loginException.set(e);
+                }
+                throw e;
+            }
         } else {
             if (lastProvider()) {
-                AuthenticationException exception = LoginUser.loginException.get();
+                AuthenticationException e = LoginUser.loginException.get();
                 LoginUser.loginException.remove();
-                throw exception;
+                throw e;
             } else {
                 throw new BadCredentialsException("hint:try to process next provider");
             }

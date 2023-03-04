@@ -1,5 +1,6 @@
 package com.chiu.megalith.security.config;
 
+import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.security.component.provider.EmailAuthenticationProvider;
 import com.chiu.megalith.security.component.provider.PasswordAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class AuthenticationProviderConfig {
 
+    private final UserService userService;
+
     private final UserDetailsService userDetailsService;
 
     private final StringRedisTemplate redisTemplate;
@@ -26,7 +29,7 @@ public class AuthenticationProviderConfig {
 
     @Bean
     public PasswordAuthenticationProvider passwordAuthenticationProvider() {
-        PasswordAuthenticationProvider passwordAuthenticationProvider = new PasswordAuthenticationProvider(passwordEncoder);
+        PasswordAuthenticationProvider passwordAuthenticationProvider = new PasswordAuthenticationProvider(passwordEncoder, redisTemplate, userService);
         passwordAuthenticationProvider.setUserDetailsService(userDetailsService);
         passwordAuthenticationProvider.setHideUserNotFoundExceptions(false);
         return passwordAuthenticationProvider;

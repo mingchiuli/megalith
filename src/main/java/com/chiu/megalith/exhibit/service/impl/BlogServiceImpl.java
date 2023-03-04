@@ -76,13 +76,14 @@ public class BlogServiceImpl implements BlogService {
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
         try {
+            String prefix = Const.READ_RECENT.getInfo() + id;
             redisTemplate.execute(new SessionCallback<>() {
                 @Override
                 @SuppressWarnings("unchecked")
                 public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                     operations.multi();
-                    operations.opsForValue().setIfAbsent(Const.READ_RECENT.getInfo() + id, "0", 7, TimeUnit.DAYS);
-                    operations.opsForValue().increment(Const.READ_RECENT.getInfo() + id, 1);
+                    operations.opsForValue().setIfAbsent(prefix, "0", 7, TimeUnit.DAYS);
+                    operations.opsForValue().increment(prefix, 1);
                     return operations.exec();
                 }
             });

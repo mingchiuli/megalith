@@ -27,19 +27,6 @@ server:
   port: 8081
   max-http-request-header-size: 10MB
 
-
-kaptcha:
-  border: 'no'
-  textproducer:
-    font:
-      color: black
-      size: 30
-    char:
-      space: 4
-  image:
-    height: 40
-    width: 120
-
 logging:
   config: classpath:logback-spring.xml
   level:

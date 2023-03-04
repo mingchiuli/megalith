@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 
@@ -22,8 +21,6 @@ public class SecurityConfig {
 
     private final LoginSuccessHandler loginSuccessHandler;
 
-    private final CaptchaFilter captchaFilter;
-
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
@@ -33,7 +30,7 @@ public class SecurityConfig {
     private final AuthenticationManager authenticationManager;
 
     private static final String[] URL_WHITELIST = {
-            "/captcha/**",
+            "/code/email",
             "/public/blog/**",
             "/search/website/*",
             "/search/blog/**",
@@ -76,7 +73,6 @@ public class SecurityConfig {
 
                 //配置自定义的过滤器
                 and().
-                addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class).
                 addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class).
                 authenticationManager(authenticationManager).
                 build();

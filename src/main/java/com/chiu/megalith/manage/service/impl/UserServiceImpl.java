@@ -83,9 +83,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUserStatus(Long userId,
+    public void changeUserStatus(String identity,
                                  Integer status) {
-        userRepository.setUserStatus(userId, status);
+        userRepository.setUserStatus(identity, status);
     }
 
     @Override

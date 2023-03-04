@@ -62,6 +62,9 @@ class MegalithApplicationTests {
 		Collection<String> dadw = redisJsonUtils.opsForHashValues("dadw");
 		System.out.println(dadw);
 
+		List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range("redisKey", 0, -1);
+		System.out.println(loginFailureTimeStampRecords);
+
 	}
 
 }

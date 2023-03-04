@@ -15,6 +15,8 @@ public enum Const {
 
     EMAIL_KEY("email_validation:"),
 
+    PASSWORD_KEY("password_validation:"),
+
     READ_RECENT("blogReadRecent:"),
 
     HOT_BLOGS_PATTERN("hot_blogs*"),

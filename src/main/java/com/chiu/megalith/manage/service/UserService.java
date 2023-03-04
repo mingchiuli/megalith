@@ -23,7 +23,7 @@ public interface UserService {
 
     UserEntity findById(Long userId);
 
-    void changeUserStatus(Long id, Integer status);
+    void changeUserStatus(String identity, Integer status);
 
     PageAdapter<UserEntity> listPage(Integer currentPage, Integer size);
 

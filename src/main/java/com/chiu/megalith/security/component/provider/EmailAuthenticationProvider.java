@@ -39,15 +39,15 @@ public class EmailAuthenticationProvider extends ProviderSupport {
 
         if (entries.size() == 2) {
             String code = entries.get("code");
-            String tryCount = entries.get("tryCount");
+            String tryCount = entries.get("try_count");
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {
                 redisTemplate.delete(prefix);
                 throw new BadCredentialsException("code reach max try number");
             }
 
-            if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
-                redisTemplate.opsForHash().increment(prefix, "tryCount", 1);
+            if (!code.equals(authentication.getCredentials().toString())) {
+                redisTemplate.opsForHash().increment(prefix, "try_count", 1);
                 throw new BadCredentialsException("code mismatch");
             }
 

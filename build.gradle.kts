@@ -34,7 +34,6 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-	implementation("com.youkol.support.kaptcha:kaptcha:2.3.2")
 	implementation("org.redisson:redisson-spring-boot-starter:3.19.1")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
 	compileOnly("org.projectlombok:lombok")

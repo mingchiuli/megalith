@@ -1,11 +1,8 @@
-package com.chiu.megalith.captcha.service.impl;
+package com.chiu.megalith.security.service.impl;
 
-import com.chiu.megalith.captcha.dto.CaptchaDto;
-import com.chiu.megalith.captcha.service.CaptchaService;
+import com.chiu.megalith.security.service.EmailCodeService;
 import com.chiu.megalith.common.lang.Const;
-import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
@@ -16,10 +13,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,8 +23,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @RequiredArgsConstructor
-public class CaptchaServiceImpl implements CaptchaService {
-    private final Producer producer;
+public class EmailCodeServiceImpl implements EmailCodeService {
+
+    private static final char[] cs = {
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+    };
 
     private final StringRedisTemplate redisTemplate;
 
@@ -38,40 +37,15 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Value("${spring.mail.properties.from}")
     private String from;
 
-    @SneakyThrows
-    @Override
-    public CaptchaDto createCaptcha() {
-        String key = UUID.randomUUID().toString();
-        String code = producer.createText();
-
-        BufferedImage image = producer.createImage(code);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", outputStream);
-
-        Base64.Encoder encoder = Base64.getEncoder();
-        String str = "data:image/jpeg;base64,";
-
-        String base64Img = str + encoder.encodeToString(outputStream.toByteArray());
-
-        redisTemplate.opsForValue().set(Const.CAPTCHA_KEY.getInfo() + key, code, 120, TimeUnit.SECONDS);
-
-
-        return CaptchaDto.
-                builder().
-                key(key).
-                captchaImg(base64Img).
-                build();
-    }
-
 
     @Override
     public void createEmailCode(String loginEmail) {
         String prefix = Const.EMAIL_KEY.getInfo() + loginEmail;
-        String code = producer.createText();
+        String code = createText();
 
         Map<String, Object> map = new HashMap<>(3);
         map.put("code", code);
-        map.put("tryCount", "0");
+        map.put("try_count", "0");
 
         redisTemplate.execute(new SessionCallback<>() {
             @Override
@@ -90,5 +64,14 @@ public class CaptchaServiceImpl implements CaptchaService {
         simpMsg.setSubject("login code");
         simpMsg.setText(code);
         javaMailSender.send(simpMsg);
+    }
+
+    private String createText() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            int idx = ThreadLocalRandom.current().nextInt(cs.length);
+            builder.append(cs[idx]);
+        }
+        return builder.toString();
     }
 }
