@@ -27,6 +27,8 @@ public class UserEntityVo {
     @Email
     private String email;
 
+    private String phone;
+
     @ListValue(values = {0, 1})
     private Integer status;
 
