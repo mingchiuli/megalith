@@ -4,6 +4,7 @@ import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.security.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
@@ -32,6 +33,9 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
 
     private static final int intervalTime = 15 * 60 * 1000;
 
+    @Value("${blog.email-try-count}")
+    private int maxTryNum;
+
     @Override
     public boolean supports(String grantType) {
         return Const.GRANT_TYPE_PASSWORD.getInfo().equals(grantType);
@@ -58,7 +62,6 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
         List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);
         int len = loginFailureTimeStampRecords.size();
         int r = -len - 1;
-        int l = 0;
         for (String timeStamp : loginFailureTimeStampRecords) {
             long currentTimeMillis = System.currentTimeMillis();
             long ts = Long.parseLong(timeStamp);
@@ -69,7 +72,7 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
             }
         }
 
-        if (len + r >= 2) {
+        if (len + r + 1 >= maxTryNum - 1) {
             userService.changeUserStatusByUsername(username, 1);
         }
 
@@ -80,7 +83,7 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
             @SuppressWarnings("unchecked")
             public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                 operations.multi();
-                operations.opsForList().trim(prefix, l, rEnd);
+                operations.opsForList().trim(prefix, 0, rEnd);
                 operations.opsForList().leftPush(prefix, String.valueOf(System.currentTimeMillis()));
                 operations.expire(prefix, intervalTime, TimeUnit.MILLISECONDS);
                 return operations.exec();
