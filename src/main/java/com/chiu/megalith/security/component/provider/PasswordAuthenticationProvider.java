@@ -56,34 +56,31 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
     private void passwordNotMatchProcess(String username) {
         String prefix = Const.PASSWORD_KEY.getInfo() + username;
         List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);
-        int r = 0;
-        int l = -1;
+        int len = loginFailureTimeStampRecords.size();
+        int r = -len - 1;
+        int l = 0;
         for (String timeStamp : loginFailureTimeStampRecords) {
             long currentTimeMillis = System.currentTimeMillis();
             long ts = Long.parseLong(timeStamp);
             if (currentTimeMillis - ts < intervalTime) {
-                if (l != 0) {
-                    l = 0;
-                }
                 r++;
             } else {
                 break;
             }
         }
 
-        if (r >= 2) {
+        if (len + r >= 2) {
             userService.changeUserStatusByUsername(username, 1);
         }
 
-        int rEnd = r - 1;
-        int lEnd = l;
+        int rEnd = r;
 
         redisTemplate.execute(new SessionCallback<>() {
             @Override
             @SuppressWarnings("unchecked")
             public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
                 operations.multi();
-                operations.opsForList().trim(prefix, lEnd, rEnd);
+                operations.opsForList().trim(prefix, l, rEnd);
                 operations.opsForList().leftPush(prefix, String.valueOf(System.currentTimeMillis()));
                 operations.expire(prefix, 15, TimeUnit.MINUTES);
                 return operations.exec();
