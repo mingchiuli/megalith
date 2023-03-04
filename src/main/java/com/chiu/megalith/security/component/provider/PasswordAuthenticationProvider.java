@@ -82,7 +82,7 @@ public class PasswordAuthenticationProvider extends ProviderSupport {
                 operations.multi();
                 operations.opsForList().trim(prefix, l, rEnd);
                 operations.opsForList().leftPush(prefix, String.valueOf(System.currentTimeMillis()));
-                operations.expire(prefix, 15, TimeUnit.MINUTES);
+                operations.expire(prefix, intervalTime, TimeUnit.MILLISECONDS);
                 return operations.exec();
             }
         });
