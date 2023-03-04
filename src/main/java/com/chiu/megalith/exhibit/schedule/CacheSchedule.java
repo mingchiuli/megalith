@@ -1,4 +1,4 @@
-package com.chiu.megalith.exhibit.scheduled;
+package com.chiu.megalith.exhibit.schedule;
 
 import com.chiu.megalith.exhibit.controller.BlogController;
 import com.chiu.megalith.exhibit.service.BlogService;
