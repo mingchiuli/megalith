@@ -26,9 +26,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		UserEntity user = sysUser.
 				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
-		String grantType = username.contains("@") ?
-				Const.GRANT_TYPE_EMAIL.getInfo() :
-				Const.GRANT_TYPE_PASSWORD.getInfo();
+		String grantType;
+
+		if (username.contains("@")) {
+			grantType = Const.GRANT_TYPE_EMAIL.getInfo();
+		} else {
+			grantType = Const.GRANT_TYPE_PASSWORD.getInfo();
+		}
 
 		//通过User去自动比较用户名和密码
 		return new LoginUser(username,

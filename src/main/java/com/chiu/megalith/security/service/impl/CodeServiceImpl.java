@@ -1,6 +1,6 @@
 package com.chiu.megalith.security.service.impl;
 
-import com.chiu.megalith.security.service.EmailCodeService;
+import com.chiu.megalith.security.service.CodeService;
 import com.chiu.megalith.common.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +12,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import com.chiu.megalith.common.generator.CodeGenerator;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,12 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @RequiredArgsConstructor
-public class EmailCodeServiceImpl implements EmailCodeService {
-
-    private static final char[] cs = {
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
-    };
+public class CodeServiceImpl implements CodeService {
 
     private final StringRedisTemplate redisTemplate;
 
@@ -41,7 +36,7 @@ public class EmailCodeServiceImpl implements EmailCodeService {
     @Override
     public void createEmailCode(String loginEmail) {
         String prefix = Const.EMAIL_KEY.getInfo() + loginEmail;
-        String code = createText();
+        String code = CodeGenerator.createText();
 
         Map<String, Object> map = new HashMap<>(3);
         map.put("code", code);
@@ -64,14 +59,5 @@ public class EmailCodeServiceImpl implements EmailCodeService {
         simpMsg.setSubject("login code");
         simpMsg.setText(code);
         javaMailSender.send(simpMsg);
-    }
-
-    private String createText() {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            int idx = ThreadLocalRandom.current().nextInt(cs.length);
-            builder.append(cs[idx]);
-        }
-        return builder.toString();
     }
 }
