@@ -13,7 +13,9 @@ import java.util.List;
  * @author mingchiuli
  * @create 2023-01-31 2:09 am
  */
-public abstract class ProviderSupport extends DaoAuthenticationProvider {
+public sealed abstract class ProviderSupport extends DaoAuthenticationProvider permits
+        EmailAuthenticationProvider,
+        PasswordAuthenticationProvider {
 
     private static class LastProvider {
         private static final AuthenticationProvider lastProvider;

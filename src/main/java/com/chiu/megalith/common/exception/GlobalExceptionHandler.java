@@ -20,8 +20,8 @@ import java.util.Optional;
  */
 @Slf4j
 @RestControllerAdvice(basePackages = {
+        "com.chiu.megalith.security.controller",
         "com.chiu.megalith.manage.controller",
-        "com.chiu.megalith.captcha.controller",
         "com.chiu.megalith.exhibit.controller",
         "com.chiu.megalith.search.controller",
         "com.chiu.megalith.coop.controller"})

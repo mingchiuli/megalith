@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @create 2023-01-14 9:02
  */
 @RequiredArgsConstructor
-public class PasswordAuthenticationProvider extends ProviderSupport {
+public final class PasswordAuthenticationProvider extends ProviderSupport {
 
     private final PasswordEncoder passwordEncoder;
 

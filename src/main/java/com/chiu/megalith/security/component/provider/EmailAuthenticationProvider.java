@@ -16,7 +16,7 @@ import java.util.Map;
  * @create 2022-12-30 10:57 am
  */
 @RequiredArgsConstructor
-public class EmailAuthenticationProvider extends ProviderSupport {
+public final class EmailAuthenticationProvider extends ProviderSupport {
 
     private final StringRedisTemplate redisTemplate;
 
