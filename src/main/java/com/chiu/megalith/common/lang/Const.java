@@ -10,6 +10,7 @@ public enum Const {
     GRANT_TYPE_EMAIL("email"),
 
     GRANT_TYPE_PASSWORD("password"),
+    GRANT_TYPE_PHONE("phone"),
 
     CAPTCHA_KEY("captcha:"),
 

@@ -1,6 +1,8 @@
 package com.chiu.megalith.manage.vo;
 
 import com.chiu.megalith.common.valid.ListValue;
+import com.chiu.megalith.common.valid.Phone;
+import com.chiu.megalith.common.valid.Username;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -16,7 +18,7 @@ public class UserEntityVo {
 
     private Long id;
 
-    @NotBlank
+    @Username
     private String username;
 
     @NotBlank
@@ -27,6 +29,7 @@ public class UserEntityVo {
     @Email
     private String email;
 
+    @Phone
     private String phone;
 
     @ListValue(values = {0, 1})

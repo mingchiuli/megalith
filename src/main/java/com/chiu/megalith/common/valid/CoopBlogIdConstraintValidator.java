@@ -14,15 +14,9 @@ public class CoopBlogIdConstraintValidator implements ConstraintValidator<CoopBl
 
     private final BlogService blogService;
 
-
-    @Override
-    public void initialize(CoopBlogId constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
-
     @Override
     public boolean isValid(Long blogId,
-                           ConstraintValidatorContext constraintValidatorContext) {
+                           ConstraintValidatorContext context) {
         return blogService.exist(blogId) &&
                 redisTemplate.opsForHash().size(Const.COOP_PREFIX.getInfo() + blogId) < 3;
     }

@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<UserEntity> sysUser = userRepository.findByUsernameOrEmail(username, username);
+		Optional<UserEntity> sysUser = userRepository.findByUsernameOrEmailOrPhone(username, username, username);
 
 		UserEntity user = sysUser.
 				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
@@ -30,6 +30,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 		if (username.contains("@")) {
 			grantType = Const.GRANT_TYPE_EMAIL.getInfo();
+		} else if (username.matches("\\d+")){
+			grantType = Const.GRANT_TYPE_PHONE.getInfo();
 		} else {
 			grantType = Const.GRANT_TYPE_PASSWORD.getInfo();
 		}
