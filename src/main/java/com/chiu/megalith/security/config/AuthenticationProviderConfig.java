@@ -3,6 +3,7 @@ package com.chiu.megalith.security.config;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.security.component.provider.EmailAuthenticationProvider;
 import com.chiu.megalith.security.component.provider.PasswordAuthenticationProvider;
+import com.chiu.megalith.security.component.provider.PhoneAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,5 +42,13 @@ public class AuthenticationProviderConfig {
         emailAuthenticationProvider.setUserDetailsService(userDetailsService);
         emailAuthenticationProvider.setHideUserNotFoundExceptions(false);
         return emailAuthenticationProvider;
+    }
+
+    @Bean
+    public PhoneAuthenticationProvider phoneAuthenticationProvider() {
+        PhoneAuthenticationProvider phoneAuthenticationProvider = new PhoneAuthenticationProvider();
+        phoneAuthenticationProvider.setUserDetailsService(userDetailsService);
+        phoneAuthenticationProvider.setHideUserNotFoundExceptions(false);
+        return phoneAuthenticationProvider;
     }
 }

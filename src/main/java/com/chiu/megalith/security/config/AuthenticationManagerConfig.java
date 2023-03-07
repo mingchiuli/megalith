@@ -2,6 +2,7 @@ package com.chiu.megalith.security.config;
 
 import com.chiu.megalith.security.component.provider.EmailAuthenticationProvider;
 import com.chiu.megalith.security.component.provider.PasswordAuthenticationProvider;
+import com.chiu.megalith.security.component.provider.PhoneAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,11 +25,14 @@ public class AuthenticationManagerConfig {
 
     private final EmailAuthenticationProvider emailAuthenticationProvider;
 
+    private final PhoneAuthenticationProvider phoneAuthenticationProvider;
+
     @Bean
     public AuthenticationManager authenticationManager() {
         List<AuthenticationProvider> providers = Arrays.asList(
                 passwordAuthenticationProvider,
-                emailAuthenticationProvider
+                emailAuthenticationProvider,
+                phoneAuthenticationProvider
         );
         return new ProviderManager(providers, null);
     }
