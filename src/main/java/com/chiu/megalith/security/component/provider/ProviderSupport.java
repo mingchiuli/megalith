@@ -15,7 +15,8 @@ import java.util.List;
  */
 public sealed abstract class ProviderSupport extends DaoAuthenticationProvider permits
         EmailAuthenticationProvider,
-        PasswordAuthenticationProvider {
+        PasswordAuthenticationProvider,
+        PhoneAuthenticationProvider {
 
     private static class LastProvider {
         private static final AuthenticationProvider lastProvider;
