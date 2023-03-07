@@ -2,12 +2,13 @@ package com.chiu.megalith.security.component.provider;
 
 import com.chiu.megalith.security.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -15,7 +16,8 @@ import java.util.Map;
  * @author mingchiuli
  * @create 2022-12-30 10:57 am
  */
-@RequiredArgsConstructor
+
+@Component
 public final class EmailAuthenticationProvider extends ProviderSupport {
 
     private final StringRedisTemplate redisTemplate;
@@ -23,10 +25,12 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
     @Value("${blog.email-try-count}")
     private int maxTryNum;
 
-    @Override
-    public boolean supports(String grantType) {
-        return Const.GRANT_TYPE_EMAIL.getInfo().equals(grantType);
+    public EmailAuthenticationProvider(StringRedisTemplate redisTemplate,
+                                       UserDetailsService userDetailsService) {
+        super(Const.GRANT_TYPE_EMAIL.getInfo(), userDetailsService);
+        this.redisTemplate = redisTemplate;
     }
+
 
     @Override
     public void authProcess(LoginUser user,
@@ -56,5 +60,4 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
             throw new BadCredentialsException("code not exist");
         }
     }
-
 }

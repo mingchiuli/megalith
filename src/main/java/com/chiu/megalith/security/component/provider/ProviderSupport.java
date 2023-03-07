@@ -6,6 +6,7 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
@@ -18,6 +19,18 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
         PasswordAuthenticationProvider,
         PhoneAuthenticationProvider {
 
+    protected String grantType;
+
+    protected UserDetailsService userDetailsService;
+
+    public ProviderSupport(String grantType,
+                           UserDetailsService userDetailsService) {
+        setUserDetailsService(userDetailsService);
+        setHideUserNotFoundExceptions(false);
+        this.grantType = grantType;
+        this.userDetailsService = userDetailsService;
+    }
+
     private static class LastProvider {
         private static final AuthenticationProvider lastProvider;
 
@@ -27,8 +40,6 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
             lastProvider = providers.get(providers.size() - 1);
         }
     }
-
-    protected abstract boolean supports(String grantType);
 
     protected abstract void authProcess(LoginUser user,
                                         UsernamePasswordAuthenticationToken authentication);
@@ -41,7 +52,7 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         LoginUser user = (LoginUser) userDetails;
-        if (supports(user.getGrantType())) {
+        if (grantType.equals(user.getGrantType())) {
             try {
                 authProcess(user, authentication);
             } catch (AuthenticationException e) {
@@ -60,5 +71,4 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
             }
         }
     }
-
 }

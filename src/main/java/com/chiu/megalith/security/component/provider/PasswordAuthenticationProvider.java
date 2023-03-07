@@ -3,7 +3,6 @@ package com.chiu.megalith.security.component.provider;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.security.user.LoginUser;
 import com.chiu.megalith.common.lang.Const;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
@@ -12,7 +11,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @author mingchiuli
  * @create 2023-01-14 9:02
  */
-@RequiredArgsConstructor
+@Component
 public final class PasswordAuthenticationProvider extends ProviderSupport {
 
     private final PasswordEncoder passwordEncoder;
@@ -36,9 +37,14 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
     @Value("${blog.email-try-count}")
     private int maxTryNum;
 
-    @Override
-    public boolean supports(String grantType) {
-        return Const.GRANT_TYPE_PASSWORD.getInfo().equals(grantType);
+    public PasswordAuthenticationProvider(PasswordEncoder passwordEncoder,
+                                          StringRedisTemplate redisTemplate,
+                                          UserService userService,
+                                          UserDetailsService userDetailsService) {
+        super(Const.GRANT_TYPE_PASSWORD.getInfo(), userDetailsService);
+        this.passwordEncoder = passwordEncoder;
+        this.redisTemplate = redisTemplate;
+        this.userService = userService;
     }
 
     @Override

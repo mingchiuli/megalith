@@ -24,7 +24,7 @@ public class WebsiteSearchController {
 
     private final WebsiteSearchService websiteSearchService;
 
-    @GetMapping("/jwt/create")
+    @GetMapping("/token")
     @Cached(prefix = Const.JSON_WEB_TOKEN)
     public Result<String> generateJwt() {
         String jwt = websiteSearchService.generateJwt();

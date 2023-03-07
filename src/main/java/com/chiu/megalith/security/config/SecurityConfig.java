@@ -33,6 +33,7 @@ public class SecurityConfig {
             "/code/email",
             "/public/blog/**",
             "/search/website/*",
+            "/search/website/token",
             "/search/blog/**",
             "/coop/**",
             "/log/**"
