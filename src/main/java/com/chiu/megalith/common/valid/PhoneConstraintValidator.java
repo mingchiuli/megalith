@@ -2,6 +2,7 @@ package com.chiu.megalith.common.valid;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -12,6 +13,9 @@ public class PhoneConstraintValidator implements ConstraintValidator<Phone, Stri
 
     @Override
     public boolean isValid(String phone, ConstraintValidatorContext context) {
+        if (!StringUtils.hasLength(phone)) {
+            return true;
+        }
         return phone.matches("\\d+");
     }
 }
