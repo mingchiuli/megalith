@@ -37,7 +37,7 @@ public class CodeOperator {
         return builder.toString();
     }
 
-    public String saveCode(String code, String prefix) {
+    public void saveCode(String code, String prefix) {
         Map<String, Object> map = new HashMap<>(3);
         map.put("code", code);
         map.put("try_count", "0");
@@ -52,6 +52,5 @@ public class CodeOperator {
                 return operations.exec();
             }
         });
-        return code;
     }
 }

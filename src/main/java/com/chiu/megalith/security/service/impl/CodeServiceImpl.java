@@ -28,7 +28,8 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public void createEmailCode(String loginEmail) {
-        String code = codeOperator.saveCode(codeOperator.createCode(), Const.EMAIL_KEY.getInfo() + loginEmail);
+        String code = codeOperator.createCode();
+        codeOperator.saveCode(code, Const.EMAIL_KEY.getInfo() + loginEmail);
         SimpleMailMessage simpMsg = new SimpleMailMessage();
         simpMsg.setFrom(from);
         simpMsg.setTo(loginEmail);
