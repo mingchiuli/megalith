@@ -159,6 +159,9 @@ public class CacheSchedule {
                             fin = true;
                         }
                         currentPageMark++;
+                        if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
+                            LockSupport.unpark(thread);
+                        }
                     }
                     ids.forEach(id -> {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
@@ -167,13 +170,6 @@ public class CacheSchedule {
                         }
                         blogController.getBlogStatus(id);
                     });
-
-                    synchronized (thread) {
-                        if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
-                            LockSupport.unpark(thread);
-                        }
-                    }
-
                 });
                 if (fin) {
                     break;
