@@ -48,8 +48,7 @@ public class CacheSchedule {
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
-//    @Scheduled(cron = "0 0 0/2 * * ?")
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0 0/2 * * ?")
     @SneakyThrows
     public void configureTask() {
 
