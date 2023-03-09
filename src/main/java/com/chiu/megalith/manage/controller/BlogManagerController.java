@@ -60,7 +60,7 @@ public class BlogManagerController {
         return Result.success(token);
     }
 
-    @GetMapping("/get/blogs")
+    @GetMapping("/blogs")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                           @RequestParam(defaultValue = "5") Integer size) {

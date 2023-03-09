@@ -31,6 +31,8 @@ import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -59,6 +61,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
+
+    @Value("${blog.highest-role}")
+    private String highestRole;
 
     public List<Long> findIdsByStatus(Integer status, Pageable pageRequest) {
         return blogRepository.findIdsByStatus(status, pageRequest);
@@ -199,13 +204,22 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void deleteBlogs(List<Long> ids) {
-        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authority = authentication.
+                getAuthorities().
+                stream().
+                findFirst().
+                map(GrantedAuthority::getAuthority).
+                orElseThrow();
+        long userId = Long.parseLong(authentication.getName());
 
         ids.forEach(id -> {
             BlogEntity blogEntity = blogRepository.findById(id).
                     orElseThrow(() -> new NotFoundException("blog not exist"));
 
-            Assert.isTrue(blogEntity.getUserId() == userId, "must delete own blog");
+            if (blogEntity.getUserId() != userId && !authority.equals(highestRole)) {
+                throw new AuthenticationExceptionImpl("must delete own blog");
+            }
 
             blogRepository.delete(blogEntity);
 
@@ -245,10 +259,22 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public PageAdapter<BlogEntityDto> getAllABlogs(Integer currentPage,
                                                    Integer size) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.valueOf(authentication.getName());
+        String authority = authentication.
+                getAuthorities().
+                stream().
+                findFirst().
+                map(GrantedAuthority::getAuthority).
+                orElseThrow();
 
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findAllByUserId(pageRequest, userId);
+        Page<BlogEntity> page;
+        if (authority.equals(highestRole)) {
+            page = blogRepository.findAll(pageRequest);
+        } else {
+            page = blogRepository.findAllByUserId(pageRequest, userId);
+        }
 
         List<BlogEntityDto> entities = page.getContent().
                 stream().
