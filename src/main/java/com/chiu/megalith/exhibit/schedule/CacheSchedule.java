@@ -5,6 +5,7 @@ import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -52,7 +53,8 @@ public class CacheSchedule {
     private volatile boolean fin;
 
     @Scheduled(cron = "0 0 0/2 * * ?")
-    public void configureTask() throws ExecutionException, InterruptedException, TimeoutException {
+    @SneakyThrows
+    public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
         boolean locked = rLock.tryLock();
@@ -153,12 +155,15 @@ public class CacheSchedule {
                 executor.execute(() -> {
                     List<Long> ids;
                     synchronized (thread) {
-                        Pageable pageRequestLocked = PageRequest.of(currentPageMark, 50, Sort.by("id").ascending());
-                        ids = blogService.findIdsByStatus(status, pageRequestLocked);
-                        if (ids.size() < 50) {
+                        Pageable pageRequest = PageRequest.of(currentPageMark, 50, Sort.by("id").ascending());
+                        ids = blogService.findIdsByStatus(status, pageRequest);
+                        int size = ids.size();
+                        if (size < 50 && !fin) {
                             fin = true;
                         }
-                        currentPageMark++;
+                        if (size == 50) {
+                            currentPageMark++;
+                        }
                         if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
                             LockSupport.unpark(thread);
                         }
@@ -177,6 +182,7 @@ public class CacheSchedule {
             } else {
                 thread.interrupt();
                 LockSupport.park();
+                Thread.interrupted();
             }
         }
     }
