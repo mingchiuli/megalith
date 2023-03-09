@@ -20,7 +20,7 @@ public class ThreadPoolConfig {
     @Bean("scheduledThreadPoolExecutor")
     public ThreadPoolExecutor scheduledThreadPoolExecutor(ThreadPoolConfigProperties pool) {
         return new ThreadPoolExecutor(30,
-                30,
+                300,
                 pool.getKeepAliveTime(), TimeUnit.SECONDS,
                 new LinkedBlockingDeque<>(30),
                 Executors.defaultThreadFactory(),
