@@ -14,14 +14,12 @@ import java.util.List;
  */
 public interface BlogService {
 
-    List<Long> findIdsByStatus(Integer status);
+    List<Long> findIdsByStatus(Integer status, Pageable pageRequest);
     BlogEntity findByIdAndStatus(Long id, Integer status);
 
     void setReadCount(Long id);
 
     BlogEntity findById(Long id);
-
-    PageAdapter<BlogEntity> listPageCustom(Pageable pageRequest);
 
 
     PageAdapter<BlogEntity> listPage(Integer currentPage);

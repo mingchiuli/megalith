@@ -5,19 +5,19 @@ import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -47,9 +47,12 @@ public class CacheSchedule {
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
-    @SneakyThrows
+    private volatile int currentPageMark;
+
+    private volatile boolean fin;
+
     @Scheduled(cron = "0 0 0/2 * * ?")
-    public void configureTask() {
+    public void configureTask() throws ExecutionException, InterruptedException, TimeoutException {
 
         RLock rLock = redisson.getLock("cacheKey");
         boolean locked = rLock.tryLock();
@@ -65,34 +68,9 @@ public class CacheSchedule {
                 List<Integer> years = blogService.searchYears();
                 CompletableFuture<Void> var1 = CompletableFuture.runAsync(() -> {
                     //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
-                    List<Long> idsUnlocked = blogService.findIdsByStatus(0);
-                    List<Long> idsLocked = blogService.findIdsByStatus(1);
                     Thread thread = Thread.currentThread();
-                    idsUnlocked.forEach(id -> {
-                        for (; ; ) {
-                            if (executor.getMaximumPoolSize() > executor.getActiveCount()) {
-                                executor.execute(() -> {
-                                    redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                                    blogController.getBlogDetail(id);
-                                    blogController.getBlogStatus(id);
-                                    synchronized (thread) {
-                                        if (!thread.isAlive() && executor.getMaximumPoolSize() >> 1 > executor.getActiveCount()) {
-                                            LockSupport.unpark(thread);
-                                        }
-                                    }
-                                });
-                                break;
-                            } else {
-                                LockSupport.park();
-                            }
-                        }
-                    });
-
-                    idsLocked.forEach(id -> {
-                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                        blogController.getBlogStatus(id);
-                    });
-
+                    cacheAndBloomBlog(thread, 0);
+                    cacheAndBloomBlog(thread, 1);
                 }, executor);
 
                 CompletableFuture<Void> var2 = CompletableFuture.runAsync(() -> {
@@ -104,12 +82,14 @@ public class CacheSchedule {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
                         blogController.listPage(no);
                     }
+
                 }, executor);
 
 
                 CompletableFuture<Void> var3 = CompletableFuture.runAsync(() -> {
                     //getCountByYear接口
                     years.forEach(blogController::getCountByYear);
+
                 }, executor);
 
 
@@ -125,6 +105,7 @@ public class CacheSchedule {
                             blogController.listPageByYear(no, year);
                         }
                     }
+
                 }, executor);
 
 
@@ -136,6 +117,7 @@ public class CacheSchedule {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
                         blogController.getCountByYear(year);
                     });
+
                 }, executor);
 
 
@@ -143,14 +125,15 @@ public class CacheSchedule {
                 CompletableFuture<Void> var6 = CompletableFuture.runAsync(() -> {
                     List<Long> ids = userService.findIdsByStatus(1);
                     ids.forEach(id -> userService.changeUserStatusById(id, 0));
+
                 }, executor);
 
-                CompletableFuture.allOf(var1, var2, var3, var4, var5, var6).get(20, TimeUnit.SECONDS);
+                CompletableFuture.allOf(var1, var2, var3, var4, var5, var6).get(5, TimeUnit.SECONDS);
 
                 long endMillis = System.currentTimeMillis();
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,
-                        CACHE_FINISH_FLAG,
+                        "1",
                         5,
                         TimeUnit.SECONDS);
 
@@ -158,6 +141,47 @@ public class CacheSchedule {
             }
         } finally {
             rLock.unlock();
+        }
+    }
+
+    private void cacheAndBloomBlog(Thread thread, Integer status) {
+        fin = false;
+        currentPageMark = 0;
+        int maxPoolSize = executor.getMaximumPoolSize();
+        for (;;) {
+            if (maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
+                executor.execute(() -> {
+                    List<Long> ids;
+                    synchronized (thread) {
+                        Pageable pageRequestLocked = PageRequest.of(currentPageMark, 50, Sort.by("id").ascending());
+                        ids = blogService.findIdsByStatus(status, pageRequestLocked);
+                        if (ids.size() < 50) {
+                            fin = true;
+                        }
+                        currentPageMark++;
+                    }
+                    ids.forEach(id -> {
+                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
+                        if (status == 0) {
+                            blogService.findByIdAndStatus(id, 0);
+                        }
+                        blogController.getBlogStatus(id);
+                    });
+
+                    synchronized (thread) {
+                        if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
+                            LockSupport.unpark(thread);
+                        }
+                    }
+
+                });
+                if (fin) {
+                    break;
+                }
+            } else {
+                thread.interrupt();
+                LockSupport.park();
+            }
         }
     }
 

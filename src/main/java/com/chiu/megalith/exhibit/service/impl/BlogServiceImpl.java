@@ -60,8 +60,8 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
-    public List<Long> findIdsByStatus(Integer status) {
-        return blogRepository.findIdsByStatus(status);
+    public List<Long> findIdsByStatus(Integer status, Pageable pageRequest) {
+        return blogRepository.findIdsByStatus(status, pageRequest);
     }
 
     @Cached(prefix = Const.HOT_BLOG)
@@ -97,12 +97,6 @@ public class BlogServiceImpl implements BlogService {
     public BlogEntity findById(Long id) {
         return blogRepository.findById(id).
                 orElseThrow(() -> new NotFoundException("blog not exist"));
-    }
-
-    @Override
-    public PageAdapter<BlogEntity> listPageCustom(Pageable pageRequest) {
-        Page<BlogEntity> page = blogRepository.findAll(pageRequest);
-        return new PageAdapter<>(page);
     }
 
     @Override
