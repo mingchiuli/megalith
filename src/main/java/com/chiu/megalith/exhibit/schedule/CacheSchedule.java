@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 
@@ -48,11 +48,8 @@ public class CacheSchedule {
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
-    private volatile int currentPageMark;
-
-    private volatile boolean fin;
-
-    @Scheduled(cron = "0 0 0/2 * * ?")
+//    @Scheduled(cron = "0 0 0/2 * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     @SneakyThrows
     public void configureTask() {
 
@@ -68,6 +65,7 @@ public class CacheSchedule {
                 long startMillis = System.currentTimeMillis();
 
                 List<Integer> years = blogService.searchYears();
+                int maxPoolSize = executor.getMaximumPoolSize();
                 CompletableFuture<Void> var1 = CompletableFuture.runAsync(() -> {
                     //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
                     Thread thread = Thread.currentThread();
@@ -80,11 +78,51 @@ public class CacheSchedule {
                     Long count = blogService.count();
                     int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
 
-                    for (int no = 1; no <= totalPage; no++) {
-                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
-                        blogController.listPage(no);
-                    }
+                    int batchPageSize = totalPage % 20 == 0 ? totalPage / 20 : totalPage / 20 + 1;
 
+                    Thread thread = Thread.currentThread();
+                    var ref = new Object() {
+                        volatile int curPage;
+                        volatile boolean fin;
+                    };
+
+                    for (;;) {
+                        if (ref.curPage <= batchPageSize && maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
+                            executor.execute(() -> {
+                                int _curPage = 0;
+                                if (!ref.fin) {
+                                    synchronized (thread) {
+                                        if (!ref.fin) {
+                                            ref.curPage++;
+                                            _curPage = ref.curPage;
+                                        }
+                                        if (_curPage == batchPageSize) {
+                                            ref.fin = true;
+                                        }
+
+                                        if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
+                                            LockSupport.unpark(thread);
+                                        }
+                                    }
+                                }
+                                if (_curPage > 0) {
+                                    for (int no = (_curPage - 1) * 20 + 1; no <= (_curPage == batchPageSize && totalPage % 20 != 0 ? totalPage : _curPage * 20); no++) {
+                                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
+                                        blogController.listPage(no);
+                                    }
+                                }
+                            });
+
+                            if (ref.fin) {
+                                break;
+                            }
+
+                        } else {
+                            thread.interrupt();
+                            LockSupport.park();
+                            Thread.interrupted();
+                        }
+                    }
                 }, executor);
 
 
@@ -99,13 +137,15 @@ public class CacheSchedule {
                     //listByYear接口，分别考虑缓存和bloom
                     for (Integer year : years) {
                         //当前年份的总页数
-                        Integer count = blogService.getCountByYear(year);
-                        int totalPage = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
+                        executor.execute(() -> {
+                            int count = blogService.getCountByYear(year);
+                            int totalPage = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
 
-                        for (int no = 1; no <= totalPage; no++) {
-                            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
-                            blogController.listPageByYear(no, year);
-                        }
+                            for (int no = 1; no <= totalPage; no++) {
+                                redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
+                                blogController.listPageByYear(no, year);
+                            }
+                        });
                     }
 
                 }, executor);
@@ -147,36 +187,49 @@ public class CacheSchedule {
     }
 
     private void cacheAndBloomBlog(Thread thread, Integer status) {
-        fin = false;
-        currentPageMark = 0;
+
+        var ref = new Object() {
+            volatile boolean fin;
+            volatile int currentPageMark;
+        };
+
         int maxPoolSize = executor.getMaximumPoolSize();
         for (;;) {
             if (maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
                 executor.execute(() -> {
-                    List<Long> ids;
-                    synchronized (thread) {
-                        Pageable pageRequest = PageRequest.of(currentPageMark, 50, Sort.by("id").ascending());
-                        ids = blogService.findIdsByStatus(status, pageRequest);
-                        int size = ids.size();
-                        if (size < 50 && !fin) {
-                            fin = true;
+                    if (!ref.fin) {
+                        List<Long> ids = null;
+                        synchronized (thread) {
+                            if (!ref.fin) {
+                                Pageable pageRequest = PageRequest.of(ref.currentPageMark, 50);
+                                ids = blogService.findIdsByStatus(status, pageRequest);
+                                int size = ids.size();
+                                if (size < 50 && !ref.fin) {
+                                    ref.fin = true;
+                                }
+                                if (size == 50) {
+                                    ref.currentPageMark++;
+                                }
+
+                                if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
+                                    LockSupport.unpark(thread);
+                                }
+                            }
                         }
-                        if (size == 50) {
-                            currentPageMark++;
+
+                        if (Optional.ofNullable(ids).isPresent()) {
+                            ids.forEach(id -> {
+                                redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
+                                if (status == 0) {
+                                    blogService.findByIdAndStatus(id, 0);
+                                }
+                                blogController.getBlogStatus(id);
+                            });
                         }
-                        if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
-                            LockSupport.unpark(thread);
-                        }
+
                     }
-                    ids.forEach(id -> {
-                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                        if (status == 0) {
-                            blogService.findByIdAndStatus(id, 0);
-                        }
-                        blogController.getBlogStatus(id);
-                    });
                 });
-                if (fin) {
+                if (ref.fin) {
                     break;
                 }
             } else {

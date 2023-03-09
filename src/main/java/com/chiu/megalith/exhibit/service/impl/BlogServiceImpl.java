@@ -1,6 +1,6 @@
 package com.chiu.megalith.exhibit.service.impl;
 
-import com.chiu.megalith.exhibit.cache.Cached;
+import com.chiu.megalith.exhibit.cache.Cache;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
@@ -64,7 +64,7 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.findIdsByStatus(status, pageRequest);
     }
 
-    @Cached(prefix = Const.HOT_BLOG)
+    @Cache(prefix = Const.HOT_BLOG)
     public BlogEntity findByIdAndStatus(Long id,
                                         Integer status) {
         return blogRepository.findByIdAndStatus(id, status).

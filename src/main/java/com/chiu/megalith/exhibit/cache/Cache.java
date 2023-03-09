@@ -11,9 +11,9 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Cached {
+public @interface Cache {
 
-    int expire() default 60;
+    int expire() default 120;
 
     Const prefix();
 

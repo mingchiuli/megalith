@@ -2,7 +2,7 @@ package com.chiu.megalith.exhibit.controller;
 
 import com.chiu.megalith.exhibit.bloom.Bloom;
 import com.chiu.megalith.exhibit.bloom.handler.impl.*;
-import com.chiu.megalith.exhibit.cache.Cached;
+import com.chiu.megalith.exhibit.cache.Cache;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.common.lang.Const;
@@ -36,7 +36,7 @@ public class BlogController {
     }
 
     @GetMapping("/page/{currentPage}")
-    @Cached(prefix = Const.HOT_BLOGS)
+    @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListBloomHandler.class)
     public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage) {
         PageAdapter<BlogEntity> pageData = blogService.listPage(currentPage);
@@ -44,7 +44,7 @@ public class BlogController {
     }
 
     @GetMapping("/page/year/{year}/{currentPage}")
-    @Cached(prefix = Const.HOT_BLOGS)
+    @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListByYearBloomHandler.class)
     public Result<PageAdapter<BlogEntity>> listPageByYear(@PathVariable(name = "currentPage") Integer currentPage,
                                                           @PathVariable(name = "year") Integer year) {
@@ -53,7 +53,7 @@ public class BlogController {
     }
 
     @GetMapping("/count/year/{year}")
-    @Cached(prefix = Const.HOT_BLOGS)
+    @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = CountByYearBloomHandler.class)
     public Result<Integer> getCountByYear(@PathVariable(name = "year") Integer year) {
         Integer count = blogService.getCountByYear(year);
@@ -69,14 +69,14 @@ public class BlogController {
 
     @GetMapping("/status/{blogId}")
     @Bloom(handler = BlogStatusBloomHandler.class)
-    @Cached(prefix = Const.BLOG_STATUS)
+    @Cache(prefix = Const.BLOG_STATUS)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
         Integer status = blogService.findStatusById(blogId);
         return Result.success(status);
     }
 
     @GetMapping("/years")
-    @Cached(prefix = Const.YEARS)
+    @Cache(prefix = Const.YEARS)
     public Result<List<Integer>> searchYears() {
         List<Integer> years = blogService.searchYears();
         return Result.success(years);

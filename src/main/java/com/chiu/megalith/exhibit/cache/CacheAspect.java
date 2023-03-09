@@ -39,7 +39,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Order(2)
 @RequiredArgsConstructor
-public class CachedAspect {
+public class CacheAspect {
 
     private static final String LOCK = "blogLock:";
 
@@ -58,7 +58,7 @@ public class CachedAspect {
             build(this::createRlock);
 
 
-    @Pointcut("@annotation(com.chiu.megalith.exhibit.cache.Cached)")
+    @Pointcut("@annotation(com.chiu.megalith.exhibit.cache.Cache)")
     public void pt() {}
 
     @SneakyThrows
@@ -88,7 +88,7 @@ public class CachedAspect {
         Class<?> declaringType = signature.getDeclaringType();
         Method method = declaringType.getMethod(methodName, parameterTypes);
 
-        Cached annotation = method.getAnnotation(Cached.class);
+        Cache annotation = method.getAnnotation(Cache.class);
         int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
         String prefix = annotation.prefix().getInfo();
 

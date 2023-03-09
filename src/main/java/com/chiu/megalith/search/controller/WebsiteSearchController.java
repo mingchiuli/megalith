@@ -1,6 +1,6 @@
 package com.chiu.megalith.search.controller;
 
-import com.chiu.megalith.exhibit.cache.Cached;
+import com.chiu.megalith.exhibit.cache.Cache;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
@@ -25,7 +25,7 @@ public class WebsiteSearchController {
     private final WebsiteSearchService websiteSearchService;
 
     @GetMapping("/token")
-    @Cached(prefix = Const.JSON_WEB_TOKEN)
+    @Cache(prefix = Const.JSON_WEB_TOKEN)
     public Result<String> generateJwt() {
         String jwt = websiteSearchService.generateJwt();
         return Result.success(jwt);
