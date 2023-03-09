@@ -77,25 +77,25 @@ public class CacheSchedule {
                     Long count = blogService.count();
                     int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
 
-                    int batchPageSize = totalPage % 20 == 0 ? totalPage / 20 : totalPage / 20 + 1;
+                    int batchPageTotal = totalPage % 20 == 0 ? totalPage / 20 : totalPage / 20 + 1;
 
                     Thread thread = Thread.currentThread();
                     var ref = new Object() {
-                        volatile int curPage;
+                        volatile int curPageNo;
                         volatile boolean fin;
                     };
 
                     for (;;) {
-                        if (ref.curPage <= batchPageSize && maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
+                        if (ref.curPageNo <= batchPageTotal && maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
                             executor.execute(() -> {
-                                int _curPage = 0;
+                                int _curPageNo = 0;
                                 if (!ref.fin) {
                                     synchronized (thread) {
                                         if (!ref.fin) {
-                                            ref.curPage++;
-                                            _curPage = ref.curPage;
+                                            ref.curPageNo++;
+                                            _curPageNo = ref.curPageNo;
                                         }
-                                        if (_curPage == batchPageSize) {
+                                        if (_curPageNo == batchPageTotal) {
                                             ref.fin = true;
                                         }
 
@@ -104,8 +104,8 @@ public class CacheSchedule {
                                         }
                                     }
                                 }
-                                if (_curPage > 0) {
-                                    for (int no = (_curPage - 1) * 20 + 1; no <= (_curPage == batchPageSize && totalPage % 20 != 0 ? totalPage : _curPage * 20); no++) {
+                                if (_curPageNo > 0) {
+                                    for (int no = (_curPageNo - 1) * 20 + 1; no <= (_curPageNo == batchPageTotal && totalPage % 20 != 0 ? totalPage : _curPageNo * 20); no++) {
                                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
                                         blogController.listPage(no);
                                     }
@@ -197,12 +197,12 @@ public class CacheSchedule {
             if (maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
                 executor.execute(() -> {
                     if (!ref.fin) {
-                        List<Long> ids = null;
+                        List<Long> list = null;
                         synchronized (thread) {
                             if (!ref.fin) {
                                 Pageable pageRequest = PageRequest.of(ref.currentPageMark, 50);
-                                ids = blogService.findIdsByStatus(status, pageRequest);
-                                int size = ids.size();
+                                list = blogService.findIdsByStatus(status, pageRequest);
+                                int size = list.size();
                                 if (size < 50 && !ref.fin) {
                                     ref.fin = true;
                                 }
@@ -216,15 +216,14 @@ public class CacheSchedule {
                             }
                         }
 
-                        if (Optional.ofNullable(ids).isPresent()) {
-                            ids.forEach(id -> {
-                                redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                                if (status == 0) {
-                                    blogService.findByIdAndStatus(id, 0);
-                                }
-                                blogController.getBlogStatus(id);
-                            });
-                        }
+                        Optional.ofNullable(list).ifPresent(ids ->
+                                ids.forEach(id -> {
+                                    redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
+                                    if (status == 0) {
+                                        blogService.findByIdAndStatus(id, 0);
+                                    }
+                                    blogController.getBlogStatus(id);
+                        }));
 
                     }
                 });
