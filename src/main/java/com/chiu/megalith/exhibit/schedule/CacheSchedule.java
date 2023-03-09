@@ -124,7 +124,6 @@ public class CacheSchedule {
                     }
                 }, executor);
 
-
                 CompletableFuture<Void> var3 = CompletableFuture.runAsync(() -> {
                     //getCountByYear接口
                     years.forEach(blogController::getCountByYear);
