@@ -61,7 +61,6 @@ public class CacheSchedule {
 
         try {
             if (Boolean.FALSE.equals(redisTemplate.hasKey(CACHE_FINISH_FLAG))) {
-                long startMillis = System.currentTimeMillis();
 
                 List<Integer> years = blogService.searchYears();
                 int maxPoolSize = executor.getMaximumPoolSize();
@@ -170,14 +169,12 @@ public class CacheSchedule {
 
                 CompletableFuture.allOf(var1, var2, var3, var4, var5, var6).get(5, TimeUnit.SECONDS);
 
-                long endMillis = System.currentTimeMillis();
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,
                         "1",
                         5,
                         TimeUnit.SECONDS);
 
-                log.info("定时任务执行用时{}毫秒", endMillis - startMillis);
             }
         } finally {
             rLock.unlock();
