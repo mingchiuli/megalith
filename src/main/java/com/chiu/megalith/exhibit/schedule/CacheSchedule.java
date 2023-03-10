@@ -85,7 +85,7 @@ public class CacheSchedule {
                     };
 
                     for (;;) {
-                        if (ref.curPageNo <= batchPageTotal && maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
+                        if (maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
                             executor.execute(() -> {
                                 int _curPageNo = 0;
                                 if (!ref.fin) {
@@ -185,7 +185,7 @@ public class CacheSchedule {
 
         var ref = new Object() {
             volatile boolean fin;
-            volatile int currentPageMark;
+            volatile int curPageNo;
         };
 
         int maxPoolSize = executor.getMaximumPoolSize();
@@ -196,14 +196,14 @@ public class CacheSchedule {
                         List<Long> list = null;
                         synchronized (thread) {
                             if (!ref.fin) {
-                                Pageable pageRequest = PageRequest.of(ref.currentPageMark, 50);
+                                Pageable pageRequest = PageRequest.of(ref.curPageNo, 50);
                                 list = blogService.findIdsByStatus(status, pageRequest);
                                 int size = list.size();
                                 if (size < 50 && !ref.fin) {
                                     ref.fin = true;
                                 }
                                 if (size == 50) {
-                                    ref.currentPageMark++;
+                                    ref.curPageNo++;
                                 }
 
                                 if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
