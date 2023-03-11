@@ -95,7 +95,6 @@ public class BlogServiceImpl implements BlogService {
         } catch (NestedRuntimeException e) {
             log.error(e.getMessage());
         }
-
     }
 
     @Override

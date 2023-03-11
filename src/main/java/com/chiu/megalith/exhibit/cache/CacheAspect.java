@@ -7,7 +7,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -36,7 +35,6 @@ import java.util.concurrent.TimeoutException;
  */
 @Aspect
 @Component
-@Slf4j
 @Order(2)
 @RequiredArgsConstructor
 public class CacheAspect {
