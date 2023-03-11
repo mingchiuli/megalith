@@ -21,7 +21,7 @@ public class LogController {
     private final RabbitListenerEndpointRegistry registry;
 
 
-    @MessageMapping("/startMQ")
+    @MessageMapping("/start")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> start() {
         MessageListenerContainer logContainer = registry.getListenerContainer("log");
@@ -33,7 +33,7 @@ public class LogController {
         return Result.success();
     }
 
-    @MessageMapping("/stopMQ")
+    @MessageMapping("/stop")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> stop() {
         MessageListenerContainer logContainer = registry.getListenerContainer("log");
