@@ -36,11 +36,15 @@ public class RabbitTemplateConfig {
 
         rabbitTemplate.setMessageConverter(jsonMessageConverter);
 
-        RetryTemplate retryTemplate = new RetryTemplate();
-        CircuitBreakerRetryPolicy circuitBreakerRetryPolicy = new CircuitBreakerRetryPolicy(new SimpleRetryPolicy(10));
-        circuitBreakerRetryPolicy.setOpenTimeout(5000L);
-        circuitBreakerRetryPolicy.setResetTimeout(10000L);
-        retryTemplate.setRetryPolicy(circuitBreakerRetryPolicy);
+        CircuitBreakerRetryPolicy retryPolicy = new CircuitBreakerRetryPolicy(
+                new SimpleRetryPolicy(10)
+        );
+        retryPolicy.setOpenTimeout(5000L);
+        retryPolicy.setResetTimeout(10000L);
+        RetryTemplate retryTemplate = RetryTemplate.
+                builder().
+                customPolicy(retryPolicy).
+                build();
 
         rabbitTemplate.setRetryTemplate(retryTemplate);
     }
