@@ -96,7 +96,6 @@ public class CoopServiceImpl implements CoopService {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
         blogService.saveOrUpdate(blogEntityVo);
 
-
         DestroyDto.Bind bind = DestroyDto.
                 Bind.
                 builder().
