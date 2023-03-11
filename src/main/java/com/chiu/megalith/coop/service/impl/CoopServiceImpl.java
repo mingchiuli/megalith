@@ -2,7 +2,7 @@ package com.chiu.megalith.coop.service.impl;
 
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
-import com.chiu.megalith.exhibit.vo.BlogEntityVo;
+import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.utils.RedisJsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;

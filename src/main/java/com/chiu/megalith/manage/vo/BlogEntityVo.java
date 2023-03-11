@@ -1,4 +1,4 @@
-package com.chiu.megalith.exhibit.vo;
+package com.chiu.megalith.manage.vo;
 
 import com.chiu.megalith.common.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * @author mingchiuli
@@ -30,5 +31,7 @@ public class BlogEntityVo {
 
     @ListValue(values = {0,1})
     private Integer status;
+
+    @URL
     private String link;
 }

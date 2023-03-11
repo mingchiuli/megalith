@@ -2,7 +2,6 @@ package com.chiu.megalith.security.component;
 
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
-import com.chiu.megalith.security.dto.LoginSuccessDto;
 import com.chiu.megalith.common.jwt.JwtUtils;
 import com.chiu.megalith.common.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-
+import java.util.HashMap;
 
 
 @Component
@@ -34,6 +33,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
 	@Override
+	@SuppressWarnings("unused")
 	public void onAuthenticationSuccess(HttpServletRequest request,
 										HttpServletResponse response,
 										Authentication authentication) throws IOException {
@@ -55,13 +55,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
 
-		Result<LoginSuccessDto> success = Result.success(
-				LoginSuccessDto.
-						builder().
-						user(user).
-						token(jwt).
-						build()
-		);
+
+		HashMap<String, Object> res = new HashMap<>(3);
+		res.put("user", user);
+		res.put("token", jwt);
+
+		Result<Object> success = Result.success(res);
 
 		outputStream.write(
 				objectMapper.writeValueAsString(success).getBytes(StandardCharsets.UTF_8)

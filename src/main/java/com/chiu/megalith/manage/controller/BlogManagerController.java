@@ -3,7 +3,7 @@ package com.chiu.megalith.manage.controller;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
-import com.chiu.megalith.exhibit.vo.BlogEntityVo;
+import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.common.lang.Result;
 import com.chiu.megalith.common.page.PageAdapter;
 import lombok.RequiredArgsConstructor;

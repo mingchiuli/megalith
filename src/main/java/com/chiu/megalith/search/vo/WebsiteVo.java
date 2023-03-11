@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * @author mingchiuli
@@ -28,6 +29,6 @@ public class WebsiteVo {
     @NotBlank
     private String description;
 
-    @NotBlank
+    @URL
     private String link;
 }

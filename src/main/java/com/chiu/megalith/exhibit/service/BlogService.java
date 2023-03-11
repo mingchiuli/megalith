@@ -2,7 +2,7 @@ package com.chiu.megalith.exhibit.service;
 
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
-import com.chiu.megalith.exhibit.vo.BlogEntityVo;
+import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.common.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
 
