@@ -172,7 +172,7 @@ public class CacheSchedule {
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,
                         "1",
-                        5,
+                        20,
                         TimeUnit.SECONDS);
 
             }
