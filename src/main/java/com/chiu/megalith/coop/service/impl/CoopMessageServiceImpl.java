@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.service.impl;
 
 import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.utils.RedisJsonUtils;
+import com.chiu.megalith.common.utils.JsonUtils;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
 import com.chiu.megalith.coop.dto.BaseBind;
 import com.chiu.megalith.coop.dto.impl.*;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,6 +21,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,7 +39,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final RedisJsonUtils redisJsonUtils;
+    private final JsonUtils jsonUtils;
     @Override
     public void chat(ChatDto.Bind msg) {
         sendToOtherUsers(msg);
@@ -84,9 +86,13 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private void sendToOtherUsers(BaseBind msg) {
         Long fromId = msg.getFromId();
-        redisJsonUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString()).
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
+        entries.remove(msg.getFromId().toString());
+
+        entries.values().
                 stream().
-                map(userStr -> redisJsonUtils.readValue(userStr, UserEntityVo.class)).
+                map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class)).
                 filter(user -> !fromId.equals(user.getId())).
                 forEach(user -> {
                     msg.setToOne(user.getId());

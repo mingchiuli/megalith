@@ -1,6 +1,6 @@
 package com.chiu.megalith.exhibit.cache;
 
-import com.chiu.megalith.common.utils.RedisJsonUtils;
+import com.chiu.megalith.common.utils.JsonUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -45,7 +45,7 @@ public class CacheAspect {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final RedisJsonUtils redisJsonUtils;
+    private final JsonUtils jsonUtils;
 
     private final ObjectMapper objectMapper;
 
@@ -80,7 +80,7 @@ public class CacheAspect {
             if (args[i] instanceof String) {
                 params.append(args[i]);
             } else {
-                params.append(redisJsonUtils.writeValueAsString(args[i]));
+                params.append(jsonUtils.writeValueAsString(args[i]));
             }
             parameterTypes[i] = args[i].getClass();
         }

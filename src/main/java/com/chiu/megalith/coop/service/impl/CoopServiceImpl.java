@@ -4,7 +4,7 @@ import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.utils.RedisJsonUtils;
+import com.chiu.megalith.common.utils.JsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
@@ -16,11 +16,12 @@ import com.chiu.megalith.coop.vo.InitCoopVo;
 import com.chiu.megalith.coop.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,7 +39,7 @@ public class CoopServiceImpl implements CoopService {
 
     private final BlogService blogService;
 
-    private final RedisJsonUtils redisJsonUtils;
+    private final JsonUtils jsonUtils;
 
     @Override
     public InitCoopVo joinCoop(Long blogId,
@@ -67,11 +68,12 @@ public class CoopServiceImpl implements CoopService {
                 data(new Container<>(bind)).
                 build();
 
-        Collection<String> usersStr = redisJsonUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
+        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
+        List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
-                map(str -> redisJsonUtils.readValue(str, UserEntityVo.class)).
+                map(str -> jsonUtils.readValue(str, UserEntityVo.class)).
                 filter(user -> !user.getId().equals(userId)).
                 forEach(user -> {
                     bind.setToOne(user.getId());
@@ -107,11 +109,12 @@ public class CoopServiceImpl implements CoopService {
                 data(new Container<>(bind)).
                 build();
 
-        Collection<String> usersStr = redisJsonUtils.opsForHashValues(Const.COOP_PREFIX.getInfo() + blogId);
+        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
+        List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
         usersStr.
                 stream().
-                map(str -> redisJsonUtils.readValue(str, UserEntityVo.class)).
+                map(str -> jsonUtils.readValue(str, UserEntityVo.class)).
                 filter(user -> userId != user.getId()).
                 forEach(user -> {
                     bind.setToOne(user.getId());

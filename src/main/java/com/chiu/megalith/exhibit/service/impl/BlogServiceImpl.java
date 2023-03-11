@@ -12,7 +12,7 @@ import com.chiu.megalith.common.lang.Const;
 import com.chiu.megalith.common.page.PageAdapter;
 import com.chiu.megalith.common.search.BlogIndexEnum;
 import com.chiu.megalith.common.search.BlogSearchIndexMessage;
-import com.chiu.megalith.common.utils.RedisJsonUtils;
+import com.chiu.megalith.common.utils.JsonUtils;
 import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class BlogServiceImpl implements BlogService {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final RedisJsonUtils redisJsonUtils;
+    private final JsonUtils jsonUtils;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -224,7 +224,7 @@ public class BlogServiceImpl implements BlogService {
             blogRepository.delete(blogEntity);
 
             redisTemplate.opsForValue().set(userId + Const.QUERY_DELETED.getInfo() + id,
-                    redisJsonUtils.writeValueAsString(blogEntity),
+                    jsonUtils.writeValueAsString(blogEntity),
                     7,
                     TimeUnit.DAYS);
 
@@ -327,7 +327,7 @@ public class BlogServiceImpl implements BlogService {
                 content(list.
                         stream().
                         filter(Objects::nonNull).
-                        map(str -> redisJsonUtils.readValue(str, BlogEntity.class)).
+                        map(str -> jsonUtils.readValue(str, BlogEntity.class)).
                         sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
                         limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
                         toList()).
@@ -350,7 +350,7 @@ public class BlogServiceImpl implements BlogService {
                 ).
                 orElseThrow(() -> new NotFoundException("blog is expired"));
 
-        BlogEntity tempBlog = redisJsonUtils.readValue(blogStr, BlogEntity.class);
+        BlogEntity tempBlog = jsonUtils.readValue(blogStr, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
         redisTemplate.delete(userId + Const.QUERY_DELETED.getInfo() + id);
 
