@@ -2,7 +2,7 @@ package com.chiu.megalith.exhibit.schedule;
 
 import com.chiu.megalith.exhibit.controller.BlogController;
 import com.chiu.megalith.exhibit.service.BlogService;
-import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

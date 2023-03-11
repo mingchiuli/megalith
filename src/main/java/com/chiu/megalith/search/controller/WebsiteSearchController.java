@@ -1,9 +1,9 @@
 package com.chiu.megalith.search.controller;
 
 import com.chiu.megalith.exhibit.cache.Cache;
-import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.lang.Result;
-import com.chiu.megalith.common.page.PageAdapter;
+import com.chiu.megalith.base.lang.Const;
+import com.chiu.megalith.base.lang.Result;
+import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.search.service.WebsiteSearchService;
 import com.chiu.megalith.search.vo.WebsiteDocumentVo;
 import com.chiu.megalith.search.vo.WebsiteVo;

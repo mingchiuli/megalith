@@ -1,6 +1,6 @@
 package com.chiu.megalith.security.component.provider;
 
-import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.security.user.LoginUser;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

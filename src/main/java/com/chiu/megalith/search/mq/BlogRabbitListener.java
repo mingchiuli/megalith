@@ -1,7 +1,7 @@
 package com.chiu.megalith.search.mq;
 
-import com.chiu.megalith.common.search.BlogSearchIndexMessage;
-import com.chiu.megalith.common.utils.SpringUtils;
+import com.chiu.megalith.base.search.BlogSearchIndexMessage;
+import com.chiu.megalith.base.utils.SpringUtils;
 import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import com.chiu.megalith.search.mq.handler.BlogIndexSupport;
 import com.rabbitmq.client.Channel;

@@ -3,7 +3,7 @@ package com.chiu.megalith.manage.service;
 
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.vo.UserEntityVo;
-import com.chiu.megalith.common.page.PageAdapter;
+import com.chiu.megalith.base.page.PageAdapter;
 
 import java.time.LocalDateTime;
 import java.util.List;

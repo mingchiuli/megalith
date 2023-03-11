@@ -2,8 +2,8 @@ package com.chiu.megalith.security.component;
 
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
-import com.chiu.megalith.common.jwt.JwtUtils;
-import com.chiu.megalith.common.lang.Result;
+import com.chiu.megalith.base.jwt.JwtUtils;
+import com.chiu.megalith.base.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;

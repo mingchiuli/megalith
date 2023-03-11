@@ -1,6 +1,6 @@
 package com.chiu.megalith.search.vo;
 
-import com.chiu.megalith.common.valid.ListValue;
+import com.chiu.megalith.base.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

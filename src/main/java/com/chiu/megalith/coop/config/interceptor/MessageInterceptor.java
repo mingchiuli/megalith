@@ -1,6 +1,6 @@
 package com.chiu.megalith.coop.config.interceptor;
 
-import com.chiu.megalith.common.jwt.JwtUtils;
+import com.chiu.megalith.base.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;

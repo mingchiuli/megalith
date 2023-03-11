@@ -1,8 +1,8 @@
 package com.chiu.megalith.coop.controller;
 
 import com.chiu.megalith.manage.vo.BlogEntityVo;
-import com.chiu.megalith.common.lang.Result;
-import com.chiu.megalith.common.valid.CoopBlogId;
+import com.chiu.megalith.base.lang.Result;
+import com.chiu.megalith.base.valid.CoopBlogId;
 import com.chiu.megalith.coop.service.CoopService;
 import com.chiu.megalith.coop.vo.InitCoopVo;
 import lombok.RequiredArgsConstructor;

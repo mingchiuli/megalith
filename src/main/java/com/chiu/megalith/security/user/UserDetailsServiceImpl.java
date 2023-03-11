@@ -1,6 +1,6 @@
 package com.chiu.megalith.security.user;
 
-import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

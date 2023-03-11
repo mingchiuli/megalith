@@ -1,7 +1,7 @@
 package com.chiu.megalith.exhibit.bloom;
 
 import com.chiu.megalith.exhibit.bloom.handler.BloomHandler;
-import com.chiu.megalith.common.utils.SpringUtils;
+import com.chiu.megalith.base.utils.SpringUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;

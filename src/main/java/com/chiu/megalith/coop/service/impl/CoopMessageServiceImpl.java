@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.service.impl;
 
-import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.utils.JsonUtils;
+import com.chiu.megalith.base.lang.Const;
+import com.chiu.megalith.base.utils.JsonUtils;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
 import com.chiu.megalith.coop.dto.BaseBind;
 import com.chiu.megalith.coop.dto.impl.*;

@@ -1,9 +1,9 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import com.chiu.megalith.common.jwt.JwtUtils;
-import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.page.PageAdapter;
+import com.chiu.megalith.base.jwt.JwtUtils;
+import com.chiu.megalith.base.lang.Const;
+import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.search.document.WebsiteDocument;
 import com.chiu.megalith.search.service.WebsiteSearchService;
 import com.chiu.megalith.search.vo.WebsiteDocumentVo;

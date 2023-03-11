@@ -2,7 +2,7 @@ package com.chiu.megalith.security.component.provider;
 
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.security.user.LoginUser;
-import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.base.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;

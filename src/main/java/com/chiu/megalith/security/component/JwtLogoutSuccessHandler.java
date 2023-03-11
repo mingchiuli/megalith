@@ -1,6 +1,6 @@
 package com.chiu.megalith.security.component;
 
-import com.chiu.megalith.common.lang.Result;
+import com.chiu.megalith.base.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;

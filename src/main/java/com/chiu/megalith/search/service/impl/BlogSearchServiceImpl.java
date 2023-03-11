@@ -2,8 +2,8 @@ package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
-import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.page.PageAdapter;
+import com.chiu.megalith.base.lang.Const;
+import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.search.document.BlogDocument;
 import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;

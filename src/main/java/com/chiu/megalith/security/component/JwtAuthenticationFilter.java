@@ -1,7 +1,7 @@
 package com.chiu.megalith.security.component;
 
-import com.chiu.megalith.common.jwt.JwtUtils;
-import com.chiu.megalith.common.lang.Result;
+import com.chiu.megalith.base.jwt.JwtUtils;
+import com.chiu.megalith.base.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

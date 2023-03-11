@@ -1,8 +1,8 @@
 package com.chiu.megalith.manage.vo;
 
-import com.chiu.megalith.common.valid.ListValue;
-import com.chiu.megalith.common.valid.Phone;
-import com.chiu.megalith.common.valid.Username;
+import com.chiu.megalith.base.valid.ListValue;
+import com.chiu.megalith.base.valid.Phone;
+import com.chiu.megalith.base.valid.Username;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

@@ -7,7 +7,7 @@ import com.chiu.megalith.manage.repository.MenuRepository;
 import com.chiu.megalith.manage.service.MenuService;
 import com.chiu.megalith.manage.service.RoleService;
 import com.chiu.megalith.manage.vo.MenuEntityVo;
-import com.chiu.megalith.common.exception.NotFoundException;
+import com.chiu.megalith.base.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.chiu.megalith.security.component.provider;
 
 import com.chiu.megalith.security.user.LoginUser;
-import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.base.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;

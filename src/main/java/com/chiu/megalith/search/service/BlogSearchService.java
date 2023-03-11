@@ -2,7 +2,7 @@ package com.chiu.megalith.search.service;
 
 
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
-import com.chiu.megalith.common.page.PageAdapter;
+import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.search.vo.BlogDocumentVo;
 
 /**

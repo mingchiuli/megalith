@@ -2,8 +2,8 @@ package com.chiu.megalith.search.mq.handler;
 
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
-import com.chiu.megalith.common.lang.Const;
-import com.chiu.megalith.common.search.BlogIndexEnum;
+import com.chiu.megalith.base.lang.Const;
+import com.chiu.megalith.base.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;

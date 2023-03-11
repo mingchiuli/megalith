@@ -1,8 +1,8 @@
 package com.chiu.megalith.exhibit.bloom.handler.impl;
 
 import com.chiu.megalith.exhibit.bloom.handler.BloomHandler;
-import com.chiu.megalith.common.exception.NotFoundException;
-import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.base.exception.NotFoundException;
+import com.chiu.megalith.base.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;

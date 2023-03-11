@@ -1,6 +1,6 @@
 package com.chiu.megalith.exhibit.cache;
 
-import com.chiu.megalith.common.lang.Const;
+import com.chiu.megalith.base.lang.Const;
 
 import java.lang.annotation.*;
 
