@@ -55,6 +55,10 @@ public class CacheAspect {
             expireAfterWrite(Duration.ofMinutes(60)).
             build(this::createRlock);
 
+    private RLock createRlock(String key) {
+        return redisson.getLock(key);
+    }
+
 
     @Pointcut("@annotation(com.chiu.megalith.exhibit.cache.Cache)")
     public void pt() {}
@@ -155,7 +159,4 @@ public class CacheAspect {
         return objectMapper.getTypeFactory().constructParametricType(rawType, javaTypes);
     }
 
-    private RLock createRlock(String key) {
-        return redisson.getLock(key);
-    }
 }

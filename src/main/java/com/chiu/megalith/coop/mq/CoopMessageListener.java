@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CoopMessageRabbitListener {
+public class CoopMessageListener {
 
     private static class CacheHandlers {
         private static final Map<String, CoopHandler> cacheHandlers = SpringUtils.getHandlers(CoopHandler.class);
@@ -30,8 +30,8 @@ public class CoopMessageRabbitListener {
 
 
     @Bean("CoopMessageListener")
-    public MessageListenerAdapter coopMessageListener(CoopMessageRabbitListener coopMessageRabbitListener) {
-        return new MessageListenerAdapter(coopMessageRabbitListener, "processMessage");
+    public MessageListenerAdapter coopMessageListener(CoopMessageListener coopMessageListener) {
+        return new MessageListenerAdapter(coopMessageListener, "processMessage");
     }
 
     @Bean("CoopMessageListenerContainer")

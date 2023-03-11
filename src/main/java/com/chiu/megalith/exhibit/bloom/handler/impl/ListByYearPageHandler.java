@@ -10,13 +10,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ListByYearBloomHandler implements BloomHandler {
-    private final StringRedisTemplate redisTemplate;
+public class ListByYearPageHandler extends BloomHandler {
 
-    @Override
-    public boolean supports(Class<? extends BloomHandler> clazz) {
-        return clazz.equals(ListByYearBloomHandler.class);
-    }
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public void handle(Object[] args) {

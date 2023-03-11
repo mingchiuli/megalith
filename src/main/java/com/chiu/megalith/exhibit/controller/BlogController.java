@@ -28,7 +28,7 @@ public class BlogController {
     private final BlogService blogService;
 
     @GetMapping("/info/{id}")
-    @Bloom(handler = DetailBloomHandler.class)
+    @Bloom(handler = DetailPageHandler.class)
     public Result<BlogEntity> getBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findByIdAndStatus(id, 0);
         blogService.setReadCount(id);
@@ -37,7 +37,7 @@ public class BlogController {
 
     @GetMapping("/page/{currentPage}")
     @Cache(prefix = Const.HOT_BLOGS)
-    @Bloom(handler = ListBloomHandler.class)
+    @Bloom(handler = ListPageHandler.class)
     public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage) {
         PageAdapter<BlogEntity> pageData = blogService.listPage(currentPage);
         return Result.success(pageData);
@@ -45,7 +45,7 @@ public class BlogController {
 
     @GetMapping("/page/year/{year}/{currentPage}")
     @Cache(prefix = Const.HOT_BLOGS)
-    @Bloom(handler = ListByYearBloomHandler.class)
+    @Bloom(handler = ListByYearPageHandler.class)
     public Result<PageAdapter<BlogEntity>> listPageByYear(@PathVariable(name = "currentPage") Integer currentPage,
                                                           @PathVariable(name = "year") Integer year) {
         PageAdapter<BlogEntity> pageData = blogService.listPageByYear(currentPage, year);
@@ -54,7 +54,7 @@ public class BlogController {
 
     @GetMapping("/count/year/{year}")
     @Cache(prefix = Const.HOT_BLOGS)
-    @Bloom(handler = CountByYearBloomHandler.class)
+    @Bloom(handler = CountYearHandler.class)
     public Result<Integer> getCountByYear(@PathVariable(name = "year") Integer year) {
         Integer count = blogService.getCountByYear(year);
         return Result.success(count);
@@ -68,7 +68,7 @@ public class BlogController {
     }
 
     @GetMapping("/status/{blogId}")
-    @Bloom(handler = BlogStatusBloomHandler.class)
+    @Bloom(handler = BlogStatusHandler.class)
     @Cache(prefix = Const.BLOG_STATUS)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
         Integer status = blogService.findStatusById(blogId);

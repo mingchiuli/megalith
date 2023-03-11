@@ -10,20 +10,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CountByYearBloomHandler implements BloomHandler {
+public class DetailPageHandler extends BloomHandler {
 
     private final StringRedisTemplate redisTemplate;
 
     @Override
-    public boolean supports(Class<? extends BloomHandler> clazz) {
-        return clazz.equals(CountByYearBloomHandler.class);
-    }
-
-    @Override
     public void handle(Object[] args) {
-        Integer year = (Integer) args[0];
-        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEARS.getInfo(), year))) {
-            throw new NotFoundException("Not found " + year + " year");
+        Long blogId = (Long) args[0];
+        if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_BLOG.getInfo(), blogId))) {
+            throw new NotFoundException("Not found "+ blogId + " blog");
         }
     }
 }

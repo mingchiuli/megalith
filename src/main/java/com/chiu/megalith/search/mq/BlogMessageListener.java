@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class BlogRabbitListener {
+public class BlogMessageListener {
     private static class CacheHandlers {
         private static final Map<String, BlogIndexSupport> cacheHandlers = SpringUtils.getHandlers(BlogIndexSupport.class);
     }

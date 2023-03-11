@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LogMessageRabbitListener {
+public class LogMessageListener {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 

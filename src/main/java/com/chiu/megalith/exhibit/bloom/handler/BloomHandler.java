@@ -1,8 +1,10 @@
 package com.chiu.megalith.exhibit.bloom.handler;
 
-public interface BloomHandler {
+public abstract class BloomHandler {
 
-    boolean supports(Class<? extends BloomHandler> clazz);
+    public boolean supports(Class<? extends BloomHandler> clazz) {
+        return clazz.equals(this.getClass());
+    }
 
-    void handle(Object[] args);
+    public abstract void handle(Object[] args);
 }
