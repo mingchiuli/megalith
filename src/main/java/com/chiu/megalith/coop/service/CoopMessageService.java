@@ -1,9 +1,6 @@
 package com.chiu.megalith.coop.service;
 
-import com.chiu.megalith.coop.dto.impl.ChatDto;
-import com.chiu.megalith.coop.dto.impl.DestroyDto;
-import com.chiu.megalith.coop.dto.impl.QuitDto;
-import com.chiu.megalith.coop.dto.impl.SyncDto;
+import com.chiu.megalith.coop.dto.*;
 
 
 /**
@@ -11,13 +8,13 @@ import com.chiu.megalith.coop.dto.impl.SyncDto;
  * @create 2022-12-28 3:42 pm
  */
 public interface CoopMessageService {
-    void chat(ChatDto.Bind msg);
+    void chat(MessageDto.BaseBind msg);
 
-    void syncContent(SyncDto.Bind msg);
+    void syncContent(MessageDto.BaseBind msg);
 
-    void destroy(DestroyDto.Bind msg);
+    void destroy(MessageDto.BaseBind msg);
 
-    void quit(QuitDto.Bind msg);
+    void quit(MessageDto.BaseBind msg);
 
     void setUserToRedisSession(Long userId, Long blogId);
 

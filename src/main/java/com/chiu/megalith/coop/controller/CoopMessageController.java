@@ -1,9 +1,6 @@
 package com.chiu.megalith.coop.controller;
 
-import com.chiu.megalith.coop.dto.impl.ChatDto;
-import com.chiu.megalith.coop.dto.impl.DestroyDto;
-import com.chiu.megalith.coop.dto.impl.QuitDto;
-import com.chiu.megalith.coop.dto.impl.SyncDto;
+import com.chiu.megalith.coop.dto.*;
 import com.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -26,25 +23,25 @@ public class CoopMessageController {
 
     @MessageMapping("/chat")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void chat(@RequestBody ChatDto.Bind msg) {
+    public void chat(@RequestBody MessageDto.BaseBind msg) {
         coopMessageService.chat(msg);
     }
 
     @MessageMapping("/sync")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void syncContent(@RequestBody SyncDto.Bind msg) {
+    public void syncContent(@RequestBody MessageDto.BaseBind msg) {
         coopMessageService.syncContent(msg);
     }
 
     @MessageMapping("/destroy")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole())")
-    public void destroy(@RequestBody DestroyDto.Bind msg) {
+    public void destroy(@RequestBody MessageDto.BaseBind msg) {
         coopMessageService.destroy(msg);
     }
 
     @MessageMapping("/quit")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void quit(@RequestBody QuitDto.Bind msg) {
+    public void quit(@RequestBody MessageDto.BaseBind msg) {
         coopMessageService.quit(msg);
     }
 

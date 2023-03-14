@@ -1,5 +1,6 @@
 package com.chiu.megalith.coop.service.impl;
 
+import com.chiu.megalith.coop.dto.MessageDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
@@ -8,9 +9,8 @@ import com.chiu.megalith.base.utils.JsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
-import com.chiu.megalith.coop.dto.Container;
-import com.chiu.megalith.coop.dto.impl.DestroyDto;
-import com.chiu.megalith.coop.dto.impl.JoinDto;
+import com.chiu.megalith.coop.dto.DestroyDto;
+import com.chiu.megalith.coop.dto.JoinDto;
 import com.chiu.megalith.coop.service.CoopService;
 import com.chiu.megalith.coop.vo.InitCoopVo;
 import com.chiu.megalith.coop.vo.UserEntityVo;
@@ -65,7 +65,7 @@ public class CoopServiceImpl implements CoopService {
 
         JoinDto dto = JoinDto.
                 builder().
-                data(new Container<>(bind)).
+                content(new MessageDto.Container<>(bind)).
                 build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
@@ -105,7 +105,7 @@ public class CoopServiceImpl implements CoopService {
 
         DestroyDto dto = DestroyDto.
                 builder().
-                data(new Container<>(bind)).
+                content(new MessageDto.Container<>(bind)).
                 build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();

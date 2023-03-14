@@ -1,28 +1,20 @@
-package com.chiu.megalith.coop.dto.impl;
+package com.chiu.megalith.coop.dto;
 
-import com.chiu.megalith.coop.dto.BaseBind;
-import com.chiu.megalith.coop.dto.Container;
-import com.chiu.megalith.coop.dto.MessageDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-public class ChatDto implements Serializable, MessageDto {
-    private Container<Bind> message;
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Container<Bind> getData() {
-        return message;
-    }
+@SuperBuilder
+public class ChatDto extends MessageDto implements Serializable {
 
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
+    @AllArgsConstructor
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Bind extends BaseBind implements Serializable {

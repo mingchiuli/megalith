@@ -1,8 +1,7 @@
 package com.chiu.megalith.coop.mq.handler.impl;
 
-import com.chiu.megalith.coop.dto.Container;
 import com.chiu.megalith.coop.dto.MessageDto;
-import com.chiu.megalith.coop.dto.impl.DestroyDto;
+import com.chiu.megalith.coop.dto.DestroyDto;
 import com.chiu.megalith.coop.mq.handler.CoopHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -21,10 +20,10 @@ public class DestroyHandler implements CoopHandler {
 
     @Override
     public void handle(MessageDto msg) {
-        Container<DestroyDto.Bind> container = msg.getData();
-        DestroyDto.Bind data = container.getData();
+        MessageDto.Container<MessageDto.BaseBind> container = msg.getData();
+        MessageDto.BaseBind data = container.getData();
         Long id = data.getBlogId();
         Long to = data.getToOne();
-        simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + "/topic/destroy", data);
+        simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + "/destroy", data);
     }
 }

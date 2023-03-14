@@ -3,8 +3,7 @@ package com.chiu.megalith.coop.service.impl;
 import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.base.utils.JsonUtils;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
-import com.chiu.megalith.coop.dto.BaseBind;
-import com.chiu.megalith.coop.dto.impl.*;
+import com.chiu.megalith.coop.dto.*;
 import com.chiu.megalith.coop.service.CoopMessageService;
 import com.chiu.megalith.coop.vo.UserEntityVo;
 import com.chiu.megalith.manage.entity.UserEntity;
@@ -41,22 +40,22 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final JsonUtils jsonUtils;
     @Override
-    public void chat(ChatDto.Bind msg) {
+    public void chat(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void syncContent(SyncDto.Bind msg) {
+    public void syncContent(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void destroy(DestroyDto.Bind msg) {
+    public void destroy(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void quit(QuitDto.Bind msg) {
+    public void quit(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
         redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
     }
@@ -84,7 +83,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
         });
     }
 
-    private void sendToOtherUsers(BaseBind msg) {
+    private void sendToOtherUsers(MessageDto.BaseBind msg) {
         Long fromId = msg.getFromId();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());

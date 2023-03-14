@@ -1,8 +1,7 @@
 package com.chiu.megalith.coop.mq.handler.impl;
 
-import com.chiu.megalith.coop.dto.Container;
 import com.chiu.megalith.coop.dto.MessageDto;
-import com.chiu.megalith.coop.dto.impl.JoinDto;
+import com.chiu.megalith.coop.dto.JoinDto;
 import com.chiu.megalith.coop.mq.handler.CoopHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,10 +24,10 @@ public class JoinHandler implements CoopHandler {
 
     @Override
     public void handle(MessageDto msg) {
-        Container<JoinDto.Bind> container = msg.getData();
-        JoinDto.Bind data = container.getData();
+        MessageDto.Container<MessageDto.BaseBind> container = msg.getData();
+        MessageDto.BaseBind data = container.getData();
         Long id = data.getBlogId();
         Long to = data.getToOne();
-        simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + "/topic/join", data);
+        simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + "/join", data);
     }
 }
