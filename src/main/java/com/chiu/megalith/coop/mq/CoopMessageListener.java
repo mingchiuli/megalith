@@ -4,7 +4,6 @@ import com.chiu.megalith.base.utils.SpringUtils;
 import com.chiu.megalith.coop.dto.MessageDto;
 import com.chiu.megalith.coop.mq.handler.CoopHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CoopMessageListener {
