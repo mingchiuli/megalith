@@ -23,25 +23,25 @@ public class CoopMessageController {
 
     @MessageMapping("/chat")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void chat(@RequestBody MessageDto.BaseBind msg) {
+    public void chat(@RequestBody ChatDto.Bind msg) {
         coopMessageService.chat(msg);
     }
 
     @MessageMapping("/sync")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void syncContent(@RequestBody MessageDto.BaseBind msg) {
+    public void syncContent(@RequestBody SyncDto.Bind msg) {
         coopMessageService.syncContent(msg);
     }
 
     @MessageMapping("/destroy")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole())")
-    public void destroy(@RequestBody MessageDto.BaseBind msg) {
+    public void destroy(@RequestBody DestroyDto.Bind msg) {
         coopMessageService.destroy(msg);
     }
 
     @MessageMapping("/quit")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void quit(@RequestBody MessageDto.BaseBind msg) {
+    public void quit(@RequestBody QuitDto.Bind msg) {
         coopMessageService.quit(msg);
     }
 
