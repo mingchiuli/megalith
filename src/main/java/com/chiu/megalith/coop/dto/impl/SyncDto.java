@@ -1,5 +1,6 @@
-package com.chiu.megalith.coop.dto;
+package com.chiu.megalith.coop.dto.impl;
 
+import com.chiu.megalith.coop.dto.MessageDto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

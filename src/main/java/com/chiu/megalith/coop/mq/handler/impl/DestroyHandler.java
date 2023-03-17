@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.mq.handler.impl;
 
 import com.chiu.megalith.coop.dto.MessageDto;
-import com.chiu.megalith.coop.dto.DestroyDto;
+import com.chiu.megalith.coop.dto.impl.DestroyDto;
 import com.chiu.megalith.coop.mq.handler.CoopHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

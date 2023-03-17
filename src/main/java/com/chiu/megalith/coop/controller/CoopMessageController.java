@@ -1,7 +1,10 @@
 package com.chiu.megalith.coop.controller;
 
 import com.chiu.megalith.base.lang.Result;
-import com.chiu.megalith.coop.dto.*;
+import com.chiu.megalith.coop.dto.impl.ChatDto;
+import com.chiu.megalith.coop.dto.impl.DestroyDto;
+import com.chiu.megalith.coop.dto.impl.QuitDto;
+import com.chiu.megalith.coop.dto.impl.SyncDto;
 import com.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
