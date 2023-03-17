@@ -73,7 +73,11 @@ public class BlogEntity implements Serializable {
         return getClass().hashCode();
     }
 
-    public BlogEntity(Long id, String title, String description, LocalDateTime created, String link) {
+    public BlogEntity(Long id,
+                      String title,
+                      String description,
+                      LocalDateTime created,
+                      String link) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -81,7 +85,14 @@ public class BlogEntity implements Serializable {
         this.link = link;
     }
 
-    public BlogEntity(Long id, Long userId, String title, String description, String content, LocalDateTime created, Integer status, Long readCount) {
+    public BlogEntity(Long id,
+                      Long userId,
+                      String title,
+                      String description,
+                      String content,
+                      LocalDateTime created,
+                      Integer status,
+                      Long readCount) {
         this.id = id;
         this.userId = userId;
         this.title = title;
