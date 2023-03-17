@@ -1,8 +1,8 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.0.3"
+	id("org.springframework.boot") version "3.0.4"
 	id("io.spring.dependency-management") version "1.1.0"
-//	id("org.graalvm.buildtools.native") version "0.9.18"
+//	id("org.graalvm.buildtools.native") version "0.9.20"
 }
 
 group = "com.chiu"
@@ -32,8 +32,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.security:spring-security-messaging")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-	implementation("org.redisson:redisson-spring-boot-starter:3.19.1")
-	implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
+	implementation("org.redisson:redisson-spring-boot-starter:3.20.0")
+	implementation("com.github.ben-manes.caffeine:caffeine:3.1.5")
+	implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final") {
+		artifact {
+			classifier = "osx-aarch_64"
+		}
+	}
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("com.mysql:mysql-connector-j")
