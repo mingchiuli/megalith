@@ -1,5 +1,6 @@
 package com.chiu.megalith.coop.controller;
 
+import com.chiu.megalith.base.lang.Result;
 import com.chiu.megalith.coop.dto.*;
 import com.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,9 @@ public class CoopMessageController {
 
     @MessageMapping("/chat")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void chat(@RequestBody ChatDto.Bind msg) {
+    public Result<Void> chat(@RequestBody ChatDto.Bind msg) {
         coopMessageService.chat(msg);
+        return Result.success();
     }
 
     @MessageMapping("/sync")

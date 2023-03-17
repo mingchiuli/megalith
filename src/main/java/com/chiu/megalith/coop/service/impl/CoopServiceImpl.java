@@ -42,7 +42,7 @@ public class CoopServiceImpl implements CoopService {
     private final JsonUtils jsonUtils;
 
     @Override
-    public InitCoopVo joinCoop(Long blogId,
+    public InitCoopVo join(Long blogId,
                                Integer orderNumber) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 

@@ -26,7 +26,7 @@ public class CoopController {
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<InitCoopVo> joinCoop(@PathVariable @CoopBlogId Long blogId,
                                        @PathVariable Integer orderNumber) {
-        InitCoopVo initCoopVo = coopService.joinCoop(blogId, orderNumber);
+        InitCoopVo initCoopVo = coopService.join(blogId, orderNumber);
         return Result.success(initCoopVo);
     }
 

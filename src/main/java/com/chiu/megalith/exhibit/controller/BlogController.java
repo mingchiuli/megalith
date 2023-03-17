@@ -35,7 +35,7 @@ public class BlogController {
         return Result.success(blog);
     }
 
-    @GetMapping("/page/{currentPage}")
+    @GetMapping("/page/total/{currentPage}")
     @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListPageHandler.class)
     public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage) {
