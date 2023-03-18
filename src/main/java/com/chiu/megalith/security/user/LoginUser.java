@@ -5,6 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author mingchiuli
@@ -13,6 +15,8 @@ import java.util.Collection;
 public class LoginUser extends User {
 
     public static final ThreadLocal<AuthenticationException> loginException = new ThreadLocal<>();
+
+    public static final Map<String, LoginUser> loginUserCache = new ConcurrentHashMap<>();
 
     private final String grantType;
 

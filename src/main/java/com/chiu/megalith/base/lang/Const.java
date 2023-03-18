@@ -8,6 +8,7 @@ package com.chiu.megalith.base.lang;
 public enum Const {
 
     GRANT_TYPE_EMAIL("email"),
+    LOGIN_USER_CACHE("login:"),
 
     GRANT_TYPE_PASSWORD("password"),
     GRANT_TYPE_PHONE("phone"),

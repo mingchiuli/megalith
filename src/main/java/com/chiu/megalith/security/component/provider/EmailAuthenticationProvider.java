@@ -5,11 +5,13 @@ import com.chiu.megalith.base.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -41,7 +43,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(prefix);
 
-        if (entries.size() == 2) {
+        if (!entries.isEmpty()) {
             String code = entries.get("code");
             String tryCount = entries.get("try_count");
 
@@ -51,7 +53,18 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
             }
 
             if (!code.equals(authentication.getCredentials().toString())) {
-                redisTemplate.opsForHash().increment(prefix, "try_count", 1);
+
+                String lua = "local ttl =  redis.call('ttl', KEYS[1]);" +
+                        "if (ttl == -2) then return 0 end;" +
+                        "redis.call('hincrby', KEYS[1], ARGV[1], 1);" +
+                        "redis.call('expire', KEYS[1], ttl);" +
+                        "return ttl;";
+
+                RedisScript<Long> script = RedisScript.of(lua, Long.class);
+                Long ttl = redisTemplate.execute(script, Collections.singletonList(prefix), "try_count");
+                if (ttl == 0) {
+                    throw new BadCredentialsException("code expired");
+                }
                 throw new BadCredentialsException("code mismatch");
             }
 

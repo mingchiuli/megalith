@@ -10,15 +10,23 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 
 @Component
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public final class UserDetailsServiceImpl implements UserDetailsService {
 
 	private final UserRepository userRepository;
 
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+		LoginUser usr = LoginUser.loginUserCache.get(username);
+		if (Optional.ofNullable(usr).isPresent()) {
+			return usr;
+		}
 
 		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username).
 				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
@@ -34,7 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		}
 
 		//通过User去自动比较用户名和密码
-		return new LoginUser(username,
+		LoginUser loginUser = new LoginUser(username,
 				user.getPassword(),
 				true,
 				true,
@@ -42,5 +50,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				user.getStatus() == 0,
 				AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()),
 				grantType);
+
+		LoginUser.loginUserCache.put(username, loginUser);
+		return loginUser;
 	}
 }

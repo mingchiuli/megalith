@@ -4,6 +4,7 @@ import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.base.jwt.JwtUtils;
 import com.chiu.megalith.base.lang.Result;
+import com.chiu.megalith.security.user.LoginUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +34,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
 	@Override
-	@SuppressWarnings("unused")
 	public void onAuthenticationSuccess(HttpServletRequest request,
 										HttpServletResponse response,
 										Authentication authentication) throws IOException {
@@ -41,6 +41,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		ServletOutputStream outputStream = response.getOutputStream();
 
 		String username = authentication.getName();
+		LoginUser.loginUserCache.remove(username);
 
 		UserEntity user = userService.retrieveUserInfo(username);
 
@@ -54,7 +55,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 						orElseThrow());
 
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
-
 
 		HashMap<String, Object> res = new HashMap<>(3);
 		res.put("user", user);
