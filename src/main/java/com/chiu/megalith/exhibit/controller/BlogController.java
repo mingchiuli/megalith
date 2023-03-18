@@ -76,10 +76,21 @@ public class BlogController {
     }
 
     @GetMapping("/token/{blogId}/{token}")
-    public Result<BlogEntity> getLockedBlog(@PathVariable Long blogId,
+    public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
                                             @PathVariable String token) {
         BlogEntity blog = blogService.getLockedBlog(blogId, token);
-        return Result.success(blog);
+        Optional<String> username = userService.findUsernameById(blog.getUserId());
+        blogService.setReadCount(blogId);
+        return Result.success(
+                BlogExhibitVo.
+                        builder().
+                        content(blog.getContent()).
+                        readCount(blog.getReadCount()).
+                        username(username.orElse("anonymous")).
+                        created(blog.getCreated()).
+                        readCount(blog.getReadCount()).
+                        build()
+        );
     }
 
     @GetMapping("/status/{blogId}")
