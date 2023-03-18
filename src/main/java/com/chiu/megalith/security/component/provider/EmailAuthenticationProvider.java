@@ -52,7 +52,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
                 throw new BadCredentialsException("code reach max try number");
             }
 
-            if (!code.equals(authentication.getCredentials().toString())) {
+            if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
 
                 String lua = "local ttl =  redis.call('ttl', KEYS[1]);" +
                         "if (ttl == -2) then return 0 end;" +
