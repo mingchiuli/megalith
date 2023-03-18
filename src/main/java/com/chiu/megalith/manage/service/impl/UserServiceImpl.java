@@ -77,6 +77,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<String> findUsernameById(Long id) {
+        return userRepository.findUsernameById(id);
+    }
+
+    @Override
     public UserEntity findById(Long userId) {
         return userRepository.findById(userId).
                 orElseThrow(() -> new NotFoundException("user not exist"));

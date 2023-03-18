@@ -7,6 +7,7 @@ import com.chiu.megalith.base.page.PageAdapter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -20,6 +21,8 @@ public interface UserService {
     void updateLoginTime(String username, LocalDateTime time);
 
     void saveOrUpdate(UserEntityVo userEntityVo);
+
+    Optional<String> findUsernameById(Long id);
 
     UserEntity findById(Long userId);
 

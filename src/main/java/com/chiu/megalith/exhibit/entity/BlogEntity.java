@@ -84,22 +84,4 @@ public class BlogEntity implements Serializable {
         this.created = created;
         this.link = link;
     }
-
-    public BlogEntity(Long id,
-                      Long userId,
-                      String title,
-                      String description,
-                      String content,
-                      LocalDateTime created,
-                      Integer status,
-                      Long readCount) {
-        this.id = id;
-        this.userId = userId;
-        this.title = title;
-        this.description = description;
-        this.content = content;
-        this.created = created;
-        this.status = status;
-        this.readCount = readCount;
-    }
 }

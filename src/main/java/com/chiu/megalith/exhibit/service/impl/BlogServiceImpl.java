@@ -104,23 +104,23 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntity> listPage(Integer currentPage) {
+    public PageAdapter<BlogEntity> findPage(Integer currentPage) {
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findAll(pageRequest);
+        Page<BlogEntity> page = blogRepository.findPage(pageRequest);
         return new PageAdapter<>(page);
     }
 
     @Override
-    public PageAdapter<BlogEntity> listPageByYear(Integer currentPage,
+    public PageAdapter<BlogEntity> findPageByYear(Integer currentPage,
                                                   Integer year) {
         LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findAllByCreatedBetween(pageRequest, start, end);
+        Page<BlogEntity> page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
         return new PageAdapter<>(page);
     }
 
@@ -138,7 +138,7 @@ public class BlogServiceImpl implements BlogService {
         String password = redisTemplate.opsForValue().get(Const.READ_TOKEN);
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
             if (password.equals(token)) {
-                return blogRepository.findByIdAndStatus(blogId, 1).
+                return blogRepository.findById(blogId).
                         orElseThrow(() -> new NotFoundException("status error"));
             }
         }
@@ -256,7 +256,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntityDto> getAllABlogs(Integer currentPage,
+    public PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage,
                                                    Integer size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.valueOf(authentication.getName());
@@ -310,7 +310,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage,
+    public PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage,
                                                     Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 

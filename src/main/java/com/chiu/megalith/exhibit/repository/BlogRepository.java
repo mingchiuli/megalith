@@ -24,8 +24,6 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     Page<BlogEntity> findAllByUserId(Pageable pageRequest, Long userId);
 
-    Page<BlogEntity> findAllByCreatedBetween(Pageable pageRequest, LocalDateTime start, LocalDateTime end);
-
     Integer countByCreatedBetween(LocalDateTime start, LocalDateTime end);
 
     Long countByCreatedAfter(LocalDateTime created);
@@ -51,4 +49,10 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
     @Modifying
     @Transactional
     void setReadCount(Long id);
+
+    @Query(value = "SELECT new BlogEntity (blog.id, blog.title, blog.description, blog.created, blog.link) from BlogEntity blog")
+    Page<BlogEntity> findPage(Pageable pageRequest);
+
+    @Query(value = "SELECT new BlogEntity (blog.id, blog.title, blog.description, blog.created, blog.link) from BlogEntity blog where blog.created between :start and :end")
+    Page<BlogEntity> findPageByCreatedBetween(Pageable pageRequest, LocalDateTime start, LocalDateTime end);
 }

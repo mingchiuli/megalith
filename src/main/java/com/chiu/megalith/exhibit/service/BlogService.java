@@ -22,9 +22,9 @@ public interface BlogService {
     BlogEntity findById(Long id);
 
 
-    PageAdapter<BlogEntity> listPage(Integer currentPage);
+    PageAdapter<BlogEntity> findPage(Integer currentPage);
 
-    PageAdapter<BlogEntity> listPageByYear(Integer currentPage, Integer year);
+    PageAdapter<BlogEntity> findPageByYear(Integer currentPage, Integer year);
 
     Integer getCountByYear(Integer year);
 
@@ -44,11 +44,11 @@ public interface BlogService {
 
     String getBlogToken();
 
-    PageAdapter<BlogEntityDto> getAllABlogs(Integer currentPage, Integer size);
+    PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size);
 
     void recoverDeletedBlog(Long id);
 
-    PageAdapter<BlogEntity> listDeletedBlogs(Integer currentPage, Integer size);
+    PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size);
 
     void changeBlogStatus(Long id, Integer status, Integer year);
 

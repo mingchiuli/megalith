@@ -1,17 +1,22 @@
 package com.chiu.megalith.manage.controller;
 
+import com.chiu.megalith.base.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.base.lang.Result;
 import com.chiu.megalith.base.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -24,11 +29,34 @@ public class BlogManagerController {
 
     private final BlogService blogService;
 
+    private final UserService userService;
+
     @GetMapping("/info/authorize/{id}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<BlogEntity> getLockedBlogDetail(@PathVariable(name = "id") Long id) {
+    public Result<BlogExhibitVo> getLockedBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findById(id);
+        Optional<String> username = userService.findUsernameById(blog.getUserId());
         blogService.setReadCount(id);
+        return Result.success(
+                BlogExhibitVo.
+                        builder().
+                        content(blog.getContent()).
+                        readCount(blog.getReadCount()).
+                        username(username.orElse("anonymous")).
+                        created(blog.getCreated()).
+                        readCount(blog.getReadCount()).
+                        build()
+        );
+    }
+
+    @GetMapping("/info/echo/{id}")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
+    public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        BlogEntity blog = blogService.findById(id);
+        if (!userId.equals(blog.getUserId())) {
+            throw new AuthenticationExceptionImpl("must edit your blog!");
+        }
         return Result.success(blog);
     }
 
@@ -64,7 +92,7 @@ public class BlogManagerController {
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                           @RequestParam(defaultValue = "5") Integer size) {
-        PageAdapter<BlogEntityDto> page = blogService.getAllABlogs(currentPage, size);
+        PageAdapter<BlogEntityDto> page = blogService.findAllABlogs(currentPage, size);
         return Result.success(page);
     }
 
@@ -72,7 +100,7 @@ public class BlogManagerController {
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogEntity>> listDeletedBlogs(@RequestParam Integer currentPage,
                                                             @RequestParam Integer size) {
-        PageAdapter<BlogEntity> deletedBlogs = blogService.listDeletedBlogs(currentPage, size);
+        PageAdapter<BlogEntity> deletedBlogs = blogService.findDeletedBlogs(currentPage, size);
         return Result.success(deletedBlogs);
     }
 

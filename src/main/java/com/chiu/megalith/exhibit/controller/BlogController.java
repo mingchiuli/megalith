@@ -8,6 +8,8 @@ import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.base.lang.Result;
 import com.chiu.megalith.base.page.PageAdapter;
+import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -27,19 +30,31 @@ public class BlogController {
 
     private final BlogService blogService;
 
+    private final UserService userService;
+
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailPageHandler.class)
-    public Result<BlogEntity> getBlogDetail(@PathVariable(name = "id") Long id) {
+    public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findByIdAndStatus(id, 0);
+        Optional<String> username = userService.findUsernameById(blog.getUserId());
         blogService.setReadCount(id);
-        return Result.success(blog);
+        return Result.success(
+                BlogExhibitVo.
+                builder().
+                content(blog.getContent()).
+                readCount(blog.getReadCount()).
+                username(username.orElse("anonymous")).
+                created(blog.getCreated()).
+                readCount(blog.getReadCount()).
+                build()
+        );
     }
 
     @GetMapping("/page/total/{currentPage}")
     @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListPageHandler.class)
     public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage) {
-        PageAdapter<BlogEntity> pageData = blogService.listPage(currentPage);
+        PageAdapter<BlogEntity> pageData = blogService.findPage(currentPage);
         return Result.success(pageData);
     }
 
@@ -48,7 +63,7 @@ public class BlogController {
     @Bloom(handler = ListByYearPageHandler.class)
     public Result<PageAdapter<BlogEntity>> listPageByYear(@PathVariable(name = "currentPage") Integer currentPage,
                                                           @PathVariable(name = "year") Integer year) {
-        PageAdapter<BlogEntity> pageData = blogService.listPageByYear(currentPage, year);
+        PageAdapter<BlogEntity> pageData = blogService.findPageByYear(currentPage, year);
         return Result.success(pageData);
     }
 
