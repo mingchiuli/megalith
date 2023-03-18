@@ -193,12 +193,12 @@ public class CacheSchedule {
             if (maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
                 executor.execute(() -> {
                     if (!ref.fin) {
-                        List<Long> list = null;
+                        List<Long> idList = null;
                         synchronized (thread) {
                             if (!ref.fin) {
                                 Pageable pageRequest = PageRequest.of(ref.curPageNo, 50);
-                                list = blogService.findIdsByStatus(status, pageRequest);
-                                int size = list.size();
+                                idList = blogService.findIdsByStatus(status, pageRequest);
+                                int size = idList.size();
                                 if (size < 50 && !ref.fin) {
                                     ref.fin = true;
                                 }
@@ -212,7 +212,7 @@ public class CacheSchedule {
                             }
                         }
 
-                        Optional.ofNullable(list).ifPresent(ids ->
+                        Optional.ofNullable(idList).ifPresent(ids ->
                                 ids.forEach(id -> {
                                     redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
                                     if (status == 0) {

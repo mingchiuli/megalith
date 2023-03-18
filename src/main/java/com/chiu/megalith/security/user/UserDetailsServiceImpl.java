@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 
 @Component
 @RequiredArgsConstructor
@@ -21,9 +19,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<UserEntity> sysUser = userRepository.findByUsernameOrEmailOrPhone(username, username, username);
 
-		UserEntity user = sysUser.
+		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username).
 				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
 		String grantType;
