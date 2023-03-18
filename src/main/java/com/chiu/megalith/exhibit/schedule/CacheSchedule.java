@@ -93,28 +93,31 @@ public class CacheSchedule {
                                         if (!ref.fin) {
                                             ref.curPageNo++;
                                             _curPageNo = ref.curPageNo;
-                                        }
-                                        if (_curPageNo == batchPageTotal) {
-                                            ref.fin = true;
+
+                                            if (_curPageNo == batchPageTotal) {
+                                                ref.fin = true;
+                                            }
+
+                                            if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
+                                                LockSupport.unpark(thread);
+                                            }
                                         }
 
-                                        if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
-                                            LockSupport.unpark(thread);
+                                    }
+
+                                    if (_curPageNo > 0) {
+                                        for (int no = (_curPageNo - 1) * 20 + 1; no <= (_curPageNo == batchPageTotal && totalPage % 20 != 0 ? totalPage : _curPageNo * 20); no++) {
+                                            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
+                                            blogController.listPage(no);
                                         }
                                     }
                                 }
-                                if (_curPageNo > 0) {
-                                    for (int no = (_curPageNo - 1) * 20 + 1; no <= (_curPageNo == batchPageTotal && totalPage % 20 != 0 ? totalPage : _curPageNo * 20); no++) {
-                                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
-                                        blogController.listPage(no);
-                                    }
-                                }
+
                             });
 
                             if (ref.fin) {
                                 break;
                             }
-
                         } else {
                             thread.interrupt();
                             LockSupport.park();
@@ -223,6 +226,7 @@ public class CacheSchedule {
 
                     }
                 });
+
                 if (ref.fin) {
                     break;
                 }
