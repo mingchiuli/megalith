@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/code")
-public class EmailCodeController {
+public class CodeController {
     private final CodeService codeService;
 
     @GetMapping("/email")
