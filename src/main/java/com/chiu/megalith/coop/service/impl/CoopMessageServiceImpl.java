@@ -70,7 +70,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
         String lua = "redis.call('hset', KEYS[1], ARGV[1], ARGV[2]);" +
                 "redis.call('expire', KEYS[1], ARGV[3]);";
 
-        RedisScript<Long> script = RedisScript.of(lua);
+        RedisScript<Void> script = RedisScript.of(lua);
         redisTemplate.execute(script, Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
                 userId.toString(), jsonUtils.writeValueAsString(userEntityVo), "21600");
     }

@@ -48,7 +48,7 @@ public class CodeOperator {
         String lua = "redis.call('hmset', KEYS[1], ARGV[1], ARGV[2], ARGV[3], ARGV[4]);" +
                 "redis.call('expire', KEYS[1], ARGV[5]);";
 
-        RedisScript<Long> script = RedisScript.of(lua);
+        RedisScript<Void> script = RedisScript.of(lua);
         redisTemplate.execute(script, Collections.singletonList(prefix),
                 "code", code, "try_count", "0", "120");
     }

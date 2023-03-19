@@ -95,11 +95,11 @@ public class BlogServiceImpl implements BlogService {
         try {
             String prefix = Const.READ_RECENT.getInfo() + id;
             String lua = "local ttl =  redis.call('ttl', KEYS[1]);" +
-                    "if (ttl == -2) then return redis.call('setex', KEYS[1] , ARGV[1], '0') end;" +
+                    "if (ttl == -2) then redis.call('setex', KEYS[1] , ARGV[1], '1') return end;" +
                     "redis.call('incr', KEYS[1]);" +
                     "redis.call('expire', KEYS[1], ttl);";
 
-            RedisScript<Long> script = RedisScript.of(lua);
+            RedisScript<Void> script = RedisScript.of(lua);
             redisTemplate.execute(script, Collections.singletonList(prefix), "604800");
         } catch (NestedRuntimeException e) {
             log.error(e.getMessage());
