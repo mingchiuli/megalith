@@ -79,6 +79,7 @@ public class BlogServiceImpl implements BlogService {
         BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, status).
                 orElseThrow(() -> new NotFoundException("blog not found"));
         Optional<String> username = userService.findUsernameById(blogEntity.getUserId());
+
         return BlogExhibitVo.
                 builder().
                 title(blogEntity.getTitle()).
