@@ -40,6 +40,7 @@ public class BlogManagerController {
         return Result.success(
                 BlogExhibitVo.
                         builder().
+                        title(blog.getTitle()).
                         content(blog.getContent()).
                         readCount(blog.getReadCount()).
                         username(username.orElse("anonymous")).

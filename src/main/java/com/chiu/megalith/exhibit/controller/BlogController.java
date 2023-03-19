@@ -35,19 +35,9 @@ public class BlogController {
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailPageHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
-        BlogEntity blog = blogService.findByIdAndStatus(id, 0);
-        Optional<String> username = userService.findUsernameById(blog.getUserId());
+        BlogExhibitVo blog = blogService.findByIdAndStatus(id, 0);
         blogService.setReadCount(id);
-        return Result.success(
-                BlogExhibitVo.
-                builder().
-                content(blog.getContent()).
-                readCount(blog.getReadCount()).
-                username(username.orElse("anonymous")).
-                created(blog.getCreated()).
-                readCount(blog.getReadCount()).
-                build()
-        );
+        return Result.success(blog);
     }
 
     @GetMapping("/page/total/{currentPage}")
@@ -84,6 +74,7 @@ public class BlogController {
         return Result.success(
                 BlogExhibitVo.
                         builder().
+                        title(blog.getTitle()).
                         content(blog.getContent()).
                         readCount(blog.getReadCount()).
                         username(username.orElse("anonymous")).

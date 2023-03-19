@@ -5,6 +5,8 @@ import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
 import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.base.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.base.exception.NotFoundException;
@@ -59,6 +61,8 @@ public class BlogServiceImpl implements BlogService {
 
     private final JsonUtils jsonUtils;
 
+    private final UserService userService;
+
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
@@ -70,10 +74,20 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Cache(prefix = Const.HOT_BLOG)
-    public BlogEntity findByIdAndStatus(Long id,
-                                        Integer status) {
-        return blogRepository.findByIdAndStatus(id, status).
+    public BlogExhibitVo findByIdAndStatus(Long id,
+                                           Integer status) {
+        BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, status).
                 orElseThrow(() -> new NotFoundException("blog not found"));
+        Optional<String> username = userService.findUsernameById(blogEntity.getUserId());
+        return BlogExhibitVo.
+                builder().
+                title(blogEntity.getTitle()).
+                content(blogEntity.getContent()).
+                readCount(blogEntity.getReadCount()).
+                username(username.orElse("anonymous")).
+                created(blogEntity.getCreated()).
+                readCount(blogEntity.getReadCount()).
+                build();
     }
 
     @Async(value = "readCountThreadPoolExecutor")

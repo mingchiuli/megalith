@@ -2,6 +2,7 @@ package com.chiu.megalith.exhibit.service;
 
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
+import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.base.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import java.util.List;
 public interface BlogService {
 
     List<Long> findIdsByStatus(Integer status, Pageable pageRequest);
-    BlogEntity findByIdAndStatus(Long id, Integer status);
+    BlogExhibitVo findByIdAndStatus(Long id, Integer status);
 
     void setReadCount(Long id);
 
