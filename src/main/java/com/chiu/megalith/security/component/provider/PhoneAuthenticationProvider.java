@@ -39,12 +39,12 @@ public final class PhoneAuthenticationProvider extends ProviderSupport {
         Map<String, String> entries = hashOperations.entries(prefix);
 
         if (!entries.isEmpty()) {
-            String code = entries.get("code");
+            String code = entries.get("msn");
             String tryCount = entries.get("try_count");
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {
                 redisTemplate.delete(prefix);
-                throw new BadCredentialsException("code reach max try number");
+                throw new BadCredentialsException("msn reach max try number");
             }
 
             if (!code.equals(authentication.getCredentials().toString())) {
@@ -58,14 +58,14 @@ public final class PhoneAuthenticationProvider extends ProviderSupport {
                 RedisScript<Long> script = RedisScript.of(lua, Long.class);
                 Long ttl = redisTemplate.execute(script, Collections.singletonList(prefix), "try_count");
                 if (ttl == 0) {
-                    throw new BadCredentialsException("code expired");
+                    throw new BadCredentialsException("msn expired");
                 }
-                throw new BadCredentialsException("code mismatch");
+                throw new BadCredentialsException("msn mismatch");
             }
 
             redisTemplate.delete(prefix);
         } else {
-            throw new BadCredentialsException("code not exist");
+            throw new BadCredentialsException("msn not exist");
         }
     }
 }
