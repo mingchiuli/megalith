@@ -23,15 +23,12 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NestedRuntimeException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.lang.NonNull;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -97,16 +94,13 @@ public class BlogServiceImpl implements BlogService {
         blogRepository.setReadCount(id);
         try {
             String prefix = Const.READ_RECENT.getInfo() + id;
-            redisTemplate.execute(new SessionCallback<>() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
-                    operations.multi();
-                    operations.opsForValue().setIfAbsent(prefix, "0", 7, TimeUnit.DAYS);
-                    operations.opsForValue().increment(prefix, 1);
-                    return operations.exec();
-                }
-            });
+            String lua = "local ttl =  redis.call('ttl', KEYS[1]);" +
+                    "if (ttl == -2) then return redis.call('setex', KEYS[1] , ARGV[1], '0') end;" +
+                    "redis.call('incr', KEYS[1]);" +
+                    "redis.call('expire', KEYS[1], ttl);";
+
+            RedisScript<Long> script = RedisScript.of(lua);
+            redisTemplate.execute(script, Collections.singletonList(prefix), "604800");
         } catch (NestedRuntimeException e) {
             log.error(e.getMessage());
         }

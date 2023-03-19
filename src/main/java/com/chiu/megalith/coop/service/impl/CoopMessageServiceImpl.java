@@ -11,17 +11,13 @@ import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.lang.NonNull;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author mingchiuli
@@ -71,16 +67,12 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 nodeMark(CoopRabbitConfig.nodeMark).
                 build();
 
-        redisTemplate.execute(new SessionCallback<>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
-                operations.multi();
-                operations.opsForHash().put(Const.COOP_PREFIX.getInfo() + blogId, userId, userEntityVo);
-                operations.expire(Const.COOP_PREFIX.getInfo() + blogId, 6, TimeUnit.HOURS);
-                return operations.exec();
-            }
-        });
+        String lua = "redis.call('hset', KEYS[1], ARGV[1], ARGV[2]);" +
+                "redis.call('expire', KEYS[1], ARGV[3]);";
+
+        RedisScript<Long> script = RedisScript.of(lua);
+        redisTemplate.execute(script, Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
+                userId.toString(), jsonUtils.writeValueAsString(userEntityVo), "21600");
     }
 
     private void sendToOtherUsers(MessageDto.BaseBind msg) {

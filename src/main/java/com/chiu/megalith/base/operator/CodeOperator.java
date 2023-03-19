@@ -1,18 +1,12 @@
 package com.chiu.megalith.base.operator;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.lang.NonNull;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author mingchiuli
@@ -21,8 +15,12 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class CodeOperator {
-    private static final char[] cs = {
+    private static final char[] code = {
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+    };
+
+    private static final char[] msn = {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
     };
 
@@ -31,26 +29,27 @@ public class CodeOperator {
     public String createCode() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 5; i++) {
-            int idx = ThreadLocalRandom.current().nextInt(cs.length);
-            builder.append(cs[idx]);
+            int idx = ThreadLocalRandom.current().nextInt(code.length);
+            builder.append(code[idx]);
+        }
+        return builder.toString();
+    }
+
+    public String createMsn() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            int idx = ThreadLocalRandom.current().nextInt(msn.length);
+            builder.append(msn[idx]);
         }
         return builder.toString();
     }
 
     public void saveCode(String code, String prefix) {
-        Map<String, Object> map = new HashMap<>(3);
-        map.put("code", code);
-        map.put("try_count", "0");
+        String lua = "redis.call('hmset', KEYS[1], ARGV[1], ARGV[2], ARGV[3], ARGV[4]);" +
+                "redis.call('expire', KEYS[1], ARGV[5]);";
 
-        redisTemplate.execute(new SessionCallback<>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
-                operations.multi();
-                operations.opsForHash().putAll(prefix, map);
-                operations.expire(prefix, 120, TimeUnit.SECONDS);
-                return operations.exec();
-            }
-        });
+        RedisScript<Long> script = RedisScript.of(lua);
+        redisTemplate.execute(script, Collections.singletonList(prefix),
+                "code", code, "try_count", "0", "120");
     }
 }

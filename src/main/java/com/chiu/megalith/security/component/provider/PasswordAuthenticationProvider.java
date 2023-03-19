@@ -4,20 +4,17 @@ import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.security.user.LoginUser;
 import com.chiu.megalith.base.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.lang.NonNull;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author mingchiuli
@@ -67,33 +64,29 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
         String prefix = Const.PASSWORD_KEY.getInfo() + username;
         List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);
         int len = loginFailureTimeStampRecords.size();
-        int r = -len - 1;
-        for (String timeStamp : loginFailureTimeStampRecords) {
-            long currentTimeMillis = System.currentTimeMillis();
-            long ts = Long.parseLong(timeStamp);
-            if (currentTimeMillis - ts < intervalTime) {
-                r++;
+        int r = - 1;
+        int l = 0;
+
+        long currentTimeMillis = System.currentTimeMillis();
+        for (int i = loginFailureTimeStampRecords.size() - 1; i >= 0; i--) {
+            long timestamp = Long.parseLong(loginFailureTimeStampRecords.get(i));
+            if (currentTimeMillis - timestamp >= intervalTime) {
+                l++;
             } else {
                 break;
             }
         }
 
-        if (len + r + 1 >= maxTryNum - 1) {
+        if (len - l + 1 >= maxTryNum) {
             userService.changeUserStatusByUsername(username, 1);
         }
 
-        int rEnd = r;
+        String lua = "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
+                "redis.call('rpush', KEYS[1], ARGV[3]);" +
+                "redis.call('expire', KEYS[1], ARGV[4])";
 
-        redisTemplate.execute(new SessionCallback<>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
-                operations.multi();
-                operations.opsForList().trim(prefix, 0, rEnd);
-                operations.opsForList().leftPush(prefix, String.valueOf(System.currentTimeMillis()));
-                operations.expire(prefix, intervalTime, TimeUnit.MILLISECONDS);
-                return operations.exec();
-            }
-        });
+        RedisScript<Void> script = RedisScript.of(lua);
+        redisTemplate.execute(script, Collections.singletonList(prefix),
+                String.valueOf(l), String.valueOf(r), String.valueOf(System.currentTimeMillis()), String.valueOf(intervalTime / 1000));
     }
 }
