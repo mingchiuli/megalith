@@ -1,10 +1,10 @@
 spring:
   mail:
-    host: smtp.163.com
-    username: 18392423997
-    password: RHIVUKVCTFIYLUDJ
+    host: smtp.163.com #SMTP服务器地址
+    username: dinglei #登陆账号
+    password: NZJVRVMISBVWIWVA #登陆密码（或授权码）
     properties:
-      from: 18392423997@163.com
+      from: dinglei@163.com #邮件发信人（即真实邮箱）
   jpa:
     show-sql: true
   datasource:
