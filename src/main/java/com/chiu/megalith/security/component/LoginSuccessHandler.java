@@ -1,5 +1,6 @@
 package com.chiu.megalith.security.component;
 
+import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.base.jwt.JwtUtils;
@@ -10,6 +11,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,6 +34,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final UserService userService;
 
+	private final StringRedisTemplate redisTemplate;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request,
@@ -39,11 +42,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 										Authentication authentication) throws IOException {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
+		String username = authentication.getName();
 
 		LoginUser.loginUserCache.remove();
+		redisTemplate.delete(Const.PASSWORD_KEY + username);
 
-		UserEntity user = userService.retrieveUserInfo(authentication.getName());
-
+		UserEntity user = userService.retrieveUserInfo(username);
 		// 生成jwt
 		String jwt = jwtUtils.generateToken(String.valueOf(user.getId()),
 				authentication.

@@ -28,6 +28,12 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 			return usr;
 		}
 
+		usr = loadUserByUsernameFromDb(username);
+		LoginUser.loginUserCache.set(usr);
+		return usr;
+	}
+
+	private LoginUser loadUserByUsernameFromDb(String username) {
 		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username).
 				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
@@ -42,7 +48,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 		}
 
 		//通过User去自动比较用户名和密码
-		LoginUser loginUser = new LoginUser(username,
+		return new LoginUser(username,
 				user.getPassword(),
 				true,
 				true,
@@ -50,8 +56,5 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 				user.getStatus() == 0,
 				AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()),
 				grantType);
-
-		LoginUser.loginUserCache.set(loginUser);
-		return loginUser;
 	}
 }

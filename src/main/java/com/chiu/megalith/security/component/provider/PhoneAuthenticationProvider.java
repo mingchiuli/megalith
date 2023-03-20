@@ -27,7 +27,8 @@ public final class PhoneAuthenticationProvider extends ProviderSupport {
     private int maxTryNum;
 
 
-    public PhoneAuthenticationProvider(UserDetailsService userDetailsService, StringRedisTemplate redisTemplate) {
+    public PhoneAuthenticationProvider(UserDetailsService userDetailsService,
+                                       StringRedisTemplate redisTemplate) {
         super(Const.GRANT_TYPE_PHONE.getInfo(), userDetailsService);
         this.redisTemplate = redisTemplate;
     }
