@@ -36,3 +36,4 @@ blog:
   email-try-count: 3
   blog-page-size: 5
   web-page-size: 9
+  password-error-intervalTime: 90000

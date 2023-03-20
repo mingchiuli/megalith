@@ -29,7 +29,8 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
 
     private final UserService userService;
 
-    private static final int intervalTime = 15 * 60 * 1000;
+    @Value("${blog.password-error-intervalTime}")
+    private long intervalTime;
 
     @Value("${blog.email-try-count}")
     private int maxTryNum;
