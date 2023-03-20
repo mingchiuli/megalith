@@ -23,7 +23,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		LoginUser usr = LoginUser.loginUserCache.get(username);
+		LoginUser usr = LoginUser.loginUserCache.get();
 		if (Optional.ofNullable(usr).isPresent()) {
 			return usr;
 		}
@@ -51,7 +51,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 				AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()),
 				grantType);
 
-		LoginUser.loginUserCache.put(username, loginUser);
+		LoginUser.loginUserCache.set(loginUser);
 		return loginUser;
 	}
 }

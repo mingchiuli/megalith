@@ -24,9 +24,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 	public void onAuthenticationFailure(HttpServletRequest request,
 										HttpServletResponse response,
 										AuthenticationException exception) throws IOException {
-		String username = request.getParameter("username");
-		LoginUser.loginUserCache.remove(username);
-
+		LoginUser.loginUserCache.remove();
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
 		Result<Object> result = Result.fail(401, exception.getMessage());
