@@ -80,7 +80,7 @@ public class CacheSchedule {
 
                     Thread thread = Thread.currentThread();
                     var ref = new Object() {
-                        volatile int curPageNo;
+                        int curPageNo;
                         volatile boolean fin;
                     };
 
@@ -188,7 +188,7 @@ public class CacheSchedule {
 
         var ref = new Object() {
             volatile boolean fin;
-            volatile int curPageNo;
+            int curPageNo;
         };
 
         int maxPoolSize = executor.getMaximumPoolSize();
