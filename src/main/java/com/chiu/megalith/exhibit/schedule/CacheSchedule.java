@@ -112,7 +112,6 @@ public class CacheSchedule {
                                         }
                                     }
                                 }
-
                             });
 
                             if (ref.fin) {
@@ -223,7 +222,6 @@ public class CacheSchedule {
                                     }
                                     blogController.getBlogStatus(id);
                         }));
-
                     }
                 });
 
