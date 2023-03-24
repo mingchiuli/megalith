@@ -63,7 +63,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 builder().
                 id(userEntity.getId()).
                 avatar(userEntity.getAvatar()).
-                username(userEntity.getUsername()).
+                nickname(userEntity.getNickname()).
                 nodeMark(CoopRabbitConfig.nodeMark).
                 build();
 
@@ -86,7 +86,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class)).
                 filter(user -> !fromId.equals(user.getId())).
                 forEach(user -> {
-                    msg.setToOne(user.getId());
+                    msg.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                             CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),

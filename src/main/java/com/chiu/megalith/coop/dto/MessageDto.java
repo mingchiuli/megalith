@@ -25,7 +25,7 @@ public abstract class MessageDto {
 
         protected Long blogId;
 
-        protected Long toOne;
+        protected Long toId;
     }
 
     @Data

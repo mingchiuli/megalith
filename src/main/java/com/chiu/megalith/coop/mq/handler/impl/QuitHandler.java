@@ -27,7 +27,7 @@ public class QuitHandler implements CoopHandler {
         MessageDto.Container<MessageDto.BaseBind> container = msg.getData();
         MessageDto.BaseBind data = container.getData();
         Long id = data.getBlogId();
-        Long to = data.getToOne();
+        Long to = data.getToId();
         simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + "/quit", data);
     }
 }

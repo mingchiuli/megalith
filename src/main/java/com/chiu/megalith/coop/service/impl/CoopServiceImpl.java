@@ -52,7 +52,7 @@ public class CoopServiceImpl implements CoopService {
                 builder().
                 id(userEntity.getId()).
                 avatar(userEntity.getAvatar()).
-                username(userEntity.getUsername()).
+                nickname(userEntity.getNickname()).
                 build();
 
         JoinDto.Bind bind = JoinDto.
@@ -76,7 +76,7 @@ public class CoopServiceImpl implements CoopService {
                 map(str -> jsonUtils.readValue(str, UserEntityVo.class)).
                 filter(user -> !user.getId().equals(userId)).
                 forEach(user -> {
-                    bind.setToOne(user.getId());
+                    bind.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                             CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
@@ -116,7 +116,7 @@ public class CoopServiceImpl implements CoopService {
                 map(str -> jsonUtils.readValue(str, UserEntityVo.class)).
                 filter(user -> userId != user.getId()).
                 forEach(user -> {
-                    bind.setToOne(user.getId());
+                    bind.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                             CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),

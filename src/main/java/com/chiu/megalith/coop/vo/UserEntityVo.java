@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class UserEntityVo implements Serializable {
     private Long id;
 
-    private String username;
+    private String nickname;
 
     private String avatar;
 
