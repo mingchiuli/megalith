@@ -77,8 +77,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<String> findUsernameById(Long id) {
-        return userRepository.findUsernameById(id);
+    public Optional<String> findNicknameById(Long id) {
+        return userRepository.findNicknameById(id);
     }
 
     @Override

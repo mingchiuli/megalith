@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class BlogExhibitVo {
-    private String username;
+    private String nickname;
 
     private String title;
 

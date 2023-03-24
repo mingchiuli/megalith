@@ -43,6 +43,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     void setUserStatusById(Long id, Integer status);
 
-    @Query(value = "SELECT user.username from UserEntity user where user.id = ?1")
-    Optional<String> findUsernameById(Long id);
+    @Query(value = "SELECT user.nickname from UserEntity user where user.id = ?1")
+    Optional<String> findNicknameById(Long id);
 }

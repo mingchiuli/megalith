@@ -69,7 +69,7 @@ public class BlogController {
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
                                             @PathVariable String token) {
         BlogEntity blog = blogService.getLockedBlog(blogId, token);
-        Optional<String> username = userService.findUsernameById(blog.getUserId());
+        Optional<String> nickname = userService.findNicknameById(blog.getUserId());
         blogService.setReadCount(blogId);
         return Result.success(
                 BlogExhibitVo.
@@ -77,7 +77,7 @@ public class BlogController {
                         title(blog.getTitle()).
                         content(blog.getContent()).
                         readCount(blog.getReadCount()).
-                        username(username.orElse("anonymous")).
+                        nickname(nickname.orElse("anonymous")).
                         created(blog.getCreated()).
                         readCount(blog.getReadCount()).
                         build()

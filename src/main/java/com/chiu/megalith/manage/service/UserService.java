@@ -22,7 +22,7 @@ public interface UserService {
 
     void saveOrUpdate(UserEntityVo userEntityVo);
 
-    Optional<String> findUsernameById(Long id);
+    Optional<String> findNicknameById(Long id);
 
     UserEntity findById(Long userId);
 

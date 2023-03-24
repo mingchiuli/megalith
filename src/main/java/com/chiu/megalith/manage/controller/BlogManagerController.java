@@ -35,7 +35,7 @@ public class BlogManagerController {
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<BlogExhibitVo> getLockedBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findById(id);
-        Optional<String> username = userService.findUsernameById(blog.getUserId());
+        Optional<String> username = userService.findNicknameById(blog.getUserId());
         blogService.setReadCount(id);
         return Result.success(
                 BlogExhibitVo.
@@ -43,7 +43,7 @@ public class BlogManagerController {
                         title(blog.getTitle()).
                         content(blog.getContent()).
                         readCount(blog.getReadCount()).
-                        username(username.orElse("anonymous")).
+                        nickname(username.orElse("anonymous")).
                         created(blog.getCreated()).
                         readCount(blog.getReadCount()).
                         build()

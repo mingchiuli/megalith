@@ -40,6 +40,9 @@ public class UserEntity implements Serializable {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "nickname")
+    private String nickname;
+
     @Column(name = "avatar")
     private String avatar;
 

@@ -22,6 +22,9 @@ public class UserEntityVo {
     private String username;
 
     @NotBlank
+    private String nickname;
+
+    @NotBlank
     private String avatar;
 
     private String password;
