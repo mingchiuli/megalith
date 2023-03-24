@@ -81,10 +81,10 @@ public class UserEntity implements Serializable {
     }
 
     public UserEntity(Long id,
-                      String username,
+                      String nickname,
                       String avatar) {
         this.id = id;
-        this.username = username;
+        this.nickname = nickname;
         this.avatar = avatar;
     }
 
