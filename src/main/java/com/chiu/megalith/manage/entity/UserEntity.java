@@ -87,8 +87,4 @@ public class UserEntity implements Serializable {
         this.nickname = nickname;
         this.avatar = avatar;
     }
-
-    public UserEntity(String username) {
-        this.username = username;
-    }
 }
