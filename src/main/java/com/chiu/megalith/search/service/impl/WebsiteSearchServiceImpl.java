@@ -42,6 +42,20 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Value("${blog.web-page-size}")
     private int webPageSize;
 
+    private final HighlightQuery highlightQuery = new HighlightQuery(
+            new Highlight(
+                    new HighlightParameters
+                            .HighlightParametersBuilder()
+                            .withPreTags("<b style='color:red'>")
+                            .withPostTags("</b>")
+                            .build(),
+                    Arrays.asList(
+                            new HighlightField("title"),
+                            new HighlightField("description"))
+            ), null);
+
+    private final List<String> fields = Arrays.asList("title", "description");
+
     @Override
     public String generateJwt() {
         return jwtUtils.generateToken(Const.ROLE_TOKEN_TOOL.getInfo(), Const.ROLE_TOKEN_TOOL.getInfo());
@@ -73,31 +87,18 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Override
     public PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage,
                                                      String keyword) {
-
         NativeQuery matchQuery = NativeQuery
                 .builder()
                 .withQuery(query ->
                         query.bool(boolQuery ->
                                 boolQuery.must(mustQuery ->
                                         mustQuery.multiMatch(multiQuery ->
-                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword)))))
+                                                multiQuery.fields(fields).query(keyword)))))
                 .withSort(sort ->
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))
                 .withPageable(PageRequest.of(currentPage - 1, webPageSize))
-                .withHighlightQuery(
-                        new HighlightQuery(
-                                new Highlight(
-                                        new HighlightParameters
-                                                .HighlightParametersBuilder()
-                                                .withPreTags("<b style='color:red'>")
-                                                .withPostTags("</b>")
-                                                .build(),
-                                        Arrays.asList(
-                                                new HighlightField("title"),
-                                                new HighlightField("description"))
-                                ), null)
-                ).
+                .withHighlightQuery(highlightQuery).
                 build();
 
         SearchHits<WebsiteDocument> search = elasticsearchTemplate.search(matchQuery, WebsiteDocument.class);
@@ -147,24 +148,13 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                         .withSort(sort ->
                                 sort.score(score ->
                                         score.order(SortOrder.Desc)))
-                        .withHighlightQuery(
-                                new HighlightQuery(
-                                        new Highlight(
-                                                new HighlightParameters
-                                                        .HighlightParametersBuilder()
-                                                        .withPreTags("<b style='color:red'>")
-                                                        .withPostTags("</b>")
-                                                        .build(),
-                                                Arrays.asList(
-                                                        new HighlightField("title"),
-                                                        new HighlightField("description"))
-                                        ), null))
+                        .withHighlightQuery(highlightQuery)
                         .withQuery(query ->
                                 query.bool(boolQuery ->
                                         boolQuery
                                                 .must(mustQuery1 ->
                                                         mustQuery1.multiMatch(multiQuery ->
-                                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword)))
+                                                                multiQuery.fields(fields).query(keyword)))
                                                 .must(mustQuery2 ->
                                                         mustQuery2.term(termQuery ->
                                                                 termQuery.field("status").value(0))))), () ->

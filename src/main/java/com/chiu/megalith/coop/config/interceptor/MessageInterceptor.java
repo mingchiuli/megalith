@@ -35,8 +35,8 @@ public class MessageInterceptor implements ChannelInterceptor {
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
             String token = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
-            Claims claim = jwtUtils.getClaimByToken(token).
-                    orElseThrow(() -> new JwtException("token invalid"));
+            Claims claim = jwtUtils.getClaimByToken(token)
+                    .orElseThrow(() -> new JwtException("token invalid"));
 
             if (jwtUtils.isTokenExpired(claim.getExpiration())) {
                 throw new JwtException("token expired");

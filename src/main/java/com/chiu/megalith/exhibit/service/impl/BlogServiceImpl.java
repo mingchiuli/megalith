@@ -211,7 +211,7 @@ public class BlogServiceImpl implements BlogService {
             BlogEntity blogEntity = blogRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("blog not exist"));
 
-            if (blogEntity.getUserId() != userId && !authority.equals(highestRole)) {
+            if (!blogEntity.getUserId().equals(userId) && !authority.equals(highestRole)) {
                 throw new AuthenticationExceptionImpl("must delete own blog");
             }
 

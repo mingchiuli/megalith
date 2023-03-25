@@ -36,11 +36,48 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
+    private final HighlightQuery highlightQueryOrigin = new HighlightQuery(
+            new Highlight(
+                    new HighlightParameters
+                            .HighlightParametersBuilder()
+                            .withPreTags("<b style='color:red'>")
+                            .withPostTags("</b>")
+                            .build(),
+                    Arrays.asList(
+                            new HighlightField("title"),
+                            new HighlightField("description"),
+                            new HighlightField("content"))),
+            null);
+
+    private final HighlightQuery highlightQuerySimple = new HighlightQuery(
+            new Highlight(
+                    new HighlightParameters
+                            .HighlightParametersBuilder()
+                            .withPreTags("<b style='color:red'>")
+                            .withPostTags("</b>")
+                            .withNumberOfFragments(1)
+                            .withFragmentSize(5)
+                            .build(),
+                    Arrays.asList(
+                            new HighlightField("title"),
+                            new HighlightField("description"),
+                            new HighlightField("content"))),
+            null);
+
+    private final List<String> fields = Arrays.asList("title", "description", "content");
+
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage,
                                                        String keyword,
                                                        Integer flag,
                                                        Integer year) {
+        HighlightQuery highlightQuery;
+
+        if (flag == 0) {
+            highlightQuery = highlightQueryOrigin;
+        } else {
+            highlightQuery = highlightQuerySimple;
+        }
 
         NativeQuery matchQuery = NativeQuery
                 .builder()
@@ -49,7 +86,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 boolQuery
                                         .must(mustQuery1 ->
                                                 mustQuery1.multiMatch(multiQuery ->
-                                                        multiQuery.fields(Arrays.asList("title", "description", "content")).query(keyword)))
+                                                        multiQuery.fields(fields).query(keyword)))
                                         .must(mustQuery2 ->
                                                 mustQuery2.term(termQuery ->
                                                         termQuery.field("status").value(0)))
@@ -62,25 +99,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))
                 .withPageable(PageRequest.of(currentPage - 1, blogPageSize))
-                .withHighlightQuery(new HighlightQuery(
-                        new Highlight(flag == 0 ?
-                                new HighlightParameters
-                                        .HighlightParametersBuilder()
-                                        .withPreTags("<b style='color:red'>")
-                                        .withPostTags("</b>")
-                                        .withNumberOfFragments(1)
-                                        .withFragmentSize(5)
-                                        .build() :
-                                new HighlightParameters
-                                        .HighlightParametersBuilder()
-                                        .withPreTags("<b style='color:red'>")
-                                        .withPostTags("</b>")
-                                        .build(),
-                                Arrays.asList(
-                                        new HighlightField("title"),
-                                        new HighlightField("description"),
-                                        new HighlightField("content"))),
-                        null))
+                .withHighlightQuery(highlightQuery)
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
@@ -132,7 +151,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 boolQuery
                                         .must(mustQuery1 ->
                                                 mustQuery1.multiMatch(multiQuery -> multiQuery.
-                                                        fields(Arrays.asList("title", "description", "content")).query(keyword)))
+                                                        fields(fields).query(keyword)))
                                         .must(mustQuery2 ->
                                                 mustQuery2.term(termQuery ->
                                                         termQuery.field("userId").value(userId)))))

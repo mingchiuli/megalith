@@ -67,7 +67,7 @@ public class BlogController {
 
     @GetMapping("/token/{blogId}/{token}")
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
-                                            @PathVariable String token) {
+                                               @PathVariable String token) {
         BlogEntity blog = blogService.getLockedBlog(blogId, token);
         Optional<String> nickname = userService.findNicknameById(blog.getUserId());
         blogService.setReadCount(blogId);

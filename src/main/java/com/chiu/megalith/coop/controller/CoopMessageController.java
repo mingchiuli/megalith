@@ -53,7 +53,7 @@ public class CoopMessageController {
     @MessageMapping("/session/{userId}/{blogId}")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public void setUserToRedisSession(@DestinationVariable Long userId,
-                              @DestinationVariable Long blogId) {
+                                      @DestinationVariable Long blogId) {
         coopMessageService.setUserToRedisSession(userId, blogId);
     }
 
