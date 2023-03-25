@@ -161,11 +161,11 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                                         ), null))
                         .withQuery(query ->
                                 query.bool(boolQuery ->
-                                        boolQuery.
-                                                must(mustQuery1 ->
+                                        boolQuery
+                                                .must(mustQuery1 ->
                                                         mustQuery1.multiMatch(multiQuery ->
-                                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword))).
-                                                must(mustQuery2 ->
+                                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword)))
+                                                .must(mustQuery2 ->
                                                         mustQuery2.term(termQuery ->
                                                                 termQuery.field("status").value(0))))), () ->
                 nativeQueryBuilder

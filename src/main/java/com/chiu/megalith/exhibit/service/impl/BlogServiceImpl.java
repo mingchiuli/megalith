@@ -71,8 +71,8 @@ public class BlogServiceImpl implements BlogService {
     @Cache(prefix = Const.HOT_BLOG)
     public BlogExhibitVo findByIdAndStatus(Long id,
                                            Integer status) {
-        BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, status).
-                orElseThrow(() -> new NotFoundException("blog not found"));
+        BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, status)
+                .orElseThrow(() -> new NotFoundException("blog not found"));
         Optional<String> nickname = userService.findNicknameById(blogEntity.getUserId());
 
         return BlogExhibitVo

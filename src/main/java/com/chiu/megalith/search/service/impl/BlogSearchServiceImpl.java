@@ -55,9 +55,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                         termQuery.field("status").value(0)))
                                         .must(mustQuery3 ->
                                                 mustQuery3.range(rangeQuery ->
-                                                        rangeQuery.field("created").
-                                                                from(Optional.ofNullable(year).isPresent() ? year + "-01-01T00:00:00.000" : null).
-                                                                to(Optional.ofNullable(year).isPresent() ? year + "-12-31T23:59:59.999" : null)))))
+                                                        rangeQuery.field("created")
+                                                                .from(Optional.ofNullable(year).isPresent() ? year + "-01-01T00:00:00.000" : null)
+                                                                .to(Optional.ofNullable(year).isPresent() ? year + "-12-31T23:59:59.999" : null)))))
                 .withSort(sort ->
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))
@@ -80,8 +80,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         new HighlightField("title"),
                                         new HighlightField("description"),
                                         new HighlightField("content"))),
-                        null)).
-                build();
+                        null))
+                .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
         long totalHits = search.getTotalHits();
