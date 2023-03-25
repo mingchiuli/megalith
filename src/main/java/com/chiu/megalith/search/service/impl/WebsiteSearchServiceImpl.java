@@ -174,7 +174,6 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % webPageSize == 0 ? totalHits / webPageSize : totalHits / webPageSize + 1;
 
-
         List<WebsiteDocumentVo> vos = search.getSearchHits()
                 .stream()
                 .map(hit -> {
