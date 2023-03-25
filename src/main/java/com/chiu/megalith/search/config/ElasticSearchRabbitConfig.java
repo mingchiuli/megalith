@@ -36,9 +36,9 @@ public class ElasticSearchRabbitConfig {
     @Bean("ES_BINDING")
     public Binding binding(@Qualifier("ES_QUEUE") Queue esQueue,
                            @Qualifier("ES_EXCHANGE") DirectExchange esExchange) {
-        return BindingBuilder.
-                bind(esQueue).
-                to(esExchange).
-                with(ES_BINDING_KEY);
+        return BindingBuilder
+                .bind(esQueue)
+                .to(esExchange)
+                .with(ES_BINDING_KEY);
     }
 }

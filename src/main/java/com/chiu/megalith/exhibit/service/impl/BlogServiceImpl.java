@@ -22,13 +22,11 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.NestedRuntimeException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -77,39 +75,27 @@ public class BlogServiceImpl implements BlogService {
                 orElseThrow(() -> new NotFoundException("blog not found"));
         Optional<String> nickname = userService.findNicknameById(blogEntity.getUserId());
 
-        return BlogExhibitVo.
-                builder().
-                title(blogEntity.getTitle()).
-                content(blogEntity.getContent()).
-                readCount(blogEntity.getReadCount()).
-                nickname(nickname.orElse("anonymous")).
-                created(blogEntity.getCreated()).
-                readCount(blogEntity.getReadCount()).
-                build();
+        return BlogExhibitVo
+                .builder()
+                .title(blogEntity.getTitle())
+                .content(blogEntity.getContent())
+                .readCount(blogEntity.getReadCount())
+                .nickname(nickname.orElse("anonymous"))
+                .created(blogEntity.getCreated())
+                .readCount(blogEntity.getReadCount())
+                .build();
     }
 
     @Async(value = "readCountThreadPoolExecutor")
     @Override
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
-        try {
-            String prefix = Const.READ_RECENT.getInfo() + id;
-            String lua = "local ttl =  redis.call('ttl', KEYS[1]);" +
-                    "if (ttl == -2) then redis.call('setex', KEYS[1] , ARGV[1], '1') return end;" +
-                    "redis.call('incr', KEYS[1]);" +
-                    "redis.call('expire', KEYS[1], ttl);";
-
-            RedisScript<Void> script = RedisScript.of(lua);
-            redisTemplate.execute(script, Collections.singletonList(prefix), "604800");
-        } catch (NestedRuntimeException e) {
-            log.error(e.getMessage());
-        }
     }
 
     @Override
     public BlogEntity findById(Long id) {
-        return blogRepository.findById(id).
-                orElseThrow(() -> new NotFoundException("blog not exist"));
+        return blogRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("blog not exist"));
     }
 
     @Override
@@ -147,8 +133,8 @@ public class BlogServiceImpl implements BlogService {
         String password = redisTemplate.opsForValue().get(Const.READ_TOKEN);
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
             if (password.equals(token)) {
-                return blogRepository.findById(blogId).
-                        orElseThrow(() -> new NotFoundException("status error"));
+                return blogRepository.findById(blogId)
+                        .orElseThrow(() -> new NotFoundException("status error"));
             }
         }
         throw new AuthenticationExceptionImpl("authorization exception");
@@ -178,17 +164,17 @@ public class BlogServiceImpl implements BlogService {
         };
 
         Optional.ofNullable(blog.getId()).ifPresentOrElse(id -> {
-            ref.blogEntity = blogRepository.findById(blog.getId()).
-                    orElseThrow(() -> new NotFoundException("blog not exist"));
+            ref.blogEntity = blogRepository.findById(blog.getId())
+                    .orElseThrow(() -> new NotFoundException("blog not exist"));
             Assert.isTrue(ref.blogEntity.getUserId().equals(userId), "must edit your blog!");
             ref.type = BlogIndexEnum.UPDATE;
         }, () -> {
-            ref.blogEntity = BlogEntity.
-                    builder().
-                    created(LocalDateTime.now()).
-                    userId(userId).
-                    readCount(0L).
-                    build();
+            ref.blogEntity = BlogEntity
+                    .builder()
+                    .created(LocalDateTime.now())
+                    .userId(userId)
+                    .readCount(0L)
+                    .build();
             ref.type = BlogIndexEnum.CREATE;
         });
 
@@ -213,17 +199,17 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void deleteBlogs(List<Long> ids) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String authority = authentication.
-                getAuthorities().
-                stream().
-                findFirst().
-                map(GrantedAuthority::getAuthority).
-                orElseThrow();
+        String authority = authentication
+                .getAuthorities()
+                .stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow();
         long userId = Long.parseLong(authentication.getName());
 
         ids.forEach(id -> {
-            BlogEntity blogEntity = blogRepository.findById(id).
-                    orElseThrow(() -> new NotFoundException("blog not exist"));
+            BlogEntity blogEntity = blogRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("blog not exist"));
 
             if (blogEntity.getUserId() != userId && !authority.equals(highestRole)) {
                 throw new AuthenticationExceptionImpl("must delete own blog");
@@ -260,8 +246,8 @@ public class BlogServiceImpl implements BlogService {
     public String getBlogToken() {
         return Optional.ofNullable(
                 redisTemplate.opsForValue().get(Const.READ_TOKEN)
-                ).
-                orElse("read token is not exist");
+                )
+                .orElse("read token is not exist");
     }
 
     @Override
@@ -269,12 +255,12 @@ public class BlogServiceImpl implements BlogService {
                                                    Integer size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.valueOf(authentication.getName());
-        String authority = authentication.
-                getAuthorities().
-                stream().
-                findFirst().
-                map(GrantedAuthority::getAuthority).
-                orElseThrow();
+        String authority = authentication
+                .getAuthorities()
+                .stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow();
 
         Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page;
@@ -284,38 +270,31 @@ public class BlogServiceImpl implements BlogService {
             page = blogRepository.findAllByUserId(pageRequest, userId);
         }
 
-        List<BlogEntityDto> entities = page.getContent().
-                stream().
-                map(blogEntity ->
-                        BlogEntityDto.
-                                builder().
-                                id(blogEntity.getId()).
-                                title(blogEntity.getTitle()).
-                                description(blogEntity.getDescription()).
-                                status(blogEntity.getStatus()).
-                                created(blogEntity.getCreated()).
-                                content(blogEntity.getContent()).
-                                readRecent(Integer.valueOf(
-                                        Optional.ofNullable(
-                                                redisTemplate.opsForValue().get(Const.READ_RECENT.getInfo() + blogEntity.getId())
-                                                ).
-                                                orElse("0")
-                                        )
-                                ).
-                                build()).
-                toList();
+        List<BlogEntityDto> entities = page.getContent()
+                .stream()
+                .map(blogEntity ->
+                        BlogEntityDto
+                                .builder()
+                                .id(blogEntity.getId())
+                                .title(blogEntity.getTitle())
+                                .description(blogEntity.getDescription())
+                                .status(blogEntity.getStatus())
+                                .created(blogEntity.getCreated())
+                                .content(blogEntity.getContent())
+                                .build())
+                .toList();
 
-        return PageAdapter.
-                <BlogEntityDto>builder().
-                content(entities).
-                last(page.isLast()).
-                first(page.isFirst()).
-                pageNumber(page.getNumber()).
-                totalPages(page.getTotalPages()).
-                pageSize(page.getSize()).
-                totalElements(page.getTotalElements()).
-                empty(page.isEmpty()).
-                build();
+        return PageAdapter
+                .<BlogEntityDto>builder()
+                .content(entities)
+                .last(page.isLast())
+                .first(page.isFirst())
+                .pageNumber(page.getNumber())
+                .totalPages(page.getTotalPages())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .empty(page.isEmpty())
+                .build();
     }
 
     @Override
@@ -330,23 +309,23 @@ public class BlogServiceImpl implements BlogService {
 
         List<String> list = redisTemplate.opsForValue().multiGet(keys);
 
-        return PageAdapter.
-                <BlogEntity>builder().
-                content(list.
-                        stream().
-                        filter(Objects::nonNull).
-                        map(str -> jsonUtils.readValue(str, BlogEntity.class)).
-                        sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated())).
-                        limit((long) currentPage * size).skip((long) (currentPage - 1) * size).
-                        toList()).
-                last(currentPage == totalPages).
-                first(currentPage == 1).
-                pageNumber(currentPage).
-                totalPages(totalPages).
-                pageSize(size).
-                totalElements(total).
-                empty(total == 0).
-                build();
+        return PageAdapter
+                .<BlogEntity>builder()
+                .content(list
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .map(str -> jsonUtils.readValue(str, BlogEntity.class))
+                        .sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated()))
+                        .limit((long) currentPage * size).skip((long) (currentPage - 1) * size)
+                        .toList())
+                .last(currentPage == totalPages)
+                .first(currentPage == 1)
+                .pageNumber(currentPage)
+                .totalPages(totalPages)
+                .pageSize(size)
+                .totalElements(total)
+                .empty(total == 0)
+                .build();
     }
 
     @Override
@@ -355,8 +334,8 @@ public class BlogServiceImpl implements BlogService {
 
         String blogStr = Optional.ofNullable(
                 redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getInfo() + id)
-                ).
-                orElseThrow(() -> new NotFoundException("blog is expired"));
+                )
+                .orElseThrow(() -> new NotFoundException("blog is expired"));
 
         BlogEntity tempBlog = jsonUtils.readValue(blogStr, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);

@@ -34,8 +34,8 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	private LoginUser loadUserByUsernameFromDb(String username) {
-		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username).
-				orElseThrow(() -> new UsernameNotFoundException("username not exist"));
+		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username)
+				.orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
 		String grantType;
 

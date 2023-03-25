@@ -72,15 +72,15 @@ public class BlogController {
         Optional<String> nickname = userService.findNicknameById(blog.getUserId());
         blogService.setReadCount(blogId);
         return Result.success(
-                BlogExhibitVo.
-                        builder().
-                        title(blog.getTitle()).
-                        content(blog.getContent()).
-                        readCount(blog.getReadCount()).
-                        nickname(nickname.orElse("anonymous")).
-                        created(blog.getCreated()).
-                        readCount(blog.getReadCount()).
-                        build()
+                BlogExhibitVo
+                        .builder()
+                        .title(blog.getTitle())
+                        .content(blog.getContent())
+                        .readCount(blog.getReadCount())
+                        .nickname(nickname.orElse("anonymous"))
+                        .created(blog.getCreated())
+                        .readCount(blog.getReadCount())
+                        .build()
         );
     }
 

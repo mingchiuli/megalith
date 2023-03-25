@@ -48,34 +48,34 @@ public class CoopServiceImpl implements CoopService {
 
         UserEntity userEntity = userService.findById(userId);
         BlogEntity blogEntity = blogService.findById(blogId);
-        UserEntityVo userEntityVo = UserEntityVo.
-                builder().
-                id(userEntity.getId()).
-                avatar(userEntity.getAvatar()).
-                nickname(userEntity.getNickname()).
-                build();
+        UserEntityVo userEntityVo = UserEntityVo
+                .builder()
+                .id(userEntity.getId())
+                .avatar(userEntity.getAvatar())
+                .nickname(userEntity.getNickname())
+                .build();
 
-        JoinDto.Bind bind = JoinDto.
-                Bind.
-                builder().
-                blogId(blogId).
-                fromId(userId).
-                user(userEntityVo).
-                build();
+        JoinDto.Bind bind = JoinDto
+                .Bind
+                .builder()
+                .blogId(blogId)
+                .fromId(userId)
+                .user(userEntityVo)
+                .build();
 
-        JoinDto dto = JoinDto.
-                builder().
-                content(new MessageDto.Container<>(bind)).
-                build();
+        JoinDto dto = JoinDto
+                .builder()
+                .content(new MessageDto.Container<>(bind))
+                .build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
         List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
-        usersStr.
-                stream().
-                map(str -> jsonUtils.readValue(str, UserEntityVo.class)).
-                filter(user -> !user.getId().equals(userId)).
-                forEach(user -> {
+        usersStr
+                .stream()
+                .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
+                .filter(user -> !user.getId().equals(userId))
+                .forEach(user -> {
                     bind.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
@@ -83,11 +83,11 @@ public class CoopServiceImpl implements CoopService {
                             dto);
                 });
 
-        return InitCoopVo.
-                builder().
-                blogEntity(blogEntity).
-                userEntityVos(usersStr).
-                build();
+        return InitCoopVo
+                .builder()
+                .blogEntity(blogEntity)
+                .userEntityVos(usersStr)
+                .build();
     }
 
     @Override
@@ -96,26 +96,26 @@ public class CoopServiceImpl implements CoopService {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
         blogService.saveOrUpdate(blogEntityVo);
 
-        DestroyDto.Bind bind = DestroyDto.
-                Bind.
-                builder().
-                blogId(blogId).
-                fromId(userId).
-                build();
+        DestroyDto.Bind bind = DestroyDto
+                .Bind
+                .builder()
+                .blogId(blogId)
+                .fromId(userId)
+                .build();
 
-        DestroyDto dto = DestroyDto.
-                builder().
-                content(new MessageDto.Container<>(bind)).
-                build();
+        DestroyDto dto = DestroyDto
+                .builder()
+                .content(new MessageDto.Container<>(bind))
+                .build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
         List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
-        usersStr.
-                stream().
-                map(str -> jsonUtils.readValue(str, UserEntityVo.class)).
-                filter(user -> userId != user.getId()).
-                forEach(user -> {
+        usersStr
+                .stream()
+                .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
+                .filter(user -> userId != user.getId())
+                .forEach(user -> {
                     bind.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,

@@ -56,9 +56,10 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         Optional.ofNullable(websiteVo.getId()).ifPresentOrElse(id ->
                 ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class),
                 () ->
-                        ref.document = WebsiteDocument.builder().
-                                created(ZonedDateTime.now()).
-                                build());
+                        ref.document = WebsiteDocument
+                                .builder()
+                                .created(ZonedDateTime.now())
+                                .build());
 
         BeanUtils.copyProperties(websiteVo, ref.document);
         elasticsearchTemplate.save(ref.document);
@@ -73,25 +74,25 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     public PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage,
                                                      String keyword) {
 
-        NativeQuery matchQuery = NativeQuery.
-                builder().
-                withQuery(query ->
+        NativeQuery matchQuery = NativeQuery
+                .builder()
+                .withQuery(query ->
                         query.bool(boolQuery ->
                                 boolQuery.must(mustQuery ->
                                         mustQuery.multiMatch(multiQuery ->
-                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword))))).
-                withSort(sort ->
+                                                multiQuery.fields(Arrays.asList("title", "description")).query(keyword)))))
+                .withSort(sort ->
                         sort.score(score ->
-                                score.order(SortOrder.Desc))).
-                withPageable(PageRequest.of(currentPage - 1, webPageSize)).
-                withHighlightQuery(
+                                score.order(SortOrder.Desc)))
+                .withPageable(PageRequest.of(currentPage - 1, webPageSize))
+                .withHighlightQuery(
                         new HighlightQuery(
                                 new Highlight(
-                                        new HighlightParameters.
-                                                HighlightParametersBuilder().
-                                                withPreTags("<b style='color:red'>").
-                                                withPostTags("</b>").
-                                                build(),
+                                        new HighlightParameters
+                                                .HighlightParametersBuilder()
+                                                .withPreTags("<b style='color:red'>")
+                                                .withPostTags("</b>")
+                                                .build(),
                                         Arrays.asList(
                                                 new HighlightField("title"),
                                                 new HighlightField("description"))
@@ -103,35 +104,35 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % webPageSize == 0 ? totalHits / webPageSize : totalHits / webPageSize + 1;
 
-        List<WebsiteDocumentVo> vos = search.getSearchHits().
-                stream().
-                map(hit -> {
+        List<WebsiteDocumentVo> vos = search.getSearchHits()
+                .stream()
+                .map(hit -> {
                     WebsiteDocument document = hit.getContent();
-                    return WebsiteDocumentVo.
-                            builder().
-                            id(document.getId()).
-                            title(document.getTitle()).
-                            description(document.getDescription()).
-                            link(document.getLink()).
-                            status(document.getStatus()).
-                            created(document.getCreated()).
-                            highlight(hit.getHighlightFields().values()).
-                            score(hit.getScore()).
-                            build();
-                }).
-                toList();
+                    return WebsiteDocumentVo
+                            .builder()
+                            .id(document.getId())
+                            .title(document.getTitle())
+                            .description(document.getDescription())
+                            .link(document.getLink())
+                            .status(document.getStatus())
+                            .created(document.getCreated())
+                            .highlight(hit.getHighlightFields().values())
+                            .score(hit.getScore())
+                            .build();
+                })
+                .toList();
 
-        return PageAdapter.
-                <WebsiteDocumentVo>builder().
-                first(currentPage == 1).
-                last(currentPage == totalPage).
-                pageSize(webPageSize).
-                pageNumber(currentPage).
-                empty(totalHits == 0).
-                totalElements(totalHits).
-                totalPages((int) totalPage).
-                content(vos).
-                build();
+        return PageAdapter
+                .<WebsiteDocumentVo>builder()
+                .first(currentPage == 1)
+                .last(currentPage == totalPage)
+                .pageSize(webPageSize)
+                .pageNumber(currentPage)
+                .empty(totalHits == 0)
+                .totalElements(totalHits)
+                .totalPages((int) totalPage)
+                .content(vos)
+                .build();
     }
 
     @Override
@@ -142,23 +143,23 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                 .withPageable(PageRequest.of(currentPage - 1, webPageSize));
 
         Optional.ofNullable(keyword).ifPresentOrElse(word ->
-                nativeQueryBuilder.
-                        withSort(sort ->
+                nativeQueryBuilder
+                        .withSort(sort ->
                                 sort.score(score ->
-                                        score.order(SortOrder.Desc))).
-                        withHighlightQuery(
+                                        score.order(SortOrder.Desc)))
+                        .withHighlightQuery(
                                 new HighlightQuery(
                                         new Highlight(
-                                                new HighlightParameters.
-                                                        HighlightParametersBuilder().
-                                                        withPreTags("<b style='color:red'>").
-                                                        withPostTags("</b>").
-                                                        build(),
+                                                new HighlightParameters
+                                                        .HighlightParametersBuilder()
+                                                        .withPreTags("<b style='color:red'>")
+                                                        .withPostTags("</b>")
+                                                        .build(),
                                                 Arrays.asList(
                                                         new HighlightField("title"),
                                                         new HighlightField("description"))
-                                        ), null)).
-                        withQuery(query ->
+                                        ), null))
+                        .withQuery(query ->
                                 query.bool(boolQuery ->
                                         boolQuery.
                                                 must(mustQuery1 ->
@@ -167,11 +168,11 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                                                 must(mustQuery2 ->
                                                         mustQuery2.term(termQuery ->
                                                                 termQuery.field("status").value(0))))), () ->
-                nativeQueryBuilder.
-                        withSort(sortQuery ->
+                nativeQueryBuilder
+                        .withSort(sortQuery ->
                                 sortQuery.field(fieldQuery ->
-                                        fieldQuery.field("created").order(SortOrder.Desc))).
-                        withQuery(query ->
+                                        fieldQuery.field("created").order(SortOrder.Desc)))
+                        .withQuery(query ->
                                 query.bool(boolQuery ->
                                         boolQuery.must(mustQuery2 ->
                                                 mustQuery2.term(termQuery ->
@@ -184,38 +185,38 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         long totalPage = totalHits % webPageSize == 0 ? totalHits / webPageSize : totalHits / webPageSize + 1;
 
 
-        List<WebsiteDocumentVo> vos = search.getSearchHits().
-                stream().
-                map(hit -> {
+        List<WebsiteDocumentVo> vos = search.getSearchHits()
+                .stream()
+                .map(hit -> {
                     WebsiteDocument document = hit.getContent();
-                    return WebsiteDocumentVo.
-                            builder().
-                            id(document.getId()).
-                            title(document.getTitle()).
-                            description(document.getDescription()).
-                            link(document.getLink()).
-                            status(document.getStatus()).
-                            created(document.getCreated()).
-                            highlight(!hit.getHighlightFields().values().isEmpty() ?
+                    return WebsiteDocumentVo
+                            .builder()
+                            .id(document.getId())
+                            .title(document.getTitle())
+                            .description(document.getDescription())
+                            .link(document.getLink())
+                            .status(document.getStatus())
+                            .created(document.getCreated())
+                            .highlight(!hit.getHighlightFields().values().isEmpty() ?
                                     hit.getHighlightFields().values() :
-                                    null).
-                            score(!Float.isNaN(hit.getScore()) ?
+                                    null)
+                            .score(!Float.isNaN(hit.getScore()) ?
                                     hit.getScore() :
-                                    null).
-                            build();
-                }).
-                toList();
+                                    null)
+                            .build();
+                })
+                .toList();
 
-        return PageAdapter.
-                <WebsiteDocumentVo>builder().
-                first(currentPage == 1).
-                last(currentPage == totalPage).
-                pageSize(webPageSize).
-                pageNumber(currentPage).
-                empty(totalHits == 0).
-                totalElements(totalHits).
-                totalPages((int) totalPage).
-                content(vos).
-                build();
+        return PageAdapter
+                .<WebsiteDocumentVo>builder()
+                .first(currentPage == 1)
+                .last(currentPage == totalPage)
+                .pageSize(webPageSize)
+                .pageNumber(currentPage)
+                .empty(totalHits == 0)
+                .totalElements(totalHits)
+                .totalPages((int) totalPage)
+                .content(vos)
+                .build();
     }
 }

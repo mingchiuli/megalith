@@ -40,10 +40,10 @@ public class CoopRabbitConfig {
     @Bean("COOP_BINDING")
     public Binding binding(@Qualifier("COOP_QUEUE") Queue wsQueue,
                            @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
-        return BindingBuilder.
-                bind(wsQueue).
-                to(wsExchange).
-                with(WS_BINDING_KEY + nodeMark);
+        return BindingBuilder
+                .bind(wsQueue)
+                .to(wsExchange)
+                .with(WS_BINDING_KEY + nodeMark);
     }
 
 }

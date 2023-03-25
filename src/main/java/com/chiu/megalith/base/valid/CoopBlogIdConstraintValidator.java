@@ -1,7 +1,6 @@
 package com.chiu.megalith.base.valid;
 
 import com.chiu.megalith.exhibit.service.BlogService;
-import com.chiu.megalith.base.lang.Const;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ public class CoopBlogIdConstraintValidator implements ConstraintValidator<CoopBl
     @Override
     public boolean isValid(Long blogId,
                            ConstraintValidatorContext context) {
-        return blogService.exist(blogId) &&
-                redisTemplate.opsForHash().size(Const.COOP_PREFIX.getInfo() + blogId) < 3;
+        return blogService.exist(blogId);
     }
 }

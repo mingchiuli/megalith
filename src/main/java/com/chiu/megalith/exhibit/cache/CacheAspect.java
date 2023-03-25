@@ -49,11 +49,11 @@ public class CacheAspect {
 
     private final RedissonClient redisson;
 
-    private final LoadingCache<String, RLock> lockCache = Caffeine.
-            newBuilder().
-            maximumSize(500).
-            expireAfterWrite(Duration.ofMinutes(60)).
-            build(this::createRlock);
+    private final LoadingCache<String, RLock> lockCache = Caffeine
+            .newBuilder()
+            .maximumSize(500)
+            .expireAfterWrite(Duration.ofMinutes(60))
+            .build(this::createRlock);
 
     private RLock createRlock(String key) {
         return redisson.getLock(key);

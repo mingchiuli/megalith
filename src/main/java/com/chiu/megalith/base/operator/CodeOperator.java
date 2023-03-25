@@ -20,7 +20,7 @@ public class CodeOperator {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
     };
 
-    private static final char[] msn = {
+    private static final char[] sms = {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
     };
 
@@ -35,11 +35,11 @@ public class CodeOperator {
         return builder.toString();
     }
 
-    public String createMsn() {
+    public String createSMS() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 6; i++) {
-            int idx = ThreadLocalRandom.current().nextInt(msn.length);
-            builder.append(msn[idx]);
+            int idx = ThreadLocalRandom.current().nextInt(sms.length);
+            builder.append(sms[idx]);
         }
         return builder.toString();
     }

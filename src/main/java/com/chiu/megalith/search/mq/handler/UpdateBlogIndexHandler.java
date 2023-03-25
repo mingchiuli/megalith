@@ -74,17 +74,16 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
 
     @Override
     protected void elasticSearchProcess(BlogEntity blog) {
-        BlogDocument blogDocument = BlogDocument.
-                builder().
-                id(blog.getId()).
-                userId(blog.getUserId()).
-                title(blog.getTitle()).
-                description(blog.getDescription()).
-                content(blog.getContent()).
-                status(blog.getStatus()).
-                link(blog.getLink()).
-                created(ZonedDateTime.of(blog.getCreated(), ZoneId.of("Asia/Shanghai"))).
-                build();
+        BlogDocument blogDocument = BlogDocument
+                .builder()
+                .id(blog.getId())
+                .userId(blog.getUserId())
+                .title(blog.getTitle())
+                .description(blog.getDescription()).content(blog.getContent())
+                .status(blog.getStatus())
+                .link(blog.getLink())
+                .created(ZonedDateTime.of(blog.getCreated(), ZoneId.of("Asia/Shanghai")))
+                .build();
 
         elasticsearchTemplate.save(blogDocument);
     }

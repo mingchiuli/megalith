@@ -35,8 +35,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleEntity info(Long id) {
-        return roleRepository.findById(id).
-                orElseThrow(() -> new NotFoundException("role not exist"));
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("role not exist"));
     }
 
     @Override
@@ -58,15 +58,15 @@ public class RoleServiceImpl implements RoleService {
         LocalDateTime now = LocalDateTime.now();
 
         Optional.ofNullable(roleVo.getId()).ifPresentOrElse((id) -> {
-            ref.roleEntity = roleRepository.findById(id).
-                    orElseThrow(() -> new NotFoundException("role not exist"));
+            ref.roleEntity = roleRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("role not exist"));
             ref.roleEntity.setUpdated(now);
         }, () ->
-                ref.roleEntity = RoleEntity.
-                        builder().
-                        created(now).
-                        updated(now).
-                        build());
+                ref.roleEntity = RoleEntity
+                        .builder()
+                        .created(now)
+                        .updated(now)
+                        .build());
 
         BeanUtils.copyProperties(roleVo, ref.roleEntity);
         roleRepository.save(ref.roleEntity);
@@ -74,8 +74,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Long> getNavMenuIds(String role) {
-        RoleEntity roleEntity = roleRepository.findByCode(role).
-                orElseThrow(() -> new NotFoundException("role not exist"));
+        RoleEntity roleEntity = roleRepository.findByCode(role)
+                .orElseThrow(() -> new NotFoundException("role not exist"));
         Long id = roleEntity.getId();
         return roleMenuService.findMenuIdsByRoleId(id);
     }
@@ -96,16 +96,16 @@ public class RoleServiceImpl implements RoleService {
     public List<Long> perm(Long roleId,
                            List<Long> menuIds) {
         roleMenuService.deleteByRoleId(roleId);
-        List<RoleMenuEntity> roleMenuEntities = menuIds.
-                stream().
-                map(menuId ->
-                        RoleMenuEntity.
-                                builder().
-                                menuId(menuId).
-                                roleId(roleId).
-                                build()
-                ).
-                toList();
+        List<RoleMenuEntity> roleMenuEntities = menuIds
+                .stream()
+                .map(menuId ->
+                        RoleMenuEntity
+                                .builder()
+                                .menuId(menuId)
+                                .roleId(roleId)
+                                .build()
+                )
+                .toList();
 
         roleMenuService.saveAll(roleMenuEntities);
         return menuIds;

@@ -53,25 +53,27 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     @Override
     public void quit(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
-        redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
+        redisTemplate.opsForHash()
+                .delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
     }
 
     @Override
     public void setUserToRedisSession(Long userId, Long blogId) {
         UserEntity userEntity = userService.findById(userId);
-        UserEntityVo userEntityVo = UserEntityVo.
-                builder().
-                id(userEntity.getId()).
-                avatar(userEntity.getAvatar()).
-                nickname(userEntity.getNickname()).
-                nodeMark(CoopRabbitConfig.nodeMark).
-                build();
+        UserEntityVo userEntityVo = UserEntityVo
+                .builder()
+                .id(userEntity.getId())
+                .avatar(userEntity.getAvatar())
+                .nickname(userEntity.getNickname())
+                .nodeMark(CoopRabbitConfig.nodeMark)
+                .build();
 
         String lua = "redis.call('hset', KEYS[1], ARGV[1], ARGV[2]);" +
                 "redis.call('expire', KEYS[1], ARGV[3]);";
 
         RedisScript<Void> script = RedisScript.of(lua);
-        redisTemplate.execute(script, Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
+        redisTemplate.execute(script,
+                Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
                 userId.toString(), jsonUtils.writeValueAsString(userEntityVo), "21600");
     }
 
@@ -81,11 +83,11 @@ public class CoopMessageServiceImpl implements CoopMessageService {
         Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
         entries.remove(msg.getFromId().toString());
 
-        entries.values().
-                stream().
-                map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class)).
-                filter(user -> !fromId.equals(user.getId())).
-                forEach(user -> {
+        entries.values()
+                .stream()
+                .map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class))
+                .filter(user -> !fromId.equals(user.getId()))
+                .forEach(user -> {
                     msg.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,

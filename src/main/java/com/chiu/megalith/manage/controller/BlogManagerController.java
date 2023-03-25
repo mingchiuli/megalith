@@ -38,15 +38,15 @@ public class BlogManagerController {
         Optional<String> username = userService.findNicknameById(blog.getUserId());
         blogService.setReadCount(id);
         return Result.success(
-                BlogExhibitVo.
-                        builder().
-                        title(blog.getTitle()).
-                        content(blog.getContent()).
-                        readCount(blog.getReadCount()).
-                        nickname(username.orElse("anonymous")).
-                        created(blog.getCreated()).
-                        readCount(blog.getReadCount()).
-                        build()
+                BlogExhibitVo
+                        .builder()
+                        .title(blog.getTitle())
+                        .content(blog.getContent())
+                        .readCount(blog.getReadCount())
+                        .nickname(username.orElse("anonymous"))
+                        .created(blog.getCreated())
+                        .readCount(blog.getReadCount())
+                        .build()
         );
     }
 

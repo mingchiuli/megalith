@@ -18,9 +18,10 @@ public class WebSocketSecurityConfig {
 
     @Bean
     AuthorizationManager<Message<?>> authorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
-        messages.
-                simpTypeMatchers(SimpMessageType.CONNECT, SimpMessageType.DISCONNECT, SimpMessageType.OTHER).permitAll().
-                anyMessage().authenticated();
+        messages
+                .simpTypeMatchers(SimpMessageType.CONNECT, SimpMessageType.DISCONNECT, SimpMessageType.OTHER)
+                .permitAll()
+                .anyMessage().authenticated();
         return messages.build();
     }
 }

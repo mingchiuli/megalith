@@ -23,7 +23,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/coop", "/log").setAllowedOriginPatterns("*").withSockJS();
+        registry
+                .addEndpoint("/coop", "/log")
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
 
     @Override
@@ -31,7 +34,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //客户端向服务器发消息的前缀
         registry.setApplicationDestinationPrefixes("/app");
         //客户端订阅消息的前缀
-        registry.enableSimpleBroker("/topic", "/queue", "/user", "/logs")
+        registry
+                .enableSimpleBroker("/topic", "/queue", "/user", "/logs")
                 .setTaskScheduler(new DefaultManagedTaskScheduler())
                 .setHeartbeatValue(new long[] {5000, 5000});
     }

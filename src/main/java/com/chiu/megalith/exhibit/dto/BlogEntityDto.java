@@ -29,6 +29,4 @@ public class BlogEntityDto implements Serializable {
     private LocalDateTime created;
 
     private Integer status;
-
-    private Integer readRecent;
 }

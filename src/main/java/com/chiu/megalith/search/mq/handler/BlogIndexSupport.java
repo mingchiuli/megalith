@@ -54,12 +54,12 @@ public abstract sealed class BlogIndexSupport permits
             try {
                 Long blogId = message.getBlogId();
                 Integer year = message.getYear();
-                BlogEntity blogEntity = blogRepository.findById(blogId).
-                        orElseGet(() -> BlogEntity.
-                                builder().
-                                id(blogId).
-                                created(LocalDateTime.of(year, 1,1,1 ,1 ,1, 1)).
-                                build());
+                BlogEntity blogEntity = blogRepository.findById(blogId)
+                        .orElseGet(() -> BlogEntity
+                                .builder()
+                                .id(blogId)
+                                .created(LocalDateTime.of(year, 1,1,1 ,1 ,1, 1))
+                                .build());
 
                 if (!rLock.tryLock(5, TimeUnit.SECONDS)) {
                     throw new TimeoutException("get lock timeout");

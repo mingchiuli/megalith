@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity retrieveUserInfo(String username) {
-        return userRepository.retrieveUserInfo(username).
-                orElseThrow(() -> new UsernameNotFoundException("user not exist"));
+        return userRepository.retrieveUserInfo(username)
+                .orElseThrow(() -> new UsernameNotFoundException("user not exist"));
     }
 
     @Override
@@ -53,17 +53,18 @@ public class UserServiceImpl implements UserService {
         LocalDateTime now = LocalDateTime.now();
 
         Optional.ofNullable(userEntityVo.getId()).ifPresentOrElse(id -> {
-            ref.userEntity = userRepository.findById(id).
-                    orElseThrow(() -> new NotFoundException("user not exist"));
+            ref.userEntity = userRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("user not exist"));
 
             Optional.ofNullable(userEntityVo.getPassword()).ifPresentOrElse(password ->
                     userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
                     userEntityVo.setPassword(ref.userEntity.getPassword()));
         }, () -> {
-            ref.userEntity = UserEntity.builder().
-                    created(now).
-                    lastLogin(now).
-                    build();
+            ref.userEntity = UserEntity
+                    .builder()
+                    .created(now)
+                    .lastLogin(now)
+                    .build();
             userEntityVo.setPassword(
                     passwordEncoder.encode(
                             Optional.ofNullable(userEntityVo.getPassword()).
@@ -83,8 +84,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findById(Long userId) {
-        return userRepository.findById(userId).
-                orElseThrow(() -> new NotFoundException("user not exist"));
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("user not exist"));
     }
 
     @Override

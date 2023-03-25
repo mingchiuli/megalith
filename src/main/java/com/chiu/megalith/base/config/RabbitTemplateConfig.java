@@ -41,10 +41,10 @@ public class RabbitTemplateConfig {
         );
         retryPolicy.setOpenTimeout(5000L);
         retryPolicy.setResetTimeout(10000L);
-        RetryTemplate retryTemplate = RetryTemplate.
-                builder().
-                customPolicy(retryPolicy).
-                build();
+        RetryTemplate retryTemplate = RetryTemplate
+                .builder()
+                .customPolicy(retryPolicy)
+                .build();
 
         rabbitTemplate.setRetryTemplate(retryTemplate);
     }

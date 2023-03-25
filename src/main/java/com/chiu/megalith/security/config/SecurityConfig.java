@@ -42,41 +42,41 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
-        return http.cors().
-                and().
-                csrf().
-                disable().
+        return http.cors()
+                .and()
+                .csrf()
+                .disable()
 
                 //登录配置
-                formLogin().
-                successHandler(loginSuccessHandler).
-                failureHandler(loginFailureHandler).
+                .formLogin()
+                .successHandler(loginSuccessHandler)
+                .failureHandler(loginFailureHandler)
 
-                and().
-                logout().
-                logoutSuccessHandler(jwtLogoutSuccessHandler).
+                .and()
+                .logout()
+                .logoutSuccessHandler(jwtLogoutSuccessHandler)
 
                 //禁用session
-                and().
-                sessionManagement().
-                sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 //配置拦截规则
-                and().
-                authorizeHttpRequests().
-                requestMatchers(URL_WHITELIST).permitAll().
-                anyRequest().authenticated().
+                .and()
+                .authorizeHttpRequests()
+                .requestMatchers(URL_WHITELIST).permitAll()
+                .anyRequest().authenticated()
 
                 //异常处理器
-                and().
-                exceptionHandling().
-                authenticationEntryPoint(jwtAuthenticationEntryPoint).
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
 
                 //配置自定义的过滤器
-                and().
-                addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class).
-                authenticationManager(authenticationManager).
-                build();
+                .and()
+                .addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class)
+                .authenticationManager(authenticationManager)
+                .build();
     }
 
 }
