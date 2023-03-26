@@ -88,7 +88,7 @@ public class BlogServiceImpl implements BlogService {
                 .build();
     }
 
-    @Async(value = "readCountThreadPoolExecutor")
+    @Async("readCountThreadPoolExecutor")
     @Override
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
@@ -318,7 +318,8 @@ public class BlogServiceImpl implements BlogService {
                         .filter(Objects::nonNull)
                         .map(str -> jsonUtils.readValue(str, BlogEntity.class))
                         .sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated()))
-                        .limit((long) currentPage * size).skip((long) (currentPage - 1) * size)
+                        .limit((long) currentPage * size)
+                        .skip((long) (currentPage - 1) * size)
                         .toList())
                 .last(currentPage == totalPages)
                 .first(currentPage == 1)
