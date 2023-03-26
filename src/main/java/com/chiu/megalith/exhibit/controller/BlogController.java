@@ -9,6 +9,7 @@ import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.base.lang.Result;
 import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -69,7 +69,7 @@ public class BlogController {
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
                                                @PathVariable String token) {
         BlogEntity blog = blogService.getLockedBlog(blogId, token);
-        Optional<String> nickname = userService.findNicknameById(blog.getUserId());
+        UserEntity user = userService.findById(blog.getUserId());
         blogService.setReadCount(blogId);
         return Result.success(
                 BlogExhibitVo
@@ -77,7 +77,8 @@ public class BlogController {
                         .title(blog.getTitle())
                         .content(blog.getContent())
                         .readCount(blog.getReadCount())
-                        .nickname(nickname.orElse("anonymous"))
+                        .nickname(user.getNickname())
+                        .avatar(user.getAvatar())
                         .created(blog.getCreated())
                         .readCount(blog.getReadCount())
                         .build()

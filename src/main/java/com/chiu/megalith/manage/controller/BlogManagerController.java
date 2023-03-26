@@ -5,6 +5,7 @@ import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.base.lang.Result;
@@ -16,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -35,7 +35,7 @@ public class BlogManagerController {
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<BlogExhibitVo> getLockedBlogDetail(@PathVariable(name = "id") Long id) {
         BlogEntity blog = blogService.findById(id);
-        Optional<String> username = userService.findNicknameById(blog.getUserId());
+        UserEntity user = userService.findById(blog.getUserId());
         blogService.setReadCount(id);
         return Result.success(
                 BlogExhibitVo
@@ -43,7 +43,8 @@ public class BlogManagerController {
                         .title(blog.getTitle())
                         .content(blog.getContent())
                         .readCount(blog.getReadCount())
-                        .nickname(username.orElse("anonymous"))
+                        .nickname(user.getNickname())
+                        .avatar(user.getAvatar())
                         .created(blog.getCreated())
                         .readCount(blog.getReadCount())
                         .build()

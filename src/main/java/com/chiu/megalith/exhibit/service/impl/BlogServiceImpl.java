@@ -6,6 +6,7 @@ import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.base.exception.AuthenticationExceptionImpl;
@@ -73,14 +74,15 @@ public class BlogServiceImpl implements BlogService {
                                            Integer status) {
         BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, status)
                 .orElseThrow(() -> new NotFoundException("blog not found"));
-        Optional<String> nickname = userService.findNicknameById(blogEntity.getUserId());
+        UserEntity user = userService.findById(blogEntity.getUserId());
 
         return BlogExhibitVo
                 .builder()
                 .title(blogEntity.getTitle())
                 .content(blogEntity.getContent())
                 .readCount(blogEntity.getReadCount())
-                .nickname(nickname.orElse("anonymous"))
+                .nickname(user.getNickname())
+                .avatar(user.getAvatar())
                 .created(blogEntity.getCreated())
                 .readCount(blogEntity.getReadCount())
                 .build();

@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 public class BlogExhibitVo {
     private String nickname;
 
+    private String avatar;
+
     private String title;
 
     private String content;
