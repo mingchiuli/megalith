@@ -11,6 +11,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -36,6 +37,13 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final StringRedisTemplate redisTemplate;
 
+	@Value("${blog.jwt.access-token-expire}")
+	private long accessExpire;
+
+	@Value("${blog.jwt.refresh-token-expire}")
+	private long refreshExpire;
+
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request,
 										HttpServletResponse response,
@@ -47,26 +55,36 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		LoginUser.loginUserCache.remove();
 		redisTemplate.delete(Const.PASSWORD_KEY + username);
 
+		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
 		UserEntity user = userService.retrieveUserInfo(username);
+
 		// 生成jwt
-		String jwt = jwtUtils.generateToken(String.valueOf(user.getId()),
+		String userId = String.valueOf(user.getId());
+		String accessToken = jwtUtils.generateToken(
+				userId,
 				authentication
 						.getAuthorities()
 						.stream()
 						.findFirst()
 						.map(GrantedAuthority::getAuthority)
-						.orElseThrow());
+						.orElseThrow(),
+				accessExpire
+		);
 
-		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
+		String refreshToken = jwtUtils.generateToken(
+				userId,
+				"ROLE_REFRESH",
+				refreshExpire
+		);
 
-		HashMap<String, Object> res = new HashMap<>(3);
-		res.put("user", user);
-		res.put("token", jwt);
-
-		Result<Object> success = Result.success(res);
+		HashMap<String, Object> resp = new HashMap<>(5);
+		resp.put("user", user);
+		resp.put("accessToken", accessToken);
+		resp.put("refreshToken", refreshToken);
 
 		outputStream.write(
-				objectMapper.writeValueAsString(success).getBytes(StandardCharsets.UTF_8)
+				objectMapper.writeValueAsString(Result.success(resp))
+						.getBytes(StandardCharsets.UTF_8)
 		);
 
 		outputStream.flush();

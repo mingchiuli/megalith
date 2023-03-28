@@ -23,10 +23,10 @@ public class JwtUtils {
 
     private String secret;
 
-    private long expire;
 
     public String generateToken(String userId,
-                                String role) {
+                                String role,
+                                long expire) {
         Date nowDate = new Date();
         //过期时间
         Date expireDate = new Date(nowDate.getTime() + expire * 1000);
@@ -44,8 +44,7 @@ public class JwtUtils {
 
     public Optional<Claims> getClaimByToken(String token) {
         return Optional.ofNullable(
-                Jwts
-                        .parserBuilder()
+                Jwts.parserBuilder()
                         .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
                         .build()
                         .parseClaimsJws(token)
