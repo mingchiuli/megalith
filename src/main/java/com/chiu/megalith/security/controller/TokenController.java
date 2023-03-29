@@ -31,7 +31,7 @@ public class TokenController {
 
     @GetMapping("/refresh")
     @PreAuthorize("hasRole('REFRESH')")
-    public Result<Map<String, String>> createEmailCode() {
+    public Result<Map<String, String>> refreshToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
