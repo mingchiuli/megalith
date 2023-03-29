@@ -1,8 +1,6 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import com.chiu.megalith.base.jwt.JwtUtils;
-import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.search.document.WebsiteDocument;
 import com.chiu.megalith.search.service.WebsiteSearchService;
@@ -35,8 +33,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
-    private final JwtUtils jwtUtils;
-
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     @Value("${blog.web-page-size}")
@@ -55,11 +51,6 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
             ), null);
 
     private final List<String> fields = Arrays.asList("title", "description");
-
-    @Override
-    public String generateJwt() {
-        return jwtUtils.generateToken(Const.ROLE_TOKEN_TOOL.getInfo(), Const.ROLE_TOKEN_TOOL.getInfo(), 604800);
-    }
 
     @Override
     public void saveOrUpdate(WebsiteVo websiteVo) {
