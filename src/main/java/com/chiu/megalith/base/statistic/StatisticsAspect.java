@@ -4,8 +4,8 @@ import com.chiu.megalith.base.lang.Const;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -28,14 +28,13 @@ public class StatisticsAspect {
 
     private final StringRedisTemplate redisTemplate;
 
-    @Pointcut(value ="execution( * com.chiu.megalith.*.controller.*.*(..))")
+    @Pointcut(value ="execution(* com.chiu.megalith.exhibit.controller.*.*(..)) || execution(* com.chiu.megalith.search.controller.*.*(..))")
     public void pt() {}
 
     @SneakyThrows
-    @After("pt()")
+    @Before("pt()")
     public void before() {
         String addr = InetAddress.getLocalHost().getHostAddress();
-        redisTemplate.opsForHyperLogLog().add("day_visit");
 
         String lua = "redis.call('pfadd', KEYS[1], ARGV[1]);" +
                 "redis.call('pfadd', KEYS[2], ARGV[1]);" +
