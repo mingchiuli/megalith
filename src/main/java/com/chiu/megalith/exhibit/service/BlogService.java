@@ -8,6 +8,7 @@ import com.chiu.megalith.base.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author mingchiuli
@@ -54,4 +55,7 @@ public interface BlogService {
     void changeBlogStatus(Long id, Integer status, Integer year);
 
     boolean exist(Long blogId);
+
+    Map<String, Long> getVisitStatistics();
+
 }

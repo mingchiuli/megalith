@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
@@ -162,11 +164,29 @@ public class CacheSchedule {
                 }, executor);
 
 
-                //unlock user
+                //unlock user & del statistic
                 CompletableFuture<Void> var6 = CompletableFuture.runAsync(() -> {
                     List<Long> ids = userService.findIdsByStatus(1);
                     ids.forEach(id -> userService.changeUserStatusById(id, 0));
+                    LocalDateTime now = LocalDateTime.now();
 
+                    int hourOfDay = now.getHour();
+                    int dayOfWeek = now.getDayOfWeek().getValue();
+                    int dayOfMonth = now.getDayOfMonth();
+                    int dayOfYear = now.getDayOfYear();
+
+                    if (hourOfDay == 0) {
+                        redisTemplate.delete(Const.DAY_VISIT.getInfo());
+                        if (dayOfWeek == 1) {
+                            redisTemplate.delete(Const.WEEK_VISIT.getInfo());
+                        }
+                        if (dayOfMonth == 1) {
+                            redisTemplate.delete(Const.MONTH_VISIT.getInfo());
+                        }
+                        if (dayOfYear == 1) {
+                            redisTemplate.delete(Const.YEAR_VISIT.getInfo());
+                        }
+                    }
                 }, executor);
 
                 CompletableFuture.allOf(var1, var2, var3, var4, var5, var6).get();
@@ -176,7 +196,6 @@ public class CacheSchedule {
                         "1",
                         20,
                         TimeUnit.SECONDS);
-
             }
         } finally {
             rLock.unlock();

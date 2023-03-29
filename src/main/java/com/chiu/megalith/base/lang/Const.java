@@ -8,9 +8,19 @@ package com.chiu.megalith.base.lang;
 public enum Const {
 
     GRANT_TYPE_EMAIL("email"),
+
+    DAY_VISIT("day_visit"),
+
+    WEEK_VISIT("week_visit"),
+
+    MONTH_VISIT("month_visit"),
+
+    YEAR_VISIT("year_visit"),
+
     LOGIN_USER_CACHE("login:"),
 
     GRANT_TYPE_PASSWORD("password"),
+
     GRANT_TYPE_PHONE("phone"),
 
     CAPTCHA_KEY("captcha:"),

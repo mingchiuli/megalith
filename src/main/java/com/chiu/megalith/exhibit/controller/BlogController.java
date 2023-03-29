@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author mingchiuli
@@ -98,6 +99,12 @@ public class BlogController {
     public Result<List<Integer>> searchYears() {
         List<Integer> years = blogService.searchYears();
         return Result.success(years);
+    }
+
+    @GetMapping("/statistic")
+    public Result<Map<String, Long>> getVisitStatistics() {
+        Map<String, Long> map = blogService.getVisitStatistics();
+        return Result.success(map);
     }
 
 }
