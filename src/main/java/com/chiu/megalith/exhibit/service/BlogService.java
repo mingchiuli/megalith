@@ -3,6 +3,7 @@ package com.chiu.megalith.exhibit.service;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.base.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,7 @@ import java.util.Map;
 public interface BlogService {
 
     List<Long> findIdsByStatus(Integer status, Pageable pageRequest);
-    BlogExhibitVo findByIdAndStatus(Long id, Integer status);
+    BlogExhibitVo findByIdAndVisible(Long id);
 
     void setReadCount(Long id);
 
@@ -58,4 +59,7 @@ public interface BlogService {
 
     Map<String, Long> getVisitStatistics();
 
+    List<BlogHotReadVo> getScoreBlogs();
+
+    String findTitleById(Long id);
 }

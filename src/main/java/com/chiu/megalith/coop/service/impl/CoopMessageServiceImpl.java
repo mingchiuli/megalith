@@ -60,8 +60,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     @Override
     public void setUserToRedisSession(Long userId, Long blogId) {
         UserEntity userEntity = userService.findById(userId);
-        UserEntityVo userEntityVo = UserEntityVo
-                .builder()
+        UserEntityVo userEntityVo = UserEntityVo.builder()
                 .id(userEntity.getId())
                 .avatar(userEntity.getAvatar())
                 .nickname(userEntity.getNickname())
@@ -83,8 +82,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
         Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
         entries.remove(msg.getFromId().toString());
 
-        entries.values()
-                .stream()
+        entries.values().stream()
                 .map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class))
                 .filter(user -> !fromId.equals(user.getId()))
                 .forEach(user -> {

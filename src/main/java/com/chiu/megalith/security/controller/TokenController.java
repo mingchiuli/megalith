@@ -2,6 +2,7 @@ package com.chiu.megalith.security.controller;
 
 import com.chiu.megalith.base.jwt.JwtUtils;
 import com.chiu.megalith.base.lang.Result;
+import com.chiu.megalith.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,28 +25,12 @@ import java.util.Map;
 @RequestMapping("/token")
 public class TokenController {
 
-    private final JwtUtils jwtUtils;
-
-    @Value("${blog.jwt.access-token-expire}")
-    private long expire;
+    private final TokenService tokenService;
 
     @GetMapping("/refresh")
     @PreAuthorize("hasRole('REFRESH')")
     public Result<Map<String, String>> refreshToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
-
-        String accessToken = jwtUtils.generateToken(
-                userId,
-                authentication
-                        .getAuthorities()
-                        .stream()
-                        .findFirst()
-                        .map(GrantedAuthority::getAuthority)
-                        .orElseThrow(),
-                expire
-        );
-        Map<String, String> resp = Collections.singletonMap("accessToken", accessToken);
+        Map<String, String> resp = tokenService.refreshToken();
         return Result.success(resp);
     }
 }

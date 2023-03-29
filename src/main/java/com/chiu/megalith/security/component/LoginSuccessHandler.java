@@ -62,9 +62,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		String userId = String.valueOf(user.getId());
 		String accessToken = jwtUtils.generateToken(
 				userId,
-				authentication
-						.getAuthorities()
-						.stream()
+				authentication.getAuthorities().stream()
 						.findFirst()
 						.map(GrantedAuthority::getAuthority)
 						.orElseThrow(),

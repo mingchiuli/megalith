@@ -1,5 +1,6 @@
 package com.chiu.megalith.exhibit.controller;
 
+import com.chiu.megalith.base.exception.NotFoundException;
 import com.chiu.megalith.exhibit.bloom.Bloom;
 import com.chiu.megalith.exhibit.bloom.handler.impl.*;
 import com.chiu.megalith.exhibit.cache.Cache;
@@ -9,6 +10,7 @@ import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.base.lang.Result;
 import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,7 @@ public class BlogController {
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailPageHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
-        BlogExhibitVo blog = blogService.findByIdAndStatus(id, 0);
+        BlogExhibitVo blog = blogService.findByIdAndVisible(id);
         blogService.setReadCount(id);
         return Result.success(blog);
     }
@@ -73,8 +75,7 @@ public class BlogController {
         UserEntity user = userService.findById(blog.getUserId());
         blogService.setReadCount(blogId);
         return Result.success(
-                BlogExhibitVo
-                        .builder()
+                BlogExhibitVo.builder()
                         .title(blog.getTitle())
                         .content(blog.getContent())
                         .readCount(blog.getReadCount())
@@ -105,6 +106,23 @@ public class BlogController {
     public Result<Map<String, Long>> getVisitStatistics() {
         Map<String, Long> map = blogService.getVisitStatistics();
         return Result.success(map);
+    }
+
+    @GetMapping("/scores")
+    public Result<List<BlogHotReadVo>> getScoreBlogs() {
+        List<BlogHotReadVo> list = blogService.getScoreBlogs();
+        list.stream()
+                .forEach(item -> {
+                    String title;
+                    Long id = item.getId();
+                    try {
+                        title = blogService.findByIdAndVisible(id).getTitle();
+                    } catch (NotFoundException e) {
+                        title = blogService.findTitleById(id);
+                    }
+                    item.setTitle(title);
+                });
+        return Result.success(list);
     }
 
 }

@@ -66,14 +66,14 @@ public class CacheSchedule {
 
                 List<Integer> years = blogService.searchYears();
                 int maxPoolSize = executor.getMaximumPoolSize();
-                CompletableFuture<Void> var1 = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() -> {
                     //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
                     Thread thread = Thread.currentThread();
                     cacheAndBloomBlog(thread, 0);
                     cacheAndBloomBlog(thread, 1);
                 }, executor);
 
-                CompletableFuture<Void> var2 = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() -> {
                     //listPage接口，分别考虑缓存和bloom
                     Long count = blogService.count();
                     int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
@@ -127,14 +127,14 @@ public class CacheSchedule {
                     }
                 }, executor);
 
-                CompletableFuture<Void> var3 = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() -> {
                     //getCountByYear接口
                     years.forEach(blogController::getCountByYear);
 
                 }, executor);
 
 
-                CompletableFuture<Void> var4 = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() -> {
                     //listByYear接口，分别考虑缓存和bloom
                     for (Integer year : years) {
                         //当前年份的总页数
@@ -153,7 +153,7 @@ public class CacheSchedule {
 
 
                 //searchYears和getCountByYear
-                CompletableFuture<Void> var5 = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() -> {
                     blogController.searchYears();
                     //getCountByYear的bloom和缓存
                     years.forEach(year -> {
@@ -165,7 +165,7 @@ public class CacheSchedule {
 
 
                 //unlock user & del statistic
-                CompletableFuture<Void> var6 = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() -> {
                     List<Long> ids = userService.findIdsByStatus(1);
                     ids.forEach(id -> userService.changeUserStatusById(id, 0));
                     LocalDateTime now = LocalDateTime.now();
@@ -189,7 +189,8 @@ public class CacheSchedule {
                     }
                 }, executor);
 
-                CompletableFuture.allOf(var1, var2, var3, var4, var5, var6).get();
+                //score cache
+                CompletableFuture.runAsync(blogController::getScoreBlogs, executor);
 
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,
@@ -237,7 +238,7 @@ public class CacheSchedule {
                                 ids.forEach(id -> {
                                     redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
                                     if (status == 0) {
-                                        blogService.findByIdAndStatus(id, 0);
+                                        blogService.findByIdAndVisible(id);
                                     }
                                     blogController.getBlogStatus(id);
                         }));

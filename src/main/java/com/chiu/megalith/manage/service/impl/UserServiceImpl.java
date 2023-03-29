@@ -60,8 +60,7 @@ public class UserServiceImpl implements UserService {
                     userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
                     userEntityVo.setPassword(ref.userEntity.getPassword()));
         }, () -> {
-            ref.userEntity = UserEntity
-                    .builder()
+            ref.userEntity = UserEntity.builder()
                     .created(now)
                     .lastLogin(now)
                     .build();

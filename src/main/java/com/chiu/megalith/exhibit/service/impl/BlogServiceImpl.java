@@ -6,6 +6,7 @@ import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
@@ -71,14 +73,12 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Cache(prefix = Const.HOT_BLOG)
-    public BlogExhibitVo findByIdAndStatus(Long id,
-                                           Integer status) {
-        BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, status)
+    public BlogExhibitVo findByIdAndVisible(Long id) {
+        BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, 0)
                 .orElseThrow(() -> new NotFoundException("blog not found"));
         UserEntity user = userService.findById(blogEntity.getUserId());
 
-        return BlogExhibitVo
-                .builder()
+        return BlogExhibitVo.builder()
                 .title(blogEntity.getTitle())
                 .content(blogEntity.getContent())
                 .readCount(blogEntity.getReadCount())
@@ -93,6 +93,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
+        redisTemplate.opsForZSet().incrementScore(Const.HOT_READ.getInfo(), id.toString(), 1);
     }
 
     @Override
@@ -172,8 +173,7 @@ public class BlogServiceImpl implements BlogService {
             Assert.isTrue(ref.blogEntity.getUserId().equals(userId), "must edit your blog!");
             ref.type = BlogIndexEnum.UPDATE;
         }, () -> {
-            ref.blogEntity = BlogEntity
-                    .builder()
+            ref.blogEntity = BlogEntity.builder()
                     .created(LocalDateTime.now())
                     .userId(userId)
                     .readCount(0L)
@@ -202,9 +202,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void deleteBlogs(List<Long> ids) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String authority = authentication
-                .getAuthorities()
-                .stream()
+        String authority = authentication.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
                 .orElseThrow();
@@ -258,9 +256,7 @@ public class BlogServiceImpl implements BlogService {
                                                    Integer size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.valueOf(authentication.getName());
-        String authority = authentication
-                .getAuthorities()
-                .stream()
+        String authority = authentication.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
                 .orElseThrow();
@@ -276,8 +272,7 @@ public class BlogServiceImpl implements BlogService {
         List<BlogEntityDto> entities = page.getContent()
                 .stream()
                 .map(blogEntity ->
-                        BlogEntityDto
-                                .builder()
+                        BlogEntityDto.builder()
                                 .id(blogEntity.getId())
                                 .title(blogEntity.getTitle())
                                 .description(blogEntity.getDescription())
@@ -287,8 +282,7 @@ public class BlogServiceImpl implements BlogService {
                                 .build())
                 .toList();
 
-        return PageAdapter
-                .<BlogEntityDto>builder()
+        return PageAdapter.<BlogEntityDto>builder()
                 .content(entities)
                 .last(page.isLast())
                 .first(page.isFirst())
@@ -312,10 +306,8 @@ public class BlogServiceImpl implements BlogService {
 
         List<String> list = redisTemplate.opsForValue().multiGet(keys);
 
-        return PageAdapter
-                .<BlogEntity>builder()
-                .content(list
-                        .stream()
+        return PageAdapter.<BlogEntity>builder()
+                .content(list.stream()
                         .filter(Objects::nonNull)
                         .map(str -> jsonUtils.readValue(str, BlogEntity.class))
                         .sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated()))
@@ -407,5 +399,26 @@ public class BlogServiceImpl implements BlogService {
         map.put("yearSize", list.get(3));
 
         return map;
+    }
+
+    @Override
+    public List<BlogHotReadVo> getScoreBlogs() {
+        Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet().reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
+        return set.stream()
+                .map(item -> {
+                    Long id = Long.valueOf(item.getValue());
+                    return BlogHotReadVo.builder()
+                            .id(id)
+                            .readCount(item.getScore().longValue())
+                            .build();
+                })
+                .toList();
+    }
+
+    @Override
+    @Cache(prefix = Const.HOT_BLOG)
+    public String findTitleById(Long id) {
+        return blogRepository.findTitleById(id)
+                .orElseThrow();
     }
 }

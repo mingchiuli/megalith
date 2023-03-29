@@ -63,8 +63,9 @@ public enum Const {
 
     JSON_WEB_TOKEN("jwt"),
 
-    ROLE_TOKEN_TOOL("ROLE_token_tool");
+    ROLE_TOKEN_TOOL("ROLE_token_tool"),
 
+    HOT_READ("hot_read");
 
     private final String info;
 

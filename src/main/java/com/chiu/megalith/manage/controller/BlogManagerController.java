@@ -38,8 +38,7 @@ public class BlogManagerController {
         UserEntity user = userService.findById(blog.getUserId());
         blogService.setReadCount(id);
         return Result.success(
-                BlogExhibitVo
-                        .builder()
+                BlogExhibitVo.builder()
                         .title(blog.getTitle())
                         .content(blog.getContent())
                         .readCount(blog.getReadCount())

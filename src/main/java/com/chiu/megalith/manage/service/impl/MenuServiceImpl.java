@@ -36,11 +36,9 @@ public class MenuServiceImpl implements MenuService {
         List<Long> menuIds = roleService.getNavMenuIds(role);
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
 
-        List<MenuEntityVo> menuEntityVos = menus
-                .stream()
+        List<MenuEntityVo> menuEntityVos = menus.stream()
                 .map(menu ->
-                        MenuEntityVo
-                                .builder()
+                        MenuEntityVo.builder()
                                 .menuId(menu.getMenuId())
                                 .parentId(menu.getParentId())
                                 .icon(menu.getIcon())
@@ -68,11 +66,9 @@ public class MenuServiceImpl implements MenuService {
     public List<MenuEntityVo> tree() {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
 
-        List<MenuEntityVo> menuEntityVos = menus
-                .stream()
+        List<MenuEntityVo> menuEntityVos = menus.stream()
                 .map(menu ->
-                        MenuEntityVo
-                                .builder()
+                        MenuEntityVo.builder()
                                 .menuId(menu.getMenuId())
                                 .parentId(menu.getParentId())
                                 .icon(menu.getIcon())
@@ -91,8 +87,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void saveOrUpdate(MenuEntityVo menu) {
-        MenuEntity menuEntity = MenuEntity
-                .builder()
+        MenuEntity menuEntity = MenuEntity.builder()
                 .menuId(menu.getMenuId())
                 .parentId(menu.getParentId())
                 .icon(menu.getIcon())
@@ -116,8 +111,7 @@ public class MenuServiceImpl implements MenuService {
     private List<MenuEntityVo> buildTreeMenu(List<MenuEntityVo> menus) {
         //2.组装父子的树形结构
         //2.1 找到所有一级分类
-        return menus
-                .stream()
+        return menus.stream()
                 .filter(menu -> menu.getParentId() == 0)
                 .peek(menu-> menu.setChildren(getChildren(menu, menus)))
                 .sorted(Comparator.comparingInt(menu -> Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum()))
@@ -126,8 +120,7 @@ public class MenuServiceImpl implements MenuService {
 
     private List<MenuEntityVo> getChildren(MenuEntityVo root,
                                            List<MenuEntityVo> all) {
-        return all
-                .stream()
+        return all.stream()
                 .filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId()))
                 .peek(menu -> menu.setChildren(getChildren(menu, all)))
                 .sorted(Comparator.comparingInt(menu -> Optional.ofNullable(menu.getOrderNum()).isEmpty() ? 0 : menu.getOrderNum()))

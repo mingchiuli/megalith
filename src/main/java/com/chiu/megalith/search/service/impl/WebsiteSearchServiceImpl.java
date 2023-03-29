@@ -100,8 +100,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                 .stream()
                 .map(hit -> {
                     WebsiteDocument document = hit.getContent();
-                    return WebsiteDocumentVo
-                            .builder()
+                    return WebsiteDocumentVo.builder()
                             .id(document.getId())
                             .title(document.getTitle())
                             .description(document.getDescription())
@@ -114,8 +113,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                 })
                 .toList();
 
-        return PageAdapter
-                .<WebsiteDocumentVo>builder()
+        return PageAdapter.<WebsiteDocumentVo>builder()
                 .first(currentPage == 1)
                 .last(currentPage == totalPage)
                 .pageSize(webPageSize)
@@ -165,8 +163,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % webPageSize == 0 ? totalHits / webPageSize : totalHits / webPageSize + 1;
 
-        List<WebsiteDocumentVo> vos = search.getSearchHits()
-                .stream()
+        List<WebsiteDocumentVo> vos = search.getSearchHits().stream()
                 .map(hit -> {
                     WebsiteDocument document = hit.getContent();
                     return WebsiteDocumentVo
@@ -187,8 +184,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                 })
                 .toList();
 
-        return PageAdapter
-                .<WebsiteDocumentVo>builder()
+        return PageAdapter.<WebsiteDocumentVo>builder()
                 .first(currentPage == 1)
                 .last(currentPage == totalPage)
                 .pageSize(webPageSize)

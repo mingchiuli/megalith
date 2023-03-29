@@ -106,12 +106,10 @@ public class BlogSearchServiceImpl implements BlogSearchService {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % blogPageSize == 0 ? totalHits / blogPageSize : totalHits / blogPageSize + 1;
 
-        List<BlogDocumentVo> vos = search.getSearchHits()
-                .stream()
+        List<BlogDocumentVo> vos = search.getSearchHits().stream()
                 .map(hit -> {
                     BlogDocument document = hit.getContent();
-                    return BlogDocumentVo
-                            .builder()
+                    return BlogDocumentVo.builder()
                             .id(document.getId())
                             .userId(document.getUserId())
                             .status(document.getStatus())
@@ -126,8 +124,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 })
                 .toList();
 
-        return PageAdapter
-                .<BlogDocumentVo>builder()
+        return PageAdapter.<BlogDocumentVo>builder()
                 .first(currentPage == 1)
                 .last(currentPage == totalPage)
                 .pageSize(blogPageSize).pageNumber(currentPage)
@@ -165,12 +162,10 @@ public class BlogSearchServiceImpl implements BlogSearchService {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % size == 0 ? totalHits / size : totalHits / size + 1;
 
-        List<BlogEntityDto> entities = search.getSearchHits()
-                .stream()
+        List<BlogEntityDto> entities = search.getSearchHits().stream()
                 .map(hit -> {
                     BlogDocument document = hit.getContent();
-                    return BlogEntityDto
-                            .builder()
+                    return BlogEntityDto.builder()
                             .id(document.getId())
                             .title(document.getTitle())
                             .description(document.getDescription())
@@ -181,8 +176,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 })
                 .toList();
 
-        return PageAdapter
-                .<BlogEntityDto>builder()
+        return PageAdapter.<BlogEntityDto>builder()
                 .totalElements(totalHits)
                 .pageNumber(currentPage)
                 .pageSize(size)

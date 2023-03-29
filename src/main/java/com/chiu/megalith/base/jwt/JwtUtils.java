@@ -31,8 +31,7 @@ public class JwtUtils {
         //过期时间
         Date expireDate = new Date(nowDate.getTime() + expire * 1000);
 
-        return Jwts
-                .builder()
+        return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .claim("role", role)
                 .setSubject(userId)

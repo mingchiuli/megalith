@@ -45,7 +45,8 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         StringBuilder builder = new StringBuilder();
         builder.append("::");
         builder.append(blog.getId());
-        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndStatus" + builder;
+        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndVisible" + builder;
+        String titleKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::getScoreBlogs" + builder;
         String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
         //年份缓存
         String yearsKey = Const.YEARS.getInfo() + "::BlogController::searchYears";
@@ -58,6 +59,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(contentKey);
         keys.add(statusKey);
         keys.add(blogReadKey);
+        keys.add(titleKey);
         //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         keys.add(Const.BLOOM_FILTER_PAGE.getInfo());

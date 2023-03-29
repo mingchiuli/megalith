@@ -60,12 +60,14 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         StringBuilder builder = new StringBuilder();
         builder.append("::");
         builder.append(blog.getId());
-        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndStatus" + builder;
+        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndVisible" + builder;
         String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
+        String titleKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::getScoreBlogs" + builder;
 
         Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo());
 
         keys.add(contentKey);
+        keys.add(titleKey);
         keys.add(statusKey);
         keys.add(pageNoPrefix);
         keys.add(pageYearNoPrefix);

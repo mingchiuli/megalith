@@ -48,31 +48,27 @@ public class CoopServiceImpl implements CoopService {
 
         UserEntity userEntity = userService.findById(userId);
         BlogEntity blogEntity = blogService.findById(blogId);
-        UserEntityVo userEntityVo = UserEntityVo
-                .builder()
+        UserEntityVo userEntityVo = UserEntityVo.builder()
                 .id(userEntity.getId())
                 .avatar(userEntity.getAvatar())
                 .nickname(userEntity.getNickname())
                 .build();
 
         JoinDto.Bind bind = JoinDto
-                .Bind
-                .builder()
+                .Bind.builder()
                 .blogId(blogId)
                 .fromId(userId)
                 .user(userEntityVo)
                 .build();
 
-        JoinDto dto = JoinDto
-                .builder()
+        JoinDto dto = JoinDto.builder()
                 .content(new MessageDto.Container<>(bind))
                 .build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
         List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
-        usersStr
-                .stream()
+        usersStr.stream()
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
                 .filter(user -> !user.getId().equals(userId))
                 .forEach(user -> {
@@ -83,8 +79,7 @@ public class CoopServiceImpl implements CoopService {
                             dto);
                 });
 
-        return InitCoopVo
-                .builder()
+        return InitCoopVo.builder()
                 .blogEntity(blogEntity)
                 .userEntityVos(usersStr)
                 .build();
@@ -97,22 +92,19 @@ public class CoopServiceImpl implements CoopService {
         blogService.saveOrUpdate(blogEntityVo);
 
         DestroyDto.Bind bind = DestroyDto
-                .Bind
-                .builder()
+                .Bind.builder()
                 .blogId(blogId)
                 .fromId(userId)
                 .build();
 
-        DestroyDto dto = DestroyDto
-                .builder()
+        DestroyDto dto = DestroyDto.builder()
                 .content(new MessageDto.Container<>(bind))
                 .build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
         List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
 
-        usersStr
-                .stream()
+        usersStr.stream()
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
                 .filter(user -> userId != user.getId())
                 .forEach(user -> {
