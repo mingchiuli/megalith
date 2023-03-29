@@ -164,7 +164,7 @@ public class CacheSchedule {
                 }, executor);
 
 
-                //unlock user & del statistic
+                //unlock user & del statistic & del hot read
                 CompletableFuture.runAsync(() -> {
                     List<Long> ids = userService.findIdsByStatus(1);
                     ids.forEach(id -> userService.changeUserStatusById(id, 0));
@@ -179,6 +179,7 @@ public class CacheSchedule {
                         redisTemplate.delete(Const.DAY_VISIT.getInfo());
                         if (dayOfWeek == 1) {
                             redisTemplate.delete(Const.WEEK_VISIT.getInfo());
+                            redisTemplate.delete(Const.HOT_READ.getInfo());
                         }
                         if (dayOfMonth == 1) {
                             redisTemplate.delete(Const.MONTH_VISIT.getInfo());
