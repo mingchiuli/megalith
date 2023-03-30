@@ -28,6 +28,12 @@ public class StatisticsAspect {
 
     private final StringRedisTemplate redisTemplate;
 
+    private final RedisScript<Void> statisticLua = RedisScript.of(
+            "redis.call('pfadd', KEYS[1], ARGV[1]);" +
+            "redis.call('pfadd', KEYS[2], ARGV[1]);" +
+            "redis.call('pfadd', KEYS[3], ARGV[1]);" +
+            "redis.call('pfadd', KEYS[4], ARGV[1]);");
+
     @Pointcut(value ="execution(* com.chiu.megalith.exhibit.controller.*.*(..)) || execution(* com.chiu.megalith.search.controller.*.*(..))")
     public void pt() {}
 
@@ -36,13 +42,7 @@ public class StatisticsAspect {
     public void before() {
         String addr = InetAddress.getLocalHost().getHostAddress();
 
-        String lua = "redis.call('pfadd', KEYS[1], ARGV[1]);" +
-                "redis.call('pfadd', KEYS[2], ARGV[1]);" +
-                "redis.call('pfadd', KEYS[3], ARGV[1]);" +
-                "redis.call('pfadd', KEYS[4], ARGV[1]);";
-
-        RedisScript<Void> script = RedisScript.of(lua);
-        redisTemplate.execute(script,
+        redisTemplate.execute(statisticLua,
                 Arrays.asList(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()),
                 addr);
     }

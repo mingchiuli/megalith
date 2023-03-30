@@ -33,6 +33,13 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
         this.redisTemplate = redisTemplate;
     }
 
+    private final RedisScript<Long> lua = RedisScript.of(
+            "local ttl =  redis.call('ttl', KEYS[1]);" +
+            "if (ttl == -2) then return 0 end;" +
+            "redis.call('hincrby', KEYS[1], ARGV[1], 1);" +
+            "redis.call('expire', KEYS[1], ttl);" +
+            "return ttl;",
+            Long.class);
 
     @Override
     public void authProcess(LoginUser user,
@@ -53,15 +60,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
             }
 
             if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
-
-                String lua = "local ttl =  redis.call('ttl', KEYS[1]);" +
-                        "if (ttl == -2) then return 0 end;" +
-                        "redis.call('hincrby', KEYS[1], ARGV[1], 1);" +
-                        "redis.call('expire', KEYS[1], ttl);" +
-                        "return ttl;";
-
-                RedisScript<Long> script = RedisScript.of(lua, Long.class);
-                Long ttl = redisTemplate.execute(script, Collections.singletonList(prefix), "try_count");
+                Long ttl = redisTemplate.execute(lua, Collections.singletonList(prefix), "try_count");
                 if (ttl == 0) {
                     throw new BadCredentialsException("code expired");
                 }

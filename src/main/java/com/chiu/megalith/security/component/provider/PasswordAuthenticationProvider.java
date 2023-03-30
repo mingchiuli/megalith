@@ -61,6 +61,11 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
         });
     }
 
+    private final RedisScript<Void> lua = RedisScript.of(
+            "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
+            "redis.call('rpush', KEYS[1], ARGV[3]);" +
+            "redis.call('expire', KEYS[1], ARGV[4])");
+
     private void passwordNotMatchProcess(String username) {
         String prefix = Const.PASSWORD_KEY.getInfo() + username;
         List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);
@@ -82,12 +87,7 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
             userService.changeUserStatusByUsername(username, 1);
         }
 
-        String lua = "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
-                "redis.call('rpush', KEYS[1], ARGV[3]);" +
-                "redis.call('expire', KEYS[1], ARGV[4])";
-
-        RedisScript<Void> script = RedisScript.of(lua);
-        redisTemplate.execute(script, Collections.singletonList(prefix),
+        redisTemplate.execute(lua, Collections.singletonList(prefix),
                 String.valueOf(l), String.valueOf(r), String.valueOf(System.currentTimeMillis()), String.valueOf(intervalTime / 1000));
     }
 }

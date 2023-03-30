@@ -166,8 +166,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         List<WebsiteDocumentVo> vos = search.getSearchHits().stream()
                 .map(hit -> {
                     WebsiteDocument document = hit.getContent();
-                    return WebsiteDocumentVo
-                            .builder()
+                    return WebsiteDocumentVo.builder()
                             .id(document.getId())
                             .title(document.getTitle())
                             .description(document.getDescription())

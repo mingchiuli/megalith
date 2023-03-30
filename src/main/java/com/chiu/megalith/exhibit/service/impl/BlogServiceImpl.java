@@ -375,21 +375,22 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.existsById(blogId);
     }
 
+    private final RedisScript<List> getVisitLua = RedisScript.of(
+            "local daySize = redis.call('pfcount', KEYS[1]);" +
+            "local weekSize = redis.call('pfcount', KEYS[2]);" +
+            "local monthSize = redis.call('pfcount', KEYS[3]);" +
+            "local yearSize = redis.call('pfcount', KEYS[4]);" +
+            "local resp = {};" +
+            "table.insert(resp, daySize);" +
+            "table.insert(resp, weekSize);" +
+            "table.insert(resp, monthSize);" +
+            "table.insert(resp, yearSize);" +
+            "return resp;",
+            List.class);
+
     @Override
     public Map<String, Long> getVisitStatistics() {
-        String lua = "local daySize = redis.call('pfcount', KEYS[1]);" +
-                "local weekSize = redis.call('pfcount', KEYS[2]);" +
-                "local monthSize = redis.call('pfcount', KEYS[3]);" +
-                "local yearSize = redis.call('pfcount', KEYS[4]);" +
-                "local resp = {};" +
-                "table.insert(resp, daySize);" +
-                "table.insert(resp, weekSize);" +
-                "table.insert(resp, monthSize);" +
-                "table.insert(resp, yearSize);" +
-                "return resp;";
-
-        RedisScript<List> script = RedisScript.of(lua, List.class);
-        List<Long> list = redisTemplate.execute(script,
+        List<Long> list = redisTemplate.execute(getVisitLua,
                 Arrays.asList(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()));
 
         Map<String, Long> map = new HashMap<>(7);
