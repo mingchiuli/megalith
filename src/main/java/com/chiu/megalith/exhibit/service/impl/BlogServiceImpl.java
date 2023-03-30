@@ -350,7 +350,6 @@ public class BlogServiceImpl implements BlogService {
                 correlationData);
     }
 
-
     @Override
     public void changeBlogStatus(Long id,
                                  Integer status,
@@ -406,7 +405,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Cache(prefix = Const.HOT_BLOG)
     public String findTitleById(Long id) {
-        return blogRepository.findTitleById(id)
-                .orElseThrow();
+        return blogRepository.findById(id)
+                .orElseThrow().getTitle();
     }
 }

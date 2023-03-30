@@ -31,9 +31,6 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
     @Query(value = "SELECT blog.status from BlogEntity blog where blog.id = ?1")
     Integer findStatusById(Long blogId);
 
-    @Query(value = "SELECT blog.title from BlogEntity blog where blog.id = ?1")
-    Optional<String> findTitleById(Long id);
-
     @Query(value = "SELECT blog.id from BlogEntity blog where blog.status = :status")
     List<Long> findIdsByStatus(Integer status, Pageable pageRequest);
 
