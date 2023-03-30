@@ -1,6 +1,7 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import com.chiu.megalith.base.utils.ESHighlightBuilderUtils;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.base.page.PageAdapter;
 import com.chiu.megalith.search.document.BlogDocument;
@@ -13,9 +14,6 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.HighlightQuery;
-import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
-import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
-import org.springframework.data.elasticsearch.core.query.highlight.HighlightParameters;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -36,34 +34,6 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
-    private final HighlightQuery highlightQueryOrigin = new HighlightQuery(
-            new Highlight(
-                    new HighlightParameters
-                            .HighlightParametersBuilder()
-                            .withPreTags("<b style='color:red'>")
-                            .withPostTags("</b>")
-                            .build(),
-                    Arrays.asList(
-                            new HighlightField("title"),
-                            new HighlightField("description"),
-                            new HighlightField("content"))),
-            null);
-
-    private final HighlightQuery highlightQuerySimple = new HighlightQuery(
-            new Highlight(
-                    new HighlightParameters
-                            .HighlightParametersBuilder()
-                            .withPreTags("<b style='color:red'>")
-                            .withPostTags("</b>")
-                            .withNumberOfFragments(1)
-                            .withFragmentSize(5)
-                            .build(),
-                    Arrays.asList(
-                            new HighlightField("title"),
-                            new HighlightField("description"),
-                            new HighlightField("content"))),
-            null);
-
     private final List<String> fields = Arrays.asList("title", "description", "content");
 
     @Override
@@ -74,9 +44,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
         HighlightQuery highlightQuery;
 
         if (flag == 0) {
-            highlightQuery = highlightQueryOrigin;
+            highlightQuery = ESHighlightBuilderUtils.blogHighlightQueryOrigin;
         } else {
-            highlightQuery = highlightQuerySimple;
+            highlightQuery = ESHighlightBuilderUtils.blogHighlightQuerySimple;
         }
 
         NativeQuery matchQuery = NativeQuery

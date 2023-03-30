@@ -2,6 +2,7 @@ package com.chiu.megalith.coop.service.impl;
 
 import com.chiu.megalith.base.lang.Const;
 import com.chiu.megalith.base.utils.JsonUtils;
+import com.chiu.megalith.base.utils.LuaScriptUtils;
 import com.chiu.megalith.coop.config.CoopRabbitConfig;
 import com.chiu.megalith.coop.dto.*;
 import com.chiu.megalith.coop.service.CoopMessageService;
@@ -13,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -67,11 +67,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 .nodeMark(CoopRabbitConfig.nodeMark)
                 .build();
 
-        String lua = "redis.call('hset', KEYS[1], ARGV[1], ARGV[2]);" +
-                "redis.call('expire', KEYS[1], ARGV[3]);";
-
-        RedisScript<Void> script = RedisScript.of(lua);
-        redisTemplate.execute(script,
+        redisTemplate.execute(LuaScriptUtils.sendUserToSessionLua,
                 Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
                 userId.toString(), jsonUtils.writeValueAsString(userEntityVo), "21600");
     }

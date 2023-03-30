@@ -2,6 +2,7 @@ package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import com.chiu.megalith.base.page.PageAdapter;
+import com.chiu.megalith.base.utils.ESHighlightBuilderUtils;
 import com.chiu.megalith.search.document.WebsiteDocument;
 import com.chiu.megalith.search.service.WebsiteSearchService;
 import com.chiu.megalith.search.vo.WebsiteDocumentVo;
@@ -14,10 +15,6 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.HighlightQuery;
-import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
-import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
-import org.springframework.data.elasticsearch.core.query.highlight.HighlightParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -37,18 +34,6 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
     @Value("${blog.web-page-size}")
     private int webPageSize;
-
-    private final HighlightQuery highlightQuery = new HighlightQuery(
-            new Highlight(
-                    new HighlightParameters
-                            .HighlightParametersBuilder()
-                            .withPreTags("<b style='color:red'>")
-                            .withPostTags("</b>")
-                            .build(),
-                    Arrays.asList(
-                            new HighlightField("title"),
-                            new HighlightField("description"))
-            ), null);
 
     private final List<String> fields = Arrays.asList("title", "description");
 
@@ -89,7 +74,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))
                 .withPageable(PageRequest.of(currentPage - 1, webPageSize))
-                .withHighlightQuery(highlightQuery).
+                .withHighlightQuery(ESHighlightBuilderUtils.websiteHighlightQuery).
                 build();
 
         SearchHits<WebsiteDocument> search = elasticsearchTemplate.search(matchQuery, WebsiteDocument.class);
@@ -137,7 +122,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                         .withSort(sort ->
                                 sort.score(score ->
                                         score.order(SortOrder.Desc)))
-                        .withHighlightQuery(highlightQuery)
+                        .withHighlightQuery(ESHighlightBuilderUtils.websiteHighlightQuery)
                         .withQuery(query ->
                                 query.bool(boolQuery ->
                                         boolQuery

@@ -1,11 +1,11 @@
 package com.chiu.megalith.security.component.provider;
 
+import com.chiu.megalith.base.utils.LuaScriptUtils;
 import com.chiu.megalith.security.user.LoginUser;
 import com.chiu.megalith.base.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,14 +33,6 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
         this.redisTemplate = redisTemplate;
     }
 
-    private final RedisScript<Long> lua = RedisScript.of(
-            "local ttl =  redis.call('ttl', KEYS[1]);" +
-            "if (ttl == -2) then return 0 end;" +
-            "redis.call('hincrby', KEYS[1], ARGV[1], 1);" +
-            "redis.call('expire', KEYS[1], ttl);" +
-            "return ttl;",
-            Long.class);
-
     @Override
     public void authProcess(LoginUser user,
                             UsernamePasswordAuthenticationToken authentication) {
@@ -60,7 +52,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
             }
 
             if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
-                Long ttl = redisTemplate.execute(lua, Collections.singletonList(prefix), "try_count");
+                Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
                 if (ttl == 0) {
                     throw new BadCredentialsException("code expired");
                 }
