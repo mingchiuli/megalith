@@ -46,7 +46,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         builder.append("::");
         builder.append(blog.getId());
         String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndVisible" + builder;
-        String titleKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::getScoreBlogs" + builder;
+        String titleKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findTitleById" + builder;
         String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
         //年份缓存
         String yearsKey = Const.YEARS.getInfo() + "::BlogController::searchYears";
