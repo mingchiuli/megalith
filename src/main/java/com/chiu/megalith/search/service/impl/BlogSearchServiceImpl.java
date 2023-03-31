@@ -1,9 +1,9 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import com.chiu.megalith.base.utils.ESHighlightBuilderUtils;
+import com.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
-import com.chiu.megalith.base.page.PageAdapter;
+import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.search.document.BlogDocument;
 import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;

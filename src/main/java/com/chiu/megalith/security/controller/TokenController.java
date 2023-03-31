@@ -1,6 +1,6 @@
 package com.chiu.megalith.security.controller;
 
-import com.chiu.megalith.base.lang.Result;
+import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

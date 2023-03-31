@@ -1,6 +1,6 @@
 package com.chiu.megalith.security.service.impl;
 
-import com.chiu.megalith.base.jwt.JwtUtils;
+import com.chiu.megalith.infra.jwt.JwtUtils;
 import com.chiu.megalith.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

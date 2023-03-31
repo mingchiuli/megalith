@@ -1,6 +1,6 @@
 package com.chiu.megalith.security.component.provider;
 
-import com.chiu.megalith.base.utils.SpringUtils;
+import com.chiu.megalith.infra.utils.SpringUtils;
 import com.chiu.megalith.security.user.LoginUser;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

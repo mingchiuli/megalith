@@ -1,6 +1,6 @@
 package com.chiu.megalith;
 
-import com.chiu.megalith.base.utils.JsonUtils;
+import com.chiu.megalith.infra.utils.JsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.repository.UserRepository;
 import org.junit.jupiter.api.Test;

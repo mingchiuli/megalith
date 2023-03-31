@@ -1,9 +1,9 @@
 package com.chiu.megalith.search.controller;
 
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
-import com.chiu.megalith.base.lang.Result;
-import com.chiu.megalith.base.page.PageAdapter;
-import com.chiu.megalith.base.valid.ListValue;
+import com.chiu.megalith.infra.lang.Result;
+import com.chiu.megalith.infra.page.PageAdapter;
+import com.chiu.megalith.infra.valid.ListValue;
 import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;
 import jakarta.validation.constraints.NotBlank;

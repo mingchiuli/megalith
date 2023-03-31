@@ -1,6 +1,6 @@
 package com.chiu.megalith.coop.mq;
 
-import com.chiu.megalith.base.utils.SpringUtils;
+import com.chiu.megalith.infra.utils.SpringUtils;
 import com.chiu.megalith.coop.dto.MessageDto;
 import com.chiu.megalith.coop.mq.handler.CoopHandler;
 import lombok.RequiredArgsConstructor;

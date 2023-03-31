@@ -1,6 +1,6 @@
 package com.chiu.megalith.manage.controller;
 
-import com.chiu.megalith.base.exception.AuthenticationExceptionImpl;
+import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
@@ -8,8 +8,8 @@ import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
-import com.chiu.megalith.base.lang.Result;
-import com.chiu.megalith.base.page.PageAdapter;
+import com.chiu.megalith.infra.lang.Result;
+import com.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;

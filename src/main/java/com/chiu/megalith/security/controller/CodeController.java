@@ -1,7 +1,7 @@
 package com.chiu.megalith.security.controller;
 
 import com.chiu.megalith.security.service.CodeService;
-import com.chiu.megalith.base.lang.Result;
+import com.chiu.megalith.infra.lang.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

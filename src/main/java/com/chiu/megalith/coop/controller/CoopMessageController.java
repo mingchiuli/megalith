@@ -1,6 +1,6 @@
 package com.chiu.megalith.coop.controller;
 
-import com.chiu.megalith.base.lang.Result;
+import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.coop.dto.impl.ChatDto;
 import com.chiu.megalith.coop.dto.impl.DestroyDto;
 import com.chiu.megalith.coop.dto.impl.QuitDto;

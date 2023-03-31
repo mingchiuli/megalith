@@ -1,6 +1,6 @@
 package com.chiu.megalith.manage.vo;
 
-import com.chiu.megalith.base.valid.ListValue;
+import com.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

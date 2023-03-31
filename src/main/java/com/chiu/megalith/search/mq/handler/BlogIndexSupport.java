@@ -3,9 +3,9 @@ package com.chiu.megalith.search.mq.handler;
 
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
-import com.chiu.megalith.base.lang.Const;
-import com.chiu.megalith.base.search.BlogIndexEnum;
-import com.chiu.megalith.base.search.BlogSearchIndexMessage;
+import com.chiu.megalith.infra.lang.Const;
+import com.chiu.megalith.infra.search.BlogIndexEnum;
+import com.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
 import org.redisson.api.RLock;
