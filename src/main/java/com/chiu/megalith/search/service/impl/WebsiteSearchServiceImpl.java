@@ -18,7 +18,6 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +34,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Value("${blog.web-page-size}")
     private int webPageSize;
 
-    private final List<String> fields = Arrays.asList("title", "description");
+    private final List<String> fields = List.of("title", "description");
 
     @Override
     public void saveOrUpdate(WebsiteVo websiteVo) {

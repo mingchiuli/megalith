@@ -377,7 +377,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Map<String, Long> getVisitStatistics() {
         List<Long> list = redisTemplate.execute(LuaScriptUtils.getVisitLua,
-                Arrays.asList(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()));
+                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()));
 
         Map<String, Long> map = new HashMap<>(7);
         map.put("daySize", list.get(0));

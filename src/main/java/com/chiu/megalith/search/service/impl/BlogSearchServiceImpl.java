@@ -17,7 +17,6 @@ import org.springframework.data.elasticsearch.core.query.HighlightQuery;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +33,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
-    private final List<String> fields = Arrays.asList("title", "description", "content");
+    private final List<String> fields = List.of("title", "description", "content");
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage,

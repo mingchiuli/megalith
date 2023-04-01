@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightParameters;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -19,7 +19,7 @@ public class ESHighlightBuilderUtils {
                             .withPreTags("<b style='color:red'>")
                             .withPostTags("</b>")
                             .build(),
-                    Arrays.asList(
+                    List.of(
                             new HighlightField("title"),
                             new HighlightField("description"),
                             new HighlightField("content"))),
@@ -34,7 +34,7 @@ public class ESHighlightBuilderUtils {
                             .withNumberOfFragments(1)
                             .withFragmentSize(5)
                             .build(),
-                    Arrays.asList(
+                    List.of(
                             new HighlightField("title"),
                             new HighlightField("description"),
                             new HighlightField("content"))),
@@ -47,7 +47,7 @@ public class ESHighlightBuilderUtils {
                             .withPreTags("<b style='color:red'>")
                             .withPostTags("</b>")
                             .build(),
-                    Arrays.asList(
+                    List.of(
                             new HighlightField("title"),
                             new HighlightField("description"))
             ), null);

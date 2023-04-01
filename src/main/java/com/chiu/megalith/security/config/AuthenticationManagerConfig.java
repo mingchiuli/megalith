@@ -10,7 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,7 +28,7 @@ public class AuthenticationManagerConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        List<AuthenticationProvider> providers = Arrays.asList(
+        List<AuthenticationProvider> providers = List.of(
                 passwordAuthenticationProvider,
                 emailAuthenticationProvider,
                 phoneAuthenticationProvider

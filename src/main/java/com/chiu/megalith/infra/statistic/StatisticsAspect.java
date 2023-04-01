@@ -13,7 +13,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -36,6 +36,6 @@ public class StatisticsAspect {
     public void before() {
         String addr = InetAddress.getLocalHost().getHostAddress();
         redisTemplate.execute(LuaScriptUtils.statisticLua,
-                Arrays.asList(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()), addr);
+                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()), addr);
     }
 }
