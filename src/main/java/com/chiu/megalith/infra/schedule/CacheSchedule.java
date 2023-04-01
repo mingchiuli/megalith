@@ -5,7 +5,6 @@ import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -51,7 +50,6 @@ public class CacheSchedule {
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
     @Scheduled(cron = "0 0 0/2 * * ?")
-    @SneakyThrows
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
@@ -87,7 +85,7 @@ public class CacheSchedule {
                     };
 
                     for (;;) {
-                        if (maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
+                        if (maxPoolSize > executor.getActiveCount()) {
                             executor.execute(() -> {
                                 int _curPageNo = 0;
                                 if (!ref.fin) {
@@ -213,7 +211,7 @@ public class CacheSchedule {
 
         int maxPoolSize = executor.getMaximumPoolSize();
         for (;;) {
-            if (maxPoolSize > executor.getActiveCount() && executor.getQueue().size() < 20) {
+            if (maxPoolSize > executor.getActiveCount()) {
                 executor.execute(() -> {
                     if (!ref.fin) {
                         List<Long> idList = null;
