@@ -65,7 +65,7 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
         String prefix = Const.PASSWORD_KEY.getInfo() + username;
         List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);
         int len = loginFailureTimeStampRecords.size();
-        int r = - 1;
+        int r = -1;
         int l = 0;
 
         long currentTimeMillis = System.currentTimeMillis();
