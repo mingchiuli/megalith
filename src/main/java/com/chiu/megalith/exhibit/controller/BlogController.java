@@ -111,17 +111,16 @@ public class BlogController {
     @GetMapping("/scores")
     public Result<List<BlogHotReadVo>> getScoreBlogs() {
         List<BlogHotReadVo> list = blogService.getScoreBlogs();
-        list.stream()
-                .forEach(item -> {
-                    String title;
-                    Long id = item.getId();
-                    try {
-                        title = blogService.findByIdAndVisible(id).getTitle();
-                    } catch (NotFoundException e) {
-                        title = blogService.findTitleById(id);
-                    }
-                    item.setTitle(title);
-                });
+        list.forEach(item -> {
+            String title;
+            Long id = item.getId();
+            try {
+                title = blogService.findByIdAndVisible(id).getTitle();
+            } catch (NotFoundException e) {
+                title = blogService.findTitleById(id);
+            }
+            item.setTitle(title);
+        });
         return Result.success(list);
     }
 
