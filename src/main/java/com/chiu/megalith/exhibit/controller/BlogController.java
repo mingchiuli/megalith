@@ -36,7 +36,7 @@ public class BlogController {
     private final UserService userService;
 
     @GetMapping("/info/{id}")
-    @Bloom(handler = DetailPageHandler.class)
+    @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
         BlogExhibitVo blog = blogService.findByIdAndVisible(id);
         blogService.setReadCount(id);
@@ -88,7 +88,7 @@ public class BlogController {
     }
 
     @GetMapping("/status/{blogId}")
-    @Bloom(handler = DetailPageHandler.class)
+    @Bloom(handler = DetailHandler.class)
     @Cache(prefix = Const.BLOG_STATUS)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
         Integer status = blogService.findStatusById(blogId);

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class DetailPageHandler extends BloomHandler {
+public class DetailHandler extends BloomHandler {
 
     private final StringRedisTemplate redisTemplate;
 
