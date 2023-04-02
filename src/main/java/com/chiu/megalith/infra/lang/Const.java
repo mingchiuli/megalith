@@ -8,6 +8,8 @@ package com.chiu.megalith.infra.lang;
 public enum Const {
 
     GRANT_TYPE_EMAIL("email"),
+    EMAIL_CODE("email_code"),
+    SMS_CODE("sms_code"),
 
     DAY_VISIT("day_visit"),
 

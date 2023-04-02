@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import com.chiu.megalith.infra.operator.CodeOperator;
+import com.chiu.megalith.infra.code.CodeFactory;
 
 
 /**
@@ -18,7 +18,7 @@ import com.chiu.megalith.infra.operator.CodeOperator;
 @RequiredArgsConstructor
 public class CodeServiceImpl implements CodeService {
 
-    private final CodeOperator codeOperator;
+    private final CodeFactory codeFactory;
 
     private final JavaMailSender javaMailSender;
 
@@ -28,8 +28,8 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public void createEmailCode(String loginEmail) {
-        String code = codeOperator.createCode();
-        codeOperator.saveCode(code, Const.EMAIL_KEY.getInfo() + loginEmail);
+        String code = codeFactory.create(Const.EMAIL_CODE.getInfo());
+        codeFactory.save(code, Const.EMAIL_KEY.getInfo() + loginEmail);
         SimpleMailMessage simpMsg = new SimpleMailMessage();
         simpMsg.setFrom(from);
         simpMsg.setTo(loginEmail);
