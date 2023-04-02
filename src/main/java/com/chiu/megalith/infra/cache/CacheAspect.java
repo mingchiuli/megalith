@@ -1,6 +1,5 @@
 package com.chiu.megalith.infra.cache;
 
-import com.chiu.megalith.infra.utils.JsonUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -43,14 +42,13 @@ public class CacheAspect {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final JsonUtils jsonUtils;
+    private final CacheKeyGenerator cacheKeyGenerator;
 
     private final ObjectMapper objectMapper;
 
     private final RedissonClient redisson;
 
-    private final LoadingCache<String, RLock> lockCache = Caffeine
-            .newBuilder()
+    private final LoadingCache<String, RLock> lockCache = Caffeine.newBuilder()
             .maximumSize(500)
             .expireAfterWrite(Duration.ofMinutes(60))
             .build(this::createRlock);
@@ -68,46 +66,30 @@ public class CacheAspect {
     public Object around(ProceedingJoinPoint pjp) {
         Signature signature = pjp.getSignature();
         //类名
-        String className = pjp.getTarget().getClass().getSimpleName();
         //调用的方法名
         String methodName = signature.getName();
-
+        Class<?> declaringType = signature.getDeclaringType();
         Class<?>[] parameterTypes = new Class[pjp.getArgs().length];
         Object[] args = pjp.getArgs();
-        //参数
-        StringBuilder params = new StringBuilder();
-
         for (int i = 0; i < args.length; i++) {
-            params.append("::");
-            if (args[i] instanceof String) {
-                params.append(args[i]);
-            } else {
-                params.append(jsonUtils.writeValueAsString(args[i]));
-            }
             parameterTypes[i] = args[i].getClass();
         }
-
-        Class<?> declaringType = signature.getDeclaringType();
+        //参数
         Method method = declaringType.getMethod(methodName, parameterTypes);
-
         Cache annotation = method.getAnnotation(Cache.class);
         int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
-        String prefix = annotation.prefix().getInfo();
 
         Type genericReturnType = method.getGenericReturnType();
-
         JavaType javaType;
-
         if (genericReturnType instanceof ParameterizedType parameterizedType) {
             javaType = getTypesReference(parameterizedType);
         } else {
             javaType = objectMapper.getTypeFactory().constructType(genericReturnType);
         }
 
-        String redisKey = StringUtils.hasLength(prefix) ? prefix + "::" + className + "::" + methodName + params : className + "::" + methodName + params;
+        String redisKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
 
         String o;
-
         //防止redis挂了以后db也访问不了
         try {
             o = redisTemplate.opsForValue().get(redisKey);
@@ -119,8 +101,7 @@ public class CacheAspect {
             return objectMapper.readValue(o, javaType);
         }
 
-        String lock = LOCK + className + methodName + params;
-
+        String lock = LOCK + redisKey;
         //已经线程安全
         RLock rLock = lockCache.get(lock);
 

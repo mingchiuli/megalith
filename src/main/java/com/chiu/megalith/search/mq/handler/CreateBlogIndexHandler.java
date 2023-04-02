@@ -2,10 +2,10 @@ package com.chiu.megalith.search.mq.handler;
 
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
+import com.chiu.megalith.infra.cache.CacheKeyGenerator;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
@@ -18,21 +18,18 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
 public final class CreateBlogIndexHandler extends BlogIndexSupport {
-    private final ObjectMapper objectMapper;
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     public CreateBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
-                                  ObjectMapper objectMapper,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  RedissonClient redisson) {
-        super(redisTemplate, blogRepository, redisson);
-        this.objectMapper = objectMapper;
+                                  RedissonClient redisson,
+                                  CacheKeyGenerator cacheKeyGenerator) {
+        super(redisTemplate, blogRepository, redisson, cacheKeyGenerator);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -77,11 +74,6 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
 
         //设置getBlogDetail的bloom, getBlogStatus的bloom(其实同一个bloom)和最近阅读数
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true);
-        redisTemplate.opsForValue().set(
-                Const.READ_RECENT.getInfo() + blog.getId(),
-                objectMapper.writeValueAsString(0),
-                7,
-                TimeUnit.DAYS);
 
         //年份过滤bloom更新,getCountByYear的bloom
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);

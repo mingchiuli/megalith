@@ -3,6 +3,7 @@ package com.chiu.megalith.search.mq.handler;
 
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
+import com.chiu.megalith.infra.cache.CacheKeyGenerator;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.infra.search.BlogSearchIndexMessage;
@@ -31,12 +32,16 @@ public abstract sealed class BlogIndexSupport permits
 
     protected final RLock rLock;
 
+    protected final CacheKeyGenerator cacheKeyGenerator;
+
     protected BlogIndexSupport(StringRedisTemplate redisTemplate,
                                BlogRepository blogRepository,
-                               RedissonClient redisson) {
+                               RedissonClient redisson,
+                               CacheKeyGenerator cacheKeyGenerator) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
         this.redisson = redisson;
+        this.cacheKeyGenerator = cacheKeyGenerator;
         rLock = redisson.getLock("redisBlogProcess");
     }
 

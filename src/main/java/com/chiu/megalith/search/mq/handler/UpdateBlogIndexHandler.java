@@ -1,8 +1,10 @@
 package com.chiu.megalith.search.mq.handler;
 
+import com.chiu.megalith.exhibit.controller.BlogController;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
-import com.chiu.megalith.infra.lang.Const;
+import com.chiu.megalith.exhibit.service.impl.BlogServiceImpl;
+import com.chiu.megalith.infra.cache.CacheKeyGenerator;
 import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
 import org.redisson.api.RedissonClient;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Set;
+import java.util.HashSet;
 
 /**
  * @author mingchiuli
@@ -30,8 +32,9 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
     public UpdateBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  RedissonClient redisson) {
-        super(redisTemplate, blogRepository, redisson);
+                                  RedissonClient redisson,
+                                  CacheKeyGenerator cacheKeyGenerator) {
+        super(redisTemplate, blogRepository, redisson, cacheKeyGenerator);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -46,31 +49,25 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         long count = blogRepository.countByCreatedAfter(blog.getCreated());
         count++;
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
-        String sb = "::" + pageNo;
-        String pageNoPrefix = Const.HOT_BLOGS.getInfo() + "::BlogController::findPage" + sb;
+        String listPage = cacheKeyGenerator.generateKey(BlogController.class, "listPage", new Class[]{Integer.class}, new Object[]{pageNo});
 
         //分年份的页数
         long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
         countYear++;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
-        String s = "::" + pageYearNo + "::" + blog.getCreated().getYear();
-        String pageYearNoPrefix = Const.HOT_BLOGS.getInfo() + "::BlogController::findPageByYear" + s;
+        String listPageByYear = cacheKeyGenerator.generateKey(BlogController.class, "listPageByYear", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, blog.getCreated().getYear()});
 
         //博客对象本身缓存
-        StringBuilder builder = new StringBuilder();
-        builder.append("::");
-        builder.append(blog.getId());
-        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndVisible" + builder;
-        String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
-        String titleKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findTitleById" + builder;
+        String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{blog.getId()});
+        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Integer.class}, new Object[]{blog.getId()});
+        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findTitleById", new Class[]{Long.class}, new Object[]{blog.getId()});
 
-        Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo());
-
-        keys.add(contentKey);
-        keys.add(titleKey);
-        keys.add(statusKey);
-        keys.add(pageNoPrefix);
-        keys.add(pageYearNoPrefix);
+        HashSet<String> keys = new HashSet<>(7);
+        keys.add(findByIdAndVisible);
+        keys.add(findTitleById);
+        keys.add(getBlogStatus);
+        keys.add(listPage);
+        keys.add(listPageByYear);
         redisTemplate.unlink(keys);
     }
 

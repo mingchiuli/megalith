@@ -1,7 +1,10 @@
 package com.chiu.megalith.search.mq.handler;
 
+import com.chiu.megalith.exhibit.controller.BlogController;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.repository.BlogRepository;
+import com.chiu.megalith.exhibit.service.impl.BlogServiceImpl;
+import com.chiu.megalith.infra.cache.CacheKeyGenerator;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
@@ -26,8 +29,9 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
     public RemoveBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  RedissonClient redisson) {
-        super(redisTemplate, blogRepository, redisson);
+                                  RedissonClient redisson,
+                                  CacheKeyGenerator cacheKeyGenerator) {
+        super(redisTemplate, blogRepository, redisson, cacheKeyGenerator);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -42,24 +46,18 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
     @Override
     protected void redisProcess(BlogEntity blog) {
         //博客对象本身缓存
-        StringBuilder builder = new StringBuilder();
-        builder.append("::");
-        builder.append(blog.getId());
-        String contentKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findByIdAndVisible" + builder;
-        String titleKey = Const.HOT_BLOG.getInfo() + "::BlogServiceImpl::findTitleById" + builder;
-        String statusKey = Const.BLOG_STATUS.getInfo() + "::BlogController::getBlogStatus" + builder;
-        //年份缓存
-        String yearsKey = Const.YEARS.getInfo() + "::BlogController::searchYears";
-        String blogReadKey = Const.READ_RECENT.getInfo() + blog.getId();
+        String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{blog.getId()});
+        String getCountByYear = cacheKeyGenerator.generateKey(BlogController.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{blog.getCreated().getYear()});
+        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Integer.class}, new Object[]{blog.getId()});
+        String searchYears = cacheKeyGenerator.generateKey(BlogController.class, "searchYears", new Class[]{}, new Object[]{});
 
         //删掉所有摘要缓存
         Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo());
 
-        keys.add(yearsKey);
-        keys.add(contentKey);
-        keys.add(statusKey);
-        keys.add(blogReadKey);
-        keys.add(titleKey);
+        keys.add(listPage);
+        keys.add(getCountByYear);
+        keys.add(getBlogStatus);
+        keys.add(searchYears);
         //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         keys.add(Const.BLOOM_FILTER_PAGE.getInfo());

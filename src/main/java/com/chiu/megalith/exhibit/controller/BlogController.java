@@ -61,7 +61,7 @@ public class BlogController {
     }
 
     @GetMapping("/count/year/{year}")
-    @Cache(prefix = Const.HOT_BLOGS)
+    @Cache(prefix = Const.HOT_BLOG)
     @Bloom(handler = CountYearHandler.class)
     public Result<Integer> getCountByYear(@PathVariable(name = "year") Integer year) {
         Integer count = blogService.getCountByYear(year);
@@ -88,7 +88,7 @@ public class BlogController {
     }
 
     @GetMapping("/status/{blogId}")
-    @Bloom(handler = BlogStatusHandler.class)
+    @Bloom(handler = DetailPageHandler.class)
     @Cache(prefix = Const.BLOG_STATUS)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
         Integer status = blogService.findStatusById(blogId);
