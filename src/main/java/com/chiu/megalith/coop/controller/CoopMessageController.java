@@ -39,7 +39,7 @@ public class CoopMessageController {
     }
 
     @MessageMapping("/submit")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public void submitBlog(@RequestBody SubmitBlogDto.Bind msg) {
         coopMessageService.submitBlog(msg);
     }
