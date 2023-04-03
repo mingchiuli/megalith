@@ -57,10 +57,11 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
         String listPageByYear = cacheKeyGenerator.generateKey(BlogController.class, "listPageByYear", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, blog.getCreated().getYear()});
 
+        Long id = blog.getId();
         //博客对象本身缓存
-        String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{blog.getId()});
-        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Integer.class}, new Object[]{blog.getId()});
-        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findTitleById", new Class[]{Long.class}, new Object[]{blog.getId()});
+        String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
+        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findTitleById", new Class[]{Long.class}, new Object[]{id});
+        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Integer.class}, new Object[]{id});
 
         HashSet<String> keys = new HashSet<>(7);
         keys.add(findByIdAndVisible);

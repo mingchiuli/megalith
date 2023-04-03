@@ -45,13 +45,14 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
 
     @Override
     protected void redisProcess(BlogEntity blog) {
+        int year = blog.getCreated().getYear();
+        Long id = blog.getId();
         //博客对象本身缓存
-        String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{blog.getId()});
-        String getCountByYear = cacheKeyGenerator.generateKey(BlogController.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{blog.getCreated().getYear()});
-        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Integer.class}, new Object[]{blog.getId()});
+        String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
+        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findTitleById", new Class[]{Long.class}, new Object[]{id});
+        String getCountByYear = cacheKeyGenerator.generateKey(BlogController.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
+        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Integer.class}, new Object[]{id});
         String searchYears = cacheKeyGenerator.generateKey(BlogController.class, "searchYears", new Class[]{}, new Object[]{});
-        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findTitleById", new Class[]{Long.class}, new Object[]{blog.getId()});
-
 
         //删掉所有摘要缓存
         Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo());
@@ -67,7 +68,6 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(Const.BLOOM_FILTER_YEARS.getInfo());
         redisTemplate.unlink(keys);
 
-        int year = blog.getCreated().getYear();
         //设置getBlogDetail的bloom
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);
         //重置该年份的页面bloom
