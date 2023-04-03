@@ -45,6 +45,8 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
 
     @Override
     protected void redisProcess(BlogEntity blog) {
+        Long id = blog.getId();
+        int year = blog.getCreated().getYear();
         //不分年份的页数
         long count = blogRepository.countByCreatedAfter(blog.getCreated());
         count++;
@@ -55,13 +57,12 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
         countYear++;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
-        String listPageByYear = cacheKeyGenerator.generateKey(BlogController.class, "listPageByYear", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, blog.getCreated().getYear()});
+        String listPageByYear = cacheKeyGenerator.generateKey(BlogController.class, "listPageByYear", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
 
-        Long id = blog.getId();
         //博客对象本身缓存
         String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
         String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findTitleById", new Class[]{Long.class}, new Object[]{id});
-        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Integer.class}, new Object[]{id});
+        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
 
         HashSet<String> keys = new HashSet<>(7);
         keys.add(findByIdAndVisible);
