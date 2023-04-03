@@ -56,4 +56,6 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
     @Query(value = "SELECT new BlogEntity (blog.id, blog.title, blog.description, blog.created, blog.link) from BlogEntity blog where blog.created between :start and :end")
     Page<BlogEntity> findPageByCreatedBetween(Pageable pageRequest, LocalDateTime start, LocalDateTime end);
 
+    @Query(value = "SELECT new BlogEntity (blog.id, blog.title, blog.description, blog.created) from BlogEntity blog where blog.id = ?1")
+    Optional<BlogEntity> findAbstractById(Long id);
 }

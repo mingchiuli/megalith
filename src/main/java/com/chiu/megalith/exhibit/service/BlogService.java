@@ -1,5 +1,6 @@
 package com.chiu.megalith.exhibit.service;
 
+import com.chiu.megalith.coop.vo.BlogAbstractVo;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
@@ -23,7 +24,6 @@ public interface BlogService {
     void setReadCount(Long id);
 
     BlogEntity findById(Long id);
-
 
     PageAdapter<BlogEntity> findPage(Integer currentPage);
 
@@ -61,5 +61,5 @@ public interface BlogService {
 
     List<BlogHotReadVo> getScoreBlogs();
 
-    String findTitleById(Long id);
+    BlogAbstractVo findAbstractById(Long id);
 }

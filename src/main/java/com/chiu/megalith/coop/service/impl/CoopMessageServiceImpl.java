@@ -41,17 +41,17 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void syncContent(MessageDto.BaseBind msg) {
+    public void syncBlog(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void destroy(MessageDto.BaseBind msg) {
+    public void submitBlog(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void quit(MessageDto.BaseBind msg) {
+    public void quitBlog(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
         redisTemplate.opsForHash()
                 .delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());

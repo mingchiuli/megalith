@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.mq.handler.impl;
 
 import com.chiu.megalith.coop.dto.MessageDto;
-import com.chiu.megalith.coop.dto.impl.JoinDto;
+import com.chiu.megalith.coop.dto.impl.JoinBlogDto;
 import com.chiu.megalith.coop.mq.handler.CoopHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class JoinHandler implements CoopHandler {
+public class JoinBlogHandler implements CoopHandler {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public boolean supports(MessageDto msg) {
-        return msg instanceof JoinDto;
+        return msg instanceof JoinBlogDto;
     }
 
     @Override

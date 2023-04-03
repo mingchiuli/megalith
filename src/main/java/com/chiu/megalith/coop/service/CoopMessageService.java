@@ -10,11 +10,11 @@ import com.chiu.megalith.coop.dto.*;
 public interface CoopMessageService {
     void chat(MessageDto.BaseBind msg);
 
-    void syncContent(MessageDto.BaseBind msg);
+    void syncBlog(MessageDto.BaseBind msg);
 
-    void destroy(MessageDto.BaseBind msg);
+    void submitBlog(MessageDto.BaseBind msg);
 
-    void quit(MessageDto.BaseBind msg);
+    void quitBlog(MessageDto.BaseBind msg);
 
     void setUserToRedisSession(Long userId, Long blogId);
 

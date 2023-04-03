@@ -2,9 +2,9 @@ package com.chiu.megalith.coop.controller;
 
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.coop.dto.impl.ChatDto;
-import com.chiu.megalith.coop.dto.impl.DestroyDto;
-import com.chiu.megalith.coop.dto.impl.QuitDto;
-import com.chiu.megalith.coop.dto.impl.SyncDto;
+import com.chiu.megalith.coop.dto.impl.SubmitBlogDto;
+import com.chiu.megalith.coop.dto.impl.QuitBlogDto;
+import com.chiu.megalith.coop.dto.impl.SyncBlogDto;
 import com.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @Controller
 @RequiredArgsConstructor
-@MessageMapping("/coop")
+@MessageMapping("/coop/message/")
 public class CoopMessageController {
 
     private final CoopMessageService coopMessageService;
@@ -34,20 +34,20 @@ public class CoopMessageController {
 
     @MessageMapping("/sync")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void syncContent(@RequestBody SyncDto.Bind msg) {
-        coopMessageService.syncContent(msg);
+    public void syncBlog(@RequestBody SyncBlogDto.Bind msg) {
+        coopMessageService.syncBlog(msg);
     }
 
-    @MessageMapping("/destroy")
+    @MessageMapping("/submit")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole())")
-    public void destroy(@RequestBody DestroyDto.Bind msg) {
-        coopMessageService.destroy(msg);
+    public void submitBlog(@RequestBody SubmitBlogDto.Bind msg) {
+        coopMessageService.submitBlog(msg);
     }
 
     @MessageMapping("/quit")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public void quit(@RequestBody QuitDto.Bind msg) {
-        coopMessageService.quit(msg);
+    public void quitBlog(@RequestBody QuitBlogDto.Bind msg) {
+        coopMessageService.quitBlog(msg);
     }
 
     @MessageMapping("/session/{userId}/{blogId}")

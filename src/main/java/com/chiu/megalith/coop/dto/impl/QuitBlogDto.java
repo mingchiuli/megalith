@@ -9,15 +9,11 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public class SyncDto extends MessageDto implements Serializable {
-
+public class QuitBlogDto extends MessageDto implements Serializable {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
     @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Bind extends BaseBind implements Serializable {
-        private String content;
-
-    }
+    @SuppressWarnings("unused")
+    public static class Bind extends BaseBind implements Serializable {}
 }

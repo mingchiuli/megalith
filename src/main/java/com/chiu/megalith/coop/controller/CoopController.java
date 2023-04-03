@@ -1,5 +1,7 @@
 package com.chiu.megalith.coop.controller;
 
+import com.chiu.megalith.coop.vo.BlogAbstractVo;
+import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.valid.CoopBlogId;
@@ -24,17 +26,24 @@ public class CoopController {
 
     @GetMapping("/init/{blogId}/{orderNumber}")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public Result<InitCoopVo> joinCoop(@PathVariable @CoopBlogId Long blogId,
+    public Result<InitCoopVo> joinCoopBlog(@PathVariable @CoopBlogId Long blogId,
                                        @PathVariable Integer orderNumber) {
-        InitCoopVo initCoopVo = coopService.join(blogId, orderNumber);
+        InitCoopVo initCoopVo = coopService.joinCoopBlog(blogId, orderNumber);
         return Result.success(initCoopVo);
     }
 
+    @GetMapping("/blogs/{currentPage}")
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
+    public Result<PageAdapter<BlogAbstractVo>> getCoopBlogs(@PathVariable Integer currentPage) {
+        PageAdapter<BlogAbstractVo> page = coopService.getCoopBlogs(currentPage);
+        return Result.success(page);
+    }
+
     @PostMapping("/submit/{blogId}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> submit(@PathVariable @CoopBlogId Long blogId,
+    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
+    public Result<Void> submitBlog(@PathVariable @CoopBlogId Long blogId,
                                @RequestBody @Validated BlogEntityVo blogEntityVo) {
-        coopService.submit(blogId, blogEntityVo);
+        coopService.submitBlog(blogId, blogEntityVo);
         return Result.success();
     }
 }

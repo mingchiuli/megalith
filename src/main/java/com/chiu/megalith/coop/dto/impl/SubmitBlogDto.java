@@ -9,11 +9,11 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public class QuitDto extends MessageDto implements Serializable {
+public class SubmitBlogDto extends MessageDto implements Serializable {
+
     @EqualsAndHashCode(callSuper = true)
     @Data
     @SuperBuilder
     @AllArgsConstructor
-    @SuppressWarnings("unused")
     public static class Bind extends BaseBind implements Serializable {}
 }

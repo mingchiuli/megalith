@@ -28,7 +28,7 @@ public class RabbitTemplateConfig {
         //设置抵达broker服务器的回掉
         //当前消息的唯一关联数据、服务器对消息是否成功收到、失败的原因
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) ->
-                log.info("message come to mq or not {}, {}, {}", correlationData, ack, cause));
+                log.debug("message come to mq or not {}, {}, {}", correlationData, ack, cause));
 
         //设置抵达消息队列的确认回调
         //只要消息没有投递给指定的队列，就触发这个失败回调

@@ -4,12 +4,9 @@ import com.chiu.megalith.exhibit.service.BlogService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 @RequiredArgsConstructor
 public class CoopBlogIdConstraintValidator implements ConstraintValidator<CoopBlogId, Long> {
-
-    private final StringRedisTemplate redisTemplate;
 
     private final BlogService blogService;
 

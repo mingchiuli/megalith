@@ -117,7 +117,7 @@ public class BlogController {
             try {
                 title = blogService.findByIdAndVisible(id).getTitle();
             } catch (NotFoundException e) {
-                title = blogService.findTitleById(id);
+                title = blogService.findAbstractById(id).getTitle();
             }
             item.setTitle(title);
         });

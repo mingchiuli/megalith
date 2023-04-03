@@ -1,5 +1,6 @@
 package com.chiu.megalith.exhibit.service.impl;
 
+import com.chiu.megalith.coop.vo.BlogAbstractVo;
 import com.chiu.megalith.infra.utils.LuaScriptUtils;
 import com.chiu.megalith.infra.cache.Cache;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
@@ -80,6 +81,7 @@ public class BlogServiceImpl implements BlogService {
 
         return BlogExhibitVo.builder()
                 .title(blogEntity.getTitle())
+                .description(blogEntity.getDescription())
                 .content(blogEntity.getContent())
                 .readCount(blogEntity.getReadCount())
                 .nickname(user.getNickname())
@@ -404,8 +406,13 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Cache(prefix = Const.HOT_BLOG)
-    public String findTitleById(Long id) {
-        return blogRepository.findById(id)
-                .orElseThrow().getTitle();
+    public BlogAbstractVo findAbstractById(Long id) {
+        BlogEntity blog = findById(id);
+        return BlogAbstractVo.builder()
+                .id(blog.getId())
+                .title(blog.getTitle())
+                .description(blog.getDescription())
+                .created(blog.getCreated())
+                .build();
     }
 }
