@@ -61,7 +61,7 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
 
         //博客对象本身缓存
         String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
-        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findTitleById", new Class[]{Long.class}, new Object[]{id});
+        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findAbstractById", new Class[]{Long.class}, new Object[]{id});
         String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
 
         HashSet<String> keys = new HashSet<>(7);

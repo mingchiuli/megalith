@@ -24,13 +24,13 @@ public abstract sealed class BlogIndexSupport permits
         RemoveBlogIndexHandler,
         UpdateBlogIndexHandler {
 
-    protected StringRedisTemplate redisTemplate;
+    protected final StringRedisTemplate redisTemplate;
 
-    protected BlogRepository blogRepository;
+    protected final BlogRepository blogRepository;
 
-    protected RedissonClient redisson;
+    protected final RedissonClient redisson;
 
-    protected final RLock rLock;
+    private final RLock rLock;
 
     protected final CacheKeyGenerator cacheKeyGenerator;
 

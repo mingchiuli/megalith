@@ -2,7 +2,7 @@ package com.chiu.megalith.coop.mq;
 
 import com.chiu.megalith.infra.utils.SpringUtils;
 import com.chiu.megalith.coop.dto.MessageDto;
-import com.chiu.megalith.coop.mq.handler.CoopHandler;
+import com.chiu.megalith.coop.mq.handler.BaseCoopHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class CoopMessageListener {
 
     private static class CacheHandlers {
-        private static final Map<String, CoopHandler> cacheHandlers = SpringUtils.getHandlers(CoopHandler.class);
+        private static final Map<String, BaseCoopHandler> cacheHandlers = SpringUtils.getHandlers(BaseCoopHandler.class);
     }
 
     private final Jackson2JsonMessageConverter jsonMessageConverter;
@@ -49,7 +49,7 @@ public class CoopMessageListener {
 
     @SuppressWarnings("unused")
     public void processMessage(MessageDto msg) {
-        for (CoopHandler handler : CacheHandlers.cacheHandlers.values()) {
+        for (BaseCoopHandler handler : CacheHandlers.cacheHandlers.values()) {
             if (handler.supports(msg)) {
                 handler.handle(msg);
                 break;
