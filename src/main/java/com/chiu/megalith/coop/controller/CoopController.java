@@ -25,7 +25,6 @@ public class CoopController {
     private final CoopService coopService;
 
     @GetMapping("/init/{blogId}/{orderNumber}")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<InitCoopVo> joinCoopBlog(@PathVariable @CoopBlogId Long blogId,
                                            @PathVariable Integer orderNumber) {
         InitCoopVo initCoopVo = coopService.joinCoopBlog(blogId, orderNumber);
@@ -33,7 +32,6 @@ public class CoopController {
     }
 
     @GetMapping("/blogs/{currentPage}")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogAbstractVo>> getCoopBlogs(@PathVariable Integer currentPage) {
         PageAdapter<BlogAbstractVo> page = coopService.getCoopBlogs(currentPage);
         return Result.success(page);

@@ -105,10 +105,10 @@ public class BlogManagerController {
         return Result.success(deletedBlogs);
     }
 
-    @GetMapping("/recover/{id}")
+    @GetMapping("/recover/{id}/{idx}")
     @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
-    public Result<Void> recoverDeletedBlog(@PathVariable(value = "id") Long id) {
-        blogService.recoverDeletedBlog(id);
+    public Result<Void> recoverDeletedBlog(@PathVariable(value = "id") Long id, @PathVariable(value = "idx") Integer idx) {
+        blogService.recoverDeletedBlog(id, idx);
         return Result.success();
     }
 

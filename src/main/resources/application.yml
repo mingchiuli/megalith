@@ -37,7 +37,7 @@ blog:
   blog-page-size: 5
   blog-coop-size: 5
   web-page-size: 9
-  password-error-intervalTime: 90000
+  password-error-intervalTime: 900000
   jwt:
     access-token-expire: 43200
     refresh-token-expire: 604800

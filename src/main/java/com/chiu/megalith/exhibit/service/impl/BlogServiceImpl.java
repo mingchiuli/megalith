@@ -220,10 +220,12 @@ public class BlogServiceImpl implements BlogService {
 
             blogRepository.delete(blogEntity);
 
-            redisTemplate.opsForValue().set(userId + Const.QUERY_DELETED.getInfo() + id,
-                    jsonUtils.writeValueAsString(blogEntity),
-                    7,
-                    TimeUnit.DAYS);
+            LocalDateTime now = LocalDateTime.now();
+            blogEntity.setCreated(now);
+
+            redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
+                    Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                    jsonUtils.writeValueAsString(blogEntity), "604800");
 
             //防止重复消费
             CorrelationData correlationData = new CorrelationData();
@@ -301,20 +303,32 @@ public class BlogServiceImpl implements BlogService {
                                                     Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        Set<String> keys = redisTemplate.keys(userId + Const.QUERY_DELETED.getInfo() + "*");
+        LocalDateTime now = LocalDateTime.now();
+        List<BlogEntity> deletedBlogs = redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1).stream()
+                .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
+                .toList();
 
-        int total = keys.size();
-        int totalPages = total % size == 0 ? total / size : total / size + 1;
+        int l = 0;
+        for (BlogEntity blog : deletedBlogs) {
+            if (now.minusDays(7).isAfter(blog.getCreated())) {
+                l++;
+            } else {
+                break;
+            }
+        }
 
-        List<String> list = redisTemplate.opsForValue().multiGet(keys);
+        int start = (currentPage - 1) * size;
+
+        redisTemplate.execute(LuaScriptUtils.flushDelete,
+                Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                String.valueOf(l), "-1");
+
+        Long total = redisTemplate.opsForList().size(Const.QUERY_DELETED.getInfo() + userId);
+        int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
         return PageAdapter.<BlogEntity>builder()
-                .content(list.stream()
-                        .filter(Objects::nonNull)
+                .content(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, start, start + size).stream()
                         .map(str -> jsonUtils.readValue(str, BlogEntity.class))
-                        .sorted((o1, o2) -> o2.getCreated().compareTo(o1.getCreated()))
-                        .limit((long) currentPage * size)
-                        .skip((long) (currentPage - 1) * size)
                         .toList())
                 .last(currentPage == totalPages)
                 .first(currentPage == 1)
@@ -327,17 +341,14 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void recoverDeletedBlog(Long id) {
+    public void recoverDeletedBlog(Long id, Integer idx) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        String blogStr = Optional.ofNullable(
-                redisTemplate.opsForValue().get(userId + Const.QUERY_DELETED.getInfo() + id)
-                )
-                .orElseThrow(() -> new NotFoundException("blog is expired"));
+        String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
 
-        BlogEntity tempBlog = jsonUtils.readValue(blogStr, BlogEntity.class);
+        BlogEntity tempBlog = jsonUtils.readValue(str, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
-        redisTemplate.delete(userId + Const.QUERY_DELETED.getInfo() + id);
+        redisTemplate.opsForList().remove(Const.QUERY_DELETED.getInfo() + userId, 1, str);
 
         CorrelationData correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),

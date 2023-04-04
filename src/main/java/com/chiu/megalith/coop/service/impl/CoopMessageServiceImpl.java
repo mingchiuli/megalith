@@ -12,12 +12,10 @@ import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author mingchiuli
@@ -61,7 +59,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     public void setUserToRedisSession(Long userId, Long blogId) {
         UserEntity userEntity = userService.findById(userId);
         UserEntityVo userEntityVo = UserEntityVo.builder()
-                .id(userEntity.getId())
+                .id(userId)
                 .avatar(userEntity.getAvatar())
                 .nickname(userEntity.getNickname())
                 .nodeMark(CoopRabbitConfig.nodeMark)
@@ -69,16 +67,13 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
         redisTemplate.execute(LuaScriptUtils.sendUserToSessionLua,
                 Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
-                userId.toString(), jsonUtils.writeValueAsString(userEntityVo), "21600");
+                jsonUtils.writeValueAsString(userEntityVo), "21600");
     }
 
     private void sendToOtherUsers(MessageDto.BaseBind msg) {
         Long fromId = msg.getFromId();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(Const.COOP_PREFIX.getInfo() + msg.getBlogId());
-        entries.remove(msg.getFromId().toString());
 
-        entries.values().stream()
+        redisTemplate.opsForList().range(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), 0, -1).stream()
                 .map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class))
                 .filter(user -> !fromId.equals(user.getId()))
                 .forEach(user -> {

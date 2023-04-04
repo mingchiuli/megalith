@@ -26,14 +26,12 @@ public class CoopMessageController {
     private final CoopMessageService coopMessageService;
 
     @MessageMapping("/chat")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> chat(@RequestBody ChatDto.Bind msg) {
         coopMessageService.chat(msg);
         return Result.success();
     }
 
     @MessageMapping("/sync")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public void syncBlog(@RequestBody SyncBlogDto.Bind msg) {
         coopMessageService.syncBlog(msg);
     }
@@ -45,13 +43,11 @@ public class CoopMessageController {
     }
 
     @MessageMapping("/quit")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public void quitBlog(@RequestBody QuitBlogDto.Bind msg) {
         coopMessageService.quitBlog(msg);
     }
 
     @MessageMapping("/session/{userId}/{blogId}")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public void setUserToRedisSession(@DestinationVariable Long userId,
                                       @DestinationVariable Long blogId) {
         coopMessageService.setUserToRedisSession(userId, blogId);

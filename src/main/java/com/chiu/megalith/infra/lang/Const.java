@@ -39,7 +39,7 @@ public enum Const {
 
     CO_NUM_PREFIX("co_num:"),
 
-    QUERY_DELETED(":blog:"),
+    QUERY_DELETED("del_blog_user:"),
 
     READ_TOKEN("read_token"),
 

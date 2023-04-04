@@ -21,7 +21,6 @@ import com.chiu.megalith.coop.vo.UserEntityVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -73,8 +72,7 @@ public class CoopServiceImpl implements CoopService {
                 .content(new MessageDto.Container<>(bind))
                 .build();
 
-        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
-        List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
+        List<String> usersStr = redisTemplate.opsForList().range(Const.COOP_PREFIX.getInfo() + blogId, 0, -1);
 
         usersStr.stream()
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
@@ -109,10 +107,7 @@ public class CoopServiceImpl implements CoopService {
                 .content(new MessageDto.Container<>(bind))
                 .build();
 
-        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
-        List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
-
-        usersStr.stream()
+        redisTemplate.opsForList().range(Const.COOP_PREFIX.getInfo() + blogId, 0, -1).stream()
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
                 .filter(user -> userId != user.getId())
                 .forEach(user -> {

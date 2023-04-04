@@ -16,6 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class UserEntityVo implements Serializable {
+
     private Long id;
 
     private String nickname;

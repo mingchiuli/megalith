@@ -65,13 +65,12 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
         String prefix = Const.PASSWORD_KEY.getInfo() + username;
         List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);
         int len = loginFailureTimeStampRecords.size();
-        int r = -1;
         int l = 0;
 
         long currentTimeMillis = System.currentTimeMillis();
-        for (int i = loginFailureTimeStampRecords.size() - 1; i >= 0; i--) {
-            long timestamp = Long.parseLong(loginFailureTimeStampRecords.get(i));
-            if (currentTimeMillis - timestamp >= intervalTime) {
+
+        for (String timestamp : loginFailureTimeStampRecords) {
+            if (currentTimeMillis - Long.parseLong(timestamp) >= intervalTime) {
                 l++;
             } else {
                 break;
@@ -83,6 +82,6 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
         }
 
         redisTemplate.execute(LuaScriptUtils.passwordLua, Collections.singletonList(prefix),
-                String.valueOf(l), String.valueOf(r), String.valueOf(System.currentTimeMillis()), String.valueOf(intervalTime / 1000));
+                String.valueOf(l), "-1", String.valueOf(System.currentTimeMillis()), String.valueOf(intervalTime / 1000));
     }
 }

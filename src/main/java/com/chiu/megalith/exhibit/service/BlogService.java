@@ -49,7 +49,7 @@ public interface BlogService {
 
     PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size);
 
-    void recoverDeletedBlog(Long id);
+    void recoverDeletedBlog(Long id, Integer idx);
 
     PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size);
 
