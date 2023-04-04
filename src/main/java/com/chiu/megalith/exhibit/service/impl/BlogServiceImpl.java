@@ -280,6 +280,11 @@ public class BlogServiceImpl implements BlogService {
                                 .id(blogEntity.getId())
                                 .title(blogEntity.getTitle())
                                 .description(blogEntity.getDescription())
+                                .readCount(blogEntity.getReadCount())
+                                .recentReadCount(
+                                        Optional.ofNullable(
+                                                redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), blogEntity.getId().toString()))
+                                                .orElse(0.0))
                                 .status(blogEntity.getStatus())
                                 .created(blogEntity.getCreated())
                                 .content(blogEntity.getContent())
@@ -423,6 +428,7 @@ public class BlogServiceImpl implements BlogService {
                 .id(blog.getId())
                 .title(blog.getTitle())
                 .description(blog.getDescription())
+                .readCount(blog.getReadCount())
                 .created(blog.getCreated())
                 .build();
     }

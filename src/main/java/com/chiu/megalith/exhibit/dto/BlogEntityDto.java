@@ -26,6 +26,10 @@ public class BlogEntityDto implements Serializable {
 
     private String content;
 
+    private Long readCount;
+
+    private Double recentReadCount;
+
     private LocalDateTime created;
 
     private Integer status;

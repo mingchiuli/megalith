@@ -21,6 +21,8 @@ public class BlogAbstractVo {
 
     private String title;
 
+    private Long readCount;
+
     private String description;
 
     private LocalDateTime created;
