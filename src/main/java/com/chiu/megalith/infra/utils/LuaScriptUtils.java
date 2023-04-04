@@ -52,5 +52,6 @@ public class LuaScriptUtils {
 
     public static final RedisScript<Long> flushDelete = RedisScript.of(
             "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
-                    "return redis.call('llen', KEYS[1]);", Long.class);
+                    "return redis.call('llen', KEYS[1]);",
+            Long.class);
 }
