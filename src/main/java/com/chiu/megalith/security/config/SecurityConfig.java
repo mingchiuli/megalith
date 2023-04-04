@@ -30,12 +30,11 @@ public class SecurityConfig {
     private final AuthenticationManager authenticationManager;
 
     private static final String[] URL_WHITELIST = {
-            "/code/email",
+            "/code/**",
             "/public/blog/**",
             "/search/website/*",
-            "/search/website/token",
             "/search/blog/**",
-            "/coop/**",
+            "/message/**",
             "/log/**"
     };
 

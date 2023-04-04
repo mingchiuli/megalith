@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @Controller
 @RequiredArgsConstructor
-@MessageMapping("/coop/message/")
+@MessageMapping("/message")
 public class CoopMessageController {
 
     private final CoopMessageService coopMessageService;
