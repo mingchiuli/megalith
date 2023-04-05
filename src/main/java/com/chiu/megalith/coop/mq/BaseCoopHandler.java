@@ -1,4 +1,4 @@
-package com.chiu.megalith.coop.mq.handler;
+package com.chiu.megalith.coop.mq;
 
 import com.chiu.megalith.coop.dto.MessageDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

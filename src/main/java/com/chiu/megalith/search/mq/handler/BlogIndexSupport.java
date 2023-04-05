@@ -60,8 +60,7 @@ public abstract sealed class BlogIndexSupport permits
                 Long blogId = message.getBlogId();
                 Integer year = message.getYear();
                 BlogEntity blogEntity = blogRepository.findById(blogId)
-                        .orElseGet(() -> BlogEntity
-                                .builder()
+                        .orElseGet(() -> BlogEntity.builder()
                                 .id(blogId)
                                 .created(LocalDateTime.of(year, 1,1,1 ,1 ,1, 1))
                                 .build());

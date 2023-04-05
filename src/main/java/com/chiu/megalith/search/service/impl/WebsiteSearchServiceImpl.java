@@ -62,8 +62,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Override
     public PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage,
                                                      String keyword) {
-        NativeQuery matchQuery = NativeQuery
-                .builder()
+        NativeQuery matchQuery = NativeQuery.builder()
                 .withQuery(query ->
                         query.bool(boolQuery ->
                                 boolQuery.must(mustQuery ->

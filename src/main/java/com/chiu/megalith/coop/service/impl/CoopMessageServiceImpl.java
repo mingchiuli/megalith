@@ -51,8 +51,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     @Override
     public void quitBlog(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
-        redisTemplate.opsForHash()
-                .delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
+        redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
     }
 
     @Override
