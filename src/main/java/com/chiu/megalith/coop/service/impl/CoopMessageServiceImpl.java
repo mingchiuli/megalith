@@ -12,6 +12,7 @@ import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,8 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void setUserToRedisSession(Long userId, Long blogId) {
+    public void setUserToRedisSession(Long userId,
+                                      Long blogId) {
         UserEntity userEntity = userService.findById(userId);
         UserEntityVo userEntityVo = UserEntityVo.builder()
                 .id(userId)
@@ -66,13 +68,15 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
         redisTemplate.execute(LuaScriptUtils.sendUserToSessionLua,
                 Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
-                jsonUtils.writeValueAsString(userEntityVo), "21600");
+                userId, jsonUtils.writeValueAsString(userEntityVo), "21600");
     }
 
     private void sendToOtherUsers(MessageDto.BaseBind msg) {
         Long fromId = msg.getFromId();
 
-        redisTemplate.opsForList().range(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), 0, -1).stream()
+        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
+
+        operations.values(Const.COOP_PREFIX.getInfo() + msg.getBlogId()).stream()
                 .map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class))
                 .filter(user -> !fromId.equals(user.getId()))
                 .forEach(user -> {
