@@ -31,8 +31,8 @@ blog:
     core-size: 20
     max-size: 100
     keep-alive-time: 10
-  highest-role: admin
-  default-role: boy,girl
+  highest-role: ADMIN
+  default-role: USER
   email-try-count: 3
   blog-page-size: 5
   blog-coop-size: 5
