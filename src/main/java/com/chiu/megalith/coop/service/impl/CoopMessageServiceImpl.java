@@ -35,7 +35,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final JsonUtils jsonUtils;
     @Override
-    public void chat(MessageDto.BaseBind msg) {
+    public void chatUser(MessageDto.BaseBind msg) {
         sendToOtherUsers(msg);
     }
 

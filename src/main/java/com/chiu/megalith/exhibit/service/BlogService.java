@@ -1,6 +1,5 @@
 package com.chiu.megalith.exhibit.service;
 
-import com.chiu.megalith.coop.vo.BlogAbstractVo;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
@@ -20,6 +19,8 @@ public interface BlogService {
 
     List<Long> findIdsByStatus(Integer status, Pageable pageRequest);
     BlogExhibitVo findByIdAndVisible(Long id);
+
+    BlogExhibitVo findByIdAndInvisible(Long id);
 
     void setReadCount(Long id);
 
@@ -60,6 +61,4 @@ public interface BlogService {
     Map<String, Long> getVisitStatistics();
 
     List<BlogHotReadVo> getScoreBlogs();
-
-    BlogAbstractVo findAbstractById(Long id);
 }

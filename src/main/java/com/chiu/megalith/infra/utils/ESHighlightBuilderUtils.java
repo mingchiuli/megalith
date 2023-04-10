@@ -19,8 +19,7 @@ public class ESHighlightBuilderUtils {
                             .withPreTags("<b style='color:red'>")
                             .withPostTags("</b>")
                             .build(),
-                    List.of(
-                            new HighlightField("title"),
+                    List.of(new HighlightField("title"),
                             new HighlightField("description"),
                             new HighlightField("content"))),
             null);
@@ -34,8 +33,7 @@ public class ESHighlightBuilderUtils {
                             .withNumberOfFragments(1)
                             .withFragmentSize(5)
                             .build(),
-                    List.of(
-                            new HighlightField("title"),
+                    List.of(new HighlightField("title"),
                             new HighlightField("description"),
                             new HighlightField("content"))),
             null);
@@ -47,8 +45,7 @@ public class ESHighlightBuilderUtils {
                             .withPreTags("<b style='color:red'>")
                             .withPostTags("</b>")
                             .build(),
-                    List.of(
-                            new HighlightField("title"),
+                    List.of(new HighlightField("title"),
                             new HighlightField("description"))
             ), null);
 }

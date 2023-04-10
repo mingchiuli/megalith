@@ -4,9 +4,6 @@ import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
-import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
-import com.chiu.megalith.manage.entity.UserEntity;
-import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.page.PageAdapter;
@@ -29,29 +26,7 @@ public class BlogManagerController {
 
     private final BlogService blogService;
 
-    private final UserService userService;
-
-    @GetMapping("/info/authorize/{id}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<BlogExhibitVo> getLockedBlogDetail(@PathVariable(name = "id") Long id) {
-        BlogEntity blog = blogService.findById(id);
-        UserEntity user = userService.findById(blog.getUserId());
-        blogService.setReadCount(id);
-        return Result.success(
-                BlogExhibitVo.builder()
-                        .title(blog.getTitle())
-                        .content(blog.getContent())
-                        .readCount(blog.getReadCount())
-                        .nickname(user.getNickname())
-                        .avatar(user.getAvatar())
-                        .created(blog.getCreated())
-                        .readCount(blog.getReadCount())
-                        .build()
-        );
-    }
-
     @GetMapping("/info/echo/{id}")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
         BlogEntity blog = blogService.findById(id);
@@ -62,14 +37,12 @@ public class BlogManagerController {
     }
 
     @PostMapping("/save")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityVo blog) {
         blogService.saveOrUpdate(blog);
         return Result.success();
     }
 
     @PostMapping("/delete")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> deleteBlogs(@RequestBody List<Long> ids) {
         blogService.deleteBlogs(ids);
         return Result.success();
@@ -90,7 +63,6 @@ public class BlogManagerController {
     }
 
     @GetMapping("/blogs")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                           @RequestParam(defaultValue = "5") Integer size) {
         PageAdapter<BlogEntityDto> page = blogService.findAllABlogs(currentPage, size);
@@ -98,7 +70,6 @@ public class BlogManagerController {
     }
 
     @GetMapping("/deleted")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<PageAdapter<BlogEntity>> listDeletedBlogs(@RequestParam Integer currentPage,
                                                             @RequestParam Integer size) {
         PageAdapter<BlogEntity> deletedBlogs = blogService.findDeletedBlogs(currentPage, size);
@@ -106,7 +77,6 @@ public class BlogManagerController {
     }
 
     @GetMapping("/recover/{id}/{idx}")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> recoverDeletedBlog(@PathVariable(value = "id") Long id,
                                            @PathVariable(value = "idx") Integer idx) {
         blogService.recoverDeletedBlog(id, idx);

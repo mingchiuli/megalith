@@ -67,9 +67,7 @@ public class UserServiceImpl implements UserService {
             userEntityVo.setPassword(
                     passwordEncoder.encode(
                             Optional.ofNullable(userEntityVo.getPassword())
-                                    .orElseThrow(() -> new CommitException("password is required"))
-                    )
-            );
+                                    .orElseThrow(() -> new CommitException("password is required"))));
         });
 
         BeanUtils.copyProperties(userEntityVo, ref.userEntity);

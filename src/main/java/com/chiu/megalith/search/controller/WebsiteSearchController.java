@@ -23,7 +23,7 @@ public class WebsiteSearchController {
     private final WebsiteSearchService websiteSearchService;
 
     @PostMapping("/save")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> save(@Validated @RequestBody WebsiteVo websiteVo) {
         websiteSearchService.saveOrUpdate(websiteVo);
         return Result.success();

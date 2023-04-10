@@ -36,8 +36,7 @@ public class TokenServiceImpl implements TokenService {
                         .findFirst()
                         .map(GrantedAuthority::getAuthority)
                         .orElseThrow(),
-                expire
-        );
+                expire);
         return Collections.singletonMap("accessToken", accessToken);
     }
 }

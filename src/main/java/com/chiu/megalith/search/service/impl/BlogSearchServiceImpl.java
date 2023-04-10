@@ -145,7 +145,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                     try {
                         readCount = blogService.findByIdAndVisible(id).getReadCount();
                     } catch (NotFoundException e) {
-                        readCount = blogService.findAbstractById(id).getReadCount();
+                        readCount = blogService.findByIdAndInvisible(id).getReadCount();
                     }
                     return BlogEntityDto.builder()
                             .id(id)
@@ -153,8 +153,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                             .description(document.getDescription())
                             .content(document.getContent())
                             .readCount(readCount)
-                            .recentReadCount(Optional.ofNullable(
-                                    redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), document.getId().toString()))
+                            .recentReadCount(Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), document.getId().toString()))
                                     .orElse(0.0))
                             .created(document.getCreated().toLocalDateTime())
                             .status(document.getStatus())

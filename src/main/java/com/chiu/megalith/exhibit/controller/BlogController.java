@@ -14,13 +14,15 @@ import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -35,12 +37,31 @@ public class BlogController {
 
     private final UserService userService;
 
+    @Value("${blog.highest-role}")
+    private String highestRole;
+
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
-        BlogExhibitVo blog = blogService.findByIdAndVisible(id);
+        var ref = new Object() {
+            BlogExhibitVo blog;
+        };
+
+        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication()).ifPresentOrElse(authentication -> {
+            String authority = authentication.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElseThrow();
+
+            if (("ROLE_" + highestRole).equals(authority)) {
+                ref.blog = blogService.findByIdAndInvisible(id);
+            } else {
+                ref.blog = blogService.findByIdAndVisible(id);
+            }
+        }, () -> ref.blog = blogService.findByIdAndVisible(id));
+
         blogService.setReadCount(id);
-        return Result.success(blog);
+        return Result.success(ref.blog);
     }
 
     @GetMapping("/page/total/{currentPage}")
@@ -117,7 +138,7 @@ public class BlogController {
             try {
                 title = blogService.findByIdAndVisible(id).getTitle();
             } catch (NotFoundException e) {
-                title = blogService.findAbstractById(id).getTitle();
+                title = blogService.findByIdAndInvisible(id).getTitle();
             }
             item.setTitle(title);
         });

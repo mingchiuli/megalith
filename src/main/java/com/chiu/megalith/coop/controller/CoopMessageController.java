@@ -9,7 +9,6 @@ import com.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -27,7 +26,7 @@ public class CoopMessageController {
 
     @MessageMapping("/chat")
     public Result<Void> chat(@RequestBody ChatDto.Bind msg) {
-        coopMessageService.chat(msg);
+        coopMessageService.chatUser(msg);
         return Result.success();
     }
 
@@ -37,7 +36,6 @@ public class CoopMessageController {
     }
 
     @MessageMapping("/submit")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public void submitBlog(@RequestBody SubmitBlogDto.Bind msg) {
         coopMessageService.submitBlog(msg);
     }

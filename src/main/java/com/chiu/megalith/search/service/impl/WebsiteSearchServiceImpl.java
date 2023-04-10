@@ -43,12 +43,10 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         };
 
         Optional.ofNullable(websiteVo.getId()).ifPresentOrElse(id ->
-                ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class),
-                () ->
-                        ref.document = WebsiteDocument
-                                .builder()
-                                .created(ZonedDateTime.now())
-                                .build());
+                        ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class),
+                () -> ref.document = WebsiteDocument.builder()
+                        .created(ZonedDateTime.now())
+                        .build());
 
         BeanUtils.copyProperties(websiteVo, ref.document);
         elasticsearchTemplate.save(ref.document);

@@ -1,6 +1,5 @@
 package com.chiu.megalith.exhibit.service.impl;
 
-import com.chiu.megalith.coop.vo.BlogAbstractVo;
 import com.chiu.megalith.infra.utils.LuaScriptUtils;
 import com.chiu.megalith.infra.cache.Cache;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
@@ -74,11 +73,29 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Cache(prefix = Const.HOT_BLOG)
+    @Override
     public BlogExhibitVo findByIdAndVisible(Long id) {
         BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, 0)
                 .orElseThrow(() -> new NotFoundException("blog not found"));
         UserEntity user = userService.findById(blogEntity.getUserId());
 
+        return BlogExhibitVo.builder()
+                .title(blogEntity.getTitle())
+                .description(blogEntity.getDescription())
+                .content(blogEntity.getContent())
+                .readCount(blogEntity.getReadCount())
+                .nickname(user.getNickname())
+                .avatar(user.getAvatar())
+                .created(blogEntity.getCreated())
+                .readCount(blogEntity.getReadCount())
+                .build();
+    }
+
+    @Override
+    @Cache(prefix = Const.HOT_BLOG)
+    public BlogExhibitVo findByIdAndInvisible(Long id) {
+        BlogEntity blogEntity = findById(id);
+        UserEntity user = userService.findById(blogEntity.getUserId());
         return BlogExhibitVo.builder()
                 .title(blogEntity.getTitle())
                 .description(blogEntity.getDescription())
@@ -249,9 +266,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public String getBlogToken() {
-        return Optional.ofNullable(
-                redisTemplate.opsForValue().get(Const.READ_TOKEN)
-                )
+        return Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_TOKEN))
                 .orElse("read token is not exist");
     }
 
@@ -282,8 +297,7 @@ public class BlogServiceImpl implements BlogService {
                                 .description(blogEntity.getDescription())
                                 .readCount(blogEntity.getReadCount())
                                 .recentReadCount(
-                                        Optional.ofNullable(
-                                                redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), blogEntity.getId().toString()))
+                                        Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), blogEntity.getId().toString()))
                                                 .orElse(0.0))
                                 .status(blogEntity.getStatus())
                                 .created(blogEntity.getCreated())
@@ -324,11 +338,10 @@ public class BlogServiceImpl implements BlogService {
 
         int start = (currentPage - 1) * size;
 
-        redisTemplate.execute(LuaScriptUtils.flushDelete,
+        Long total = redisTemplate.execute(LuaScriptUtils.flushDelete,
                 Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
                 String.valueOf(l), "-1");
 
-        Long total = redisTemplate.opsForList().size(Const.QUERY_DELETED.getInfo() + userId);
         int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
         return PageAdapter.<BlogEntity>builder()
@@ -346,7 +359,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void recoverDeletedBlog(Long id, Integer idx) {
+    public void recoverDeletedBlog(Long id,
+                                   Integer idx) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
@@ -402,7 +416,6 @@ public class BlogServiceImpl implements BlogService {
         map.put("weekSize", list.get(1));
         map.put("monthSize", list.get(2));
         map.put("yearSize", list.get(3));
-
         return map;
     }
 
@@ -410,26 +423,10 @@ public class BlogServiceImpl implements BlogService {
     public List<BlogHotReadVo> getScoreBlogs() {
         Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet().reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
         return set.stream()
-                .map(item -> {
-                    Long id = Long.valueOf(item.getValue());
-                    return BlogHotReadVo.builder()
-                            .id(id)
-                            .readCount(item.getScore().longValue())
-                            .build();
-                })
+                .map(item -> BlogHotReadVo.builder()
+                        .id(Long.valueOf(item.getValue()))
+                        .readCount(item.getScore().longValue())
+                        .build())
                 .toList();
-    }
-
-    @Override
-    @Cache(prefix = Const.HOT_BLOG)
-    public BlogAbstractVo findAbstractById(Long id) {
-        BlogEntity blog = findById(id);
-        return BlogAbstractVo.builder()
-                .id(blog.getId())
-                .title(blog.getTitle())
-                .description(blog.getDescription())
-                .readCount(blog.getReadCount())
-                .created(blog.getCreated())
-                .build();
     }
 }

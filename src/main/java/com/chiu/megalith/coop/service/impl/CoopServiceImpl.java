@@ -138,17 +138,18 @@ public class CoopServiceImpl implements CoopService {
                         .limit((long) currentPage * size)
                         .skip((long) (currentPage - 1) * size)
                         .map(id -> {
+                            BlogExhibitVo vo;
                             try {
-                                BlogExhibitVo vo = blogService.findByIdAndVisible(id);
-                                return BlogAbstractVo.builder()
-                                        .id(id)
-                                        .title(vo.getTitle())
-                                        .description(vo.getDescription())
-                                        .created(vo.getCreated())
-                                        .build();
+                                vo = blogService.findByIdAndVisible(id);
                             } catch (NotFoundException e) {
-                                return blogService.findAbstractById(id);
+                                vo = blogService.findByIdAndInvisible(id);
                             }
+                            return BlogAbstractVo.builder()
+                                    .id(id)
+                                    .title(vo.getTitle())
+                                    .description(vo.getDescription())
+                                    .created(vo.getCreated())
+                                    .build();
                         })
                         .toList())
                 .last(currentPage == totalPages)

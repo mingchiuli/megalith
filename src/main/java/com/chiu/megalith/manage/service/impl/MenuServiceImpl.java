@@ -37,19 +37,18 @@ public class MenuServiceImpl implements MenuService {
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
 
         List<MenuEntityVo> menuEntityVos = menus.stream()
-                .map(menu ->
-                        MenuEntityVo.builder()
-                                .menuId(menu.getMenuId())
-                                .parentId(menu.getParentId())
-                                .icon(menu.getIcon())
-                                .url(menu.getUrl())
-                                .title(menu.getTitle())
-                                .name(menu.getName())
-                                .component(menu.getComponent())
-                                .type(menu.getType())
-                                .orderNum(menu.getOrderNum())
-                                .status(menu.getStatus())
-                                .build())
+                .map(menu -> MenuEntityVo.builder()
+                        .menuId(menu.getMenuId())
+                        .parentId(menu.getParentId())
+                        .icon(menu.getIcon())
+                        .url(menu.getUrl())
+                        .title(menu.getTitle())
+                        .name(menu.getName())
+                        .component(menu.getComponent())
+                        .type(menu.getType())
+                        .orderNum(menu.getOrderNum())
+                        .status(menu.getStatus())
+                        .build())
                 .toList();
 
         // 转树状结构
@@ -67,19 +66,18 @@ public class MenuServiceImpl implements MenuService {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
 
         List<MenuEntityVo> menuEntityVos = menus.stream()
-                .map(menu ->
-                        MenuEntityVo.builder()
-                                .menuId(menu.getMenuId())
-                                .parentId(menu.getParentId())
-                                .icon(menu.getIcon())
-                                .url(menu.getUrl())
-                                .title(menu.getTitle())
-                                .name(menu.getName())
-                                .component(menu.getComponent())
-                                .type(menu.getType())
-                                .orderNum(menu.getOrderNum())
-                                .status(menu.getStatus())
-                                .build())
+                .map(menu -> MenuEntityVo.builder()
+                        .menuId(menu.getMenuId())
+                        .parentId(menu.getParentId())
+                        .icon(menu.getIcon())
+                        .url(menu.getUrl())
+                        .title(menu.getTitle())
+                        .name(menu.getName())
+                        .component(menu.getComponent())
+                        .type(menu.getType())
+                        .orderNum(menu.getOrderNum())
+                        .status(menu.getStatus())
+                        .build())
                 .toList();
 
         return buildTreeMenu(menuEntityVos);

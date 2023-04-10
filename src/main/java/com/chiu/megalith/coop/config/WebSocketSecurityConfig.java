@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.socket.EnableWebSocket
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 
 /**
+ * 支持security注解@PreAuthorize
  * @author mingchiuli
  * @create 2023-01-15 11:38 am
  */

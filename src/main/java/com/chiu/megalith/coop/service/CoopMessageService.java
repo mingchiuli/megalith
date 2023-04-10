@@ -8,7 +8,7 @@ import com.chiu.megalith.coop.dto.*;
  * @create 2022-12-28 3:42 pm
  */
 public interface CoopMessageService {
-    void chat(MessageDto.BaseBind msg);
+    void chatUser(MessageDto.BaseBind msg);
 
     void syncBlog(MessageDto.BaseBind msg);
 

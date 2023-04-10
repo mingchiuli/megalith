@@ -8,7 +8,6 @@ import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +32,6 @@ public class BlogSearchController {
         return Result.success(page);
     }
 
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     @GetMapping("/sys/blogs")
     public Result<PageAdapter<BlogEntityDto>> searchAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                              @RequestParam(defaultValue = "5") Integer size,

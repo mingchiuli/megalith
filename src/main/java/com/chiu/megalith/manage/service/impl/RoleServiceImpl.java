@@ -100,7 +100,6 @@ public class RoleServiceImpl implements RoleService {
                         .roleId(roleId)
                         .build())
                 .toList();
-
         roleMenuService.saveAll(roleMenuEntities);
         return menuIds;
     }

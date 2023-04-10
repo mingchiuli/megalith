@@ -8,7 +8,6 @@ import com.chiu.megalith.infra.valid.CoopBlogId;
 import com.chiu.megalith.coop.service.CoopService;
 import com.chiu.megalith.coop.vo.InitCoopVo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +37,6 @@ public class CoopController {
     }
 
     @PostMapping("/submit/{blogId}")
-    @PreAuthorize("hasAnyRole(@highestRoleHolder.getRole(), @defaultRoleHolder.getRole())")
     public Result<Void> submitBlog(@PathVariable @CoopBlogId Long blogId,
                                    @RequestBody @Validated BlogEntityVo blogEntityVo) {
         coopService.submitBlog(blogId, blogEntityVo);
