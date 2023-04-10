@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.mq.handler;
 
 import com.chiu.megalith.coop.dto.MessageDto;
-import com.chiu.megalith.coop.dto.impl.ChatDto;
+import com.chiu.megalith.coop.dto.impl.ChatUserDto;
 import com.chiu.megalith.coop.mq.BaseCoopHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -15,6 +15,6 @@ public class ChatHandler extends BaseCoopHandler {
 
     @Override
     public boolean supports(MessageDto msg) {
-        return msg instanceof ChatDto;
+        return msg instanceof ChatUserDto;
     }
 }

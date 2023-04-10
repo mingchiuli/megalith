@@ -10,7 +10,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public class ChatDto extends MessageDto implements Serializable {
+public class ChatUserDto extends MessageDto implements Serializable {
 
     @EqualsAndHashCode(callSuper = true)
     @Data

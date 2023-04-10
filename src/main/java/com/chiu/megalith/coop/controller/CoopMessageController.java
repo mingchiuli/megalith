@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.controller;
 
 import com.chiu.megalith.infra.lang.Result;
-import com.chiu.megalith.coop.dto.impl.ChatDto;
+import com.chiu.megalith.coop.dto.impl.ChatUserDto;
 import com.chiu.megalith.coop.dto.impl.SubmitBlogDto;
 import com.chiu.megalith.coop.dto.impl.QuitBlogDto;
 import com.chiu.megalith.coop.dto.impl.SyncBlogDto;
@@ -25,7 +25,7 @@ public class CoopMessageController {
     private final CoopMessageService coopMessageService;
 
     @MessageMapping("/chat")
-    public Result<Void> chat(@RequestBody ChatDto.Bind msg) {
+    public Result<Void> chat(@RequestBody ChatUserDto.Bind msg) {
         coopMessageService.chatUser(msg);
         return Result.success();
     }
