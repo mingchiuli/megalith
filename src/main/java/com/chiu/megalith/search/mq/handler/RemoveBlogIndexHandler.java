@@ -49,7 +49,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         Long id = blog.getId();
         //博客对象本身缓存
         String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
-        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findAbstractById", new Class[]{Long.class}, new Object[]{id});
+        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndInvisible", new Class[]{Long.class}, new Object[]{id});
         String getCountByYear = cacheKeyGenerator.generateKey(BlogController.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
         String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
         String searchYears = cacheKeyGenerator.generateKey(BlogController.class, "searchYears", new Class[]{}, new Object[]{});

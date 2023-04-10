@@ -57,11 +57,11 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
         countYear++;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
-        String listPageByYear = cacheKeyGenerator.generateKey(BlogController.class, "listPageByYear", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
+        String listPageByYear = cacheKeyGenerator.generateKey(BlogController.class, "listPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
 
         //博客对象本身缓存
         String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
-        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findAbstractById", new Class[]{Long.class}, new Object[]{id});
+        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndInvisible", new Class[]{Long.class}, new Object[]{id});
         String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
 
         HashSet<String> keys = new HashSet<>(7);
