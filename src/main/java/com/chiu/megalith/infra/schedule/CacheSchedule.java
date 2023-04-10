@@ -108,7 +108,7 @@ public class CacheSchedule {
                                     if (_curPageNo > 0) {
                                         for (int no = (_curPageNo - 1) * 20 + 1; no <= (_curPageNo == batchPageTotal && totalPage % 20 != 0 ? totalPage : _curPageNo * 20); no++) {
                                             redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
-                                            blogController.listPage(no);
+                                            blogController.listPage(no, null);
                                         }
                                     }
                                 }
@@ -142,7 +142,7 @@ public class CacheSchedule {
 
                             for (int no = 1; no <= totalPage; no++) {
                                 redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
-                                blogController.listPageByYear(no, year);
+                                blogController.listPage(no, year);
                             }
                         });
                     }

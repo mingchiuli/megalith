@@ -122,24 +122,23 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntity> findPage(Integer currentPage) {
-        Pageable pageRequest = PageRequest.of(currentPage - 1,
-                blogPageSize,
-                Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findPage(pageRequest);
-        return new PageAdapter<>(page);
-    }
+    public PageAdapter<BlogEntity> findPage(Integer currentPage,
+                                            Integer year) {
+        var ref = new Object() {
+            Page<BlogEntity> page;
+        };
 
-    @Override
-    public PageAdapter<BlogEntity> findPageByYear(Integer currentPage,
-                                                  Integer year) {
-        LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-        LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
-        Page<BlogEntity> page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
-        return new PageAdapter<>(page);
+
+        Optional.ofNullable(year).ifPresentOrElse(y -> {
+            LocalDateTime start = LocalDateTime.of(y, 1, 1 , 0, 0, 0);
+            LocalDateTime end = LocalDateTime.of(y, 12, 31 , 23, 59, 59);
+            ref.page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
+        }, () -> ref.page = blogRepository.findPage(pageRequest));
+
+        return new PageAdapter<>(ref.page);
     }
 
     @Override

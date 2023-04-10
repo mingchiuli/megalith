@@ -5,12 +5,10 @@ import com.chiu.megalith.manage.service.MenuService;
 import com.chiu.megalith.manage.vo.MenuEntityVo;
 import com.chiu.megalith.infra.jwt.JwtUtils;
 import com.chiu.megalith.infra.lang.Result;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,10 +29,9 @@ public class MenuController {
     private final JwtUtils jwtUtils;
 
     @GetMapping("/nav")
-    public Result<List<MenuEntityVo>> nav(HttpServletRequest request) {
-        String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
-        Claims claim = jwtUtils.getClaimByToken(jwt).orElseThrow(() -> new JwtException("invalid token"));
-        Long userId = Long.parseLong(claim.getSubject());
+    public Result<List<MenuEntityVo>> nav() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.valueOf(authentication.getName());
         List<MenuEntityVo> navs = menuService.getCurrentUserNav(userId);
         return Result.success(navs);
     }

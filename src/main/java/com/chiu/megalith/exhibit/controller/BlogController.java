@@ -15,7 +15,6 @@ import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -64,24 +63,16 @@ public class BlogController {
         return Result.success(ref.blog);
     }
 
-    @GetMapping("/page/total/{currentPage}")
+    @GetMapping("/page/{currentPage}")
     @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListPageHandler.class)
-    public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage) {
-        PageAdapter<BlogEntity> pageData = blogService.findPage(currentPage);
+    public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage,
+                                                    @RequestParam(required = false) Integer year) {
+        PageAdapter<BlogEntity> pageData = blogService.findPage(currentPage, year);
         return Result.success(pageData);
     }
 
-    @GetMapping("/page/year/{year}/{currentPage}")
-    @Cache(prefix = Const.HOT_BLOGS)
-    @Bloom(handler = ListByYearPageHandler.class)
-    public Result<PageAdapter<BlogEntity>> listPageByYear(@PathVariable(name = "currentPage") Integer currentPage,
-                                                          @PathVariable(name = "year") Integer year) {
-        PageAdapter<BlogEntity> pageData = blogService.findPageByYear(currentPage, year);
-        return Result.success(pageData);
-    }
-
-    @GetMapping("/count/year/{year}")
+    @GetMapping("/count/{year}")
     @Cache(prefix = Const.HOT_BLOG)
     @Bloom(handler = CountYearHandler.class)
     public Result<Integer> getCountByYear(@PathVariable(name = "year") Integer year) {

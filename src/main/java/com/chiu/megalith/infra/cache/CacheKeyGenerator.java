@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -26,11 +27,13 @@ public class CacheKeyGenerator {
 
         StringBuilder params = new StringBuilder();
         for (Object arg : args) {
-            params.append("::");
-            if (arg instanceof String) {
-                params.append(arg);
-            } else {
-                params.append(objectMapper.writeValueAsString(arg));
+            if (Optional.ofNullable(arg).isPresent()) {
+                params.append("::");
+                if (arg instanceof String) {
+                    params.append(arg);
+                } else {
+                    params.append(objectMapper.writeValueAsString(arg));
+                }
             }
         }
 

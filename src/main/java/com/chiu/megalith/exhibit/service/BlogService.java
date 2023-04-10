@@ -26,9 +26,7 @@ public interface BlogService {
 
     BlogEntity findById(Long id);
 
-    PageAdapter<BlogEntity> findPage(Integer currentPage);
-
-    PageAdapter<BlogEntity> findPageByYear(Integer currentPage, Integer year);
+    PageAdapter<BlogEntity> findPage(Integer currentPage, Integer year);
 
     Integer getCountByYear(Integer year);
 

@@ -25,15 +25,7 @@ public class LoginUser extends User {
                      boolean accountNonLocked,
                      Collection<? extends GrantedAuthority> authorities,
                      String grantType) {
-        super(
-                username,
-                password,
-                enabled,
-                accountNonExpired,
-                credentialsNonExpired,
-                accountNonLocked,
-                authorities
-        );
+        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.grantType = grantType;
     }
 
