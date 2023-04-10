@@ -19,7 +19,10 @@ public class ListPageHandler extends BloomHandler {
     @Override
     public void handle(Object[] args) {
         Integer currentPage = (Integer) args[0];
-        Integer year = (Integer) args[1];
+        Integer year = null;
+        if (args.length == 2) {
+            year = (Integer) args[1];
+        }
 
         Optional.ofNullable(year).ifPresentOrElse(y -> {
             if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + y, currentPage))) {
