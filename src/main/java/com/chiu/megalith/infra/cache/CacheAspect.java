@@ -76,8 +76,6 @@ public class CacheAspect {
         }
         //参数
         Method method = declaringType.getMethod(methodName, parameterTypes);
-        Cache annotation = method.getAnnotation(Cache.class);
-        int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
 
         Type genericReturnType = method.getGenericReturnType();
         JavaType javaType;
@@ -118,6 +116,9 @@ public class CacheAspect {
             }
             //执行目标方法
             Object proceed = pjp.proceed();
+
+            Cache annotation = method.getAnnotation(Cache.class);
+            int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
             redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(proceed), expire, TimeUnit.MINUTES);
             return proceed;
         } finally {
