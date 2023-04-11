@@ -34,7 +34,8 @@ public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
 		response.setHeader(HttpHeaders.AUTHORIZATION, null);
 		Result<String> result = Result.success();
 		outputStream.write(
-				objectMapper.writeValueAsString(result).getBytes(StandardCharsets.UTF_8)
+				objectMapper.writeValueAsString(result)
+						.getBytes(StandardCharsets.UTF_8)
 		);
 
 		outputStream.flush();

@@ -57,8 +57,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 			response.getWriter().write(
 					objectMapper.writeValueAsString(
-									Result.fail(401, e.getMessage())
-					)
+									Result.fail(401, e.getMessage()))
 			);
 			return;
 		}

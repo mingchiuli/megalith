@@ -83,12 +83,11 @@ public class BlogManagerController {
         return Result.success();
     }
 
-    @GetMapping("/status/{id}/{status}/{year}")
+    @GetMapping("/status/{id}/{status}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> changeBlogStatus(@PathVariable(value = "id") Long id,
-                                         @PathVariable(value = "status") Integer status,
-                                         @PathVariable(value = "year") Integer year) {
-        blogService.changeBlogStatus(id, status, year);
+                                         @PathVariable(value = "status") Integer status) {
+        blogService.changeBlogStatus(id, status);
         return Result.success();
     }
 }

@@ -25,7 +25,7 @@ public class BlogSearchController {
 
     @GetMapping("/blog/{flag}/{currentPage}")
     public Result<PageAdapter<BlogDocumentVo>> selectBlogsByES(@PathVariable Integer currentPage,
-                                                               @PathVariable @ListValue(values = {0, 1}, message = "must commit 0 or 1") Integer flag ,
+                                                               @PathVariable @ListValue(values = {0, 1}, message = "must commit 0 or 1") Integer flag,
                                                                @RequestParam(value = "year", required = false) Integer year,
                                                                @RequestParam(value = "keyword") @NotBlank String keyword) {
         PageAdapter<BlogDocumentVo> page = blogSearchService.selectBlogsByES(currentPage, keyword, flag, year);

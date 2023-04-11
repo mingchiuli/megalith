@@ -52,7 +52,7 @@ public interface BlogService {
 
     PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size);
 
-    void changeBlogStatus(Long id, Integer status, Integer year);
+    void changeBlogStatus(Long id, Integer status);
 
     boolean exist(Long blogId);
 

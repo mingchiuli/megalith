@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
 
 
 @Component
@@ -66,16 +67,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 						.findFirst()
 						.map(GrantedAuthority::getAuthority)
 						.orElseThrow(),
-				accessExpire
-		);
+				accessExpire);
 
 		String refreshToken = jwtUtils.generateToken(
 				userId,
 				"ROLE_REFRESH",
-				refreshExpire
-		);
+				refreshExpire);
 
-		HashMap<String, Object> resp = new HashMap<>(5);
+		Map<String, Object> resp = new HashMap<>(5);
 		resp.put("user", user);
 		resp.put("accessToken", accessToken);
 		resp.put("refreshToken", refreshToken);

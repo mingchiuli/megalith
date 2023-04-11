@@ -94,7 +94,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Cache(prefix = Const.HOT_BLOG)
     public BlogExhibitVo findByIdAndInvisible(Long id) {
-        BlogEntity blogEntity = findById(id);
+        BlogEntity blogEntity = blogRepository.findById(id).orElseThrow(() -> new NotFoundException("blog not exist"));
         UserEntity user = userService.findById(blogEntity.getUserId());
         return BlogExhibitVo.builder()
                 .title(blogEntity.getTitle())
@@ -383,8 +383,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void changeBlogStatus(Long id,
-                                 Integer status,
-                                 Integer year) {
+                                 Integer status) {
+        int year = blogRepository.findById(id).orElseThrow().getCreated().getYear();
         blogRepository.setStatus(id, status);
 
         CorrelationData correlationData = new CorrelationData();
