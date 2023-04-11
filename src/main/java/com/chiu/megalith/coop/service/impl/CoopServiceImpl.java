@@ -1,6 +1,5 @@
 package com.chiu.megalith.coop.service.impl;
 
-import com.chiu.megalith.coop.dto.MessageDto;
 import com.chiu.megalith.coop.vo.BlogAbstractVo;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
@@ -63,14 +62,10 @@ public class CoopServiceImpl implements CoopService {
                 .nickname(userEntity.getNickname())
                 .build();
 
-        JoinBlogDto.Bind bind = JoinBlogDto.Bind.builder()
+        JoinBlogDto dto = JoinBlogDto.builder()
                 .blogId(blogId)
                 .fromId(userId)
                 .user(userEntityVo)
-                .build();
-
-        JoinBlogDto dto = JoinBlogDto.builder()
-                .content(new MessageDto.Container<>(bind))
                 .build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
@@ -80,7 +75,7 @@ public class CoopServiceImpl implements CoopService {
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
                 .filter(user -> !user.getId().equals(userId))
                 .forEach(user -> {
-                    bind.setToId(user.getId());
+                    dto.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                             CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
@@ -100,13 +95,9 @@ public class CoopServiceImpl implements CoopService {
 
         blogService.saveOrUpdate(blogEntityVo);
 
-        SubmitBlogDto.Bind bind = SubmitBlogDto.Bind.builder()
+        SubmitBlogDto dto = SubmitBlogDto.builder()
                 .blogId(blogId)
                 .fromId(userId)
-                .build();
-
-        SubmitBlogDto dto = SubmitBlogDto.builder()
-                .content(new MessageDto.Container<>(bind))
                 .build();
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
@@ -115,7 +106,7 @@ public class CoopServiceImpl implements CoopService {
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
                 .filter(user -> userId != user.getId())
                 .forEach(user -> {
-                    bind.setToId(user.getId());
+                    dto.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
                             CoopRabbitConfig.WS_TOPIC_EXCHANGE,
                             CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),

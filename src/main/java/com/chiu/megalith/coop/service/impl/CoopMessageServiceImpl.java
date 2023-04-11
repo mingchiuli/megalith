@@ -35,22 +35,22 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
     private final JsonUtils jsonUtils;
     @Override
-    public void chatUser(MessageDto.BaseBind msg) {
+    public void chatUser(BaseDto msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void syncBlog(MessageDto.BaseBind msg) {
+    public void syncBlog(BaseDto msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void submitBlog(MessageDto.BaseBind msg) {
+    public void submitBlog(BaseDto msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void quitBlog(MessageDto.BaseBind msg) {
+    public void quitBlog(BaseDto msg) {
         sendToOtherUsers(msg);
         redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
     }
@@ -71,9 +71,8 @@ public class CoopMessageServiceImpl implements CoopMessageService {
                 userId, jsonUtils.writeValueAsString(userEntityVo), "21600");
     }
 
-    private void sendToOtherUsers(MessageDto.BaseBind msg) {
+    private void sendToOtherUsers(BaseDto msg) {
         Long fromId = msg.getFromId();
-
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
 
         operations.values(Const.COOP_PREFIX.getInfo() + msg.getBlogId()).stream()

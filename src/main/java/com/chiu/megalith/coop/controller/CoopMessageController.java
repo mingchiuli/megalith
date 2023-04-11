@@ -25,23 +25,23 @@ public class CoopMessageController {
     private final CoopMessageService coopMessageService;
 
     @MessageMapping("/chat")
-    public Result<Void> chat(@RequestBody ChatUserDto.Bind msg) {
+    public Result<Void> chat(@RequestBody ChatUserDto msg) {
         coopMessageService.chatUser(msg);
         return Result.success();
     }
 
     @MessageMapping("/sync")
-    public void syncBlog(@RequestBody SyncBlogDto.Bind msg) {
+    public void syncBlog(@RequestBody SyncBlogDto msg) {
         coopMessageService.syncBlog(msg);
     }
 
     @MessageMapping("/submit")
-    public void submitBlog(@RequestBody SubmitBlogDto.Bind msg) {
+    public void submitBlog(@RequestBody SubmitBlogDto msg) {
         coopMessageService.submitBlog(msg);
     }
 
     @MessageMapping("/quit")
-    public void quitBlog(@RequestBody QuitBlogDto.Bind msg) {
+    public void quitBlog(@RequestBody QuitBlogDto msg) {
         coopMessageService.quitBlog(msg);
     }
 

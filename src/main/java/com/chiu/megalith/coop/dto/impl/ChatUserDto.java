@@ -1,7 +1,6 @@
 package com.chiu.megalith.coop.dto.impl;
 
-import com.chiu.megalith.coop.dto.MessageDto;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.chiu.megalith.coop.dto.BaseDto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -9,20 +8,10 @@ import java.io.Serializable;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@AllArgsConstructor
 @SuperBuilder
-public class ChatUserDto extends MessageDto implements Serializable {
+public class ChatUserDto extends BaseDto implements Serializable {
+    private String username;
 
-    @EqualsAndHashCode(callSuper = true)
-    @Data
-    @SuperBuilder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Bind extends BaseBind implements Serializable {
-
-        private String username;
-
-        private String message;
-
-    }
+    private String message;
 }

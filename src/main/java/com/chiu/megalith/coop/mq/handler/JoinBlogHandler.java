@@ -1,6 +1,6 @@
 package com.chiu.megalith.coop.mq.handler;
 
-import com.chiu.megalith.coop.dto.MessageDto;
+import com.chiu.megalith.coop.dto.BaseDto;
 import com.chiu.megalith.coop.dto.impl.JoinBlogDto;
 import com.chiu.megalith.coop.mq.BaseCoopHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -18,7 +18,7 @@ public class JoinBlogHandler extends BaseCoopHandler {
     }
 
     @Override
-    public boolean supports(MessageDto msg) {
+    public boolean supports(BaseDto msg) {
         return msg instanceof JoinBlogDto;
     }
 

@@ -1,7 +1,7 @@
 package com.chiu.megalith.coop.mq;
 
+import com.chiu.megalith.coop.dto.BaseDto;
 import com.chiu.megalith.infra.utils.SpringUtils;
-import com.chiu.megalith.coop.dto.MessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
@@ -47,7 +47,7 @@ public class CoopMessageListener {
 
 
     @SuppressWarnings("unused")
-    public void processMessage(MessageDto msg) {
+    public void processMessage(BaseDto msg) {
         for (BaseCoopHandler handler : CacheHandlers.cacheHandlers.values()) {
             if (handler.supports(msg)) {
                 handler.handle(msg);

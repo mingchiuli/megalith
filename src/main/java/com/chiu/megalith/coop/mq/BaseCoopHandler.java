@@ -1,6 +1,6 @@
 package com.chiu.megalith.coop.mq;
 
-import com.chiu.megalith.coop.dto.MessageDto;
+import com.chiu.megalith.coop.dto.BaseDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 public abstract class BaseCoopHandler {
@@ -15,13 +15,11 @@ public abstract class BaseCoopHandler {
         this.uri = uri;
     }
 
-    public abstract boolean supports(MessageDto msg);
+    public abstract boolean supports(BaseDto msg);
 
-    public void handle(MessageDto msg) {
-        MessageDto.Container<MessageDto.BaseBind> container = msg.getData();
-        MessageDto.BaseBind data = container.getData();
-        Long id = data.getBlogId();
-        Long to = data.getToId();
-        simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + id + uri, data);
+    public void handle(BaseDto msg) {
+        Long blogId = msg.getBlogId();
+        Long to = msg.getToId();
+        simpMessagingTemplate.convertAndSendToUser(to.toString(), "/" + blogId + uri, msg);
     }
 }
