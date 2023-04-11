@@ -13,5 +13,4 @@ import java.io.Serializable;
 public class SyncBlogDto extends BaseDto implements Serializable {
 
     private String content;
-
 }

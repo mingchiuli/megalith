@@ -10,6 +10,4 @@ import java.io.Serializable;
 @Data
 @SuperBuilder
 @AllArgsConstructor
-public class SubmitBlogDto extends BaseDto implements Serializable {
-
-}
+public class SubmitBlogDto extends BaseDto implements Serializable {}
