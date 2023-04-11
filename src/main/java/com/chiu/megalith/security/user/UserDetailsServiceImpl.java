@@ -23,7 +23,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		LoginUser usr = LoginUser.loginUserCache.get();
+		UserDetails usr = LoginUser.loginUserCache.get();
 		if (Optional.ofNullable(usr).isPresent()) {
 			return usr;
 		}
@@ -33,7 +33,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 		return usr;
 	}
 
-	private LoginUser loadUserByUsernameFromDb(String username) {
+	private UserDetails loadUserByUsernameFromDb(String username) {
 		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username)
 				.orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 

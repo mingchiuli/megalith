@@ -3,6 +3,7 @@ package com.chiu.megalith.security.user;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
@@ -13,7 +14,7 @@ import java.util.Collection;
 public class LoginUser extends User {
 
     public static final ThreadLocal<AuthenticationException> loginException = new ThreadLocal<>();
-    public static final ThreadLocal<LoginUser> loginUserCache = new ThreadLocal<>();
+    public static final ThreadLocal<UserDetails> loginUserCache = new ThreadLocal<>();
 
     private final String grantType;
 
