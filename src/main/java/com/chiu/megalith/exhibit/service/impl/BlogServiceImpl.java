@@ -140,7 +140,6 @@ public class BlogServiceImpl implements BlogService {
             page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
         }
 
-
         return new PageAdapter<>(page.map(blogEntity ->
                 BlogDescriptionVo.builder()
                         .id(blogEntity.getId())
