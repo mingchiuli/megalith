@@ -108,7 +108,7 @@ public class CacheSchedule {
                                     if (_curPageNo > 0) {
                                         for (int no = (_curPageNo - 1) * 20 + 1; no <= (_curPageNo == batchPageTotal && totalPage % 20 != 0 ? totalPage : _curPageNo * 20); no++) {
                                             redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
-                                            blogController.listPage(no, null);
+                                            blogService.findPage(no, null);
                                         }
                                     }
                                 }
@@ -127,7 +127,7 @@ public class CacheSchedule {
 
                 CompletableFuture.runAsync(() -> {
                     //getCountByYear接口
-                    years.forEach(blogController::getCountByYear);
+                    years.forEach(blogService::getCountByYear);
 
                 }, executor);
 
@@ -142,7 +142,7 @@ public class CacheSchedule {
 
                             for (int no = 1; no <= totalPage; no++) {
                                 redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
-                                blogController.listPage(no, year);
+                                blogService.findPage(no, year);
                             }
                         });
                     }
@@ -156,7 +156,7 @@ public class CacheSchedule {
                     //getCountByYear的bloom和缓存
                     years.forEach(year -> {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
-                        blogController.getCountByYear(year);
+                        blogService.getCountByYear(year);
                     });
 
                 }, executor);
@@ -187,9 +187,6 @@ public class CacheSchedule {
                         }
                     }
                 }, executor);
-
-                //score cache
-                CompletableFuture.runAsync(blogController::getScoreBlogs, executor);
 
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,

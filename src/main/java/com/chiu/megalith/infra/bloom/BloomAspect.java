@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -43,7 +44,9 @@ public class BloomAspect {
         Object[] args = jp.getArgs();
         Class<?>[] classes = new Class[args.length];
         for (int i = 0; i < args.length; i++) {
-            classes[i] = args[i].getClass();
+            if (Optional.ofNullable(args[i]).isPresent()) {
+                classes[i] = args[i].getClass();
+            }
         }
 
         Class<?> declaringType = signature.getDeclaringType();

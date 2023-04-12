@@ -2,6 +2,7 @@ package com.chiu.megalith.exhibit.service;
 
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
 import com.chiu.megalith.exhibit.entity.BlogEntity;
+import com.chiu.megalith.exhibit.vo.BlogDescriptionVo;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
 import com.chiu.megalith.manage.vo.BlogEntityVo;
@@ -26,7 +27,7 @@ public interface BlogService {
 
     BlogEntity findById(Long id);
 
-    PageAdapter<BlogEntity> findPage(Integer currentPage, Integer year);
+    PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year);
 
     Integer getCountByYear(Integer year);
 

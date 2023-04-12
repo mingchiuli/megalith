@@ -39,6 +39,8 @@ public class PageAdapter<T> implements Serializable {
 
     private int totalPages;
 
+    private Object additional;
+
     //只用把原来的page类放进来即可
     public PageAdapter(Page<T> page) {
         this.content = page.getContent();

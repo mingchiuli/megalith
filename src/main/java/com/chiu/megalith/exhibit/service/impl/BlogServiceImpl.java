@@ -1,5 +1,6 @@
 package com.chiu.megalith.exhibit.service.impl;
 
+import com.chiu.megalith.exhibit.vo.BlogDescriptionVo;
 import com.chiu.megalith.infra.utils.LuaScriptUtils;
 import com.chiu.megalith.infra.cache.Cache;
 import com.chiu.megalith.exhibit.dto.BlogEntityDto;
@@ -122,26 +123,36 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntity> findPage(Integer currentPage,
-                                            Integer year) {
-        var ref = new Object() {
-            Page<BlogEntity> page;
-        };
+    @Cache(prefix = Const.HOT_BLOGS)
+    public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage,
+                                                   Integer year) {
+        Page<BlogEntity> page;
 
         Pageable pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
 
-        Optional.ofNullable(year).ifPresentOrElse(y -> {
-            LocalDateTime start = LocalDateTime.of(y, 1, 1 , 0, 0, 0);
-            LocalDateTime end = LocalDateTime.of(y, 12, 31 , 23, 59, 59);
-            ref.page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
-        }, () -> ref.page = blogRepository.findPage(pageRequest));
+        if (year.equals(Integer.MIN_VALUE)) {
+            page = blogRepository.findPage(pageRequest);
+        } else {
+            LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
+            LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
+            page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
+        }
 
-        return new PageAdapter<>(ref.page);
+
+        return new PageAdapter<>(page.map(blogEntity ->
+                BlogDescriptionVo.builder()
+                        .id(blogEntity.getId())
+                        .description(blogEntity.getDescription())
+                        .title(blogEntity.getTitle())
+                        .created(blogEntity.getCreated())
+                        .link(blogEntity.getLink())
+                        .build()));
     }
 
     @Override
+    @Cache(prefix = Const.HOT_BLOG)
     public Integer getCountByYear(Integer year) {
         LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);

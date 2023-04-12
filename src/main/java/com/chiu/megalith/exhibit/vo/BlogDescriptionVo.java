@@ -1,4 +1,4 @@
-package com.chiu.megalith.coop.vo;
+package com.chiu.megalith.exhibit.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 
 /**
  * @author mingchiuli
- * @create 2023-04-03 11:36 pm
+ * @create 2023-04-12 1:05 pm
  */
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BlogAbstractVo {
+@Builder
+public class BlogDescriptionVo {
 
     private Long id;
 
@@ -24,4 +24,6 @@ public class BlogAbstractVo {
     private String description;
 
     private LocalDateTime created;
+
+    private String link;
 }

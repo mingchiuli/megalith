@@ -1,5 +1,6 @@
 package com.chiu.megalith.exhibit.controller;
 
+import com.chiu.megalith.exhibit.vo.BlogDescriptionVo;
 import com.chiu.megalith.infra.bloom.handler.impl.*;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.bloom.Bloom;
@@ -64,20 +65,13 @@ public class BlogController {
     }
 
     @GetMapping("/page/{currentPage}")
-    @Cache(prefix = Const.HOT_BLOGS)
     @Bloom(handler = ListPageHandler.class)
-    public Result<PageAdapter<BlogEntity>> listPage(@PathVariable(name = "currentPage") Integer currentPage,
-                                                    @RequestParam(required = false) Integer year) {
-        PageAdapter<BlogEntity> pageData = blogService.findPage(currentPage, year);
-        return Result.success(pageData);
-    }
-
-    @GetMapping("/count/{year}")
-    @Cache(prefix = Const.HOT_BLOG)
-    @Bloom(handler = CountYearHandler.class)
-    public Result<Integer> getCountByYear(@PathVariable(name = "year") Integer year) {
+    public Result<PageAdapter<BlogDescriptionVo>> listPage(@PathVariable(name = "currentPage") Integer currentPage,
+                                                           @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
+        PageAdapter<BlogDescriptionVo> page = blogService.findPage(currentPage, year);
         Integer count = blogService.getCountByYear(year);
-        return Result.success(count);
+        page.setAdditional(count);
+        return Result.success(page);
     }
 
     @GetMapping("/token/{blogId}/{token}")
