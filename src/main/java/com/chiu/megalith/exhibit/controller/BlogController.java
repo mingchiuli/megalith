@@ -5,19 +5,18 @@ import com.chiu.megalith.infra.bloom.handler.impl.*;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.bloom.Bloom;
 import com.chiu.megalith.infra.cache.Cache;
-import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
-import com.chiu.megalith.manage.entity.UserEntity;
-import com.chiu.megalith.manage.service.UserService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,11 +30,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/public/blog")
 @RequiredArgsConstructor
+@Validated
 public class BlogController {
 
     private final BlogService blogService;
-
-    private final UserService userService;
 
     @Value("${blog.highest-role}")
     private String highestRole;
@@ -69,28 +67,23 @@ public class BlogController {
     public Result<PageAdapter<BlogDescriptionVo>> listPage(@PathVariable(name = "currentPage") Integer currentPage,
                                                            @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
         PageAdapter<BlogDescriptionVo> page = blogService.findPage(currentPage, year);
-        Integer count = blogService.getCountByYear(year);
-        page.setAdditional(count);
+        if (!year.equals(Integer.MIN_VALUE)) {
+            Integer count = blogService.getCountByYear(year);
+            page.setAdditional(count);
+        }
         return Result.success(page);
     }
 
-    @GetMapping("/token/{blogId}/{token}")
+    @GetMapping("/token/{blogId}")
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
-                                               @PathVariable String token) {
-        BlogEntity blog = blogService.getLockedBlog(blogId, token);
-        UserEntity user = userService.findById(blog.getUserId());
-        blogService.setReadCount(blogId);
-        return Result.success(
-                BlogExhibitVo.builder()
-                        .title(blog.getTitle())
-                        .content(blog.getContent())
-                        .readCount(blog.getReadCount())
-                        .nickname(user.getNickname())
-                        .avatar(user.getAvatar())
-                        .created(blog.getCreated())
-                        .readCount(blog.getReadCount())
-                        .build()
-        );
+                                               @RequestParam @NotBlank String token) {
+        boolean valid = blogService.checkToken(blogId, token);
+        if (valid) {
+            BlogExhibitVo vo = blogService.findByIdAndInvisible(blogId);
+            blogService.setReadCount(blogId);
+            return Result.success(vo);
+        }
+        return Result.fail("authorization exception");
     }
 
     @GetMapping("/status/{blogId}")

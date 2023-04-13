@@ -159,17 +159,14 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity getLockedBlog(Long blogId,
-                                    String token) {
+    public boolean checkToken(Long blogId,
+                                 String token) {
         token = token.trim();
-        String password = redisTemplate.opsForValue().get(Const.READ_TOKEN);
+        String password = redisTemplate.opsForValue().get(Const.READ_TOKEN.getInfo());
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
-            if (password.equals(token)) {
-                return blogRepository.findById(blogId)
-                        .orElseThrow(() -> new NotFoundException("status error"));
-            }
+            return password.equals(token);
         }
-        throw new AuthenticationExceptionImpl("authorization exception");
+        return false;
     }
 
     @Override

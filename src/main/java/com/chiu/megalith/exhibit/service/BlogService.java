@@ -31,7 +31,7 @@ public interface BlogService {
 
     Integer getCountByYear(Integer year);
 
-    BlogEntity getLockedBlog(Long blogId, String token);
+    boolean checkToken(Long blogId, String token);
 
     Integer findStatusById(Long blogId);
 
