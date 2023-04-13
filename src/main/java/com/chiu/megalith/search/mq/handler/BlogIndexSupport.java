@@ -9,14 +9,10 @@ import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 
 public abstract sealed class BlogIndexSupport permits
@@ -28,21 +24,14 @@ public abstract sealed class BlogIndexSupport permits
 
     protected final BlogRepository blogRepository;
 
-    protected final RedissonClient redisson;
-
-    private final RLock rLock;
-
     protected final CacheKeyGenerator cacheKeyGenerator;
 
     protected BlogIndexSupport(StringRedisTemplate redisTemplate,
                                BlogRepository blogRepository,
-                               RedissonClient redisson,
                                CacheKeyGenerator cacheKeyGenerator) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
-        this.redisson = redisson;
         this.cacheKeyGenerator = cacheKeyGenerator;
-        rLock = redisson.getLock("redisBlogProcess");
     }
 
     public abstract boolean supports(BlogIndexEnum blogIndexEnum);
@@ -65,16 +54,7 @@ public abstract sealed class BlogIndexSupport permits
                                 .created(LocalDateTime.of(year, 1,1,1 ,1 ,1, 1))
                                 .build());
 
-                if (!rLock.tryLock(5, TimeUnit.SECONDS)) {
-                    throw new TimeoutException("get lock timeout");
-                }
-
-                try {
-                    redisProcess(blogEntity);
-                } finally {
-                    rLock.unlock();
-                }
-
+                redisProcess(blogEntity);
                 elasticSearchProcess(blogEntity);
                 //手动签收消息
                 //false代表不是批量签收模式

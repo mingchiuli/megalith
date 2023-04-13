@@ -8,7 +8,6 @@ import com.chiu.megalith.infra.cache.CacheKeyGenerator;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -29,9 +28,8 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
     public RemoveBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  RedissonClient redisson,
                                   CacheKeyGenerator cacheKeyGenerator) {
-        super(redisTemplate, blogRepository, redisson, cacheKeyGenerator);
+        super(redisTemplate, blogRepository, cacheKeyGenerator);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -50,7 +48,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         //博客对象本身缓存
         String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
         String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndInvisible", new Class[]{Long.class}, new Object[]{id});
-        String getCountByYear = cacheKeyGenerator.generateKey(BlogController.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
+        String getCountByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
         String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
         String searchYears = cacheKeyGenerator.generateKey(BlogController.class, "searchYears", new Class[]{}, new Object[]{});
 

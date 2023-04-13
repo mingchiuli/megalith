@@ -8,7 +8,6 @@ import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,9 +26,8 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
     public CreateBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  RedissonClient redisson,
                                   CacheKeyGenerator cacheKeyGenerator) {
-        super(redisTemplate, blogRepository, redisson, cacheKeyGenerator);
+        super(redisTemplate, blogRepository, cacheKeyGenerator);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 

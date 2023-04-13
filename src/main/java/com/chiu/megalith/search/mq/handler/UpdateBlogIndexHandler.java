@@ -7,7 +7,6 @@ import com.chiu.megalith.exhibit.service.impl.BlogServiceImpl;
 import com.chiu.megalith.infra.cache.CacheKeyGenerator;
 import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,9 +31,8 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
     public UpdateBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  RedissonClient redisson,
                                   CacheKeyGenerator cacheKeyGenerator) {
-        super(redisTemplate, blogRepository, redisson, cacheKeyGenerator);
+        super(redisTemplate, blogRepository, cacheKeyGenerator);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -51,13 +49,13 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         long count = blogRepository.countByCreatedAfter(blog.getCreated());
         count++;
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
-        String listPage = cacheKeyGenerator.generateKey(BlogController.class, "listPage", new Class[]{Integer.class}, new Object[]{pageNo});
+        String findPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageNo, Integer.MIN_VALUE});
 
         //分年份的页数
         long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
         countYear++;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
-        String listPageByYear = cacheKeyGenerator.generateKey(BlogController.class, "listPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
+        String findPageByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
 
         //博客对象本身缓存
         String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findByIdAndVisible", new Class[]{Long.class}, new Object[]{id});
@@ -68,8 +66,8 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         keys.add(findByIdAndVisible);
         keys.add(findTitleById);
         keys.add(getBlogStatus);
-        keys.add(listPage);
-        keys.add(listPageByYear);
+        keys.add(findPage);
+        keys.add(findPageByYear);
         redisTemplate.unlink(keys);
     }
 
