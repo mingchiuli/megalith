@@ -1,11 +1,10 @@
 package com.chiu.megalith.security.config;
 
-import com.chiu.megalith.security.component.provider.EmailAuthenticationProvider;
-import com.chiu.megalith.security.component.provider.PasswordAuthenticationProvider;
-import com.chiu.megalith.security.component.provider.PhoneAuthenticationProvider;
+import com.chiu.megalith.infra.utils.SpringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -18,21 +17,13 @@ import java.util.List;
  */
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
+@DependsOn(value = {"springUtils",
+        "emailAuthenticationProvider", "passwordAuthenticationProvider", "phoneAuthenticationProvider"})
 public class AuthenticationManagerConfig {
-
-    private final PasswordAuthenticationProvider passwordAuthenticationProvider;
-
-    private final EmailAuthenticationProvider emailAuthenticationProvider;
-
-    private final PhoneAuthenticationProvider phoneAuthenticationProvider;
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        List<AuthenticationProvider> providers = List.of(
-                passwordAuthenticationProvider,
-                emailAuthenticationProvider,
-                phoneAuthenticationProvider
-        );
+        List<AuthenticationProvider> providers = SpringUtils.getBeans(AuthenticationProvider.class);
         return new ProviderManager(providers, null);
     }
 }

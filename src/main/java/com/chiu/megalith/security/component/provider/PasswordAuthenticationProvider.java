@@ -20,7 +20,7 @@ import java.util.Optional;
  * @author mingchiuli
  * @create 2023-01-14 9:02
  */
-@Component
+@Component(value = "passwordAuthenticationProvider")
 public final class PasswordAuthenticationProvider extends ProviderSupport {
 
     private final PasswordEncoder passwordEncoder;
