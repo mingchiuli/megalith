@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface BlogService {
 
-    List<Long> findIdsByStatus(Integer status, Pageable pageRequest);
+    List<Long> findIds(Pageable pageRequest);
     BlogExhibitVo findByIdAndVisible(Long id);
 
     BlogExhibitVo findByIdAndInvisible(Long id);

@@ -69,8 +69,8 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    public List<Long> findIdsByStatus(Integer status, Pageable pageRequest) {
-        return blogRepository.findIdsByStatus(status, pageRequest);
+    public List<Long> findIds(Pageable pageRequest) {
+        return blogRepository.findIds(pageRequest);
     }
 
     @Cache(prefix = Const.HOT_BLOG)

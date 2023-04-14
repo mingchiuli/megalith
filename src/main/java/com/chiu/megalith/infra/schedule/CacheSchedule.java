@@ -2,6 +2,7 @@ package com.chiu.megalith.infra.schedule;
 
 import com.chiu.megalith.exhibit.controller.BlogController;
 import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -64,18 +65,65 @@ public class CacheSchedule {
 
                 List<Integer> years = blogService.searchYears();
                 int maxPoolSize = executor.getMaximumPoolSize();
+                //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
                 CompletableFuture.runAsync(() -> {
-                    //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
                     Thread thread = Thread.currentThread();
-                    cacheAndBloomBlog(thread, 0);
-                    cacheAndBloomBlog(thread, 1);
+                    var ref = new Object() {
+                        volatile boolean fin;
+                        int curPageNo;
+                    };
+
+                    for (;;) {
+                        if (maxPoolSize > executor.getActiveCount()) {
+                            executor.execute(() -> {
+                                if (!ref.fin) {
+                                    List<Long> idList = null;
+                                    synchronized (thread) {
+                                        if (!ref.fin) {
+                                            Pageable pageRequest = PageRequest.of(ref.curPageNo, 50);
+                                            idList = blogService.findIds(pageRequest);
+                                            int size = idList.size();
+                                            if (size < 50 && !ref.fin) {
+                                                ref.fin = true;
+                                            }
+                                            if (size == 50) {
+                                                ref.curPageNo++;
+                                            }
+
+                                            if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
+                                                LockSupport.unpark(thread);
+                                            }
+                                        }
+                                    }
+
+                                    Optional.ofNullable(idList).ifPresent(ids ->
+                                            ids.forEach(id -> {
+                                                redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
+                                                try {
+                                                    blogService.findByIdAndVisible(id);
+                                                } catch (NotFoundException e) {
+                                                    blogService.findByIdAndInvisible(id);
+                                                }
+                                                blogController.getBlogStatus(id);
+                                            }));
+                                }
+                            });
+
+                            if (ref.fin) {
+                                break;
+                            }
+                        } else {
+                            thread.interrupt();
+                            LockSupport.park();
+                            Thread.interrupted();
+                        }
+                    }
                 }, executor);
 
                 CompletableFuture.runAsync(() -> {
                     //listPage接口，分别考虑缓存和bloom
                     Long count = blogService.count();
                     int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
-
                     int batchPageTotal = totalPage % 20 == 0 ? totalPage / 20 : totalPage / 20 + 1;
 
                     Thread thread = Thread.currentThread();
@@ -191,58 +239,4 @@ public class CacheSchedule {
             rLock.unlock();
         }
     }
-
-    private void cacheAndBloomBlog(Thread thread, Integer status) {
-
-        var ref = new Object() {
-            volatile boolean fin;
-            int curPageNo;
-        };
-
-        int maxPoolSize = executor.getMaximumPoolSize();
-        for (;;) {
-            if (maxPoolSize > executor.getActiveCount()) {
-                executor.execute(() -> {
-                    if (!ref.fin) {
-                        List<Long> idList = null;
-                        synchronized (thread) {
-                            if (!ref.fin) {
-                                Pageable pageRequest = PageRequest.of(ref.curPageNo, 50);
-                                idList = blogService.findIdsByStatus(status, pageRequest);
-                                int size = idList.size();
-                                if (size < 50 && !ref.fin) {
-                                    ref.fin = true;
-                                }
-                                if (size == 50) {
-                                    ref.curPageNo++;
-                                }
-
-                                if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
-                                    LockSupport.unpark(thread);
-                                }
-                            }
-                        }
-
-                        Optional.ofNullable(idList).ifPresent(ids ->
-                                ids.forEach(id -> {
-                                    redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                                    if (status == 0) {
-                                        blogService.findByIdAndVisible(id);
-                                    }
-                                    blogController.getBlogStatus(id);
-                        }));
-                    }
-                });
-
-                if (ref.fin) {
-                    break;
-                }
-            } else {
-                thread.interrupt();
-                LockSupport.park();
-                Thread.interrupted();
-            }
-        }
-    }
-
 }
