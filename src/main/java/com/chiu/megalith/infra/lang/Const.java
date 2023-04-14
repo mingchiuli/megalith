@@ -29,6 +29,8 @@ public enum Const {
 
     EMAIL_KEY("email_validation:"),
 
+    PHONE_KEY("phone_validation:"),
+
     PASSWORD_KEY("password_validation:"),
 
     READ_RECENT("blogReadRecent:"),

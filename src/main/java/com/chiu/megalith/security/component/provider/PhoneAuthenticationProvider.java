@@ -35,7 +35,7 @@ public final class PhoneAuthenticationProvider extends ProviderSupport {
 
     @Override
     protected void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication) {
-        String prefix = Const.PASSWORD_KEY.getInfo() + user.getUsername();
+        String prefix = Const.PHONE_KEY.getInfo() + user.getUsername();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(prefix);
 
