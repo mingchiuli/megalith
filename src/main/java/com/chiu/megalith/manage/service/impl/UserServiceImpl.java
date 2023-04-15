@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -31,12 +30,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
-
-    @Override
-    public UserEntity retrieveUserInfo(String username) {
-        return userRepository.retrieveUserInfo(username)
-                .orElseThrow(() -> new UsernameNotFoundException("user not exist"));
-    }
 
     @Override
     public void updateLoginTime(String username,

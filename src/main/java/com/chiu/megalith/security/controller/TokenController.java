@@ -2,6 +2,7 @@ package com.chiu.megalith.security.controller;
 
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.security.service.TokenService;
+import com.chiu.megalith.security.vo.UserInfoVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +23,15 @@ public class TokenController {
     private final TokenService tokenService;
 
     @GetMapping("/refresh")
-    @PreAuthorize("hasRole('REFRESH')")
+    @PreAuthorize("hasRole('REFRESH_TOKEN')")
     public Result<Map<String, String>> refreshToken() {
         Map<String, String> resp = tokenService.refreshToken();
         return Result.success(resp);
+    }
+
+    @GetMapping("/userinfo")
+    public Result<UserInfoVo> userinfo() {
+        UserInfoVo user = tokenService.userinfo();
+        return Result.success(user);
     }
 }

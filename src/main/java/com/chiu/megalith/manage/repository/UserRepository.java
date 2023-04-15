@@ -30,9 +30,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     void updateLoginTime(String username, LocalDateTime time);
 
-    @Query(value = "SELECT new UserEntity (id, nickname, avatar) from UserEntity where (username = ?1 or email = ?1 or phone = ?1)")
-    Optional<UserEntity> retrieveUserInfo(String username);
-
     @Query(value = "UPDATE UserEntity user set user.status = :status where user.username = :username")
     @Modifying
     @Transactional

@@ -1,7 +1,6 @@
 package com.chiu.megalith.security.component;
 
 import com.chiu.megalith.infra.lang.Const;
-import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.infra.jwt.JwtUtils;
 import com.chiu.megalith.infra.lang.Result;
@@ -52,15 +51,13 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
 		String username = authentication.getName();
-
+		LoginUser user = LoginUser.loginUserCache.get();
 		LoginUser.loginUserCache.remove();
-		redisTemplate.delete(Const.PASSWORD_KEY + username);
+		redisTemplate.delete(Const.PASSWORD_KEY.getInfo() + username);
 
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
-		UserEntity user = userService.retrieveUserInfo(username);
-
 		// 生成jwt
-		String userId = String.valueOf(user.getId());
+		String userId = user.getUserId().toString();
 		String accessToken = jwtUtils.generateToken(
 				userId,
 				authentication.getAuthorities().stream()
@@ -71,11 +68,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		String refreshToken = jwtUtils.generateToken(
 				userId,
-				"ROLE_REFRESH",
+				"ROLE_REFRESH_TOKEN",
 				refreshExpire);
 
 		Map<String, Object> resp = new HashMap<>(5);
-		resp.put("user", user);
 		resp.put("accessToken", accessToken);
 		resp.put("refreshToken", refreshToken);
 

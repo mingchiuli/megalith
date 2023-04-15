@@ -19,11 +19,10 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 
 	private final UserRepository userRepository;
 
-
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		UserDetails usr = LoginUser.loginUserCache.get();
+		LoginUser usr = LoginUser.loginUserCache.get();
 		if (Optional.ofNullable(usr).isPresent()) {
 			return usr;
 		}
@@ -33,7 +32,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 		return usr;
 	}
 
-	private UserDetails loadUserByUsernameFromDb(String username) {
+	private LoginUser loadUserByUsernameFromDb(String username) {
 		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username)
 				.orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
@@ -55,6 +54,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 				true,
 				user.getStatus() == 0,
 				AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()),
-				grantType);
+				grantType,
+				user.getId());
 	}
 }

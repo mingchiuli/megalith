@@ -1,5 +1,7 @@
 package com.chiu.megalith.security.service;
 
+import com.chiu.megalith.security.vo.UserInfoVo;
+
 import java.util.Map;
 
 /**
@@ -9,4 +11,6 @@ import java.util.Map;
 public interface TokenService {
 
     Map<String, String> refreshToken();
+
+    UserInfoVo userinfo();
 }
