@@ -71,7 +71,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 				"ROLE_REFRESH_TOKEN",
 				refreshExpire);
 
-		Map<String, Object> resp = new HashMap<>(5);
+		Map<String, Object> resp = new HashMap<>(3);
 		resp.put("accessToken", accessToken);
 		resp.put("refreshToken", refreshToken);
 
