@@ -22,10 +22,10 @@ public class LuaScriptUtils {
                     "local monthSize = redis.call('pfcount', KEYS[3]);" +
                     "local yearSize = redis.call('pfcount', KEYS[4]);" +
                     "local resp = {};" +
-                    "table.insert(resp, daySize);" +
-                    "table.insert(resp, weekSize);" +
-                    "table.insert(resp, monthSize);" +
-                    "table.insert(resp, yearSize);" +
+                    "resp[1] = daySize;" +
+                    "resp[2] = weekSize;" +
+                    "resp[3] = monthSize;" +
+                    "resp[4] = yearSize;" +
                     "return resp;",
             List.class);
 
