@@ -21,7 +21,6 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
 		LoginUser usr = LoginUser.loginUserCache.get();
 		if (Optional.ofNullable(usr).isPresent()) {
 			return usr;

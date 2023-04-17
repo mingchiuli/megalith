@@ -1,4 +1,4 @@
-package com.chiu.megalith.manage.vo;
+package com.chiu.megalith.exhibit.vo;
 
 import com.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;

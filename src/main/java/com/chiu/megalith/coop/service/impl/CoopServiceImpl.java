@@ -6,7 +6,7 @@ import com.chiu.megalith.exhibit.service.BlogService;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.page.PageAdapter;
-import com.chiu.megalith.manage.vo.BlogEntityVo;
+import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.utils.JsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;

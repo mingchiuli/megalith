@@ -52,7 +52,8 @@ public class UserController {
     @GetMapping("/info/{id}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<UserEntity> info(@PathVariable(value = "id") Long id) {
-        UserEntity user = userService.findByIdWithoutPassword(id);
+        UserEntity user = userService.findById(id);
+        user.setPassword(null);
         return Result.success(user);
     }
 

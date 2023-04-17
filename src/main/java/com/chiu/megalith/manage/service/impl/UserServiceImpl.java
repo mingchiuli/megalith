@@ -102,13 +102,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity findByIdWithoutPassword(Long id) {
-        UserEntity userEntity = findById(id);
-        userEntity.setPassword(null);
-        return userEntity;
-    }
-
-    @Override
     public List<Long> findIdsByStatus(Integer status) {
         return userRepository.findByStatus(status);
     }

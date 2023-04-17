@@ -2,7 +2,7 @@ package com.chiu.megalith.coop.controller;
 
 import com.chiu.megalith.coop.vo.BlogAbstractVo;
 import com.chiu.megalith.infra.page.PageAdapter;
-import com.chiu.megalith.manage.vo.BlogEntityVo;
+import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.valid.CoopBlogId;
 import com.chiu.megalith.coop.service.CoopService;

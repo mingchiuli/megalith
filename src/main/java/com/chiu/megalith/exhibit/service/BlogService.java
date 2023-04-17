@@ -5,7 +5,7 @@ import com.chiu.megalith.exhibit.entity.BlogEntity;
 import com.chiu.megalith.exhibit.vo.BlogDescriptionVo;
 import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
-import com.chiu.megalith.manage.vo.BlogEntityVo;
+import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.infra.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
 

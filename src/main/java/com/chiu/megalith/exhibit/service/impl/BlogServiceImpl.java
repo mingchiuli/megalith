@@ -11,7 +11,7 @@ import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
-import com.chiu.megalith.manage.vo.BlogEntityVo;
+import com.chiu.megalith.exhibit.vo.BlogEntityVo;
 import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.lang.Const;
