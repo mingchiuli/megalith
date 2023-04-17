@@ -1,11 +1,11 @@
-package com.chiu.megalith.exhibit.service;
+package com.chiu.megalith.blog.service;
 
-import com.chiu.megalith.exhibit.dto.BlogEntityDto;
-import com.chiu.megalith.exhibit.entity.BlogEntity;
-import com.chiu.megalith.exhibit.vo.BlogDescriptionVo;
-import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
-import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
-import com.chiu.megalith.exhibit.vo.BlogEntityVo;
+import com.chiu.megalith.blog.dto.BlogEntityDto;
+import com.chiu.megalith.blog.entity.BlogEntity;
+import com.chiu.megalith.blog.vo.BlogDescriptionVo;
+import com.chiu.megalith.blog.vo.BlogExhibitVo;
+import com.chiu.megalith.blog.vo.BlogHotReadVo;
+import com.chiu.megalith.blog.vo.BlogEntityVo;
 import com.chiu.megalith.infra.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
 

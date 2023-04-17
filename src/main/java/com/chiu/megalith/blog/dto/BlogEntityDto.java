@@ -1,4 +1,4 @@
-package com.chiu.megalith.exhibit.dto;
+package com.chiu.megalith.blog.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

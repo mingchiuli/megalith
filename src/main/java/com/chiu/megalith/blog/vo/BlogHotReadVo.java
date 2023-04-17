@@ -1,4 +1,4 @@
-package com.chiu.megalith.exhibit.vo;
+package com.chiu.megalith.blog.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

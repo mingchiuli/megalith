@@ -1,11 +1,11 @@
 package com.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
-import com.chiu.megalith.exhibit.dto.BlogEntityDto;
+import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.search.document.BlogDocument;
 import com.chiu.megalith.search.service.BlogSearchService;

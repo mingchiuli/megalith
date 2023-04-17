@@ -1,7 +1,7 @@
 package com.chiu.megalith.infra.schedule;
 
-import com.chiu.megalith.exhibit.controller.BlogController;
-import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.blog.controller.BlogController;
+import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.manage.service.UserService;

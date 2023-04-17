@@ -1,12 +1,12 @@
 package com.chiu.megalith.coop.service.impl;
 
 import com.chiu.megalith.coop.vo.BlogAbstractVo;
-import com.chiu.megalith.exhibit.entity.BlogEntity;
-import com.chiu.megalith.exhibit.service.BlogService;
-import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
+import com.chiu.megalith.blog.entity.BlogEntity;
+import com.chiu.megalith.blog.service.BlogService;
+import com.chiu.megalith.blog.vo.BlogExhibitVo;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.page.PageAdapter;
-import com.chiu.megalith.exhibit.vo.BlogEntityVo;
+import com.chiu.megalith.blog.vo.BlogEntityVo;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.utils.JsonUtils;
 import com.chiu.megalith.manage.entity.UserEntity;

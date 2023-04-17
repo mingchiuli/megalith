@@ -1,16 +1,16 @@
-package com.chiu.megalith.exhibit.controller;
+package com.chiu.megalith.blog.controller;
 
-import com.chiu.megalith.exhibit.vo.BlogDescriptionVo;
+import com.chiu.megalith.blog.vo.BlogDescriptionVo;
 import com.chiu.megalith.infra.bloom.handler.impl.*;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.bloom.Bloom;
 import com.chiu.megalith.infra.cache.Cache;
-import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.page.PageAdapter;
-import com.chiu.megalith.exhibit.vo.BlogExhibitVo;
-import com.chiu.megalith.exhibit.vo.BlogHotReadVo;
+import com.chiu.megalith.blog.vo.BlogExhibitVo;
+import com.chiu.megalith.blog.vo.BlogHotReadVo;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

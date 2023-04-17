@@ -1,6 +1,6 @@
 package com.chiu.megalith.infra.valid;
 
-import com.chiu.megalith.exhibit.service.BlogService;
+import com.chiu.megalith.blog.service.BlogService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;

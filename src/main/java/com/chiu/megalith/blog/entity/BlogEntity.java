@@ -1,4 +1,4 @@
-package com.chiu.megalith.exhibit.entity;
+package com.chiu.megalith.blog.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

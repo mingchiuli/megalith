@@ -28,7 +28,7 @@ public class StatisticsAspect {
 
     private final StringRedisTemplate redisTemplate;
 
-    @Pointcut(value ="execution(* com.chiu.megalith.exhibit.controller.*.*(..)) || execution(* com.chiu.megalith.search.controller.*.*(..))")
+    @Pointcut(value ="execution(* com.chiu.megalith.blog.controller.*.*(..)) || execution(* com.chiu.megalith.search.controller.*.*(..))")
     public void pt() {}
 
     @SneakyThrows

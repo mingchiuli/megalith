@@ -1,10 +1,10 @@
-package com.chiu.megalith.exhibit.controller;
+package com.chiu.megalith.blog.controller;
 
 import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
-import com.chiu.megalith.exhibit.dto.BlogEntityDto;
-import com.chiu.megalith.exhibit.entity.BlogEntity;
-import com.chiu.megalith.exhibit.service.BlogService;
-import com.chiu.megalith.exhibit.vo.BlogEntityVo;
+import com.chiu.megalith.blog.dto.BlogEntityDto;
+import com.chiu.megalith.blog.entity.BlogEntity;
+import com.chiu.megalith.blog.service.BlogService;
+import com.chiu.megalith.blog.vo.BlogEntityVo;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;

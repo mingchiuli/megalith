@@ -1,6 +1,6 @@
-package com.chiu.megalith.exhibit.repository;
+package com.chiu.megalith.blog.repository;
 
-import com.chiu.megalith.exhibit.entity.BlogEntity;
+import com.chiu.megalith.blog.entity.BlogEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
