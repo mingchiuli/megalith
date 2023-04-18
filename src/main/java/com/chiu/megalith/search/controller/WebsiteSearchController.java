@@ -5,7 +5,6 @@ import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.search.service.WebsiteSearchService;
 import com.chiu.megalith.search.vo.WebsiteDocumentVo;
 import com.chiu.megalith.search.vo.WebsiteVo;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -36,16 +35,7 @@ public class WebsiteSearchController {
         return Result.success();
     }
 
-
-    @GetMapping("/auth/{currentPage}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<PageAdapter<WebsiteDocumentVo>> authSearch(@PathVariable Integer currentPage,
-                                                             @RequestParam @NotBlank String keyword) {
-        PageAdapter<WebsiteDocumentVo> page = websiteSearchService.authSearch(currentPage, keyword);
-        return Result.success(page);
-    }
-
-    @GetMapping("/{currentPage}")
+    @GetMapping("/query/{currentPage}")
     public Result<PageAdapter<WebsiteDocumentVo>> search(@PathVariable Integer currentPage,
                                                          @RequestParam(required = false) String keyword) {
         PageAdapter<WebsiteDocumentVo> page = websiteSearchService.search(currentPage, keyword);

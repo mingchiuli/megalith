@@ -14,7 +14,5 @@ public interface WebsiteSearchService {
 
     void delete(String id);
 
-    PageAdapter<WebsiteDocumentVo> authSearch(Integer currentPage, String keyword);
-
     PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword);
 }
