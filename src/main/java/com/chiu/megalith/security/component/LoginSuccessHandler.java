@@ -5,6 +5,7 @@ import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.infra.jwt.JwtUtils;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.security.user.LoginUser;
+import com.chiu.megalith.security.vo.LoginSuccessVo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,8 +22,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Component
@@ -71,12 +70,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 				"ROLE_REFRESH_TOKEN",
 				refreshExpire);
 
-		Map<String, Object> resp = new HashMap<>(3);
-		resp.put("accessToken", accessToken);
-		resp.put("refreshToken", refreshToken);
-
 		outputStream.write(
-				objectMapper.writeValueAsString(Result.success(resp))
+				objectMapper.writeValueAsString(
+						Result.success(
+								LoginSuccessVo.builder()
+										.accessToken(accessToken)
+										.refreshToken(refreshToken)
+										.build())
+						)
 						.getBytes(StandardCharsets.UTF_8)
 		);
 

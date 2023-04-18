@@ -1,6 +1,7 @@
 package com.chiu.megalith.blog.controller;
 
 import com.chiu.megalith.blog.vo.BlogDescriptionVo;
+import com.chiu.megalith.blog.vo.VisitStatisticsVo;
 import com.chiu.megalith.infra.bloom.handler.impl.*;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.bloom.Bloom;
@@ -102,9 +103,9 @@ public class BlogController {
     }
 
     @GetMapping("/statistic")
-    public Result<Map<String, Long>> getVisitStatistics() {
-        Map<String, Long> map = blogService.getVisitStatistics();
-        return Result.success(map);
+    public Result<VisitStatisticsVo> getVisitStatistics() {
+        VisitStatisticsVo vo = blogService.getVisitStatistics();
+        return Result.success(vo);
     }
 
     @GetMapping("/scores")

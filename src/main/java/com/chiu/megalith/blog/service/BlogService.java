@@ -2,10 +2,7 @@ package com.chiu.megalith.blog.service;
 
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.blog.entity.BlogEntity;
-import com.chiu.megalith.blog.vo.BlogDescriptionVo;
-import com.chiu.megalith.blog.vo.BlogExhibitVo;
-import com.chiu.megalith.blog.vo.BlogHotReadVo;
-import com.chiu.megalith.blog.vo.BlogEntityVo;
+import com.chiu.megalith.blog.vo.*;
 import com.chiu.megalith.infra.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
 
@@ -57,7 +54,7 @@ public interface BlogService {
 
     boolean exist(Long blogId);
 
-    Map<String, Long> getVisitStatistics();
+    VisitStatisticsVo getVisitStatistics();
 
     List<BlogHotReadVo> getScoreBlogs();
 }

@@ -7,15 +7,15 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author mingchiuli
- * @create 2023-04-15 2:14 pm
+ * @create 2023-04-19 1:47 am
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserInfoVo {
+public class LoginSuccessVo {
 
-    private String nickname;
+    private String accessToken;
 
-    private String avatar;
+    private String refreshToken;
 }

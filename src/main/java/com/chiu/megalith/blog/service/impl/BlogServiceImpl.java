@@ -1,17 +1,14 @@
 package com.chiu.megalith.blog.service.impl;
 
-import com.chiu.megalith.blog.vo.BlogDescriptionVo;
+import com.chiu.megalith.blog.vo.*;
 import com.chiu.megalith.infra.utils.LuaScriptUtils;
 import com.chiu.megalith.infra.cache.Cache;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.repository.BlogRepository;
 import com.chiu.megalith.blog.service.BlogService;
-import com.chiu.megalith.blog.vo.BlogExhibitVo;
-import com.chiu.megalith.blog.vo.BlogHotReadVo;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
-import com.chiu.megalith.blog.vo.BlogEntityVo;
 import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.lang.Const;
@@ -413,16 +410,16 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Map<String, Long> getVisitStatistics() {
+    public VisitStatisticsVo getVisitStatistics() {
         List<Long> list = redisTemplate.execute(LuaScriptUtils.getVisitLua,
                 List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()));
 
-        Map<String, Long> map = new HashMap<>(7);
-        map.put("daySize", list.get(0));
-        map.put("weekSize", list.get(1));
-        map.put("monthSize", list.get(2));
-        map.put("yearSize", list.get(3));
-        return map;
+        return VisitStatisticsVo.builder()
+                .daySize(list.get(0))
+                .weekSize(list.get(1))
+                .monthSize(list.get(2))
+                .yearSize(list.get(3))
+                .build();
     }
 
     @Override
