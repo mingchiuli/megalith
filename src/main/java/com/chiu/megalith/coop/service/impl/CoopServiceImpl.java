@@ -125,7 +125,7 @@ public class CoopServiceImpl implements CoopService {
 
         return PageAdapter.<BlogAbstractVo>builder()
                 .content(keys.stream()
-                        .map(key -> Long.valueOf(key.replace(Const.COOP_PREFIX.getInfo(), "")))
+                        .map(key -> Long.parseLong(key.replace(Const.COOP_PREFIX.getInfo(), "")))
                         .limit((long) currentPage * size)
                         .skip((long) (currentPage - 1) * size)
                         .map(id -> {

@@ -28,9 +28,9 @@ public class BlogManagerController {
 
     @GetMapping("/info/echo/{id}")
     public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
         BlogEntity blog = blogService.findById(id);
-        if (!userId.equals(blog.getUserId())) {
+        if (!blog.getUserId().equals(userId)) {
             throw new AuthenticationExceptionImpl("must edit your blog!");
         }
         return Result.success(blog);
