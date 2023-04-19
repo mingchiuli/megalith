@@ -99,7 +99,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         Optional.ofNullable(keyword).ifPresentOrElse(word -> {
             boolBuilder.must(mustQuery ->
                     mustQuery.multiMatch(multiQuery ->
-                            multiQuery.fields(fields).query(keyword)));
+                            multiQuery.fields(fields).query(word)));
             nativeQueryBuilder
                     .withSort(sort ->
                             sort.score(score ->

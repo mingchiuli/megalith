@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -69,8 +70,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         .must(mustQuery3 ->
                                                 mustQuery3.range(rangeQuery ->
                                                         rangeQuery.field("created")
-                                                                .from(Optional.ofNullable(year).isPresent() ? year + "-01-01T00:00:00.000" : null)
-                                                                .to(Optional.ofNullable(year).isPresent() ? year + "-12-31T23:59:59.999" : null)))))
+                                                                .from(Objects.nonNull(year) ? year + "-01-01T00:00:00.000" : null)
+                                                                .to(Objects.nonNull(year) ? year + "-12-31T23:59:59.999" : null)))))
                 .withSort(sort ->
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))

@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.Objects;
 
 
 @Component
@@ -22,7 +22,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		LoginUser usr = LoginUser.loginUserCache.get();
-		if (Optional.ofNullable(usr).isPresent()) {
+		if (Objects.nonNull(usr)) {
 			return usr;
 		}
 

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * @author mingchiuli
@@ -44,7 +44,7 @@ public class BloomAspect {
         Object[] args = jp.getArgs();
         Class<?>[] classes = new Class[args.length];
         for (int i = 0; i < args.length; i++) {
-            if (Optional.ofNullable(args[i]).isPresent()) {
+            if (Objects.nonNull(args[i])) {
                 classes[i] = args[i].getClass();
             }
         }
