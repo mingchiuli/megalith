@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * @author mingchiuli
@@ -77,7 +78,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
         operations.values(Const.COOP_PREFIX.getInfo() + msg.getBlogId()).stream()
                 .map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class))
-                .filter(user -> !fromId.equals(user.getId()))
+                .filter(user -> Objects.equals(fromId, user.getId()))
                 .forEach(user -> {
                     msg.setToId(user.getId());
                     rabbitTemplate.convertAndSend(

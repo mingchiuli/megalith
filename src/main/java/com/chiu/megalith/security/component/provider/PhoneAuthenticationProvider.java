@@ -18,7 +18,7 @@ import java.util.Map;
  * @author mingchiuli
  * @create 2023-03-08 1:59 am
  */
-@Component(value = "phoneAuthenticationProvider")
+@Component
 public final class PhoneAuthenticationProvider extends ProviderSupport {
 
     private final StringRedisTemplate redisTemplate;

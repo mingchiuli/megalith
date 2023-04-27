@@ -192,7 +192,7 @@ public class BlogServiceImpl implements BlogService {
         Optional.ofNullable(blog.getId()).ifPresentOrElse(id -> {
             ref.blogEntity = blogRepository.findById(blog.getId())
                     .orElseThrow(() -> new NotFoundException("blog not exist"));
-            Assert.isTrue(ref.blogEntity.getUserId().equals(userId), "must edit your blog!");
+            Assert.isTrue(Objects.equals(ref.blogEntity.getUserId(), userId), "must edit your blog!");
             ref.type = BlogIndexEnum.UPDATE;
         }, () -> {
             ref.blogEntity = BlogEntity.builder()
@@ -234,7 +234,7 @@ public class BlogServiceImpl implements BlogService {
             BlogEntity blogEntity = blogRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("blog not exist"));
 
-            if (!blogEntity.getUserId().equals(userId) && !authority.equals(highestRole)) {
+            if (!Objects.equals(blogEntity.getUserId(), userId) && !Objects.equals(authority, highestRole)) {
                 throw new AuthenticationExceptionImpl("must delete own blog");
             }
 

@@ -19,7 +19,7 @@ import java.util.Map;
  * @create 2022-12-30 10:57 am
  */
 
-@Component(value = "emailAuthenticationProvider")
+@Component
 public final class EmailAuthenticationProvider extends ProviderSupport {
 
     private final StringRedisTemplate redisTemplate;

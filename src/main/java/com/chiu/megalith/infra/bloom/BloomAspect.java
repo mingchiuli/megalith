@@ -1,7 +1,7 @@
 package com.chiu.megalith.infra.bloom;
 
 import com.chiu.megalith.infra.bloom.handler.BloomHandler;
-import com.chiu.megalith.infra.utils.SpringUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -14,7 +14,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -25,11 +25,10 @@ import java.util.Objects;
 @Component
 @Slf4j
 @Order(1)
+@RequiredArgsConstructor
 public class BloomAspect {
 
-    private static class CacheHandlers {
-        private static final Map<String, BloomHandler> cacheHandlers = SpringUtils.getHandlers(BloomHandler.class);
-    }
+    private final List<BloomHandler> bloomHandlers;
 
     @Pointcut("@annotation(com.chiu.megalith.infra.bloom.Bloom)")
     public void pt() {}
@@ -54,7 +53,7 @@ public class BloomAspect {
         Bloom bloom = method.getAnnotation(Bloom.class);
         Class<? extends BloomHandler> handler0 = bloom.handler();
 
-        for (BloomHandler handler : CacheHandlers.cacheHandlers.values()) {
+        for (BloomHandler handler : bloomHandlers) {
             if (handler.supports(handler0)) {
                 try {
                     handler.handle(args);
