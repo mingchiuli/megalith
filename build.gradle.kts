@@ -34,7 +34,7 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	implementation("org.redisson:redisson-spring-boot-starter:3.21.0")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.6")
-	implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final") {
+	implementation("io.netty:netty-resolver-dns-native-macos:4.1.92.Final") {
 		artifact {
 			classifier = "osx-aarch_64"
 		}
