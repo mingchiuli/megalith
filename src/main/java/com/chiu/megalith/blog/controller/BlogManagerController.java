@@ -1,6 +1,5 @@
 package com.chiu.megalith.blog.controller;
 
-import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.service.BlogService;
@@ -29,10 +28,7 @@ public class BlogManagerController {
     @GetMapping("/info/echo/{id}")
     public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
-        BlogEntity blog = blogService.findById(id);
-        if (!blog.getUserId().equals(userId)) {
-            throw new AuthenticationExceptionImpl("must edit your blog!");
-        }
+        BlogEntity blog = blogService.findByIdAndUserId(id, userId);
         return Result.success(blog);
     }
 

@@ -56,4 +56,6 @@ public interface BlogService {
     VisitStatisticsVo getVisitStatistics();
 
     List<BlogHotReadVo> getScoreBlogs();
+
+    BlogEntity findByIdAndUserId(Long id, long userId);
 }

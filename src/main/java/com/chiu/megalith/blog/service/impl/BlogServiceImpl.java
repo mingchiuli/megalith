@@ -432,4 +432,10 @@ public class BlogServiceImpl implements BlogService {
                         .build())
                 .toList();
     }
+
+    @Override
+    public BlogEntity findByIdAndUserId(Long id, long userId) {
+        return blogRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new NotFoundException("must edit your blog"));
+    }
 }

@@ -1,5 +1,6 @@
 package com.chiu.megalith.infra.cache;
 
+import com.chiu.megalith.infra.lang.Result;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -24,7 +25,6 @@ import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * 统一缓存处理
@@ -103,8 +103,8 @@ public class CacheAspect {
         //已经线程安全
         RLock rLock = lockCache.get(lock);
 
-        if (!rLock.tryLock(5000, TimeUnit.MILLISECONDS)) {
-            throw new TimeoutException("request timeout");
+        if (!rLock.tryLock()) {
+            return Result.fail(425, "retry");
         }
 
         try {
