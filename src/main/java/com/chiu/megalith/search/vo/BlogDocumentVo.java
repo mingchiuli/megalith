@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author mingchiuli
@@ -38,6 +38,6 @@ public class BlogDocumentVo implements Serializable {
 
     private Float score;
 
-    private Collection<List<String>> highlight;
+    private Map<String, List<String>> highlight;
 
 }

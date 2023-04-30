@@ -22,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,8 +123,6 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         List<WebsiteDocumentVo> vos = search.getSearchHits().stream()
                 .map(hit -> {
                     WebsiteDocument document = hit.getContent();
-                    Collection<List<String>> highlightValues = hit.getHighlightFields().values();
-                    float score = hit.getScore();
                     return WebsiteDocumentVo.builder()
                             .id(document.getId())
                             .title(document.getTitle())
@@ -133,12 +130,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                             .link(document.getLink())
                             .status(document.getStatus())
                             .created(document.getCreated())
-                            .highlight(!highlightValues.isEmpty() ?
-                                    highlightValues :
-                                    null)
-                            .score(!Float.isNaN(score) ?
-                                    score :
-                                    null)
+                            .highlight(hit.getHighlightFields())
+                            .score(hit.getScore())
                             .build();
                 })
                 .toList();
