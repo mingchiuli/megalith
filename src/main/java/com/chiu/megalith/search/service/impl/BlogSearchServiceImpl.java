@@ -144,9 +144,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                     Long id = document.getId();
                     Long readCount;
                     try {
-                        readCount = blogService.findByIdAndVisible(id).getReadCount();
+                        readCount = blogService.findById(id, false).getReadCount();
                     } catch (NotFoundException e) {
-                        readCount = blogService.findByIdAndInvisible(id).getReadCount();
+                        readCount = blogService.findById(id, true).getReadCount();
                     }
                     return BlogEntityDto.builder()
                             .id(id)

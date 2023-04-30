@@ -15,9 +15,8 @@ import java.util.List;
 public interface BlogService {
 
     List<Long> findIds(Pageable pageRequest);
-    BlogExhibitVo findByIdAndVisible(Long id);
 
-    BlogExhibitVo findByIdAndInvisible(Long id);
+    BlogExhibitVo findById(Long id, boolean visible);
 
     void setReadCount(Long id);
 
@@ -39,9 +38,7 @@ public interface BlogService {
 
     void deleteBlogs(List<Long> ids);
 
-    void setBlogToken();
-
-    String getBlogToken();
+    String setBlogToken();
 
     PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size);
 

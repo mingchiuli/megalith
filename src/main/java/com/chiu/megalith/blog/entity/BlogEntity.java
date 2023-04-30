@@ -24,8 +24,9 @@ import java.util.Objects;
 @DynamicUpdate
 @Builder
 @Table(name ="m_blog",
-        indexes = {@Index(columnList = "created"), @Index(columnList = "status"),
-                @Index(name = "IDX_ID_USERID", columnList = "id"), @Index(name = "IDX_ID_USERID", columnList = "user_id")})
+        indexes = {@Index(columnList = "created"), @Index(columnList = "user_id"),
+                @Index(name = "IDX_ID_USERID", columnList = "id"), @Index(name = "IDX_ID_USERID", columnList = "user_id"),
+                @Index(name = "IDX_ID_STATUS", columnList = "id"), @Index(name = "IDX_ID_STATUS", columnList = "status")})
 public class BlogEntity implements Serializable {
 
     @Serial

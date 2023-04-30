@@ -44,17 +44,10 @@ public class BlogManagerController {
         return Result.success();
     }
 
-    @GetMapping("/set/token")
+    @GetMapping("/token")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> setBlogToken() {
-        blogService.setBlogToken();
-        return Result.success();
-    }
-
-    @GetMapping("/get/token")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<String> getBlogToken() {
-        String token = blogService.getBlogToken();
+    public Result<String> setBlogToken() {
+        String token = blogService.setBlogToken();
         return Result.success(token);
     }
 

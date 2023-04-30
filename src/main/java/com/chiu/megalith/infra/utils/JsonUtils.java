@@ -13,7 +13,6 @@ public class JsonUtils {
 
     private final ObjectMapper objectMapper;
 
-
     @SneakyThrows
     public <T> T readValue(String str, Class<T> clazz) {
         return objectMapper.readValue(str, clazz);

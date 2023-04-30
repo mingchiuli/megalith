@@ -132,9 +132,9 @@ public class CoopServiceImpl implements CoopService {
                         .map(id -> {
                             BlogExhibitVo vo;
                             try {
-                                vo = blogService.findByIdAndVisible(id);
+                                vo = blogService.findById(id, false);
                             } catch (NotFoundException e) {
-                                vo = blogService.findByIdAndInvisible(id);
+                                vo = blogService.findById(id, true);
                             }
                             return BlogAbstractVo.builder()
                                     .id(id)

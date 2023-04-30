@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor
 public class ListPageHandler extends BloomHandler {
@@ -18,7 +20,7 @@ public class ListPageHandler extends BloomHandler {
         Integer currentPage = (Integer) args[0];
         Integer year = (Integer) args[1];
 
-        if (year.equals(Integer.MIN_VALUE)) {
+        if (Objects.equals(year, Integer.MIN_VALUE)) {
             if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_PAGE.getInfo(), currentPage))) {
                 throw new NotFoundException("Not found " + currentPage + " page");
             }

@@ -39,12 +39,6 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         return BlogIndexEnum.CREATE.equals(blogIndexEnum);
     }
 
-
-    //    getBlogDetail: 通过id查博客细节
-//    listPage：全体博客，查当前页的摘要
-//    listPageByYear：年份博客，查当前页的摘要
-//    getCountByYear：计算当前年份的博客数量
-//    getBlogStatus：当前博客是否可见
     @SneakyThrows
     @Override
     protected void redisProcess(BlogEntity blog) {

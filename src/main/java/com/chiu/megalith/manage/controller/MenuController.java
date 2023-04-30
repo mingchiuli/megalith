@@ -3,7 +3,6 @@ package com.chiu.megalith.manage.controller;
 import com.chiu.megalith.manage.entity.MenuEntity;
 import com.chiu.megalith.manage.service.MenuService;
 import com.chiu.megalith.manage.vo.MenuEntityVo;
-import com.chiu.megalith.infra.jwt.JwtUtils;
 import com.chiu.megalith.infra.lang.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,8 +24,6 @@ import java.util.List;
 public class MenuController {
 
     private final MenuService menuService;
-
-    private final JwtUtils jwtUtils;
 
     @GetMapping("/nav")
     public Result<List<MenuEntityVo>> nav() {

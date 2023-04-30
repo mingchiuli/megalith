@@ -100,9 +100,9 @@ public class CacheSchedule {
                                             ids.forEach(id -> {
                                                 redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
                                                 try {
-                                                    blogService.findByIdAndVisible(id);
+                                                    blogService.findById(id, false);
                                                 } catch (NotFoundException e) {
-                                                    blogService.findByIdAndInvisible(id);
+                                                    blogService.findById(id, true);
                                                 }
                                                 blogController.getBlogStatus(id);
                                             }));

@@ -52,11 +52,11 @@ public class BlogController {
                     .orElseThrow();
 
             if (("ROLE_" + highestRole).equals(authority)) {
-                ref.blog = blogService.findByIdAndInvisible(id);
+                ref.blog = blogService.findById(id, true);
             } else {
-                ref.blog = blogService.findByIdAndVisible(id);
+                ref.blog = blogService.findById(id, false);
             }
-        }, () -> ref.blog = blogService.findByIdAndVisible(id));
+        }, () -> ref.blog = blogService.findById(id, false));
 
         blogService.setReadCount(id);
         return Result.success(ref.blog);
@@ -79,7 +79,7 @@ public class BlogController {
                                                @RequestParam @NotBlank String token) {
         boolean valid = blogService.checkToken(blogId, token);
         if (valid) {
-            BlogExhibitVo vo = blogService.findByIdAndInvisible(blogId);
+            BlogExhibitVo vo = blogService.findById(blogId, true);
             blogService.setReadCount(blogId);
             return Result.success(vo);
         }
@@ -114,9 +114,9 @@ public class BlogController {
             String title;
             Long id = item.getId();
             try {
-                title = blogService.findByIdAndVisible(id).getTitle();
+                title = blogService.findById(id, false).getTitle();
             } catch (NotFoundException e) {
-                title = blogService.findByIdAndInvisible(id).getTitle();
+                title = blogService.findById(id, true).getTitle();
             }
             item.setTitle(title);
         });

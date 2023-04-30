@@ -51,7 +51,7 @@ public abstract sealed class BlogIndexSupport permits
                 BlogEntity blogEntity = blogRepository.findById(blogId)
                         .orElseGet(() -> BlogEntity.builder()
                                 .id(blogId)
-                                .created(LocalDateTime.of(year, 1,1,1 ,1 ,1, 1))
+                                .created(LocalDateTime.of(year, 1,1,1,1,1, 1))
                                 .build());
 
                 redisProcess(blogEntity);

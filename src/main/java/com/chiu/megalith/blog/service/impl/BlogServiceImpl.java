@@ -72,28 +72,17 @@ public class BlogServiceImpl implements BlogService {
 
     @Cache(prefix = Const.HOT_BLOG)
     @Override
-    public BlogExhibitVo findByIdAndVisible(Long id) {
-        BlogEntity blogEntity = blogRepository.findByIdAndStatus(id, 0)
-                .orElseThrow(() -> new NotFoundException("blog not found"));
+    public BlogExhibitVo findById(Long id, boolean visible) {
+        BlogEntity blogEntity;
+        if (visible) {
+            blogEntity = blogRepository.findByIdAndStatus(id, 0)
+                    .orElseThrow(() -> new NotFoundException("blog not found"));
+        } else {
+            blogEntity = blogRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("blog not exist"));
+        }
         UserEntity user = userService.findById(blogEntity.getUserId());
 
-        return BlogExhibitVo.builder()
-                .title(blogEntity.getTitle())
-                .description(blogEntity.getDescription())
-                .content(blogEntity.getContent())
-                .readCount(blogEntity.getReadCount())
-                .nickname(user.getNickname())
-                .avatar(user.getAvatar())
-                .created(blogEntity.getCreated())
-                .readCount(blogEntity.getReadCount())
-                .build();
-    }
-
-    @Override
-    @Cache(prefix = Const.HOT_BLOG)
-    public BlogExhibitVo findByIdAndInvisible(Long id) {
-        BlogEntity blogEntity = blogRepository.findById(id).orElseThrow(() -> new NotFoundException("blog not exist"));
-        UserEntity user = userService.findById(blogEntity.getUserId());
         return BlogExhibitVo.builder()
                 .title(blogEntity.getTitle())
                 .description(blogEntity.getDescription())
@@ -157,7 +146,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public boolean checkToken(Long blogId,
-                                 String token) {
+                              String token) {
         token = token.trim();
         String password = redisTemplate.opsForValue().get(Const.READ_TOKEN.getInfo());
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
@@ -262,15 +251,10 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void setBlogToken() {
+    public String setBlogToken() {
         String token = UUID.randomUUID().toString();
         redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo(), token, 24, TimeUnit.HOURS);
-    }
-
-    @Override
-    public String getBlogToken() {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(Const.READ_TOKEN))
-                .orElse("read token is not exist");
+        return token;
     }
 
     @Override
