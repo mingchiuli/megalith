@@ -6,5 +6,5 @@ package com.chiu.megalith.security.service;
  */
 public interface CodeService {
 
-    void createEmailCode(String loginName);
+    Boolean createEmailCode(String loginName);
 }

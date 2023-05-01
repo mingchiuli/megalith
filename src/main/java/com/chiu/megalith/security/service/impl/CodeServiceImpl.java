@@ -4,6 +4,7 @@ import com.chiu.megalith.security.service.CodeService;
 import com.chiu.megalith.infra.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -22,19 +23,26 @@ public class CodeServiceImpl implements CodeService {
 
     private final JavaMailSender javaMailSender;
 
+    private final StringRedisTemplate redisTemplate;
+
     @Value("${spring.mail.properties.from}")
     private String from;
 
 
     @Override
-    public void createEmailCode(String loginEmail) {
-        String code = codeFactory.create(Const.EMAIL_CODE.getInfo());
-        codeFactory.save(code, Const.EMAIL_KEY.getInfo() + loginEmail);
-        SimpleMailMessage simpMsg = new SimpleMailMessage();
-        simpMsg.setFrom(from);
-        simpMsg.setTo(loginEmail);
-        simpMsg.setSubject("login code");
-        simpMsg.setText(code);
-        javaMailSender.send(simpMsg);
+    public Boolean createEmailCode(String loginEmail) {
+        String key = Const.EMAIL_KEY.getInfo() + loginEmail;
+        boolean res = Boolean.FALSE.equals(redisTemplate.hasKey(key));
+        if (res) {
+            String code = codeFactory.create(Const.EMAIL_CODE.getInfo());
+            codeFactory.save(code, key);
+            SimpleMailMessage simpMsg = new SimpleMailMessage();
+            simpMsg.setFrom(from);
+            simpMsg.setTo(loginEmail);
+            simpMsg.setSubject("login code");
+            simpMsg.setText(code);
+            javaMailSender.send(simpMsg);
+        }
+        return res;
     }
 }
