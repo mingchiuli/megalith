@@ -118,7 +118,7 @@ public class BlogServiceImpl implements BlogService {
                 blogPageSize,
                 Sort.by("created").descending());
 
-        if (year.equals(Integer.MIN_VALUE)) {
+        if (Objects.equals(year, Integer.MIN_VALUE)) {
             page = blogRepository.findPage(pageRequest);
         } else {
             LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);

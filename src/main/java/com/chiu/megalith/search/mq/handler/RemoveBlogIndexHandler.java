@@ -47,7 +47,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         Long id = blog.getId();
         //博客对象本身缓存
         String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
-        String findTitleById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
+        String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
         String getCountByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
         String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
         String searchYears = cacheKeyGenerator.generateKey(BlogController.class, "searchYears", new Class[]{}, new Object[]{});
@@ -59,7 +59,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(getCountByYear);
         keys.add(getBlogStatus);
         keys.add(searchYears);
-        keys.add(findTitleById);
+        keys.add(findByIdAndInvisible);
         //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         keys.add(Const.BLOOM_FILTER_PAGE.getInfo());

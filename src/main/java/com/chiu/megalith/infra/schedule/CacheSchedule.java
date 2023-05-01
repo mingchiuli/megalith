@@ -54,9 +54,7 @@ public class CacheSchedule {
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
-        boolean locked = rLock.tryLock();
-
-        if (!locked) {
+        if (!rLock.tryLock()) {
             return;
         }
 
