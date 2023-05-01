@@ -259,7 +259,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage,
-                                                   Integer size) {
+                                                    Integer size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.valueOf(authentication.getName());
         String authority = authentication.getAuthorities().stream()
@@ -418,7 +418,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity findByIdAndUserId(Long id, long userId) {
+    public BlogEntity findByIdAndUserId(Long id, Long userId) {
         return blogRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new NotFoundException("must edit your blog"));
     }

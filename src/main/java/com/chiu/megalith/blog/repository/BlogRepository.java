@@ -28,7 +28,7 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     Long countByCreatedAfter(LocalDateTime created);
 
-    Optional<BlogEntity> findByIdAndUserId(Long id, long userId);
+    Optional<BlogEntity> findByIdAndUserId(Long id, Long userId);
 
     @Query(value = "SELECT blog.status from BlogEntity blog where blog.id = ?1")
     Integer findStatusById(Long blogId);

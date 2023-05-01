@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -67,7 +68,7 @@ public class BlogController {
     public Result<PageAdapter<BlogDescriptionVo>> listPage(@PathVariable(name = "currentPage") Integer currentPage,
                                                            @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
         PageAdapter<BlogDescriptionVo> page = blogService.findPage(currentPage, year);
-        if (!year.equals(Integer.MIN_VALUE)) {
+        if (!Objects.equals(year, Integer.MIN_VALUE)) {
             Integer count = blogService.getCountByYear(year);
             page.setAdditional(count);
         }
