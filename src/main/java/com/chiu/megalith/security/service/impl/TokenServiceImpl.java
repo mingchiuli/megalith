@@ -33,10 +33,8 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Map<String, String> refreshToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
-
         String accessToken = jwtUtils.generateToken(
-                userId,
+                authentication.getName(),
                 authentication.getAuthorities().stream()
                         .findFirst()
                         .map(GrantedAuthority::getAuthority)
