@@ -16,7 +16,7 @@ public interface BlogService {
 
     List<Long> findIds(Pageable pageRequest);
 
-    BlogExhibitVo findById(Long id, boolean visible);
+    BlogExhibitVo findById(Long id, Boolean visible);
 
     void setReadCount(Long id);
 

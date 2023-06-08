@@ -72,7 +72,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Cache(prefix = Const.HOT_BLOG)
     @Override
-    public BlogExhibitVo findById(Long id, boolean visible) {
+    public BlogExhibitVo findById(Long id, Boolean visible) {
         BlogEntity blogEntity;
         if (visible) {
             blogEntity = blogRepository.findByIdAndStatus(id, 0)

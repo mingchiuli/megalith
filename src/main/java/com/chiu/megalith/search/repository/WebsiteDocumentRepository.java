@@ -1,6 +1,7 @@
 package com.chiu.megalith.search.repository;
 
 import com.chiu.megalith.search.document.WebsiteDocument;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @SuppressWarnings("unused")
+@ConditionalOnProperty(value = "blog.env", havingValue = "prod")
 public interface WebsiteDocumentRepository extends ElasticsearchRepository<WebsiteDocument, String> {}
