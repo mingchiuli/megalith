@@ -36,7 +36,7 @@ public class CodeServiceImpl implements CodeService {
         if (res) {
             String code = codeFactory.create(Const.EMAIL_CODE.getInfo());
             codeFactory.save(code, key);
-            SimpleMailMessage simpMsg = new SimpleMailMessage();
+            var simpMsg = new SimpleMailMessage();
             simpMsg.setFrom(from);
             simpMsg.setTo(loginEmail);
             simpMsg.setSubject("login code");

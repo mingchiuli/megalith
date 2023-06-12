@@ -197,7 +197,7 @@ public class BlogServiceImpl implements BlogService {
 
         //通知消息给mq,更新并删除缓存
         //防止重复消费
-        CorrelationData correlationData = new CorrelationData();
+        var correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                 ref.type + "_" + ref.blogEntity.getId(),
                 30,
@@ -237,7 +237,7 @@ public class BlogServiceImpl implements BlogService {
                     jsonUtils.writeValueAsString(blogEntity), "604800");
 
             //防止重复消费
-            CorrelationData correlationData = new CorrelationData();
+            var correlationData = new CorrelationData();
             redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                     BlogIndexEnum.REMOVE.name() + "_" + id,
                     30,
@@ -356,7 +356,7 @@ public class BlogServiceImpl implements BlogService {
         BlogEntity blog = blogRepository.save(tempBlog);
         redisTemplate.opsForList().remove(Const.QUERY_DELETED.getInfo() + userId, 1, str);
 
-        CorrelationData correlationData = new CorrelationData();
+        var correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                 BlogIndexEnum.CREATE.name() + "_" + id,
                 30,
@@ -375,7 +375,7 @@ public class BlogServiceImpl implements BlogService {
         int year = blogRepository.findById(id).orElseThrow().getCreated().getYear();
         blogRepository.setStatus(id, status);
 
-        CorrelationData correlationData = new CorrelationData();
+        var correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
                 BlogIndexEnum.UPDATE.name() + "_" + id,
                 30,

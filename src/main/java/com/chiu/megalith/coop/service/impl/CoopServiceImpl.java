@@ -53,17 +53,17 @@ public class CoopServiceImpl implements CoopService {
     @Override
     public InitCoopVo joinCoopBlog(Long blogId,
                                    Integer orderNumber) {
-        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        var userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         UserEntity userEntity = userService.findById(userId);
         BlogEntity blogEntity = blogService.findById(blogId);
-        UserEntityVo userEntityVo = UserEntityVo.builder()
+        var userEntityVo = UserEntityVo.builder()
                 .id(userEntity.getId())
                 .avatar(userEntity.getAvatar())
                 .nickname(userEntity.getNickname())
                 .build();
 
-        JoinBlogDto dto = JoinBlogDto.builder()
+        var dto = JoinBlogDto.builder()
                 .blogId(blogId)
                 .fromId(userId)
                 .user(userEntityVo)
@@ -92,11 +92,11 @@ public class CoopServiceImpl implements CoopService {
     @Override
     public void submitBlog(Long blogId,
                            BlogEntityVo blogEntityVo) {
-        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        var userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         blogService.saveOrUpdate(blogEntityVo);
 
-        SubmitBlogDto dto = SubmitBlogDto.builder()
+        var dto = SubmitBlogDto.builder()
                 .blogId(blogId)
                 .fromId(userId)
                 .build();

@@ -60,7 +60,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     public void setUserToRedisSession(Long userId,
                                       Long blogId) {
         UserEntity userEntity = userService.findById(userId);
-        UserEntityVo userEntityVo = UserEntityVo.builder()
+        var userEntityVo = UserEntityVo.builder()
                 .id(userId)
                 .avatar(userEntity.getAvatar())
                 .nickname(userEntity.getNickname())

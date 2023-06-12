@@ -40,7 +40,7 @@ public class CodeFactory {
     }
 
     private String createEmailCode() {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         for (int i = 0; i < 5; i++) {
             int idx = ThreadLocalRandom.current().nextInt(code.length);
             builder.append(code[idx]);
@@ -49,7 +49,7 @@ public class CodeFactory {
     }
 
     private String createSMS() {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         for (int i = 0; i < 6; i++) {
             int idx = ThreadLocalRandom.current().nextInt(sms.length);
             builder.append(sms[idx]);

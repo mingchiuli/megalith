@@ -25,7 +25,7 @@ public class CacheKeyGenerator {
                               Class<?>[] parameterTypes,
                               Object[] args) {
 
-        StringBuilder params = new StringBuilder();
+        var params = new StringBuilder();
         for (Object arg : args) {
             if (Objects.nonNull(arg)) {
                 params.append("::");

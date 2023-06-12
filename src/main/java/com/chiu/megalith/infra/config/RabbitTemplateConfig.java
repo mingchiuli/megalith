@@ -36,7 +36,7 @@ public class RabbitTemplateConfig {
 
         rabbitTemplate.setMessageConverter(jsonMessageConverter);
 
-        CircuitBreakerRetryPolicy retryPolicy = new CircuitBreakerRetryPolicy(
+        var retryPolicy = new CircuitBreakerRetryPolicy(
                 new SimpleRetryPolicy(10)
         );
         retryPolicy.setOpenTimeout(5000L);

@@ -31,9 +31,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         //客户端向服务器发消息的前缀
-        registry.setApplicationDestinationPrefixes("/app");
         //客户端订阅消息的前缀
-        registry.enableSimpleBroker("/user", "/logs")
+        registry.setApplicationDestinationPrefixes("/app")
+                .enableSimpleBroker("/user", "/logs")
                 .setTaskScheduler(new DefaultManagedTaskScheduler())
                 .setHeartbeatValue(new long[] {5000, 5000});
     }

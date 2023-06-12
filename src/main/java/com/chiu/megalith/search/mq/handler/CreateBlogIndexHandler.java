@@ -73,7 +73,7 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
 
     @Override
     protected void elasticSearchProcess(BlogEntity blog) {
-        BlogDocument blogDocument = BlogDocument.builder()
+        var blogDocument = BlogDocument.builder()
                 .id(blog.getId())
                 .userId(blog.getUserId())
                 .title(blog.getTitle())

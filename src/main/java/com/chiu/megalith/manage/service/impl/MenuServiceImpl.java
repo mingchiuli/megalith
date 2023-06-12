@@ -85,7 +85,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void saveOrUpdate(MenuEntityVo menu) {
-        MenuEntity menuEntity = MenuEntity.builder()
+        var menuEntity = MenuEntity.builder()
                 .menuId(menu.getMenuId())
                 .parentId(menu.getParentId())
                 .icon(menu.getIcon())

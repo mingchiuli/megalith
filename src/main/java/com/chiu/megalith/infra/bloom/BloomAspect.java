@@ -41,7 +41,7 @@ public class BloomAspect {
         String methodName = signature.getName();
         //参数
         Object[] args = jp.getArgs();
-        Class<?>[] classes = new Class[args.length];
+        var classes = new Class[args.length];
         for (int i = 0; i < args.length; i++) {
             if (Objects.nonNull(args[i])) {
                 classes[i] = args[i].getClass();

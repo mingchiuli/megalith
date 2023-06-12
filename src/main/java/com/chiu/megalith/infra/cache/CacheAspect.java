@@ -69,7 +69,7 @@ public class CacheAspect {
         //调用的方法名
         String methodName = signature.getName();
         Class<?> declaringType = signature.getDeclaringType();
-        Class<?>[] parameterTypes = new Class[pjp.getArgs().length];
+        var parameterTypes = new Class[pjp.getArgs().length];
         Object[] args = pjp.getArgs();
         for (int i = 0; i < args.length; i++) {
             parameterTypes[i] = args[i].getClass();
@@ -129,7 +129,7 @@ public class CacheAspect {
     private JavaType getTypesReference(ParameterizedType parameterizedType) {
         Class<?> rawType = (Class<?>) parameterizedType.getRawType();
         Type[] arguments = parameterizedType.getActualTypeArguments();
-        JavaType[] javaTypes = new JavaType[arguments.length];
+        var javaTypes = new JavaType[arguments.length];
         for (int i = 0; i < javaTypes.length; i++) {
             if (arguments[i] instanceof ParameterizedType _parameterizedType) {
                 JavaType type = getTypesReference(_parameterizedType);

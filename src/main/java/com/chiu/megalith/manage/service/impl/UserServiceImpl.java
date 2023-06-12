@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUserStatusByUsername(String username,
-                                 Integer status) {
+                                           Integer status) {
         userRepository.setUserStatusByUsername(username, status);
     }
 

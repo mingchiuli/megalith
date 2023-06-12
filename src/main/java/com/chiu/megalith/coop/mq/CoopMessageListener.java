@@ -35,7 +35,7 @@ public class CoopMessageListener {
     public SimpleMessageListenerContainer coopMessageListenerContainer(ConnectionFactory connectionFactory,
                                                                        @Qualifier("CoopMessageListener") MessageListenerAdapter listenerAdapter,
                                                                        @Qualifier("COOP_QUEUE") Queue queue) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        var container = new SimpleMessageListenerContainer();
         listenerAdapter.containerAckMode(AcknowledgeMode.AUTO);
         listenerAdapter.setMessageConverter(jsonMessageConverter);
         container.setConcurrency("5-10");
