@@ -57,7 +57,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
             highlightQuery = ESHighlightBuilderUtils.blogHighlightQuerySimple;
         }
 
-        NativeQuery matchQuery = NativeQuery.builder()
+        var matchQuery = NativeQuery.builder()
                 .withQuery(query ->
                         query.bool(boolQuery ->
                                 boolQuery
@@ -118,7 +118,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                      Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        NativeQuery nativeQuery = NativeQuery.builder()
+        var nativeQuery = NativeQuery.builder()
                 .withQuery(query ->
                         query.bool(boolQuery ->
                                 boolQuery

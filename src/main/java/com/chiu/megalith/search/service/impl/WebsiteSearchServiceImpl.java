@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,11 +81,11 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
             }
         });
 
-        NativeQueryBuilder nativeQueryBuilder = NativeQuery.builder()
+        var nativeQueryBuilder = NativeQuery.builder()
                 .withPageable(PageRequest.of(currentPage - 1, webPageSize));
 
-        Query.Builder builder = new Query.Builder();
-        BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
+        var builder = new Query.Builder();
+        var boolBuilder = new BoolQuery.Builder();
 
 
         if (!ref.auth) {
@@ -109,7 +108,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                         sortQuery.field(fieldQuery ->
                                 fieldQuery.field("created").order(SortOrder.Desc))));
 
-        NativeQuery matchQuery = nativeQueryBuilder
+        var matchQuery = nativeQueryBuilder
                 .withQuery(builder
                         .bool(boolBuilder
                                 .build())

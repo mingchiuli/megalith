@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author mingchiuli
@@ -40,7 +39,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
         //username is login email
         String prefix = Const.EMAIL_KEY.getInfo() + user.getUsername();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> entries = hashOperations.entries(prefix);
+        var entries = hashOperations.entries(prefix);
 
         if (!entries.isEmpty()) {
             String code = entries.get("code");
