@@ -12,5 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @SuppressWarnings("unused")
-@ConditionalOnProperty(value = "blog.env", havingValue = "prod")
+@ConditionalOnProperty(value = "spring.profiles.active", havingValue = "prod")
 public interface WebsiteDocumentRepository extends ElasticsearchRepository<WebsiteDocument, String> {}
