@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -39,21 +40,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveOrUpdate(UserEntityVo userEntityVo) {
-        var ref = new Object() {
-            UserEntity userEntity;
-        };
-
+        Long id = userEntityVo.getId();
+        UserEntity userEntity;
         LocalDateTime now = LocalDateTime.now();
 
-        Optional.ofNullable(userEntityVo.getId()).ifPresentOrElse(id -> {
-            ref.userEntity = userRepository.findById(id)
+        if (Objects.nonNull(id)) {
+            userEntity = userRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("user not exist"));
 
             Optional.ofNullable(userEntityVo.getPassword()).ifPresentOrElse(password ->
                     userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
-                    userEntityVo.setPassword(ref.userEntity.getPassword()));
-        }, () -> {
-            ref.userEntity = UserEntity.builder()
+                    userEntityVo.setPassword(userEntity.getPassword()));
+        } else {
+            userEntity = UserEntity.builder()
                     .created(now)
                     .lastLogin(now)
                     .build();
@@ -63,10 +62,10 @@ public class UserServiceImpl implements UserService {
                                     .orElseThrow(() -> new CommitException("password is required"))
                     )
             );
-        });
+        }
 
-        BeanUtils.copyProperties(userEntityVo, ref.userEntity);
-        userRepository.save(ref.userEntity);
+        BeanUtils.copyProperties(userEntityVo, userEntity);
+        userRepository.save(userEntity);
     }
 
     @Override

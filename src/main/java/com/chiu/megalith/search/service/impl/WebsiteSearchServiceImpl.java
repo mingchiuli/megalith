@@ -17,12 +17,14 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -45,18 +47,19 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
     @Override
     public void saveOrUpdate(WebsiteVo websiteVo) {
-        var ref = new Object() {
-            WebsiteDocument document;
-        };
+        String id = websiteVo.getId();
+        WebsiteDocument document;
 
-        Optional.ofNullable(websiteVo.getId()).ifPresentOrElse(id ->
-                        ref.document = elasticsearchTemplate.get(id, WebsiteDocument.class),
-                () -> ref.document = WebsiteDocument.builder()
-                        .created(ZonedDateTime.now())
-                        .build());
+        if (Objects.nonNull(id)) {
+            document = elasticsearchTemplate.get(id, WebsiteDocument.class);
+        } else {
+            document = WebsiteDocument.builder()
+                    .created(ZonedDateTime.now())
+                    .build();
+        }
 
-        BeanUtils.copyProperties(websiteVo, ref.document);
-        elasticsearchTemplate.save(ref.document);
+        BeanUtils.copyProperties(websiteVo, document);
+        elasticsearchTemplate.save(document);
     }
 
     @Override
@@ -67,20 +70,20 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Override
     public PageAdapter<WebsiteDocumentVo> search(Integer currentPage,
                                                  String keyword) {
-        var ref = new Object() {
-            boolean auth = false;
-        };
 
-        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication()).ifPresent(authentication -> {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean auth = false;
+
+        if (Objects.nonNull(authentication)) {
             String authority = authentication.getAuthorities().stream()
                     .findFirst()
                     .map(GrantedAuthority::getAuthority)
                     .orElseThrow();
 
             if (("ROLE_" + highestRole).equals(authority)) {
-                ref.auth = true;
+                auth = true;
             }
-        });
+        }
 
         NativeQueryBuilder nativeQueryBuilder = NativeQuery.builder()
                 .withPageable(PageRequest.of(currentPage - 1, webPageSize));
@@ -89,7 +92,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         var boolBuilder = new BoolQuery.Builder();
 
 
-        if (!ref.auth) {
+        if (!auth) {
             boolBuilder.must(mustQuery ->
                     mustQuery.term(termQuery ->
                             termQuery.field("status").value(0)));

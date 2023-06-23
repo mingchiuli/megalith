@@ -15,6 +15,7 @@ import com.chiu.megalith.blog.vo.BlogHotReadVo;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -42,25 +42,27 @@ public class BlogController {
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
-        var ref = new Object() {
-            BlogExhibitVo blog;
-        };
 
-        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication()).ifPresentOrElse(authentication -> {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        BlogExhibitVo blog;
+
+        if (Objects.nonNull(authentication)) {
             String authority = authentication.getAuthorities().stream()
                     .findFirst()
                     .map(GrantedAuthority::getAuthority)
                     .orElseThrow();
 
             if (("ROLE_" + highestRole).equals(authority)) {
-                ref.blog = blogService.findById(id, true);
+                blog = blogService.findById(id, true);
             } else {
-                ref.blog = blogService.findById(id, false);
+                blog = blogService.findById(id, false);
             }
-        }, () -> ref.blog = blogService.findById(id, false));
+        } else {
+            blog = blogService.findById(id, false);
+        }
 
         blogService.setReadCount(id);
-        return Result.success(ref.blog);
+        return Result.success(blog);
     }
 
     @GetMapping("/page/{currentPage}")

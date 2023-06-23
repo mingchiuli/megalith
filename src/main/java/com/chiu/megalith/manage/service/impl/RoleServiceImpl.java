@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * @author mingchiuli
@@ -51,23 +51,24 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void saveOrUpdate(RoleEntityVo roleVo) {
-        var ref = new Object() {
-            RoleEntity roleEntity;
-        };
 
+        Long id = roleVo.getId();
+        RoleEntity roleEntity;
         LocalDateTime now = LocalDateTime.now();
 
-        Optional.ofNullable(roleVo.getId()).ifPresentOrElse((id) -> {
-            ref.roleEntity = roleRepository.findById(id)
+        if (Objects.nonNull(id)) {
+            roleEntity = roleRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("role not exist"));
-            ref.roleEntity.setUpdated(now);
-        }, () -> ref.roleEntity = RoleEntity.builder()
-                .created(now)
-                .updated(now)
-                .build());
+            roleEntity.setUpdated(now);
+        } else {
+            roleEntity = RoleEntity.builder()
+                    .created(now)
+                    .updated(now)
+                    .build();
+        }
 
-        BeanUtils.copyProperties(roleVo, ref.roleEntity);
-        roleRepository.save(ref.roleEntity);
+        BeanUtils.copyProperties(roleVo, roleEntity);
+        roleRepository.save(roleEntity);
     }
 
     @Override

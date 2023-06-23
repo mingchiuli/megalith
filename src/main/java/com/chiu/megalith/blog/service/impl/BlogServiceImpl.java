@@ -173,40 +173,40 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void saveOrUpdate(BlogEntityVo blog) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
-        var ref = new Object() {
-            BlogEntity blogEntity;
-            BlogIndexEnum type;
-        };
+        Long blogId = blog.getId();
 
-        Optional.ofNullable(blog.getId()).ifPresentOrElse(id -> {
-            ref.blogEntity = blogRepository.findById(blog.getId())
+        BlogEntity blogEntity;
+        BlogIndexEnum type;
+
+        if (Objects.nonNull(blogId)) {
+            blogEntity = blogRepository.findById(blog.getId())
                     .orElseThrow(() -> new NotFoundException("blog not exist"));
-            Assert.isTrue(Objects.equals(ref.blogEntity.getUserId(), userId), "must edit your blog!");
-            ref.type = BlogIndexEnum.UPDATE;
-        }, () -> {
-            ref.blogEntity = BlogEntity.builder()
+            Assert.isTrue(Objects.equals(blogEntity.getUserId(), userId), "must edit your blog!");
+            type = BlogIndexEnum.UPDATE;
+        } else {
+            blogEntity = BlogEntity.builder()
                     .created(LocalDateTime.now())
                     .userId(userId)
                     .readCount(0L)
                     .build();
-            ref.type = BlogIndexEnum.CREATE;
-        });
+            type = BlogIndexEnum.CREATE;
+        }
 
-        BeanUtils.copyProperties(blog, ref.blogEntity);
-        blogRepository.save(ref.blogEntity);
+        BeanUtils.copyProperties(blog, blogEntity);
+        blogRepository.save(blogEntity);
 
         //通知消息给mq,更新并删除缓存
         //防止重复消费
         var correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                ref.type + "_" + ref.blogEntity.getId(),
+                type + "_" + blogEntity.getId(),
                 30,
                 TimeUnit.MINUTES);
 
         rabbitTemplate.convertAndSend(
                 ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(ref.blogEntity.getId(), ref.type, ref.blogEntity.getCreated().getYear()),
+                new BlogSearchIndexMessage(blogEntity.getId(), type, blogEntity.getCreated().getYear()),
                 correlationData);
     }
 
