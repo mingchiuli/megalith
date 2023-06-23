@@ -3,6 +3,7 @@ package com.chiu.megalith.search.service.impl;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import com.chiu.megalith.search.document.WebsiteDocument;
@@ -52,6 +53,9 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         if (Objects.nonNull(id)) {
             document = elasticsearchTemplate.get(id, WebsiteDocument.class);
+            if (Objects.isNull(document)) {
+                throw new NotFoundException("web record is miss");
+            }
         } else {
             document = WebsiteDocument.builder()
                     .created(ZonedDateTime.now())
