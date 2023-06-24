@@ -2,8 +2,10 @@ package com.chiu.megalith.infra.schedule;
 
 import com.chiu.megalith.blog.controller.BlogController;
 import com.chiu.megalith.blog.service.BlogService;
-import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.lang.Const;
+import com.chiu.megalith.infra.schedule.task.BlogRunnable;
+import com.chiu.megalith.infra.schedule.task.BlogsRunnable;
+import com.chiu.megalith.infra.schedule.task.PageMarker;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,15 +13,12 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 
@@ -65,49 +64,15 @@ public class CacheSchedule {
                 int maxPoolSize = executor.getMaximumPoolSize();
                 //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
                 CompletableFuture.runAsync(() -> {
-                    Thread thread = Thread.currentThread();
-                    var ref = new Object() {
-                        volatile boolean fin;
-                        int curPageNo;
-                    };
+                    var thread = Thread.currentThread();
+                    var pageMarker = new PageMarker();
 
                     for (;;) {
-                        if (maxPoolSize > executor.getActiveCount()) {
-                            executor.execute(() -> {
-                                if (!ref.fin) {
-                                    List<Long> idList = null;
-                                    synchronized (thread) {
-                                        if (!ref.fin) {
-                                            Pageable pageRequest = PageRequest.of(ref.curPageNo, 50);
-                                            idList = blogService.findIds(pageRequest);
-                                            int size = idList.size();
-                                            if (size < 50 && !ref.fin) {
-                                                ref.fin = true;
-                                            }
-                                            if (size == 50) {
-                                                ref.curPageNo++;
-                                            }
+                        if (executor.getMaximumPoolSize() > executor.getActiveCount()) {
+                            var runnable = new BlogRunnable(executor, blogController, blogService, redisTemplate, thread, pageMarker);
+                            executor.execute(runnable);
 
-                                            if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
-                                                LockSupport.unpark(thread);
-                                            }
-                                        }
-                                    }
-
-                                    Optional.ofNullable(idList).ifPresent(ids ->
-                                            ids.forEach(id -> {
-                                                redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                                                try {
-                                                    blogService.findById(id, false);
-                                                } catch (NotFoundException e) {
-                                                    blogService.findById(id, true);
-                                                }
-                                                blogController.getBlogStatus(id);
-                                            }));
-                                }
-                            });
-
-                            if (ref.fin) {
+                            if (pageMarker.fin) {
                                 break;
                             }
                         } else {
@@ -123,44 +88,15 @@ public class CacheSchedule {
                     Long count = blogService.count();
                     int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
                     int batchPageTotal = totalPage % 20 == 0 ? totalPage / 20 : totalPage / 20 + 1;
-
-                    Thread thread = Thread.currentThread();
-                    var ref = new Object() {
-                        int curPageNo;
-                        volatile boolean fin;
-                    };
+                    var thread = Thread.currentThread();
+                    var pageMarker = new PageMarker();
 
                     for (;;) {
                         if (maxPoolSize > executor.getActiveCount()) {
-                            executor.execute(() -> {
-                                int _curPageNo = 0;
-                                if (!ref.fin) {
-                                    synchronized (thread) {
-                                        if (!ref.fin) {
-                                            ref.curPageNo++;
-                                            _curPageNo = ref.curPageNo;
+                            var runnable = new BlogsRunnable(thread, pageMarker, executor, redisTemplate, blogService, batchPageTotal, totalPage);
+                            executor.execute(runnable);
 
-                                            if (_curPageNo == batchPageTotal) {
-                                                ref.fin = true;
-                                            }
-
-                                            if (thread.isInterrupted() && executor.getActiveCount() < maxPoolSize >> 1) {
-                                                LockSupport.unpark(thread);
-                                            }
-                                        }
-
-                                    }
-
-                                    if (_curPageNo > 0) {
-                                        for (int no = (_curPageNo - 1) * 20 + 1; no <= (_curPageNo == batchPageTotal && totalPage % 20 != 0 ? totalPage : _curPageNo * 20); no++) {
-                                            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), no, true);
-                                            blogService.findPage(no, Integer.MIN_VALUE);
-                                        }
-                                    }
-                                }
-                            });
-
-                            if (ref.fin) {
+                            if (pageMarker.fin) {
                                 break;
                             }
                         } else {
@@ -205,7 +141,7 @@ public class CacheSchedule {
                 CompletableFuture.runAsync(() -> {
                     List<Long> ids = userService.findIdsByStatus(1);
                     ids.forEach(id -> userService.changeUserStatusById(id, 0));
-                    LocalDateTime now = LocalDateTime.now();
+                    var now = LocalDateTime.now();
 
                     int hourOfDay = now.getHour();
                     int dayOfWeek = now.getDayOfWeek().getValue();
@@ -229,9 +165,9 @@ public class CacheSchedule {
 
                 redisTemplate.opsForValue().set(
                         CACHE_FINISH_FLAG,
-                        "1",
-                        20,
-                        TimeUnit.SECONDS);
+                        "flag",
+                        119,
+                        TimeUnit.MINUTES);
             }
         } finally {
             rLock.unlock();

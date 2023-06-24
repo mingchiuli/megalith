@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author mingchiuli
@@ -62,7 +63,7 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
         String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
 
-        HashSet<String> keys = new HashSet<>(7);
+        Set<String> keys = new HashSet<>(7);
         keys.add(findByIdAndVisible);
         keys.add(findByIdAndInvisible);
         keys.add(getBlogStatus);

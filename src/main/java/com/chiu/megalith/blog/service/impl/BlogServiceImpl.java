@@ -114,15 +114,15 @@ public class BlogServiceImpl implements BlogService {
                                                    Integer year) {
         Page<BlogEntity> page;
 
-        Pageable pageRequest = PageRequest.of(currentPage - 1,
+        var pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
 
         if (Objects.equals(year, Integer.MIN_VALUE)) {
             page = blogRepository.findPage(pageRequest);
         } else {
-            LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-            LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
+            var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
+            var end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
             page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
         }
 
@@ -139,8 +139,8 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Cache(prefix = Const.HOT_BLOG)
     public Integer getCountByYear(Integer year) {
-        LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-        LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
+        var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
+        var end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
         return blogRepository.countByCreatedBetween(start, end);
     }
 
@@ -229,7 +229,7 @@ public class BlogServiceImpl implements BlogService {
 
             blogRepository.delete(blogEntity);
 
-            LocalDateTime now = LocalDateTime.now();
+            var now = LocalDateTime.now();
             blogEntity.setCreated(now);
 
             redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
@@ -267,7 +267,7 @@ public class BlogServiceImpl implements BlogService {
                 .map(GrantedAuthority::getAuthority)
                 .orElseThrow();
 
-        Pageable pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
+        var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page;
         if (authority.equals(highestRole)) {
             page = blogRepository.findAll(pageRequest);
@@ -309,7 +309,7 @@ public class BlogServiceImpl implements BlogService {
                                                     Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        LocalDateTime now = LocalDateTime.now();
+        var now = LocalDateTime.now();
         List<BlogEntity> deletedBlogs = redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1).stream()
                 .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
                 .toList();

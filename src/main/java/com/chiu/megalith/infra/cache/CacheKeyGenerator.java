@@ -39,7 +39,7 @@ public class CacheKeyGenerator {
 
         String className = declaringType.getSimpleName();
         Method method = declaringType.getMethod(methodName, parameterTypes);
-        Cache annotation = method.getAnnotation(Cache.class);
+        var annotation = method.getAnnotation(Cache.class);
         String prefix = annotation.prefix().getInfo();
 
         return StringUtils.hasLength(prefix) ?

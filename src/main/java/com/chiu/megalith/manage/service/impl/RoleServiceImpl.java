@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
+
     private final RoleRepository roleRepository;
 
     private final RoleMenuService roleMenuService;
@@ -42,7 +42,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public PageAdapter<RoleEntity> listPage(Integer currentPage,
                                             Integer size) {
-        Pageable pageRequest = PageRequest.of(currentPage - 1,
+        var pageRequest = PageRequest.of(currentPage - 1,
                 size,
                 Sort.by("created").ascending());
         Page<RoleEntity> page = roleRepository.findAll(pageRequest);
@@ -54,7 +54,7 @@ public class RoleServiceImpl implements RoleService {
 
         Long id = roleVo.getId();
         RoleEntity roleEntity;
-        LocalDateTime now = LocalDateTime.now();
+        var now = LocalDateTime.now();
 
         if (Objects.nonNull(id)) {
             roleEntity = roleRepository.findById(id)

@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService {
     public void saveOrUpdate(UserEntityVo userEntityVo) {
         Long id = userEntityVo.getId();
         UserEntity userEntity;
-        LocalDateTime now = LocalDateTime.now();
+        var now = LocalDateTime.now();
 
         if (Objects.nonNull(id)) {
             userEntity = userRepository.findById(id)
@@ -88,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageAdapter<UserEntity> listPage(Integer currentPage,
                                             Integer size) {
-        Pageable pageRequest = PageRequest.of(currentPage - 1,
+        var pageRequest = PageRequest.of(currentPage - 1,
                 size,
                 Sort.by("created").ascending());
         Page<UserEntity> page = userRepository.findAll(pageRequest);

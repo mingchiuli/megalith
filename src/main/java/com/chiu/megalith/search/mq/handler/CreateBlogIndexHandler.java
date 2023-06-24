@@ -49,8 +49,8 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         redisTemplate.unlink(keys);
 
         //重新构建该年份的页面bloom
-        LocalDateTime start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-        LocalDateTime end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
+        var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
+        var end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
         Integer countByPeriod = blogRepository.countByCreatedBetween(start, end);
         int totalPageByPeriod = countByPeriod % blogPageSize == 0 ? countByPeriod / blogPageSize : countByPeriod / blogPageSize + 1;
         for (int i = 1; i <= totalPageByPeriod; i++) {
