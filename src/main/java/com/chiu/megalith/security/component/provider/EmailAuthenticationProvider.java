@@ -33,6 +33,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
     }
 
     @Override
+    @SuppressWarnings("all")
     public void authProcess(LoginUser user,
                             UsernamePasswordAuthenticationToken authentication) {
 

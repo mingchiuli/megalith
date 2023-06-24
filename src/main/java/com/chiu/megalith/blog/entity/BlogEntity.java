@@ -25,8 +25,7 @@ import java.util.Objects;
 @Builder
 @Table(name ="m_blog",
         indexes = {@Index(columnList = "created"), @Index(columnList = "user_id"),
-                @Index(name = "IDX_ID_USERID", columnList = "id"), @Index(name = "IDX_ID_USERID", columnList = "user_id"),
-                @Index(name = "IDX_ID_STATUS", columnList = "id"), @Index(name = "IDX_ID_STATUS", columnList = "status")})
+                @Index(name = "IDX_ID_USERID", columnList = "id"), @Index(name = "IDX_ID_USERID", columnList = "user_id")})
 public class BlogEntity implements Serializable {
 
     @Serial
@@ -35,7 +34,7 @@ public class BlogEntity implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
+    @GenericGenerator(name = "native")
     private Long id;
 
     @Column(name = "user_id")

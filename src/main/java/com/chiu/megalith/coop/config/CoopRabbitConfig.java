@@ -31,7 +31,6 @@ public class CoopRabbitConfig {
 
     private final Jackson2JsonMessageConverter jsonMessageConverter;
 
-
     @Bean("COOP_QUEUE")
     public Queue queue() {
         nodeMark = UUID.randomUUID().toString();

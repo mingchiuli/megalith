@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author mingchiuli
@@ -34,12 +35,13 @@ public final class PhoneAuthenticationProvider extends ProviderSupport {
     }
 
     @Override
+    @SuppressWarnings("all")
     protected void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication) {
         String prefix = Const.PHONE_KEY.getInfo() + user.getUsername();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(prefix);
 
-        if (!entries.isEmpty()) {
+        if (Boolean.FALSE.equals(entries.isEmpty())) {
             String code = entries.get("sms");
             String tryCount = entries.get("try_count");
 
@@ -48,7 +50,7 @@ public final class PhoneAuthenticationProvider extends ProviderSupport {
                 throw new BadCredentialsException("sms reach max try number");
             }
 
-            if (!code.equals(authentication.getCredentials().toString())) {
+            if (Boolean.FALSE.equals(Objects.equals(code, authentication.getCredentials().toString()))) {
                 Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
                 if (ttl == 0) {
                     throw new BadCredentialsException("sms expired");

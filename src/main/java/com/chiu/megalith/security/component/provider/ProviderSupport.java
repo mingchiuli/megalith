@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author mingchiuli
@@ -52,7 +53,7 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         LoginUser user = (LoginUser) userDetails;
-        if (grantType.equals(user.getGrantType())) {
+        if (Objects.equals(grantType, user.getGrantType())) {
             try {
                 authProcess(user, authentication);
             } catch (AuthenticationException e) {

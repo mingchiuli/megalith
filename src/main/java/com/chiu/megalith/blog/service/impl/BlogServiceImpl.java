@@ -17,6 +17,7 @@ import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import com.chiu.megalith.infra.utils.JsonUtils;
 import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -73,14 +74,12 @@ public class BlogServiceImpl implements BlogService {
     @Cache(prefix = Const.HOT_BLOG)
     @Override
     public BlogExhibitVo findById(Long id, Boolean visible) {
-        BlogEntity blogEntity;
-        if (visible) {
-            blogEntity = blogRepository.findByIdAndStatus(id, 0)
-                    .orElseThrow(() -> new NotFoundException("blog not found"));
-        } else {
-            blogEntity = blogRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("blog not exist"));
-        }
+        BlogEntity blogEntity = visible ?
+                blogRepository.findByIdAndStatus(id, 0)
+                        .orElseThrow(() -> new NotFoundException("blog not found")) :
+                blogRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("blog not exist"));
+
         UserEntity user = userService.findById(blogEntity.getUserId());
 
         return BlogExhibitVo.builder()
@@ -112,19 +111,14 @@ public class BlogServiceImpl implements BlogService {
     @Cache(prefix = Const.HOT_BLOGS)
     public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage,
                                                    Integer year) {
-        Page<BlogEntity> page;
-
         var pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
 
-        if (Objects.equals(year, Integer.MIN_VALUE)) {
-            page = blogRepository.findPage(pageRequest);
-        } else {
-            var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-            var end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
-            page = blogRepository.findPageByCreatedBetween(pageRequest, start, end);
-        }
+        Page<BlogEntity> page = Objects.equals(year, Integer.MIN_VALUE) ?
+                blogRepository.findPage(pageRequest) :
+                blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1 , 0, 0, 0), LocalDateTime.of(year, 12, 31 , 23, 59, 59));
+
 
         return new PageAdapter<>(page.map(blogEntity ->
                 BlogDescriptionVo.builder()
@@ -139,9 +133,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Cache(prefix = Const.HOT_BLOG)
     public Integer getCountByYear(Integer year) {
-        var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-        var end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
-        return blogRepository.countByCreatedBetween(start, end);
+        return blogRepository.countByCreatedBetween(LocalDateTime.of(year, 1, 1 , 0, 0, 0), LocalDateTime.of(year, 12, 31 , 23, 59, 59));
     }
 
     @Override
@@ -179,7 +171,7 @@ public class BlogServiceImpl implements BlogService {
         BlogIndexEnum type;
 
         if (Objects.nonNull(blogId)) {
-            blogEntity = blogRepository.findById(blog.getId())
+            blogEntity = blogRepository.findById(blogId)
                     .orElseThrow(() -> new NotFoundException("blog not exist"));
             Assert.isTrue(Objects.equals(blogEntity.getUserId(), userId), "must edit your blog!");
             type = BlogIndexEnum.UPDATE;
@@ -211,6 +203,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @Transactional
     public void deleteBlogs(List<Long> ids) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authority = authentication.getAuthorities().stream()
@@ -223,14 +216,13 @@ public class BlogServiceImpl implements BlogService {
             BlogEntity blogEntity = blogRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("blog not exist"));
 
-            if (!Objects.equals(blogEntity.getUserId(), userId) && !Objects.equals(authority, highestRole)) {
+            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
                 throw new AuthenticationExceptionImpl("must delete own blog");
             }
 
             blogRepository.delete(blogEntity);
 
-            var now = LocalDateTime.now();
-            blogEntity.setCreated(now);
+            blogEntity.setCreated(LocalDateTime.now());
 
             redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
                     Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
@@ -268,12 +260,9 @@ public class BlogServiceImpl implements BlogService {
                 .orElseThrow();
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page;
-        if (authority.equals(highestRole)) {
-            page = blogRepository.findAll(pageRequest);
-        } else {
-            page = blogRepository.findAllByUserId(pageRequest, userId);
-        }
+        Page<BlogEntity> page = Objects.equals(authority, highestRole) ?
+                blogRepository.findAll(pageRequest) :
+                blogRepository.findAllByUserId(pageRequest, userId);
 
         List<BlogEntityDto> entities = page.getContent()
                 .stream()
@@ -310,14 +299,13 @@ public class BlogServiceImpl implements BlogService {
                                                     Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        var now = LocalDateTime.now();
         List<BlogEntity> deletedBlogs = redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1).stream()
                 .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
                 .toList();
 
         int l = 0;
         for (BlogEntity blog : deletedBlogs) {
-            if (now.minusDays(7).isAfter(blog.getCreated())) {
+            if (LocalDateTime.now().minusDays(7).isAfter(blog.getCreated())) {
                 l++;
             } else {
                 break;

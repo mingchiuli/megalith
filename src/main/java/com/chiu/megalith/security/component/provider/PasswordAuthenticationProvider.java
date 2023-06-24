@@ -61,6 +61,7 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
         });
     }
 
+    @SuppressWarnings("all")
     private void passwordNotMatchProcess(String username) {
         String prefix = Const.PASSWORD_KEY.getInfo() + username;
         List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);

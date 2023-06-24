@@ -2,7 +2,6 @@ package com.chiu.megalith.manage.vo;
 
 import com.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,7 +43,6 @@ public class MenuEntityVo implements Serializable {
     @NotBlank
     private String icon;
 
-    @NotNull
     private Integer orderNum;
 
     @ListValue(values = {0, 1})

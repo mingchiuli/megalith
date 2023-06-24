@@ -32,9 +32,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.security:spring-security-messaging")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-	implementation("org.redisson:redisson-spring-boot-starter:3.21.3")
+	implementation("org.redisson:redisson-spring-boot-starter:3.22.1")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.6")
-	implementation("io.netty:netty-resolver-dns-native-macos:4.1.92.Final") {
+	implementation("io.netty:netty-resolver-dns-native-macos:4.1.94.Final") {
 		artifact {
 			classifier = "osx-aarch_64"
 		}
