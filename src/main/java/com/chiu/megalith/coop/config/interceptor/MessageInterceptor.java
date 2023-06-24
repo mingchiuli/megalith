@@ -29,6 +29,7 @@ public class MessageInterceptor implements ChannelInterceptor {
 
 
     @Override
+    @SuppressWarnings("all")
     public Message<?> preSend(@NonNull Message<?> message,
                               @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
