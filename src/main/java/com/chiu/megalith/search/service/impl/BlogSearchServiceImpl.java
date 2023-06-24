@@ -49,13 +49,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                        String keyword,
                                                        Integer flag,
                                                        Integer year) {
-        HighlightQuery highlightQuery;
-
-        if (flag == 0) {
-            highlightQuery = ESHighlightBuilderUtils.blogHighlightQueryOrigin;
-        } else {
-            highlightQuery = ESHighlightBuilderUtils.blogHighlightQuerySimple;
-        }
+        HighlightQuery highlightQuery = flag == 0 ? ESHighlightBuilderUtils.blogHighlightQueryOrigin : ESHighlightBuilderUtils.blogHighlightQuerySimple;
 
         var matchQuery = NativeQuery.builder()
                 .withQuery(query ->
