@@ -74,7 +74,7 @@ public class CoopServiceImpl implements CoopService {
 
         usersStr.stream()
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
-                .filter(user -> Objects.equals(userId, user.getId()))
+                .filter(user -> Boolean.FALSE.equals(Objects.equals(userId, user.getId())))
                 .forEach(user -> {
                     dto.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
@@ -105,7 +105,7 @@ public class CoopServiceImpl implements CoopService {
 
         operations.values(Const.COOP_PREFIX.getInfo() + blogId).stream()
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
-                .filter(user -> Objects.equals(userId, user.getId()))
+                .filter(user -> Boolean.FALSE.equals(Objects.equals(userId, user.getId())))
                 .forEach(user -> {
                     dto.setToId(user.getId());
                     rabbitTemplate.convertAndSend(

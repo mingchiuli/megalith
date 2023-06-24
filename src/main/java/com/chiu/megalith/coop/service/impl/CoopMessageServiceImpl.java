@@ -78,7 +78,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
         operations.values(Const.COOP_PREFIX.getInfo() + msg.getBlogId()).stream()
                 .map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class))
-                .filter(user -> Objects.equals(fromId, user.getId()))
+                .filter(user -> Boolean.FALSE.equals(Objects.equals(fromId, user.getId())))
                 .forEach(user -> {
                     msg.setToId(user.getId());
                     rabbitTemplate.convertAndSend(
