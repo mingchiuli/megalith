@@ -43,20 +43,25 @@ public class SecurityConfig {
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(formLogin -> formLogin
-                        .successHandler(loginSuccessHandler)
-                        .failureHandler(loginFailureHandler))
-                .logout(logout -> logout
-                        .logoutSuccessHandler(jwtLogoutSuccessHandler))
-                .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(URL_WHITELIST)
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .formLogin(formLogin ->
+                        formLogin
+                                .successHandler(loginSuccessHandler)
+                                .failureHandler(loginFailureHandler))
+                .logout(logout ->
+                        logout
+                                .logoutSuccessHandler(jwtLogoutSuccessHandler))
+                .sessionManagement(sessionManagement ->
+                        sessionManagement
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorizeHttpRequests ->
+                        authorizeHttpRequests
+                                .requestMatchers(URL_WHITELIST)
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated())
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class)
                 .authenticationManager(authenticationManager)
                 .build();
