@@ -54,7 +54,7 @@ public class CoopRabbitConfig {
     }
 
 
-    @Bean("CoopMessageListener")
+    @Bean("MessageListenerAdapter")
     public MessageListenerAdapter coopMessageListener(CoopMessageListener coopMessageListener) {
         //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
         return new MessageListenerAdapter(coopMessageListener);
@@ -62,7 +62,7 @@ public class CoopRabbitConfig {
 
     @Bean("CoopMessageListenerContainer")
     public SimpleMessageListenerContainer coopMessageListenerContainer(ConnectionFactory connectionFactory,
-                                                                       @Qualifier("CoopMessageListener") MessageListenerAdapter listenerAdapter,
+                                                                       @Qualifier("MessageListenerAdapter") MessageListenerAdapter listenerAdapter,
                                                                        @Qualifier("COOP_QUEUE") Queue queue) {
         var container = new SimpleMessageListenerContainer();
         listenerAdapter.containerAckMode(AcknowledgeMode.AUTO);
