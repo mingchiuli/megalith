@@ -35,3 +35,13 @@ out/
 
 ### VS Code ###
 .vscode/
+src/main/resources/application-prod.yml
+src/main/java/com/.DS_Store
+src/.DS_Store
+.gitignore
+src/main/.DS_Store
+src/main/java/.DS_Store
+src/main/java/com/chiu/.DS_Store
+gradle/wrapper/gradle-wrapper.properties
+gradle/wrapper/gradle-wrapper.jar
+.DS_Store
