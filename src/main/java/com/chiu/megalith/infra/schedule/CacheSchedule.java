@@ -68,8 +68,6 @@ public class CacheSchedule {
         }
     }
 
-
-    @SuppressWarnings("all")
     private void exec() {
         List<Integer> years = blogService.searchYears();
         int maxPoolSize = executor.getMaximumPoolSize();

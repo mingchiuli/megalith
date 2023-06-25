@@ -12,7 +12,6 @@ public class CoopMessageListener {
 
     private final List<BaseCoopHandler> cacheHandlers;
 
-    @SuppressWarnings("unused")
     //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
     public void handleMessage(BaseDto msg) {
         for (BaseCoopHandler handler : cacheHandlers) {

@@ -118,7 +118,6 @@ public class CoopServiceImpl implements CoopService {
     }
 
     @Override
-    @SuppressWarnings("all")
     public PageAdapter<BlogAbstractVo> getCoopBlogs(Integer currentPage) {
 
         Set<String> keys = redisTemplate.keys(Const.COOP_PREFIX.getInfo() + "*");

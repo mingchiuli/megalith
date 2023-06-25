@@ -294,7 +294,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @SuppressWarnings("all")
     public PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage,
                                                     Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -335,7 +334,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @SuppressWarnings("all")
     public void recoverDeletedBlog(Long id,
                                    Integer idx) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -384,7 +382,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @SuppressWarnings("all")
     public VisitStatisticsVo getVisitStatistics() {
         List<Long> list = redisTemplate.execute(LuaScriptUtils.getVisitLua,
                 List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()));
@@ -398,7 +395,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @SuppressWarnings("all")
     public List<BlogHotReadVo> getScoreBlogs() {
         Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet().reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
         return set.stream()

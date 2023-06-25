@@ -20,7 +20,6 @@ import java.util.Optional;
  */
 @Slf4j
 @RestControllerAdvice
-@SuppressWarnings("unused")
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

@@ -40,7 +40,6 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
     }
 
     @SneakyThrows
-    @SuppressWarnings("all")
     @Override
     protected void redisProcess(BlogEntity blog) {
         //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom

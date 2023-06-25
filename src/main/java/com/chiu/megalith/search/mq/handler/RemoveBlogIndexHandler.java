@@ -41,7 +41,6 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         return BlogIndexEnum.REMOVE.equals(blogIndexEnum);
     }
 
-    @SuppressWarnings("all")
     @Override
     protected void redisProcess(BlogEntity blog) {
         int year = blog.getCreated().getYear();
