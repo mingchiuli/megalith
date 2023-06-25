@@ -35,7 +35,8 @@ public class SecurityConfig {
             "/search/website/query/*",
             "/search/blog/**",
             "/message/**",
-            "/log/**"
+            "/log/**",
+            "/actuator/**"
     };
 
     @Bean
