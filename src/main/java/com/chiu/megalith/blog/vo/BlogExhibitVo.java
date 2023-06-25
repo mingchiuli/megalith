@@ -1,9 +1,7 @@
 package com.chiu.megalith.blog.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -12,8 +10,6 @@ import java.time.LocalDateTime;
  * @create 2023-03-19 3:27 am
  */
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class BlogExhibitVo {
 

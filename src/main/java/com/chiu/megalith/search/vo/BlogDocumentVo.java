@@ -1,9 +1,7 @@
 package com.chiu.megalith.search.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -15,8 +13,6 @@ import java.util.Map;
  * @create 2021-12-12 6:55 AM
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class BlogDocumentVo implements Serializable {
 

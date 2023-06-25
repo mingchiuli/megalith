@@ -1,10 +1,8 @@
 package com.chiu.megalith.coop.vo;
 
 import com.chiu.megalith.blog.entity.BlogEntity;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -15,8 +13,6 @@ import java.util.Collection;
  */
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class InitCoopVo implements Serializable {
 
     private BlogEntity blogEntity;

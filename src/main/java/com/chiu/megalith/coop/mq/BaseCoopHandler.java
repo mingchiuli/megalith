@@ -9,7 +9,7 @@ public abstract class BaseCoopHandler {
 
     protected final String uri;
 
-    public BaseCoopHandler(SimpMessagingTemplate simpMessagingTemplate,
+    protected BaseCoopHandler(SimpMessagingTemplate simpMessagingTemplate,
                            String uri) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.uri = uri;

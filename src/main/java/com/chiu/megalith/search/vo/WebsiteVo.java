@@ -2,10 +2,8 @@ package com.chiu.megalith.search.vo;
 
 import com.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
 /**
@@ -14,8 +12,6 @@ import org.hibernate.validator.constraints.URL;
  */
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class WebsiteVo {
 
     private String id;

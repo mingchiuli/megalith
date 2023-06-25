@@ -1,25 +1,21 @@
 package com.chiu.megalith.blog.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @author mingchiuli
  * @create 2023-04-19 1:50 am
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class VisitStatisticsVo {
 
-    public Long daySize;
+    private Long daySize;
 
-    public Long weekSize;
+    private Long weekSize;
 
-    public Long monthSize;
+    private Long monthSize;
 
-    public Long yearSize;
+    private Long yearSize;
 }
