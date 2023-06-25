@@ -5,13 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Optional;
 
 
 /**
@@ -34,9 +32,10 @@ public class GlobalExceptionHandler {
     public Result<String> handler(MethodArgumentNotValidException e) {
         log.error("entity validate exception------------{}", e.toString());
         BindingResult bindingResult = e.getBindingResult();
-        Optional<ObjectError> objectError = bindingResult.getAllErrors().stream().findFirst();
-        return objectError.<Result<String>>map(error ->
-                Result.fail(error.getDefaultMessage()))
+        return bindingResult.getAllErrors().stream()
+                .findFirst()
+                .<Result<String>>map(error ->
+                        Result.fail(error.getDefaultMessage()))
                 .orElseGet(Result::fail);
     }
 
