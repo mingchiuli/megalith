@@ -19,12 +19,8 @@ import java.util.Optional;
  * @create 2021-10-27 9:29 PM
  */
 @Slf4j
-@RestControllerAdvice(basePackages = {
-        "com.chiu.megalith.security.controller",
-        "com.chiu.megalith.manage.controller",
-        "com.chiu.megalith.blog.controller",
-        "com.chiu.megalith.search.controller",
-        "com.chiu.megalith.coop.controller"})
+@RestControllerAdvice
+@SuppressWarnings("unused")
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
