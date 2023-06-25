@@ -35,7 +35,7 @@ public class CoopMessageController {
         coopMessageService.syncBlog(msg);
     }
 
-    @MessageMapping("/submit")
+    @MessageMapping("/save")
     public void submitBlog(@RequestBody SubmitBlogDto msg) {
         coopMessageService.submitBlog(msg);
     }

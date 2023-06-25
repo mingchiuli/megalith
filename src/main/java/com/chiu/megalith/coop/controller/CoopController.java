@@ -24,7 +24,7 @@ public class CoopController {
     private final CoopService coopService;
 
     @GetMapping("/init/{blogId}/{orderNumber}")
-    public Result<InitCoopVo> joinCoopBlog(@PathVariable @CoopBlogId Long blogId,
+    public Result<InitCoopVo> initCoopBlog(@PathVariable @CoopBlogId Long blogId,
                                            @PathVariable Integer orderNumber) {
         InitCoopVo initCoopVo = coopService.joinCoopBlog(blogId, orderNumber);
         return Result.success(initCoopVo);
@@ -36,7 +36,7 @@ public class CoopController {
         return Result.success(page);
     }
 
-    @PostMapping("/submit/{blogId}")
+    @PostMapping("/save/{blogId}")
     public Result<Void> submitBlog(@PathVariable @CoopBlogId Long blogId,
                                    @RequestBody @Validated BlogEntityVo blogEntityVo) {
         coopService.submitBlog(blogId, blogEntityVo);

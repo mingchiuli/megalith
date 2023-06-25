@@ -40,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PageAdapter<RoleEntity> listPage(Integer currentPage,
+    public PageAdapter<RoleEntity> getPage(Integer currentPage,
                                             Integer size) {
         var pageRequest = PageRequest.of(currentPage - 1,
                 size,

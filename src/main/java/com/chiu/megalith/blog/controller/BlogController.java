@@ -12,7 +12,7 @@ import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.blog.vo.BlogExhibitVo;
 import com.chiu.megalith.blog.vo.BlogHotReadVo;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -67,7 +67,7 @@ public class BlogController {
 
     @GetMapping("/page/{currentPage}")
     @Bloom(handler = ListPageHandler.class)
-    public Result<PageAdapter<BlogDescriptionVo>> listPage(@PathVariable(name = "currentPage") Integer currentPage,
+    public Result<PageAdapter<BlogDescriptionVo>> getPage(@PathVariable(name = "currentPage") Integer currentPage,
                                                            @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
         PageAdapter<BlogDescriptionVo> page = blogService.findPage(currentPage, year);
         if (!Objects.equals(year, Integer.MIN_VALUE)) {
@@ -77,9 +77,11 @@ public class BlogController {
         return Result.success(page);
     }
 
-    @GetMapping("/token/{blogId}")
+    @GetMapping("/locked/{blogId}")
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
-                                               @RequestParam @NotBlank String token) {
+                                               HttpServletRequest request) {
+
+        String token = request.getHeader("token");
         boolean valid = blogService.checkToken(blogId, token);
         if (valid) {
             BlogExhibitVo vo = blogService.findById(blogId, true);
@@ -104,7 +106,7 @@ public class BlogController {
         return Result.success(years);
     }
 
-    @GetMapping("/statistic")
+    @GetMapping("/stat")
     public Result<VisitStatisticsVo> getVisitStatistics() {
         VisitStatisticsVo vo = blogService.getVisitStatistics();
         return Result.success(vo);

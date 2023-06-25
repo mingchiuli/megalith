@@ -28,7 +28,7 @@ public class UserController {
 
     @GetMapping("/status/{id}/{status}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> changeUserStatus(@PathVariable(value = "id") Long userId,
+    public Result<Void> setUserStatus(@PathVariable(value = "id") Long userId,
                                          @PathVariable(value = "status") Integer status) {
         userService.changeUserStatusById(userId, status);
         return Result.success();

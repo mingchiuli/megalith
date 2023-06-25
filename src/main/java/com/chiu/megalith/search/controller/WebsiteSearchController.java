@@ -35,7 +35,7 @@ public class WebsiteSearchController {
         return Result.success();
     }
 
-    @GetMapping("/query/{currentPage}")
+    @GetMapping("/{currentPage}")
     public Result<PageAdapter<WebsiteDocumentVo>> search(@PathVariable Integer currentPage,
                                                          @RequestParam(required = false) String keyword) {
         PageAdapter<WebsiteDocumentVo> page = websiteSearchService.search(currentPage, keyword);

@@ -25,7 +25,7 @@ public class BlogManagerController {
 
     private final BlogService blogService;
 
-    @GetMapping("/info/echo/{id}")
+    @GetMapping("/echo/{id}")
     public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
         BlogEntity blog = blogService.findByIdAndUserId(id, userId);
@@ -44,7 +44,7 @@ public class BlogManagerController {
         return Result.success();
     }
 
-    @GetMapping("/token")
+    @GetMapping("/lock")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<String> setBlogToken() {
         String token = blogService.setBlogToken();
@@ -59,7 +59,7 @@ public class BlogManagerController {
     }
 
     @GetMapping("/deleted")
-    public Result<PageAdapter<BlogEntity>> listDeletedBlogs(@RequestParam Integer currentPage,
+    public Result<PageAdapter<BlogEntity>> getDeletedBlogs(@RequestParam Integer currentPage,
                                                             @RequestParam Integer size) {
         PageAdapter<BlogEntity> deletedBlogs = blogService.findDeletedBlogs(currentPage, size);
         return Result.success(deletedBlogs);
@@ -74,7 +74,7 @@ public class BlogManagerController {
 
     @GetMapping("/status/{id}/{status}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> changeBlogStatus(@PathVariable(value = "id") Long id,
+    public Result<Void> setBlogStatus(@PathVariable(value = "id") Long id,
                                          @PathVariable(value = "status") Integer status) {
         blogService.changeBlogStatus(id, status);
         return Result.success();

@@ -15,7 +15,7 @@ public interface RoleService {
 
     RoleEntity info(Long id);
 
-    PageAdapter<RoleEntity> listPage(Integer current, Integer size);
+    PageAdapter<RoleEntity> getPage(Integer current, Integer size);
 
     void saveOrUpdate(RoleEntityVo role);
 

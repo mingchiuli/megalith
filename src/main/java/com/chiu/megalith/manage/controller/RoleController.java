@@ -32,9 +32,9 @@ public class RoleController {
 
     @GetMapping("/page")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<PageAdapter<RoleEntity>> listPage(@RequestParam(defaultValue = "1") Integer currentPage,
+    public Result<PageAdapter<RoleEntity>> getPage(@RequestParam(defaultValue = "1") Integer currentPage,
                                                     @RequestParam(defaultValue = "5") Integer pageSize) {
-        PageAdapter<RoleEntity> pageData = roleService.listPage(currentPage, pageSize);
+        PageAdapter<RoleEntity> pageData = roleService.getPage(currentPage, pageSize);
         return Result.success(pageData);
     }
 
