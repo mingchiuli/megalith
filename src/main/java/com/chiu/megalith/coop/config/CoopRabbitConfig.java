@@ -32,20 +32,20 @@ public class CoopRabbitConfig {
     private final Jackson2JsonMessageConverter jsonMessageConverter;
 
     @Bean("COOP_QUEUE")
-    public Queue queue() {
+    Queue queue() {
         nodeMark = UUID.randomUUID().toString();
         WS_QUEUE += nodeMark;
         return new Queue(WS_QUEUE, true, false, true);
     }
 
     @Bean("COOP_TOPIC_EXCHANGE")
-    public TopicExchange exchange() {
+    TopicExchange exchange() {
         return new TopicExchange(WS_TOPIC_EXCHANGE);
     }
 
     @Bean("COOP_BINDING")
-    public Binding binding(@Qualifier("COOP_QUEUE") Queue wsQueue,
-                           @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
+    Binding binding(@Qualifier("COOP_QUEUE") Queue wsQueue,
+                    @Qualifier("COOP_TOPIC_EXCHANGE") TopicExchange wsExchange) {
         return BindingBuilder
                 .bind(wsQueue)
                 .to(wsExchange)
@@ -54,15 +54,15 @@ public class CoopRabbitConfig {
 
 
     @Bean("MessageListenerAdapter")
-    public MessageListenerAdapter coopMessageListener(CoopMessageListener coopMessageListener) {
+    MessageListenerAdapter coopMessageListener(CoopMessageListener coopMessageListener) {
         //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
         return new MessageListenerAdapter(coopMessageListener);
     }
 
     @Bean("CoopMessageListenerContainer")
-    public SimpleMessageListenerContainer coopMessageListenerContainer(ConnectionFactory connectionFactory,
-                                                                       @Qualifier("MessageListenerAdapter") MessageListenerAdapter listenerAdapter,
-                                                                       @Qualifier("COOP_QUEUE") Queue queue) {
+    SimpleMessageListenerContainer coopMessageListenerContainer(ConnectionFactory connectionFactory,
+                                                                @Qualifier("MessageListenerAdapter") MessageListenerAdapter listenerAdapter,
+                                                                @Qualifier("COOP_QUEUE") Queue queue) {
         var container = new SimpleMessageListenerContainer();
         listenerAdapter.containerAckMode(AcknowledgeMode.AUTO);
         listenerAdapter.setMessageConverter(jsonMessageConverter);

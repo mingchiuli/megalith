@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class BlogSearchIndexMessage implements Serializable {
 
     private Long blogId;
+
     public BlogIndexEnum typeEnum;
 
     private Integer year;

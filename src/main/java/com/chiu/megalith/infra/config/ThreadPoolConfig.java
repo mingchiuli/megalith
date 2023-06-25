@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class ThreadPoolConfig {
 
     @Bean("scheduledThreadPoolExecutor")
-    public ThreadPoolExecutor scheduledThreadPoolExecutor(ThreadPoolConfigProperties pool) {
+    ThreadPoolExecutor scheduledThreadPoolExecutor(ThreadPoolConfigProperties pool) {
         return new ThreadPoolExecutor(30,
                 30,
                 pool.getKeepAliveTime(), TimeUnit.SECONDS,
@@ -28,7 +28,7 @@ public class ThreadPoolConfig {
     }
 
     @Bean("readCountThreadPoolExecutor")
-    public ThreadPoolExecutor readCountThreadPoolExecutor(ThreadPoolConfigProperties pool) {
+    ThreadPoolExecutor readCountThreadPoolExecutor(ThreadPoolConfigProperties pool) {
         return new ThreadPoolExecutor(pool.getCoreSize(),
                 pool.getMaxSize(),
                 pool.getKeepAliveTime(), TimeUnit.SECONDS,

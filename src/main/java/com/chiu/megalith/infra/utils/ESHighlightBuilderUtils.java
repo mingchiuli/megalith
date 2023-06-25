@@ -12,6 +12,8 @@ import java.util.List;
  * @create 2023-03-30 9:20 pm
  */
 public class ESHighlightBuilderUtils {
+    private ESHighlightBuilderUtils() {}
+
     public static final HighlightQuery blogHighlightQueryOrigin = new HighlightQuery(
             new Highlight(
                     new HighlightParameters

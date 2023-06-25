@@ -20,7 +20,7 @@ public class AuthenticationManagerConfig {
     private final List<AuthenticationProvider> providers;
 
     @Bean
-    public AuthenticationManager authenticationManager() {
+    AuthenticationManager authenticationManager() {
         return new ProviderManager(providers, null);
     }
 }

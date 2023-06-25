@@ -91,9 +91,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         var nativeQueryBuilder = NativeQuery.builder()
                 .withPageable(PageRequest.of(currentPage - 1, webPageSize));
 
-        var builder = new Query.Builder();
         var boolBuilder = new BoolQuery.Builder();
-
 
         if (Boolean.FALSE.equals(auth)) {
             boolBuilder.must(mustQuery ->
@@ -116,7 +114,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                                 fieldQuery.field("created").order(SortOrder.Desc))));
 
         var matchQuery = nativeQueryBuilder
-                .withQuery(builder
+                .withQuery(new Query.Builder()
                         .bool(boolBuilder
                                 .build())
                         .build())
