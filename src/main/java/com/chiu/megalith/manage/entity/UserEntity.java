@@ -34,7 +34,7 @@ public class UserEntity implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
+    @GenericGenerator(name = "native")
     private Long id;
 
     @Column(name = "username")

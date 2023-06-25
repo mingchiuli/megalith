@@ -31,7 +31,7 @@ public class MenuEntity implements Serializable {
     @Id
     @Column(name = "menu_id")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
+    @GenericGenerator(name = "native")
     private Long menuId;
 
     @Column(name = "parent_id")
