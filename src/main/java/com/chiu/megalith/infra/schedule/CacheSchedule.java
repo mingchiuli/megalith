@@ -61,7 +61,7 @@ public class CacheSchedule {
             Boolean executed = redisTemplate.hasKey(CACHE_FINISH_FLAG);
             if (Boolean.FALSE.equals(executed)) {
                 exec();
-                redisTemplate.opsForValue().set(CACHE_FINISH_FLAG, "flag", 119, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(CACHE_FINISH_FLAG, "flag", 60, TimeUnit.MINUTES);
             }
         } finally {
             rLock.unlock();
