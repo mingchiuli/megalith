@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = AuthenticationExceptionImpl.class)
-    public Result<?> handler(AuthenticationExceptionImpl e) {
+    public Result<Object> handler(AuthenticationExceptionImpl e) {
         log.error("authentication exception:{}", e.toString());
         return Result.fail(401, e.getMessage());
     }

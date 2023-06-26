@@ -68,7 +68,7 @@ public class BlogController {
     @GetMapping("/page/{currentPage}")
     @Bloom(handler = ListPageHandler.class)
     public Result<PageAdapter<BlogDescriptionVo>> getPage(@PathVariable(name = "currentPage") Integer currentPage,
-                                                           @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
+                                                          @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
         PageAdapter<BlogDescriptionVo> page = blogService.findPage(currentPage, year);
         if (!Objects.equals(year, Integer.MIN_VALUE)) {
             Integer count = blogService.getCountByYear(year);
