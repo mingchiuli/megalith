@@ -7,7 +7,6 @@ import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.search.BlogIndexEnum;
 import com.chiu.megalith.search.document.BlogDocument;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -19,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Component
-@Slf4j
 public final class CreateBlogIndexHandler extends BlogIndexSupport {
     private final ElasticsearchTemplate elasticsearchTemplate;
 

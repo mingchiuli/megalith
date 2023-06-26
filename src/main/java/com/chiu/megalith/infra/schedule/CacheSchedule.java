@@ -8,7 +8,6 @@ import com.chiu.megalith.infra.schedule.task.BlogsRunnable;
 import com.chiu.megalith.infra.schedule.task.PageMarker;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +26,6 @@ import java.util.concurrent.locks.LockSupport;
  * @create 2022-11-29 10:52 pm
  */
 @Component
-@Slf4j
 @RequiredArgsConstructor
 public class CacheSchedule {
 

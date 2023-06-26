@@ -10,7 +10,6 @@ import com.chiu.megalith.coop.vo.UserEntityVo;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -24,7 +23,6 @@ import java.util.Objects;
  * @create 2022-12-28 3:43 pm
  */
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class CoopMessageServiceImpl implements CoopMessageService {
 

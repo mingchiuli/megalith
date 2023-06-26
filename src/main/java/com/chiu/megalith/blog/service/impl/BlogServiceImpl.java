@@ -19,7 +19,6 @@ import com.chiu.megalith.infra.utils.JsonUtils;
 import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -47,7 +46,6 @@ import java.util.concurrent.TimeUnit;
  * @create 2022-11-27 2:10 pm
  */
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class BlogServiceImpl implements BlogService {
 
@@ -74,7 +72,7 @@ public class BlogServiceImpl implements BlogService {
     @Cache(prefix = Const.HOT_BLOG)
     @Override
     public BlogExhibitVo findById(Long id, Boolean visible) {
-        BlogEntity blogEntity = visible ?
+        BlogEntity blogEntity = Boolean.TRUE.equals(visible) ?
                 blogRepository.findByIdAndStatus(id, 0)
                         .orElseThrow(() -> new NotFoundException("blog not found")) :
                 blogRepository.findById(id)

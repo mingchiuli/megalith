@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,6 @@ import java.util.Optional;
 /**
  * jwt工具类
  */
-@Slf4j
 @Data
 @Component
 @ConfigurationProperties(prefix = "blog.jwt")

@@ -4,7 +4,6 @@ import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.utils.LuaScriptUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -21,7 +20,6 @@ import java.util.List;
  */
 @Aspect
 @Component
-@Slf4j
 @Order(0)
 @RequiredArgsConstructor
 public class StatisticsAspect {

@@ -2,7 +2,6 @@ package com.chiu.megalith.infra.listener;
 
 import com.chiu.megalith.infra.config.LogRabbitConfig;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
  * @author mingchiuli
  * @create 2022-01-03 8:56 PM
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LogMessageListener {
