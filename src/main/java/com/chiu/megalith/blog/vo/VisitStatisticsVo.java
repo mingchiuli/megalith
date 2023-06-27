@@ -11,11 +11,11 @@ import lombok.Data;
 @Builder
 public class VisitStatisticsVo {
 
-    private Long daySize;
+    private Long dayVisit;
 
-    private Long weekSize;
+    private Long weekVisit;
 
-    private Long monthSize;
+    private Long monthVisit;
 
-    private Long yearSize;
+    private Long yearVisit;
 }

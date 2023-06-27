@@ -385,10 +385,10 @@ public class BlogServiceImpl implements BlogService {
                 List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()));
 
         return VisitStatisticsVo.builder()
-                .daySize(list.get(0))
-                .weekSize(list.get(1))
-                .monthSize(list.get(2))
-                .yearSize(list.get(3))
+                .dayVisit(list.get(0))
+                .weekVisit(list.get(1))
+                .monthVisit(list.get(2))
+                .yearVisit(list.get(3))
                 .build();
     }
 
