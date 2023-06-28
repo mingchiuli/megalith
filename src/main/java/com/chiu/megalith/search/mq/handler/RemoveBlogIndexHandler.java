@@ -3,6 +3,7 @@ package com.chiu.megalith.search.mq.handler;
 import com.chiu.megalith.blog.controller.BlogController;
 import com.chiu.megalith.blog.entity.BlogEntity;
 import com.chiu.megalith.blog.repository.BlogRepository;
+import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.blog.service.impl.BlogServiceImpl;
 import com.chiu.megalith.infra.cache.CacheKeyGenerator;
 import com.chiu.megalith.infra.lang.Const;
@@ -25,12 +26,16 @@ import java.util.Set;
 public final class RemoveBlogIndexHandler extends BlogIndexSupport {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
+    private final BlogService blogService;
+
     public RemoveBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  CacheKeyGenerator cacheKeyGenerator) {
+                                  CacheKeyGenerator cacheKeyGenerator,
+                                  BlogService blogService) {
         super(redisTemplate, blogRepository, cacheKeyGenerator);
         this.elasticsearchTemplate = elasticsearchTemplate;
+        this.blogService = blogService;
     }
 
     @Value("${blog.blog-page-size}")
@@ -85,8 +90,12 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         }
 
         //getCountByYear的bloom
-        List<Integer> years = blogRepository.searchYears();
-        years.forEach(y -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), y, true));
+        List<Integer> years = blogService.searchYears();
+        int lYear = years.get(0);
+        int rYear = years.get(1);
+        for (int i = lYear; i <= rYear; i++) {
+            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), i, true);
+        }
     }
 
     @Override

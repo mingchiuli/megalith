@@ -8,7 +8,9 @@ package com.chiu.megalith.infra.lang;
 public enum Const {
 
     GRANT_TYPE_EMAIL("email"),
+
     EMAIL_CODE("email_code"),
+    
     SMS_CODE("sms_code"),
 
     DAY_VISIT("day_visit"),
@@ -60,8 +62,6 @@ public enum Const {
     BLOOM_FILTER_PAGE("bloom_filter_page"),
 
     BLOOM_FILTER_YEAR_PAGE("bloom_filter_page_"),
-
-    YEARS("years"),
 
     BLOOM_FILTER_YEARS("bloom_filter_years"),
 

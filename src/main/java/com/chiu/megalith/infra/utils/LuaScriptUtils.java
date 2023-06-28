@@ -55,4 +55,9 @@ public class LuaScriptUtils {
             "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
                     "return redis.call('llen', KEYS[1]);",
             Long.class);
+
+
+    public static final RedisScript<Long> countYears = RedisScript.of(
+        "return redis.call('bitcount', KEYS[1]);", 
+        Long.class);        
 }

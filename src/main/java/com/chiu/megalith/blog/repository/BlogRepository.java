@@ -34,9 +34,6 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
     @Query(value = "SELECT blog.id from BlogEntity blog")
     List<Long> findIds(Pageable pageRequest);
 
-    @Query(value = "SELECT distinct year(blog.created) from BlogEntity blog order by year(blog.created)")
-    List<Integer> searchYears();
-
     @Query(value = "SELECT count(blog) from BlogEntity blog where blog.created < :created and Year(blog.created) = :year")
     Long getPageCountYear(LocalDateTime created, int year);
 
