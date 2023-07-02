@@ -46,10 +46,10 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage,
-                                                       String keyword,
-                                                       Integer flag,
+                                                       String keywords,
+                                                       Boolean allInfo,
                                                        Integer year) {
-        HighlightQuery highlightQuery = flag == 0 ? ESHighlightBuilderUtils.blogHighlightQueryOrigin : ESHighlightBuilderUtils.blogHighlightQuerySimple;
+        HighlightQuery highlightQuery = Boolean.TRUE.equals(allInfo) ? ESHighlightBuilderUtils.blogHighlightQueryOrigin : ESHighlightBuilderUtils.blogHighlightQuerySimple;
 
         var matchQuery = NativeQuery.builder()
                 .withQuery(query ->
@@ -57,7 +57,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 boolQuery
                                         .must(mustQuery1 ->
                                                 mustQuery1.multiMatch(multiQuery ->
-                                                        multiQuery.fields(fields).query(keyword)))
+                                                        multiQuery.fields(fields).query(keywords)))
                                         .must(mustQuery2 ->
                                                 mustQuery2.term(termQuery ->
                                                         termQuery.field("status").value(0)))
@@ -88,7 +88,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                             .description(document.getDescription())
                             .content(document.getContent())
                             .link(document.getLink())
-                            .created(document.getCreated())
+                            .created(document.getCreated().toLocalDateTime())
                             .score(hit.getScore())
                             .highlight(hit.getHighlightFields())
                             .build();
@@ -107,7 +107,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     }
 
     @Override
-    public PageAdapter<BlogEntityDto> searchAllBlogs(String keyword,
+    public PageAdapter<BlogEntityDto> searchAllBlogs(String keywords,
                                                      Integer currentPage,
                                                      Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -118,7 +118,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 boolQuery
                                         .must(mustQuery1 ->
                                                 mustQuery1.multiMatch(multiQuery -> multiQuery.
-                                                        fields(fields).query(keyword)))
+                                                        fields(fields).query(keywords)))
                                         .must(mustQuery2 ->
                                                 mustQuery2.term(termQuery ->
                                                         termQuery.field("userId").value(userId)))))

@@ -7,6 +7,8 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -26,8 +28,9 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 										AuthenticationException exception) throws IOException {
 		LoginUser.loginUserCache.remove();
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		ServletOutputStream outputStream = response.getOutputStream();
-		Result<Object> result = Result.fail(401, exception.getMessage());
+		Result<Object> result = Result.fail(exception.getMessage());
 		outputStream.write(
 				objectMapper.writeValueAsString(result).getBytes(StandardCharsets.UTF_8)
 		);

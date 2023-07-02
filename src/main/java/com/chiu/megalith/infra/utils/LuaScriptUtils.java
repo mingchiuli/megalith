@@ -9,6 +9,7 @@ import java.util.List;
  * @create 2023-03-30 8:42 pm
  */
 public class LuaScriptUtils {
+    
     private LuaScriptUtils() {}
 
     public static final RedisScript<Void> statisticLua = RedisScript.of(

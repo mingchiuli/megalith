@@ -11,7 +11,7 @@ import com.chiu.megalith.search.vo.BlogDocumentVo;
  */
 public interface BlogSearchService {
 
-    PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keyword, Integer flag, Integer year);
+    PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keywords, Boolean allInfo, Integer year);
 
-    PageAdapter<BlogEntityDto> searchAllBlogs(String keyword, Integer currentPage, Integer size);
+    PageAdapter<BlogEntityDto> searchAllBlogs(String keywords, Integer currentPage, Integer size);
 }

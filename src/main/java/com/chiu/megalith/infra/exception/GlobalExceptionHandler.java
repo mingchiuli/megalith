@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AuthenticationExceptionImpl.class)
     public Result<Object> handler(AuthenticationExceptionImpl e) {
         log.error("authentication exception:{}", e.toString());
-        return Result.fail(401, e.getMessage());
+        return Result.fail(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

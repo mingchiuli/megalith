@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -55,9 +56,10 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 			authentication = getAuthentication(jwt);
 		} catch (JwtException e) {
 			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			response.getWriter().write(
 					objectMapper.writeValueAsString(
-									Result.fail(401, e.getMessage()))
+									Result.fail(e.getMessage()))
 			);
 			return;
 		}

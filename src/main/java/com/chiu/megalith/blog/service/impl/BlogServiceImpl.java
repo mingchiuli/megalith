@@ -154,8 +154,12 @@ public class BlogServiceImpl implements BlogService {
     public List<Integer> searchYears() {
         Long count = redisTemplate.execute(LuaScriptUtils.countYears, List.of(Const.BLOOM_FILTER_YEARS.getInfo()));
         int start = 2021;
-        int end = (int) (2021 + count - 1);
-        return List.of(start, end);
+        int end = start + count.intValue() - 1 >= start ? start + count.intValue() - 1 : start;
+        var years = new ArrayList<Integer>(end - start + 1);
+        for (int year = start; year <= end; year++) {
+            years.add(year);
+        }
+        return years;
     }
 
     @Override
