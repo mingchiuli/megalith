@@ -19,6 +19,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -47,7 +48,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage,
                                                        String keywords,
                                                        Boolean allInfo,
-                                                       Integer year) {
+                                                       String year) {
         var matchQuery = NativeQuery.builder()
                 .withQuery(query ->
                         query.bool(boolQuery ->
@@ -61,12 +62,12 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         .must(mustQuery3 ->
                                                 mustQuery3.range(rangeQuery ->
                                                         rangeQuery.field("created")
-                                                                .from(Objects.nonNull(year) ? year + "-01-01T00:00:00.000" : null)
-                                                                .to(Objects.nonNull(year) ? year + "-12-31T23:59:59.999" : null)))))
+                                                                .from(StringUtils.hasLength(year) ? year + "-01-01T00:00:00.000" : null)
+                                                                .to(StringUtils.hasLength(year) ? year + "-12-31T23:59:59.999" : null)))))
                 .withSort(sort ->
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))
-                .withPageable(Objects.equals(currentPage, -1) ? null : PageRequest.of(currentPage - 1, blogPageSize))
+                .withPageable(Objects.equals(currentPage, -1) ? PageRequest.of(0, 10) : PageRequest.of(currentPage - 1, blogPageSize))
                 .withHighlightQuery(Boolean.TRUE.equals(allInfo) ? ESHighlightBuilderUtils.blogHighlightQueryOrigin : ESHighlightBuilderUtils.blogHighlightQuerySimple)
                 .build();
 

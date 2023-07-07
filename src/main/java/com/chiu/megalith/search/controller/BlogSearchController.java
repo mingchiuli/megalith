@@ -3,7 +3,6 @@ package com.chiu.megalith.search.controller;
 import com.chiu.megalith.blog.dto.BlogEntityDto;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.page.PageAdapter;
-import com.chiu.megalith.infra.valid.ListValue;
 import com.chiu.megalith.search.service.BlogSearchService;
 import com.chiu.megalith.search.vo.BlogDocumentVo;
 import jakarta.validation.constraints.NotBlank;
@@ -26,7 +25,7 @@ public class BlogSearchController {
     @GetMapping("/blog")
     public Result<PageAdapter<BlogDocumentVo>> selectBlogsByES(@RequestParam(value = "currentPage", defaultValue = "-1") Integer currentPage,
                                                                @RequestParam(value = "allInfo") Boolean allInfo,
-                                                               @RequestParam(value = "year", required = false) Integer year,
+                                                               @RequestParam(value = "year", required = false) String year,
                                                                @RequestParam(value = "keywords") @NotBlank String keywords) {
         PageAdapter<BlogDocumentVo> page = blogSearchService.selectBlogsByES(currentPage, keywords, allInfo, year);
         return Result.success(page);
