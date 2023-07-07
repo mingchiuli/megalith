@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.HighlightQuery;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -49,8 +48,6 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                        String keywords,
                                                        Boolean allInfo,
                                                        Integer year) {
-        HighlightQuery highlightQuery = Boolean.TRUE.equals(allInfo) ? ESHighlightBuilderUtils.blogHighlightQueryOrigin : ESHighlightBuilderUtils.blogHighlightQuerySimple;
-
         var matchQuery = NativeQuery.builder()
                 .withQuery(query ->
                         query.bool(boolQuery ->
@@ -69,8 +66,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withSort(sort ->
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))
-                .withPageable(PageRequest.of(currentPage - 1, blogPageSize))
-                .withHighlightQuery(highlightQuery)
+                .withPageable(Objects.equals(currentPage, -1) ? null : PageRequest.of(currentPage - 1, blogPageSize))
+                .withHighlightQuery(Boolean.TRUE.equals(allInfo) ? ESHighlightBuilderUtils.blogHighlightQueryOrigin : ESHighlightBuilderUtils.blogHighlightQuerySimple)
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
