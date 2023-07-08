@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 public class SecurityConfig {
+    
     private final LoginFailureHandler loginFailureHandler;
 
     private final LoginSuccessHandler loginSuccessHandler;

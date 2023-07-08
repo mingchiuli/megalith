@@ -5,9 +5,7 @@ import com.chiu.megalith.blog.vo.VisitStatisticsVo;
 import com.chiu.megalith.infra.bloom.handler.impl.*;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.bloom.Bloom;
-import com.chiu.megalith.infra.cache.Cache;
 import com.chiu.megalith.blog.service.BlogService;
-import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.lang.Result;
 import com.chiu.megalith.infra.page.PageAdapter;
 import com.chiu.megalith.blog.vo.BlogExhibitVo;
@@ -42,7 +40,6 @@ public class BlogController {
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         BlogExhibitVo blog;
 
@@ -70,10 +67,6 @@ public class BlogController {
     public Result<PageAdapter<BlogDescriptionVo>> getPage(@PathVariable(name = "currentPage") Integer currentPage,
                                                           @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
         PageAdapter<BlogDescriptionVo> page = blogService.findPage(currentPage, year);
-        if (!Objects.equals(year, Integer.MIN_VALUE)) {
-            Integer count = blogService.getCountByYear(year);
-            page.setAdditional(count);
-        }
         return Result.success(page);
     }
 
@@ -93,7 +86,6 @@ public class BlogController {
 
     @GetMapping("/status/{blogId}")
     @Bloom(handler = DetailHandler.class)
-    @Cache(prefix = Const.BLOG_STATUS)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
         Integer status = blogService.findStatusById(blogId);
         return Result.success(status);
@@ -113,8 +105,8 @@ public class BlogController {
 
     @GetMapping("/scores")
     public Result<List<BlogHotReadVo>> getScoreBlogs() {
-        List<BlogHotReadVo> list = blogService.getScoreBlogs();
-        list.forEach(item -> {
+        List<BlogHotReadVo> hotList = blogService.getScoreBlogs();
+        hotList.forEach(item -> {
             String title;
             Long id = item.getId();
             try {
@@ -124,7 +116,7 @@ public class BlogController {
             }
             item.setTitle(title);
         });
-        return Result.success(list);
+        return Result.success(hotList);
     }
 
 }

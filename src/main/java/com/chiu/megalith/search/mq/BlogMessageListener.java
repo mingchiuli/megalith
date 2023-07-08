@@ -27,7 +27,7 @@ public class BlogMessageListener {
             messageConverter = "jsonMessageConverter")
     public void handler(BlogSearchIndexMessage message, Channel channel, Message msg) {
         for (BlogIndexSupport handler : elasticsearchHandlers) {
-            if (handler.supports(message.typeEnum)) {
+            if (handler.supports(message.getTypeEnum())) {
                 handler.handle(message, channel, msg);
                 break;
             }

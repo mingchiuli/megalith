@@ -45,7 +45,7 @@ public enum Const {
 
     QUERY_DELETED("del_blog_user:"),
 
-    READ_TOKEN("read_token"),
+    READ_TOKEN("read_token:"),
 
     HOT_BLOGS("hot_blogs"),
 

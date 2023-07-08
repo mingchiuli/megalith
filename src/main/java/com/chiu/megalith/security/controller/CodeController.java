@@ -21,7 +21,7 @@ public class CodeController {
 
     @GetMapping("/email")
     public Result<Void> createEmailCode(@RequestParam(value = "loginEmail") String loginEmail) {
-        Boolean success = codeService.createEmailCode(loginEmail);
+        boolean success = codeService.createEmailCode(loginEmail);
         return success ?
                 Result.success() :
                 Result.fail("code exist");

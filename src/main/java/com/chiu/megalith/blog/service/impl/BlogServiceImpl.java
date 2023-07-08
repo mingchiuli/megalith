@@ -9,18 +9,11 @@ import com.chiu.megalith.blog.repository.BlogRepository;
 import com.chiu.megalith.blog.service.BlogService;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
-import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.infra.exception.NotFoundException;
 import com.chiu.megalith.infra.lang.Const;
 import com.chiu.megalith.infra.page.PageAdapter;
-import com.chiu.megalith.infra.search.BlogIndexEnum;
-import com.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import com.chiu.megalith.infra.utils.JsonUtils;
-import com.chiu.megalith.search.config.ElasticSearchRabbitConfig;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -39,7 +32,6 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author mingchiuli
@@ -52,8 +44,6 @@ public class BlogServiceImpl implements BlogService {
     private final BlogRepository blogRepository;
 
     private final StringRedisTemplate redisTemplate;
-
-    private final RabbitTemplate rabbitTemplate;
 
     private final JsonUtils jsonUtils;
 
@@ -138,7 +128,7 @@ public class BlogServiceImpl implements BlogService {
     public boolean checkToken(Long blogId,
                               String token) {
         token = token.trim();
-        String password = redisTemplate.opsForValue().get(Const.READ_TOKEN.getInfo());
+        String password = redisTemplate.opsForValue().get(Const.READ_TOKEN.getInfo() + blogId);
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
             return password.equals(token);
         }
@@ -146,6 +136,13 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @Cache(prefix = Const.HOT_BLOG)
+    public Long findUserIdById(Long id) {
+        return blogRepository.findUserIdById(id);
+    }
+
+    @Override
+    @Cache(prefix = Const.BLOG_STATUS)
     public Integer findStatusById(Long blogId) {
         return blogRepository.findStatusById(blogId);
     }
@@ -168,90 +165,27 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void saveOrUpdate(BlogEntityVo blog) {
+    public BlogEntity saveOrUpdate(BlogEntityVo blog) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
         Long blogId = blog.getId();
 
         BlogEntity blogEntity;
-        BlogIndexEnum type;
 
         if (Objects.nonNull(blogId)) {
             blogEntity = blogRepository.findById(blogId)
                     .orElseThrow(() -> new NotFoundException("blog not exist"));
             Assert.isTrue(Objects.equals(blogEntity.getUserId(), userId), "must edit your blog!");
-            type = BlogIndexEnum.UPDATE;
         } else {
             blogEntity = BlogEntity.builder()
                     .created(LocalDateTime.now())
                     .userId(userId)
                     .readCount(0L)
                     .build();
-            type = BlogIndexEnum.CREATE;
         }
 
         BeanUtils.copyProperties(blog, blogEntity);
         blogRepository.save(blogEntity);
-
-        //通知消息给mq,更新并删除缓存
-        //防止重复消费
-        var correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                type + "_" + blogEntity.getId(),
-                30,
-                TimeUnit.MINUTES);
-
-        rabbitTemplate.convertAndSend(
-                ElasticSearchRabbitConfig.ES_EXCHANGE,
-                ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(blogEntity.getId(), type, blogEntity.getCreated().getYear()),
-                correlationData);
-    }
-
-    @Override
-    @Transactional
-    public void deleteBlogs(List<Long> ids) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String authority = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElseThrow();
-        long userId = Long.parseLong(authentication.getName());
-
-        ids.forEach(id -> {
-            BlogEntity blogEntity = blogRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("blog not exist"));
-
-            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
-                throw new AuthenticationExceptionImpl("must delete own blog");
-            }
-
-            blogRepository.delete(blogEntity);
-
-            blogEntity.setCreated(LocalDateTime.now());
-
-            redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
-                    Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
-                    jsonUtils.writeValueAsString(blogEntity), "604800");
-
-            //防止重复消费
-            var correlationData = new CorrelationData();
-            redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                    BlogIndexEnum.REMOVE.name() + "_" + id,
-                    30,
-                    TimeUnit.MINUTES);
-
-            rabbitTemplate.convertAndSend(
-                    ElasticSearchRabbitConfig.ES_EXCHANGE,
-                    ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                    new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
-        });
-    }
-
-    @Override
-    public String setBlogToken() {
-        String token = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo(), token, 24, TimeUnit.HOURS);
-        return token;
+        return blogEntity;
     }
 
     @Override
@@ -339,46 +273,28 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void recoverDeletedBlog(Long id,
-                                   Integer idx) {
+    public BlogEntity recoverDeletedBlog(Long id,
+                                        Integer idx) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
 
         BlogEntity tempBlog = jsonUtils.readValue(str, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
+
         redisTemplate.opsForList().remove(Const.QUERY_DELETED.getInfo() + userId, 1, str);
-
-        var correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                BlogIndexEnum.CREATE.name() + "_" + id,
-                30,
-                TimeUnit.MINUTES);
-
-        rabbitTemplate.convertAndSend(
-                ElasticSearchRabbitConfig.ES_EXCHANGE,
-                ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
-                correlationData);
+        return blog;
     }
 
     @Override
-    public void changeBlogStatus(Long id,
-                                 Integer status) {
-        int year = blogRepository.findById(id).orElseThrow().getCreated().getYear();
+    public Integer changeBlogStatus(Long id,
+                                    Integer status) {
+        int year = blogRepository.findById(id)
+                .orElseThrow()
+                .getCreated()
+                .getYear();
         blogRepository.setStatus(id, status);
-
-        var correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                BlogIndexEnum.UPDATE.name() + "_" + id,
-                30,
-                TimeUnit.MINUTES);
-
-        rabbitTemplate.convertAndSend(
-                ElasticSearchRabbitConfig.ES_EXCHANGE,
-                ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
-                correlationData);
+        return year;
     }
 
     @Override
@@ -411,8 +327,14 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity findByIdAndUserId(Long id, Long userId) {
+    public BlogEntity findByIdAndUserId(Long id, 
+                                        Long userId) {
         return blogRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new NotFoundException("must edit your blog"));
+    }
+
+    @Override
+    public void delete(BlogEntity blogEntity) {
+        blogRepository.delete(blogEntity);
     }
 }

@@ -30,7 +30,7 @@ public class CodeServiceImpl implements CodeService {
 
 
     @Override
-    public Boolean createEmailCode(String loginEmail) {
+    public boolean createEmailCode(String loginEmail) {
         String key = Const.EMAIL_KEY.getInfo() + loginEmail;
         boolean res = Boolean.FALSE.equals(redisTemplate.hasKey(key));
         if (res) {

@@ -34,19 +34,15 @@ public interface BlogService {
 
     Long count();
 
-    void saveOrUpdate(BlogEntityVo blog);
-
-    void deleteBlogs(List<Long> ids);
-
-    String setBlogToken();
+    BlogEntity saveOrUpdate(BlogEntityVo blog);
 
     PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size);
 
-    void recoverDeletedBlog(Long id, Integer idx);
+    BlogEntity recoverDeletedBlog(Long id, Integer idx);
 
     PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size);
 
-    void changeBlogStatus(Long id, Integer status);
+    Integer changeBlogStatus(Long id, Integer status);
 
     boolean exist(Long blogId);
 
@@ -55,4 +51,8 @@ public interface BlogService {
     List<BlogHotReadVo> getScoreBlogs();
 
     BlogEntity findByIdAndUserId(Long id, Long userId);
+
+    Long findUserIdById(Long id);
+
+    void delete(BlogEntity blogEntity);
 }

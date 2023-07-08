@@ -28,6 +28,9 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     Optional<BlogEntity> findByIdAndUserId(Long id, Long userId);
 
+    @Query(value = "SELECT blog.userId from BlogEntity blog where blog.id = ?1")
+    Long findUserIdById(Long id);
+
     @Query(value = "SELECT blog.status from BlogEntity blog where blog.id = ?1")
     Integer findStatusById(Long blogId);
 

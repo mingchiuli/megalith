@@ -67,8 +67,12 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withSort(sort ->
                         sort.score(score ->
                                 score.order(SortOrder.Desc)))
-                .withPageable(Objects.equals(currentPage, -1) ? PageRequest.of(0, 10) : PageRequest.of(currentPage - 1, blogPageSize))
-                .withHighlightQuery(Boolean.TRUE.equals(allInfo) ? ESHighlightBuilderUtils.blogHighlightQueryOrigin : ESHighlightBuilderUtils.blogHighlightQuerySimple)
+                .withPageable(Objects.equals(currentPage, -1) ? 
+                        PageRequest.of(0, 10) : 
+                        PageRequest.of(currentPage - 1, blogPageSize))
+                .withHighlightQuery(Boolean.TRUE.equals(allInfo) ? 
+                        ESHighlightBuilderUtils.blogHighlightQueryOrigin : 
+                        ESHighlightBuilderUtils.blogHighlightQuerySimple)
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
