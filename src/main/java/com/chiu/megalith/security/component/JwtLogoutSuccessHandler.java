@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
 	private final ObjectMapper objectMapper;
 
-	private final static LogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+	private static final LogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request,
