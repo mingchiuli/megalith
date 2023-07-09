@@ -63,7 +63,8 @@ public class BlogManagerController {
 
     @PostMapping("/save")
     public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityVo blog) {
-        BlogEntity blogEntity = blogService.saveOrUpdate(blog);
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        BlogEntity blogEntity = blogService.saveOrUpdate(blog, userId);
         //通知消息给mq,更新并删除缓存
         //防止重复消费
         BlogIndexEnum type;
@@ -147,21 +148,31 @@ public class BlogManagerController {
     @GetMapping("/blogs")
     public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                           @RequestParam(defaultValue = "5") Integer size) {
-        PageAdapter<BlogEntityDto> page = blogService.findAllABlogs(currentPage, size);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.valueOf(authentication.getName());
+        String authority = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow();
+
+        PageAdapter<BlogEntityDto> page = blogService.findAllABlogs(currentPage, size, userId, authority);
         return Result.success(page);
     }
 
     @GetMapping("/deleted")
     public Result<PageAdapter<BlogEntity>> getDeletedBlogs(@RequestParam Integer currentPage,
                                                            @RequestParam Integer size) {
-        PageAdapter<BlogEntity> deletedBlogs = blogService.findDeletedBlogs(currentPage, size);
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        PageAdapter<BlogEntity> deletedBlogs = blogService.findDeletedBlogs(currentPage, size, userId);
         return Result.success(deletedBlogs);
     }
 
     @GetMapping("/recover/{id}/{idx}")
     public Result<Void> recoverDeletedBlog(@PathVariable(value = "id") Long id,
                                            @PathVariable(value = "idx") Integer idx) {
-        BlogEntity blog = blogService.recoverDeletedBlog(id, idx);
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        BlogEntity blog = blogService.recoverDeletedBlog(id, idx, userId);
 
         var correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
@@ -186,7 +197,7 @@ public class BlogManagerController {
                 .map(GrantedAuthority::getAuthority)
                 .orElseThrow();
 
-        long userId = Long.parseLong(authentication.getName());
+        Long userId = Long.valueOf(authentication.getName());
         Long bdUserId = blogService.findUserIdById(id);
 
         if (Boolean.FALSE.equals(Objects.equals(highestRole, authority) || Objects.equals(userId, bdUserId))) {

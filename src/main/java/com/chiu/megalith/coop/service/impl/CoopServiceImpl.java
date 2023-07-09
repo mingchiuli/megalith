@@ -94,7 +94,7 @@ public class CoopServiceImpl implements CoopService {
                            BlogEntityVo blogEntityVo) {
         var userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        blogService.saveOrUpdate(blogEntityVo);
+        blogService.saveOrUpdate(blogEntityVo, userId);
 
         var dto = SubmitBlogDto.builder()
                 .blogId(blogId)

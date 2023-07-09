@@ -26,7 +26,7 @@ public interface BlogService {
 
     Integer getCountByYear(Integer year);
 
-    boolean checkToken(Long blogId, String token);
+    Boolean checkToken(Long blogId, String token);
 
     Integer findStatusById(Long blogId);
 
@@ -34,17 +34,17 @@ public interface BlogService {
 
     Long count();
 
-    BlogEntity saveOrUpdate(BlogEntityVo blog);
+    BlogEntity saveOrUpdate(BlogEntityVo blog, Long userId);
 
-    PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size);
+    PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority);
 
-    BlogEntity recoverDeletedBlog(Long id, Integer idx);
+    BlogEntity recoverDeletedBlog(Long id, Integer idx, Long userId);
 
-    PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size);
+    PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size, Long userId);
 
     Integer changeBlogStatus(Long id, Integer status);
 
-    boolean exist(Long blogId);
+    Boolean exist(Long blogId);
 
     VisitStatisticsVo getVisitStatistics();
 

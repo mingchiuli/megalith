@@ -23,9 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -125,7 +122,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public boolean checkToken(Long blogId,
+    public Boolean checkToken(Long blogId,
                               String token) {
         token = token.trim();
         String password = redisTemplate.opsForValue().get(Const.READ_TOKEN.getInfo() + blogId);
@@ -165,8 +162,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity saveOrUpdate(BlogEntityVo blog) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+    public BlogEntity saveOrUpdate(BlogEntityVo blog, Long userId) {
         Long blogId = blog.getId();
 
         BlogEntity blogEntity;
@@ -190,13 +186,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage,
-                                                    Integer size) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = Long.valueOf(authentication.getName());
-        String authority = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElseThrow();
+                                                    Integer size,
+                                                    Long userId,
+                                                    String authority) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page = Objects.equals(authority, highestRole) ?
@@ -234,8 +226,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage,
-                                                    Integer size) {
-        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+                                                    Integer size,
+                                                    Long userId) {
 
         List<BlogEntity> deletedBlogs = redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1).stream()
                 .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
@@ -274,8 +266,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEntity recoverDeletedBlog(Long id,
-                                        Integer idx) {
-        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+                                        Integer idx,
+                                        Long userId) {
 
         String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
 
@@ -298,7 +290,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public boolean exist(Long blogId) {
+    public Boolean exist(Long blogId) {
         return blogRepository.existsById(blogId);
     }
 
