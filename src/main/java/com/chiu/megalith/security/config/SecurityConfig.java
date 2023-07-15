@@ -37,8 +37,7 @@ public class SecurityConfig {
             "/search/blog",
             "/message/**",
             "/log/**",
-            "/actuator/**",
-            "/token/refresh"
+            "/actuator/**"
     };
 
     @Bean
