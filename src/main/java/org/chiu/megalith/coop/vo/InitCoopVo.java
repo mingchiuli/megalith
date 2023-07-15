@@ -4,7 +4,6 @@ import org.chiu.megalith.blog.entity.BlogEntity;
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -13,7 +12,7 @@ import java.util.Collection;
  */
 @Data
 @Builder
-public class InitCoopVo implements Serializable {
+public class InitCoopVo {
 
     private BlogEntity blogEntity;
 

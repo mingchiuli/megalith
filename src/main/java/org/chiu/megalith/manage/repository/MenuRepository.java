@@ -11,5 +11,6 @@ import java.util.List;
  * @create 2022-11-27 11:50 am
  */
 public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
+    
     List<MenuEntity> findAllByOrderByOrderNumDesc();
 }

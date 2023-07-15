@@ -4,10 +4,8 @@ import org.chiu.megalith.coop.dto.BaseDto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serializable;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
 @AllArgsConstructor
-public class SubmitBlogDto extends BaseDto implements Serializable {}
+public class SubmitBlogDto extends BaseDto {}

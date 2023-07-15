@@ -40,12 +40,11 @@ public class JwtUtils {
     }
 
     public Optional<Claims> getClaimByToken(String token) {
-        return Optional.ofNullable(
-                Jwts.parserBuilder()
-                        .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody()
+        return Optional.ofNullable(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
         );
 
     }

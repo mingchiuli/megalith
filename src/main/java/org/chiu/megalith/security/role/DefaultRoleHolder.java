@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Component(value = "defaultRoleHolder")
 public class DefaultRoleHolder {
+    
     @Value("${blog.default-role}")
     private String roles;
 

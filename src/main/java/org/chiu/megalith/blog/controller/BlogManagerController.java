@@ -82,8 +82,7 @@ public class BlogManagerController {
                 30,
                 TimeUnit.MINUTES);
 
-        rabbitTemplate.convertAndSend(
-                ElasticSearchRabbitConfig.ES_EXCHANGE,
+        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(blogEntity.getId(), type, blogEntity.getCreated().getYear()),
                 correlationData);
@@ -122,8 +121,7 @@ public class BlogManagerController {
                     30,
                     TimeUnit.MINUTES);
 
-            rabbitTemplate.convertAndSend(
-                    ElasticSearchRabbitConfig.ES_EXCHANGE,
+            rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
                     ElasticSearchRabbitConfig.ES_BINDING_KEY,
                     new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
         });
@@ -180,8 +178,7 @@ public class BlogManagerController {
                 30,
                 TimeUnit.MINUTES);
 
-        rabbitTemplate.convertAndSend(
-                ElasticSearchRabbitConfig.ES_EXCHANGE,
+        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
                 correlationData);
@@ -212,8 +209,7 @@ public class BlogManagerController {
                 30,
                 TimeUnit.MINUTES);
 
-        rabbitTemplate.convertAndSend(
-                ElasticSearchRabbitConfig.ES_EXCHANGE,
+        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
                 correlationData);

@@ -63,8 +63,8 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public List<MenuEntityVo> tree() {
-        List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
 
+        List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
         List<MenuEntityVo> menuEntityVos = menus.stream()
                 .map(menu -> MenuEntityVo.builder()
                         .menuId(menu.getMenuId())
@@ -85,6 +85,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void saveOrUpdate(MenuEntityVo menu) {
+
         var menuEntity = MenuEntity.builder()
                 .menuId(menu.getMenuId())
                 .parentId(menu.getParentId())
@@ -103,6 +104,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void delete(Long id) {
+        
         menuRepository.deleteById(id);
     }
 

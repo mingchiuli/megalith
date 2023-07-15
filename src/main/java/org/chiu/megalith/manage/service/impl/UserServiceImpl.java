@@ -56,8 +56,7 @@ public class UserServiceImpl implements UserService {
                     .lastLogin(now)
                     .build();
             userEntityVo.setPassword(
-                    passwordEncoder.encode(
-                            Optional.ofNullable(userEntityVo.getPassword())
+                    passwordEncoder.encode(Optional.ofNullable(userEntityVo.getPassword())
                                     .orElseThrow(() -> new CommitException("password is required"))
                     )
             );

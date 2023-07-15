@@ -5,12 +5,11 @@ import org.chiu.megalith.coop.vo.UserEntityVo;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
 @AllArgsConstructor
-public class JoinBlogDto extends BaseDto implements Serializable {
+public class JoinBlogDto extends BaseDto {
 
     private UserEntityVo user;
 }

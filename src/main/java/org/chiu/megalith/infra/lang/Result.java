@@ -2,14 +2,12 @@ package org.chiu.megalith.infra.lang;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
  * @author mingchiuli
  * @create 2021-10-27 3:27 PM
  */
 @Data
-public class Result<T> implements Serializable {
+public class Result<T> {
 
     private String msg;
 

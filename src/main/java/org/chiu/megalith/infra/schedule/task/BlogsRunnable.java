@@ -11,7 +11,8 @@ import java.util.concurrent.locks.LockSupport;
  * @author mingchiuli
  * @create 2023-06-24 5:32 pm
  */
-public record BlogsRunnable(Thread thread, PageMarker pageMarker,
+public record BlogsRunnable(Thread thread, 
+                            PageMarker pageMarker,
                             ThreadPoolExecutor executor,
                             StringRedisTemplate redisTemplate,
                             BlogService blogService,

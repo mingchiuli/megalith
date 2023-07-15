@@ -26,7 +26,7 @@ public class ListPageHandler extends BloomHandler {
             }
         } else {
             if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, currentPage))) {
-                throw new NotFoundException("Not found " + year + " year" + currentPage + " page");
+                throw new NotFoundException("Not found " + year + " year " + currentPage + " page");
             }
         }
     }

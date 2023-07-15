@@ -3,7 +3,6 @@ package org.chiu.megalith.search.vo;
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
  */
 @Data
 @Builder
-public class WebsiteDocumentVo implements Serializable {
+public class WebsiteDocumentVo {
 
     private String id;
 

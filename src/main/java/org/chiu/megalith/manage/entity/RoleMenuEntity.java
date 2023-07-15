@@ -6,8 +6,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -24,10 +22,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @DynamicUpdate
-public class RoleMenuEntity implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1984295938385285L;
+public class RoleMenuEntity {
 
     @Id
     @Column(name = "id")

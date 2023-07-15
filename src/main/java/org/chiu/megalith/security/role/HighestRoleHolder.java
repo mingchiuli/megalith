@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Component(value = "highestRoleHolder")
 public class HighestRoleHolder {
+    
     @Value("${blog.highest-role}")
     private String role;
 

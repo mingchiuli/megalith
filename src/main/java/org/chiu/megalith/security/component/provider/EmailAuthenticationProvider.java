@@ -41,7 +41,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         var entries = hashOperations.entries(prefix);
 
-        if (!entries.isEmpty()) {
+        if (Boolean.FALSE.equals(entries.isEmpty())) {
             String code = entries.get("code");
             String tryCount = entries.get("try_count");
 
@@ -50,7 +50,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
                 throw new BadCredentialsException("code reach max try number");
             }
 
-            if (!code.equalsIgnoreCase(authentication.getCredentials().toString())) {
+            if (Boolean.FALSE.equals(code.equalsIgnoreCase(authentication.getCredentials().toString()))) {
                 Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
                 if (ttl == 0) {
                     throw new BadCredentialsException("code expired");

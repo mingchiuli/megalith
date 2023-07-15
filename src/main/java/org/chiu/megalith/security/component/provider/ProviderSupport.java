@@ -24,7 +24,7 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
 
     protected UserDetailsService userDetailsService;
 
-    public ProviderSupport(String grantType,
+    protected ProviderSupport(String grantType,
                            UserDetailsService userDetailsService) {
         setUserDetailsService(userDetailsService);
         setHideUserNotFoundExceptions(false);
@@ -57,7 +57,7 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
             try {
                 authProcess(user, authentication);
             } catch (AuthenticationException e) {
-                if (!lastProvider()) {
+                if (Boolean.FALSE.equals(lastProvider())) {
                     LoginUser.loginException.set(e);
                 }
                 throw e;

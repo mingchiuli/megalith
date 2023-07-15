@@ -23,14 +23,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = AuthenticationExceptionImpl.class)
     public Result<Object> handler(AuthenticationExceptionImpl e) {
-        log.error("authentication exception:{}", e.toString());
+        log.error("authentication exception:{}", e);
         return Result.fail(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result<String> handler(MethodArgumentNotValidException e) {
-        log.error("entity validate exception------------{}", e.toString());
+        log.error("entity validate exception------------{}", e);
         BindingResult bindingResult = e.getBindingResult();
         return bindingResult.getAllErrors().stream()
                 .findFirst()
@@ -42,21 +42,21 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = IllegalArgumentException.class)
     public Result<String> handler(IllegalArgumentException e) {
-        log.error("Assert exception------------{}", e.toString());
+        log.error("Assert exception------------{}", e);
         return Result.fail(e.getMessage());
     }
 
-    @ExceptionHandler(value = AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = AccessDeniedException.class)
     public Result<String> handler(AccessDeniedException e){
-        log.error("authorization exception------------{}",e.toString());
+        log.error("authorization exception------------{}",e);
         return Result.fail(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = RuntimeException.class)
     public Result<String> handler(RuntimeException e) {
-        log.error("runtime exception------------{}", e.toString());
+        log.error("runtime exception------------{}", e);
         return Result.fail(e.getMessage());
     }
 

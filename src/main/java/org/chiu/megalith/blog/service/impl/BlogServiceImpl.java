@@ -162,7 +162,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity saveOrUpdate(BlogEntityVo blog, Long userId) {
+    public BlogEntity saveOrUpdate(BlogEntityVo blog, 
+                                   Long userId) {
         Long blogId = blog.getId();
 
         BlogEntity blogEntity;
@@ -266,8 +267,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEntity recoverDeletedBlog(Long id,
-                                        Integer idx,
-                                        Long userId) {
+                                         Integer idx,
+                                         Long userId) {
 
         String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
 

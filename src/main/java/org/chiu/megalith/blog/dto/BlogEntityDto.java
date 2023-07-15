@@ -3,7 +3,6 @@ package org.chiu.megalith.blog.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
  */
 @Builder
 @Data
-public class BlogEntityDto implements Serializable {
+public class BlogEntityDto {
 
     private Long id;
 

@@ -3,7 +3,6 @@ package org.chiu.megalith.coop.vo;
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 
 /**
  * @author mingchiuli
@@ -11,7 +10,7 @@ import java.io.Serializable;
  */
 @Data
 @Builder
-public class UserEntityVo implements Serializable {
+public class UserEntityVo {
 
     private Long id;
 

@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -18,10 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class PageAdapter<T> implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = -3720998571176536865L;
+public class PageAdapter<T> {
 
     private List<T> content;
 

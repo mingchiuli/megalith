@@ -15,7 +15,7 @@ public class UsernameConstraintValidator implements ConstraintValidator<Username
     public boolean isValid(String username,
                            ConstraintValidatorContext context) {
         if (StringUtils.hasLength(username)) {
-            return !username.matches("\\d+") && !username.contains("@");
+            return Boolean.FALSE.equals(username.matches("\\d+")) && Boolean.FALSE.equals(username.contains("@"));
         }
         return false;
     }

@@ -57,16 +57,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
 		// 生成jwt
 		String userId = user.getUserId().toString();
-		String accessToken = jwtUtils.generateToken(
-				userId,
+		String accessToken = jwtUtils.generateToken(userId,
 				authentication.getAuthorities().stream()
 						.findFirst()
 						.map(GrantedAuthority::getAuthority)
 						.orElseThrow(),
 				accessExpire);
 
-		String refreshToken = jwtUtils.generateToken(
-				userId,
+		String refreshToken = jwtUtils.generateToken(userId,
 				"ROLE_REFRESH_TOKEN",
 				refreshExpire);
 

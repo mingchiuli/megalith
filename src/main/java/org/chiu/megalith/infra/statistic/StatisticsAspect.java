@@ -34,6 +34,7 @@ public class StatisticsAspect {
     public void before() {
         String addr = InetAddress.getLocalHost().getHostAddress();
         redisTemplate.execute(LuaScriptUtils.statisticLua,
-                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()), addr);
+                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()), 
+                addr);
     }
 }

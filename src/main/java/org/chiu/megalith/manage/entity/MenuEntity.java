@@ -6,8 +6,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -23,10 +21,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @DynamicUpdate
 @Table(name ="m_menu")
-public class MenuEntity implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 18494689233749274L;
+public class MenuEntity {
 
     @Id
     @Column(name = "menu_id")

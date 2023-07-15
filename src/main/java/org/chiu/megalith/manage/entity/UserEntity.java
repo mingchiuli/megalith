@@ -6,8 +6,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -26,10 +24,7 @@ import java.util.Objects;
 @Table(name ="m_user",
         indexes = {@Index(columnList = "username"), @Index(columnList = "email"), @Index(columnList = "phone")},
         uniqueConstraints = {@UniqueConstraint(columnNames = {"username"}), @UniqueConstraint(columnNames = {"email"}), @UniqueConstraint(columnNames = {"phone"})})
-public class UserEntity implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 18428328402842084L;
+public class UserEntity {
 
     @Id
     @Column(name = "id")

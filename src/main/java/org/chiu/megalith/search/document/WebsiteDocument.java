@@ -10,7 +10,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 /**
@@ -22,7 +21,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(indexName = "websiteinfo")
-public class WebsiteDocument implements Serializable {
+public class WebsiteDocument {
 
     @Id
     @Field(type = FieldType.Text)

@@ -6,8 +6,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -26,10 +24,7 @@ import java.util.Objects;
 @Table(name ="m_blog",
         indexes = {@Index(columnList = "created"), @Index(columnList = "user_id"),
                 @Index(name = "IDX_ID_USERID", columnList = "id"), @Index(name = "IDX_ID_USERID", columnList = "user_id")})
-public class BlogEntity implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID =  5450815487641580632L;
+public class BlogEntity {
 
     @Id
     @Column(name = "id")
