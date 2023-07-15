@@ -1,10 +1,12 @@
 package com.chiu.megalith.security.service.impl;
 
+import com.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import com.chiu.megalith.infra.jwt.JwtUtils;
 import com.chiu.megalith.manage.entity.UserEntity;
 import com.chiu.megalith.manage.service.UserService;
 import com.chiu.megalith.security.service.TokenService;
 import com.chiu.megalith.security.vo.UserInfoVo;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -38,7 +40,7 @@ public class TokenServiceImpl implements TokenService {
                 authentication.getAuthorities().stream()
                         .findFirst()
                         .map(GrantedAuthority::getAuthority)
-                        .orElseThrow(),
+                        .orElseThrow(() -> new AuthenticationExceptionImpl("auth exception")),
                 expire);
         return Collections.singletonMap("accessToken", accessToken);
     }
