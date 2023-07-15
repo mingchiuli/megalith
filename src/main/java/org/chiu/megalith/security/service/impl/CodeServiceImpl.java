@@ -45,4 +45,11 @@ public class CodeServiceImpl implements CodeService {
         }
         return res;
     }
+
+
+    @Override
+    public boolean createSMSCode(String loginSMS) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createSMSCode'");
+    }
 }

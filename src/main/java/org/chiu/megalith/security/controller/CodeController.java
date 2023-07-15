@@ -26,4 +26,12 @@ public class CodeController {
                 Result.success() :
                 Result.fail("code exist");
     }
+
+    @GetMapping("/sms")
+    public Result<Void> createSmsCode(@RequestParam(value = "loginSMS") String loginSMS) {
+        boolean success = codeService.createSMSCode(loginSMS);
+        return success ?
+                Result.success() :
+                Result.fail("code exist");
+    }
 }
