@@ -1,0 +1,45 @@
+package org.chiu.megalith.coop.controller;
+
+import org.chiu.megalith.coop.vo.BlogAbstractVo;
+import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
+import org.chiu.megalith.infra.lang.Result;
+import org.chiu.megalith.infra.valid.CoopBlogId;
+import org.chiu.megalith.coop.service.CoopService;
+import org.chiu.megalith.coop.vo.InitCoopVo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+
+/**
+ * @author mingchiuli
+ * @create 2022-12-25 7:14 pm
+ */
+@RestController
+@RequiredArgsConstructor
+@Validated
+@RequestMapping("/coop")
+public class CoopController {
+    private final CoopService coopService;
+
+    @GetMapping("/init/{blogId}/{orderNumber}")
+    public Result<InitCoopVo> initCoopBlog(@PathVariable @CoopBlogId Long blogId,
+                                           @PathVariable Integer orderNumber) {
+        InitCoopVo initCoopVo = coopService.joinCoopBlog(blogId, orderNumber);
+        return Result.success(initCoopVo);
+    }
+
+    @GetMapping("/blogs/{currentPage}")
+    public Result<PageAdapter<BlogAbstractVo>> getCoopBlogs(@PathVariable Integer currentPage) {
+        PageAdapter<BlogAbstractVo> page = coopService.getCoopBlogs(currentPage);
+        return Result.success(page);
+    }
+
+    @PostMapping("/save/{blogId}")
+    public Result<Void> submitBlog(@PathVariable @CoopBlogId Long blogId,
+                                   @RequestBody @Validated BlogEntityVo blogEntityVo) {
+        coopService.submitBlog(blogId, blogEntityVo);
+        return Result.success();
+    }
+}
