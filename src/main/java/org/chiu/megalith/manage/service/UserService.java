@@ -29,4 +29,6 @@ public interface UserService {
     void deleteUsers(List<Long> ids);
 
     List<Long> findIdsByStatus(Integer status);
+
+    UserEntity findByEmail(String email);
 }

@@ -9,6 +9,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.chiu.megalith.infra.code.CodeFactory;
+import org.chiu.megalith.infra.exception.CodeException;
 
 
 /**
@@ -30,7 +31,7 @@ public class CodeServiceImpl implements CodeService {
 
 
     @Override
-    public boolean createEmailCode(String loginEmail) {
+    public void createEmailCode(String loginEmail) {
         String key = Const.EMAIL_KEY.getInfo() + loginEmail;
         boolean res = Boolean.FALSE.equals(redisTemplate.hasKey(key));
         if (res) {
@@ -42,13 +43,14 @@ public class CodeServiceImpl implements CodeService {
             simpMsg.setSubject("login code");
             simpMsg.setText(code);
             javaMailSender.send(simpMsg);
+            return;
         }
-        return res;
+        throw new CodeException("code existed");
     }
 
 
     @Override
-    public boolean createSMSCode(String loginSMS) {
+    public void createSMSCode(String loginSMS) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'createSMSCode'");
     }

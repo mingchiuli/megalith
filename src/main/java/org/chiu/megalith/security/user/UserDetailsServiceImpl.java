@@ -32,17 +32,22 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	private LoginUser loadUserByUsernameFromDb(String username) {
-		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username)
-				.orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 
+		UserEntity user;
 		String grantType;
 
 		if (username.contains("@")) {
 			grantType = Const.GRANT_TYPE_EMAIL.getInfo();
+            user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("email not exist"));
 		} else if (username.matches("\\d+")){
 			grantType = Const.GRANT_TYPE_PHONE.getInfo();
+            user = userRepository.findByPhone(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("phone not exist"));
 		} else {
 			grantType = Const.GRANT_TYPE_PASSWORD.getInfo();
+            user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("username not exist"));
 		}
 
 		//通过User去自动比较用户名和密码
