@@ -14,6 +14,7 @@ import org.chiu.megalith.blog.vo.BlogHotReadVo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,7 +45,7 @@ public class BlogController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         BlogExhibitVo blog;
 
-        if (Objects.nonNull(authentication)) {
+        if (Boolean.FALSE.equals(authentication instanceof AnonymousAuthenticationToken)) {
             String authority = authentication.getAuthorities().stream()
                     .findFirst()
                     .map(GrantedAuthority::getAuthority)
@@ -96,7 +97,7 @@ public class BlogController {
             return Result.success(0);
         }
 
-        if (Objects.isNull(authentication)) {
+        if (authentication instanceof AnonymousAuthenticationToken) {
             return Result.success(1);
         }
 
