@@ -25,7 +25,7 @@ public sealed abstract class ProviderSupport extends DaoAuthenticationProvider p
     protected UserDetailsService userDetailsService;
 
     protected ProviderSupport(String grantType,
-                           UserDetailsService userDetailsService) {
+                              UserDetailsService userDetailsService) {
         setUserDetailsService(userDetailsService);
         setHideUserNotFoundExceptions(false);
         this.grantType = grantType;
