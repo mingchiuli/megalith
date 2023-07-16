@@ -139,6 +139,14 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public Integer checkStatusByIdAndUserId(Long blogId, Long userId) {
+        BlogEntity blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new NotFoundException("blog not exist"));
+        Long id = blog.getUserId();   
+        return Objects.equals(id, blogId) ? 0 : 1;  
+    }
+
+    @Override
     @Cache(prefix = Const.BLOG_STATUS)
     public Integer findStatusById(Long blogId) {
         return blogRepository.findStatusById(blogId);

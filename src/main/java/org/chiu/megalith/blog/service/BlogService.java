@@ -55,4 +55,6 @@ public interface BlogService {
     Long findUserIdById(Long id);
 
     void delete(BlogEntity blogEntity);
+
+    Integer checkStatusByIdAndUserId(Long blogId, Long userId);
 }

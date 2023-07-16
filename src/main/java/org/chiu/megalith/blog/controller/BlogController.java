@@ -3,6 +3,7 @@ package org.chiu.megalith.blog.controller;
 import org.chiu.megalith.blog.vo.BlogDescriptionVo;
 import org.chiu.megalith.blog.vo.VisitStatisticsVo;
 import org.chiu.megalith.infra.bloom.handler.impl.*;
+import org.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import org.chiu.megalith.infra.bloom.Bloom;
 import org.chiu.megalith.blog.service.BlogService;
@@ -70,24 +71,46 @@ public class BlogController {
         return Result.success(page);
     }
 
-    @GetMapping("/locked/{blogId}")
+    @GetMapping("/secret/{blogId}")
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
                                                HttpServletRequest request) {
 
-        String token = request.getHeader("token");
+        String token = request.getHeader("Read-Token");
         boolean valid = blogService.checkToken(blogId, token);
         if (valid) {
             BlogExhibitVo vo = blogService.findById(blogId, true);
             blogService.setReadCount(blogId);
             return Result.success(vo);
         }
-        return Result.fail("authorization exception");
+        throw new AuthenticationExceptionImpl("authorization exception");
     }
 
     @GetMapping("/status/{blogId}")
     @Bloom(handler = DetailHandler.class)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer status = blogService.findStatusById(blogId);
+
+        if (status == 0) {
+            return Result.success(0);
+        }
+
+        if (Objects.isNull(authentication)) {
+            return Result.success(1);
+        }
+
+        String authority = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow();
+
+        if (("ROLE_" + highestRole).equals(authority)) {
+            return Result.success(0);
+        }
+
+        String userId = authentication.getName();
+        status = blogService.checkStatusByIdAndUserId(blogId, Long.valueOf(userId));
         return Result.success(status);
     }
 

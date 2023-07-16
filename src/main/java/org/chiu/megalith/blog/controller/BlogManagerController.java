@@ -56,7 +56,7 @@ public class BlogManagerController {
 
     @GetMapping("/echo/{id}")
     public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
-        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
         BlogEntity blog = blogService.findByIdAndUserId(id, userId);
         return Result.success(blog);
     }
