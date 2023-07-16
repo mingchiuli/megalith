@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author mingchiuli
  * @create 2023-01-31 2:09 am
  */
-public sealed abstract class ProviderSupport extends DaoAuthenticationProvider permits
+public abstract sealed class ProviderSupport extends DaoAuthenticationProvider permits
         EmailAuthenticationProvider,
         PasswordAuthenticationProvider,
         SMSAuthenticationProvider {
