@@ -97,7 +97,7 @@ public class BlogController {
             return Result.success(0);
         }
 
-        if (authentication instanceof AnonymousAuthenticationToken) {
+        if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
             return Result.success(1);
         }
 
