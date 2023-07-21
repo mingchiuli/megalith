@@ -26,29 +26,28 @@ public class CoopMessageController {
 
     @MessageMapping("/chat")
     public Result<Void> chat(@RequestBody ChatUserDto msg) {
-        coopMessageService.chatUser(msg);
-        return Result.success();
+        return Result.success(() -> coopMessageService.chatUser(msg));
     }
 
     @MessageMapping("/sync")
-    public void syncBlog(@RequestBody SyncBlogDto msg) {
-        coopMessageService.syncBlog(msg);
+    public Result<Void> syncBlog(@RequestBody SyncBlogDto msg) {
+        return Result.success(() -> coopMessageService.syncBlog(msg));
     }
 
     @MessageMapping("/save")
-    public void submitBlog(@RequestBody SubmitBlogDto msg) {
-        coopMessageService.submitBlog(msg);
+    public Result<Void> submitBlog(@RequestBody SubmitBlogDto msg) {
+        return Result.success(() -> coopMessageService.submitBlog(msg));
     }
 
     @MessageMapping("/quit")
-    public void quitBlog(@RequestBody QuitBlogDto msg) {
-        coopMessageService.quitBlog(msg);
+    public Result<Void> quitBlog(@RequestBody QuitBlogDto msg) {
+        return Result.success(() -> coopMessageService.quitBlog(msg));
     }
 
     @MessageMapping("/session/{userId}/{blogId}")
-    public void setUserToRedisSession(@DestinationVariable Long userId,
+    public Result<Void> setUserToRedisSession(@DestinationVariable Long userId,
                                       @DestinationVariable Long blogId) {
-        coopMessageService.setUserToRedisSession(userId, blogId);
+        return Result.success(() -> coopMessageService.setUserToRedisSession(userId, blogId));
     }
 
 }

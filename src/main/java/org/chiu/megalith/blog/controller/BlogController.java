@@ -22,7 +22,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author mingchiuli
@@ -68,8 +67,7 @@ public class BlogController {
     @Bloom(handler = ListPageHandler.class)
     public Result<PageAdapter<BlogDescriptionVo>> getPage(@PathVariable(name = "currentPage") Integer currentPage,
                                                           @RequestParam(required = false, defaultValue = "-2147483648") Integer year) {
-        PageAdapter<BlogDescriptionVo> page = blogService.findPage(currentPage, year);
-        return Result.success(page);
+        return Result.success(() -> blogService.findPage(currentPage, year));
     }
 
     @GetMapping("/secret/{blogId}")
@@ -79,9 +77,8 @@ public class BlogController {
         String token = request.getHeader("Read-Token");
         boolean valid = blogService.checkToken(blogId, token);
         if (valid) {
-            BlogExhibitVo vo = blogService.findById(blogId, true);
             blogService.setReadCount(blogId);
-            return Result.success(vo);
+            return Result.success(() -> blogService.findById(blogId, true));
         }
         throw new AuthenticationExceptionImpl("authorization exception");
     }
@@ -111,20 +108,17 @@ public class BlogController {
         }
 
         String userId = authentication.getName();
-        status = blogService.checkStatusByIdAndUserId(blogId, Long.valueOf(userId));
-        return Result.success(status);
+        return Result.success(() -> blogService.checkStatusByIdAndUserId(blogId, Long.valueOf(userId)));
     }
 
     @GetMapping("/years")
     public Result<List<Integer>> searchYears() {
-        List<Integer> years = blogService.searchYears();
-        return Result.success(years);
+        return Result.success(blogService::searchYears);
     }
 
     @GetMapping("/stat")
     public Result<VisitStatisticsVo> getVisitStatistics() {
-        VisitStatisticsVo vo = blogService.getVisitStatistics();
-        return Result.success(vo);
+        return Result.success(blogService::getVisitStatistics);
     }
 
     @GetMapping("/scores")

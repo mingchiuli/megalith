@@ -1,5 +1,7 @@
 package org.chiu.megalith.infra.lang;
 
+import java.util.function.Supplier;
+
 import lombok.Data;
 
 /**
@@ -37,5 +39,19 @@ public class Result<T> {
 
     public static <T> Result<T> fail(String msg) {
         return load(msg, null);
+    }
+
+    public static Result<Void> success(Runnable runnable) {
+        runnable.run();
+        return success();
+    }
+
+    public static <T> Result<T> success(Supplier<T> supplier) {
+        return Result.success(supplier.get());
+    }
+
+    public static <T> Result<T> fail(String msg, Runnable runnable) {
+        runnable.run();
+        return fail(msg);
     }
 }

@@ -56,9 +56,8 @@ public class BlogManagerController {
 
     @GetMapping("/echo/{id}")
     public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
-        long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
-        BlogEntity blog = blogService.findByIdAndUserId(id, userId);
-        return Result.success(blog);
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        return Result.success(() -> blogService.findByIdAndUserId(id, userId));
     }
 
     @PostMapping("/save")
@@ -153,16 +152,14 @@ public class BlogManagerController {
                 .map(GrantedAuthority::getAuthority)
                 .orElseThrow();
 
-        PageAdapter<BlogEntityDto> page = blogService.findAllABlogs(currentPage, size, userId, authority);
-        return Result.success(page);
+        return Result.success(() -> blogService.findAllABlogs(currentPage, size, userId, authority));
     }
 
     @GetMapping("/deleted")
     public Result<PageAdapter<BlogEntity>> getDeletedBlogs(@RequestParam Integer currentPage,
                                                            @RequestParam Integer size) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
-        PageAdapter<BlogEntity> deletedBlogs = blogService.findDeletedBlogs(currentPage, size, userId);
-        return Result.success(deletedBlogs);
+        return Result.success(() -> blogService.findDeletedBlogs(currentPage, size, userId));
     }
 
     @GetMapping("/recover/{id}/{idx}")

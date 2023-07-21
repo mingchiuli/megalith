@@ -26,20 +26,17 @@ public class CoopController {
     @GetMapping("/init/{blogId}/{orderNumber}")
     public Result<InitCoopVo> initCoopBlog(@PathVariable @CoopBlogId Long blogId,
                                            @PathVariable Integer orderNumber) {
-        InitCoopVo initCoopVo = coopService.joinCoopBlog(blogId, orderNumber);
-        return Result.success(initCoopVo);
+        return Result.success(() -> coopService.joinCoopBlog(blogId, orderNumber));
     }
 
     @GetMapping("/blogs/{currentPage}")
     public Result<PageAdapter<BlogAbstractVo>> getCoopBlogs(@PathVariable Integer currentPage) {
-        PageAdapter<BlogAbstractVo> page = coopService.getCoopBlogs(currentPage);
-        return Result.success(page);
+        return Result.success(() -> coopService.getCoopBlogs(currentPage));
     }
 
     @PostMapping("/save/{blogId}")
     public Result<Void> submitBlog(@PathVariable @CoopBlogId Long blogId,
                                    @RequestBody @Validated BlogEntityVo blogEntityVo) {
-        coopService.submitBlog(blogId, blogEntityVo);
-        return Result.success();
+        return Result.success(() -> coopService.submitBlog(blogId, blogEntityVo));
     }
 }

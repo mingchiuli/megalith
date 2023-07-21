@@ -25,15 +25,14 @@ public class CodeController {
 
     @GetMapping("/email")
     public Result<Void> createEmailCode(@RequestParam(value = "loginEmail") String loginEmail) {
-
-        userService.findByEmail(loginEmail);
-        codeService.createEmailCode(loginEmail);
-        return Result.success();
+        return Result.success(() -> {
+            userService.findByEmail(loginEmail);
+            codeService.createEmailCode(loginEmail);
+        });
     }
 
     @GetMapping("/sms")
     public Result<Void> createSmsCode(@RequestParam(value = "loginSMS") String loginSMS) {
-        codeService.createSMSCode(loginSMS);
-        return Result.success();
+        return Result.success(() -> codeService.createSMSCode(loginSMS));
     }
 }

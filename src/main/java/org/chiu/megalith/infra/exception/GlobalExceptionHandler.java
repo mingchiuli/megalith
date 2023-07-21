@@ -4,7 +4,6 @@ import org.chiu.megalith.infra.lang.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,41 +22,35 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = AuthenticationExceptionImpl.class)
     public Result<Object> handler(AuthenticationExceptionImpl e) {
-        log.error("authentication exception:{}", e);
-        return Result.fail(e.getMessage());
+        return Result.fail(e.getMessage(), () -> log.error("authentication exception:{}", e));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result<String> handler(MethodArgumentNotValidException e) {
-        log.error("entity validate exception------------{}", e);
-        BindingResult bindingResult = e.getBindingResult();
-        return bindingResult.getAllErrors().stream()
+        return e.getBindingResult().getAllErrors().stream()
                 .findFirst()
                 .<Result<String>>map(error ->
-                        Result.fail(error.getDefaultMessage()))
+                        Result.fail(error.getDefaultMessage(), () -> log.error("entity validate exception------------{}", e)))
                 .orElseGet(Result::fail);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = IllegalArgumentException.class)
     public Result<String> handler(IllegalArgumentException e) {
-        log.error("Assert exception------------{}", e);
-        return Result.fail(e.getMessage());
+        return Result.fail(e.getMessage(), () -> log.error("Assert exception------------{}", e));
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AccessDeniedException.class)
     public Result<String> handler(AccessDeniedException e){
-        log.error("authorization exception------------{}",e);
-        return Result.fail(e.getMessage());
+        return Result.fail(e.getMessage(),  () -> log.error("authorization exception------------{}",e));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = RuntimeException.class)
     public Result<String> handler(RuntimeException e) {
-        log.error("runtime exception------------{}", e);
-        return Result.fail(e.getMessage());
+        return Result.fail(e.getMessage(), () -> log.error("runtime exception------------{}", e));
     }
 
 }

@@ -26,38 +26,33 @@ public class RoleController {
     @GetMapping("/info/{id}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<RoleEntity> info(@PathVariable("id") Long id) {
-        RoleEntity role = roleService.info(id);
-        return Result.success(role);
+        return Result.success(() -> roleService.info(id));
     }
 
     @GetMapping("/page")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<PageAdapter<RoleEntity>> getPage(@RequestParam(defaultValue = "1") Integer currentPage,
                                                     @RequestParam(defaultValue = "5") Integer pageSize) {
-        PageAdapter<RoleEntity> pageData = roleService.getPage(currentPage, pageSize);
-        return Result.success(pageData);
+        return Result.success(() -> roleService.getPage(currentPage, pageSize));
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> saveOrUpdate(@Validated @RequestBody RoleEntityVo role) {
-        roleService.saveOrUpdate(role);
-        return Result.success();
+        return Result.success(() -> roleService.saveOrUpdate(role));
     }
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> delete(@RequestBody List<Long> ids) {
-        roleService.delete(ids);
-        return Result.success();
+        return Result.success(() -> roleService.delete(ids));
     }
 
     @PostMapping("/perm/{roleId}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<List<Long>> info(@PathVariable("roleId") Long roleId,
                                    @RequestBody List<Long> menuIds) {
-        menuIds = roleService.perm(roleId, menuIds);
-        return Result.success(menuIds);
+        return Result.success(() -> roleService.perm(roleId, menuIds));
     }
 
 

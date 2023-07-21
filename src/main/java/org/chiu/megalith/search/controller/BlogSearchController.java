@@ -27,16 +27,14 @@ public class BlogSearchController {
                                                                @RequestParam(value = "allInfo") Boolean allInfo,
                                                                @RequestParam(value = "year", required = false) String year,
                                                                @RequestParam(value = "keywords") @NotBlank String keywords) {
-        PageAdapter<BlogDocumentVo> page = blogSearchService.selectBlogsByES(currentPage, keywords, allInfo, year);
-        return Result.success(page);
+        return Result.success(() -> blogSearchService.selectBlogsByES(currentPage, keywords, allInfo, year));
     }
 
     @GetMapping("/sys/blogs")
     public Result<PageAdapter<BlogEntityDto>> searchAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                              @RequestParam(defaultValue = "5") Integer size,
                                                              @RequestParam(value = "keyword")  @NotBlank String keywords) {
-        PageAdapter<BlogEntityDto> page = blogSearchService.searchAllBlogs(keywords, currentPage, size);
-        return Result.success(page);
+        return Result.success(() -> blogSearchService.searchAllBlogs(keywords, currentPage, size));
     }
 
 }

@@ -22,31 +22,27 @@ public class UserController {
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> save(@Validated @RequestBody UserEntityVo userEntityVo) {
-        userService.saveOrUpdate(userEntityVo);
-        return Result.success();
+        return Result.success(() -> userService.saveOrUpdate(userEntityVo));
     }
 
     @GetMapping("/status/{id}/{status}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> setUserStatus(@PathVariable(value = "id") Long userId,
                                          @PathVariable(value = "status") Integer status) {
-        userService.changeUserStatusById(userId, status);
-        return Result.success();
+        return Result.success(() -> userService.changeUserStatusById(userId, status));
     }
 
     @GetMapping("/page/{currentPage}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<PageAdapter<UserEntity>> page(@PathVariable(value = "currentPage") Integer currentPage,
                                                 @RequestParam(value = "size", defaultValue = "5") Integer size) {
-        PageAdapter<UserEntity> page = userService.listPage(currentPage, size);
-        return Result.success(page);
+        return Result.success(() -> userService.listPage(currentPage, size));
     }
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> page(@RequestBody List<Long> ids) {
-        userService.deleteUsers(ids);
-        return Result.success();
+        return Result.success(() -> userService.deleteUsers(ids));
     }
 
     @GetMapping("/info/{id}")
