@@ -69,7 +69,9 @@ public enum Const {
 
     ROLE_TOKEN_TOOL("ROLE_token_tool"),
 
-    HOT_READ("hot_read");
+    HOT_READ("hot_read"),
+    
+    BLOG_NOT_EXIST("blog not exist");
 
     private final String info;
 
