@@ -10,4 +10,6 @@ public class SyncContentDto extends BaseDto {
     private String content;
 
     private Long offset;
+
+    private OperateType operateType;
 }
