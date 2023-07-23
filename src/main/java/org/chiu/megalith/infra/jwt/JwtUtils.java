@@ -45,8 +45,7 @@ public class JwtUtils {
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-        );
-
+                );
     }
 
     public boolean isTokenExpired(Date expiration) {

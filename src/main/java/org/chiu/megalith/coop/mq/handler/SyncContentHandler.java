@@ -1,20 +1,20 @@
 package org.chiu.megalith.coop.mq.handler;
 
 import org.chiu.megalith.coop.dto.BaseDto;
-import org.chiu.megalith.coop.dto.impl.SyncBlogDto;
-import org.chiu.megalith.coop.mq.BaseCoopHandler;
+import org.chiu.megalith.coop.dto.impl.SyncContentDto;
+import org.chiu.megalith.coop.mq.BaseHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SyncBlogHandler extends BaseCoopHandler {
+public class SyncContentHandler extends BaseHandler {
 
-    public SyncBlogHandler(SimpMessagingTemplate simpMessagingTemplate) {
+    public SyncContentHandler(SimpMessagingTemplate simpMessagingTemplate) {
         super(simpMessagingTemplate, "/content");
     }
 
     @Override
     public boolean supports(BaseDto msg) {
-        return msg instanceof SyncBlogDto;
+        return msg instanceof SyncContentDto;
     }
 }

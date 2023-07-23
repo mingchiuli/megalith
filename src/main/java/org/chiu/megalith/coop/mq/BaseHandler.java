@@ -3,14 +3,14 @@ package org.chiu.megalith.coop.mq;
 import org.chiu.megalith.coop.dto.BaseDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-public abstract class BaseCoopHandler {
+public abstract class BaseHandler {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     protected final String uri;
 
-    protected BaseCoopHandler(SimpMessagingTemplate simpMessagingTemplate,
-                           String uri) {
+    protected BaseHandler(SimpMessagingTemplate simpMessagingTemplate,
+                              String uri) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.uri = uri;
     }

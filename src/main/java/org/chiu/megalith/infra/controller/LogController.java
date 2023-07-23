@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
+import jakarta.annotation.PostConstruct;
 
 /**
  * @author mingchiuli
@@ -20,29 +21,31 @@ public class LogController {
 
     private final RabbitListenerEndpointRegistry registry;
 
+    private MessageListenerContainer logContainer;
+
+    @PostConstruct
+    private void setLogContainer() {
+        logContainer = registry.getListenerContainer("log");
+    }
 
     @MessageMapping("/start")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> start() {
-        MessageListenerContainer logContainer = registry.getListenerContainer("log");
-
-        if (!logContainer.isRunning()) {
-            logContainer.start();
-        }
-
-        return Result.success();
+        return Result.success(() -> {
+            if (Boolean.FALSE.equals(logContainer.isRunning())) {
+                logContainer.start();
+            }
+        });
     }
 
     @MessageMapping("/stop")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> stop() {
-        MessageListenerContainer logContainer = registry.getListenerContainer("log");
-
-        if (logContainer.isRunning()) {
-            logContainer.stop();
-        }
-
-        return Result.success();
+        return Result.success(() -> {
+            if (logContainer.isRunning()) {
+                logContainer.stop();
+            }
+        });
     }
 
 }

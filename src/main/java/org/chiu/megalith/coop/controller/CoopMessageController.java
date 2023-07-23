@@ -1,10 +1,10 @@
 package org.chiu.megalith.coop.controller;
 
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.coop.dto.impl.ChatUserDto;
+import org.chiu.megalith.coop.dto.impl.UserChatDto;
 import org.chiu.megalith.coop.dto.impl.SubmitBlogDto;
 import org.chiu.megalith.coop.dto.impl.QuitBlogDto;
-import org.chiu.megalith.coop.dto.impl.SyncBlogDto;
+import org.chiu.megalith.coop.dto.impl.SyncContentDto;
 import org.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -25,12 +25,12 @@ public class CoopMessageController {
     private final CoopMessageService coopMessageService;
 
     @MessageMapping("/chat")
-    public Result<Void> chat(@RequestBody ChatUserDto msg) {
+    public Result<Void> chat(@RequestBody UserChatDto msg) {
         return Result.success(() -> coopMessageService.chatUser(msg));
     }
 
     @MessageMapping("/sync")
-    public Result<Void> syncBlog(@RequestBody SyncBlogDto msg) {
+    public Result<Void> syncBlog(@RequestBody SyncContentDto msg) {
         return Result.success(() -> coopMessageService.syncBlog(msg));
     }
 

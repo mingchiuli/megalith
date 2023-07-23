@@ -10,11 +10,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CoopMessageListener {
 
-    private final List<BaseCoopHandler> cacheHandlers;
+    private final List<BaseHandler> cacheHandlers;
 
     //public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
     public void handleMessage(BaseDto msg) {
-        for (BaseCoopHandler handler : cacheHandlers) {
+        for (BaseHandler handler : cacheHandlers) {
             if (handler.supports(msg)) {
                 handler.handle(msg);
                 break;
