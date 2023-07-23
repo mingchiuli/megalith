@@ -9,5 +9,5 @@ public class SyncContentDto extends BaseDto {
 
     private String content;
 
-    private String offset;
+    private Long offset;
 }
