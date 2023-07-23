@@ -46,7 +46,7 @@ public class CoopMessageController {
 
     @MessageMapping("/session/{userId}/{blogId}")
     public Result<Void> setUserToRedisSession(@DestinationVariable Long userId,
-                                      @DestinationVariable Long blogId) {
+                                              @DestinationVariable Long blogId) {
         return Result.success(() -> coopMessageService.setUserToRedisSession(userId, blogId));
     }
 
