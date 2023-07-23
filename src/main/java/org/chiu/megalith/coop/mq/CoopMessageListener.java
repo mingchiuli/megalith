@@ -12,7 +12,7 @@ public class CoopMessageListener {
 
     private final List<BaseCoopHandler> cacheHandlers;
 
-    //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
+    //public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
     public void handleMessage(BaseDto msg) {
         for (BaseCoopHandler handler : cacheHandlers) {
             if (handler.supports(msg)) {

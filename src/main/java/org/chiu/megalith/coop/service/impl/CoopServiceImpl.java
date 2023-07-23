@@ -63,11 +63,10 @@ public class CoopServiceImpl implements CoopService {
                 .nickname(userEntity.getNickname())
                 .build();
 
-        var dto = JoinBlogDto.builder()
-                .blogId(blogId)
-                .fromId(userId)
-                .user(userEntityVo)
-                .build();
+        var dto = new JoinBlogDto();
+        dto.setBlogId(blogId);
+        dto.setFromId(userId);
+        dto.setUser(userEntityVo);
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
         List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
@@ -95,10 +94,9 @@ public class CoopServiceImpl implements CoopService {
 
         blogService.saveOrUpdate(blogEntityVo, userId);
 
-        var dto = SubmitBlogDto.builder()
-                .blogId(blogId)
-                .fromId(userId)
-                .build();
+        var dto = new SubmitBlogDto();
+        dto.setBlogId(blogId);
+        dto.setFromId(userId);
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
 
