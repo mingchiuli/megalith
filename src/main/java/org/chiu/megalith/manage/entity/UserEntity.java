@@ -75,9 +75,7 @@ public class UserEntity {
         return getClass().hashCode();
     }
 
-    public UserEntity(Long id,
-                      String nickname,
-                      String avatar) {
+    public UserEntity(Long id, String nickname, String avatar) {
         this.id = id;
         this.nickname = nickname;
         this.avatar = avatar;

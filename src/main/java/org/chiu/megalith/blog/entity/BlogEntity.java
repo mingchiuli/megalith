@@ -69,11 +69,7 @@ public class BlogEntity {
         return getClass().hashCode();
     }
 
-    public BlogEntity(Long id,
-                      String title,
-                      String description,
-                      LocalDateTime created,
-                      String link) {
+    public BlogEntity(Long id, String title, String description, LocalDateTime created, String link) {
         this.id = id;
         this.title = title;
         this.description = description;
