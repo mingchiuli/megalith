@@ -94,8 +94,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Cache(prefix = Const.HOT_BLOGS)
-    public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage,
-                                                   Integer year) {
+    public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year) {
         var pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
@@ -122,8 +121,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Boolean checkToken(Long blogId,
-                              String token) {
+    public Boolean checkToken(Long blogId, String token) {
         token = token.trim();
         String password = redisTemplate.opsForValue().get(Const.READ_TOKEN.getInfo() + blogId);
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
@@ -170,8 +168,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity saveOrUpdate(BlogEntityVo blog, 
-                                   Long userId) {
+    public BlogEntity saveOrUpdate(BlogEntityVo blog, Long userId) {
         Long blogId = blog.getId();
 
         BlogEntity blogEntity;
@@ -194,10 +191,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage,
-                                                    Integer size,
-                                                    Long userId,
-                                                    String authority) {
+    public PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page = Objects.equals(authority, highestRole) ?
@@ -234,9 +228,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage,
-                                                    Integer size,
-                                                    Long userId) {
+    public PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size, Long userId) {
 
         List<BlogEntity> deletedBlogs = redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1).stream()
                 .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
@@ -274,9 +266,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity recoverDeletedBlog(Long id,
-                                         Integer idx,
-                                         Long userId) {
+    public BlogEntity recoverDeletedBlog(Long id, Integer idx, Long userId) {
 
         String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
 
@@ -288,8 +278,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Integer changeBlogStatus(Long id,
-                                    Integer status) {
+    public Integer changeBlogStatus(Long id, Integer status) {
         int year = blogRepository.findById(id)
                 .orElseThrow()
                 .getCreated()
@@ -328,8 +317,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity findByIdAndUserId(Long id, 
-                                        Long userId) {
+    public BlogEntity findByIdAndUserId(Long id, Long userId) {
         return blogRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new NotFoundException("must edit your blog"));
     }

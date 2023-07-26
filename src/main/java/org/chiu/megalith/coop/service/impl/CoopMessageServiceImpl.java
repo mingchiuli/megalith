@@ -56,8 +56,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void setUserToRedisSession(Long userId,
-                                      Long blogId) {
+    public void setUserToRedisSession(Long userId, Long blogId) {
         UserEntity userEntity = userService.findById(userId);
         var userEntityVo = UserEntityVo.builder()
                 .id(userId)

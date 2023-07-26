@@ -71,8 +71,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     }
 
     @Override
-    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage,
-                                                 String keyword) {
+    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean auth = false;

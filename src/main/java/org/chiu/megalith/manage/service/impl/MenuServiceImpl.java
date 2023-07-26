@@ -118,8 +118,7 @@ public class MenuServiceImpl implements MenuService {
                 .toList();
     }
 
-    private List<MenuEntityVo> getChildren(MenuEntityVo root,
-                                           List<MenuEntityVo> all) {
+    private List<MenuEntityVo> getChildren(MenuEntityVo root, List<MenuEntityVo> all) {
         return all.stream()
                 .filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId()))
                 .peek(menu -> menu.setChildren(getChildren(menu, all)))
