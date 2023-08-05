@@ -6,8 +6,6 @@ import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
