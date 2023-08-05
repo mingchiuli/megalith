@@ -42,16 +42,14 @@ public abstract sealed class ProviderSupport extends DaoAuthenticationProvider p
         }
     }
 
-    protected abstract void authProcess(LoginUser user,
-                                        UsernamePasswordAuthenticationToken authentication);
+    protected abstract void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
 
     private boolean lastProvider() {
         return LastProvider.lastProvider.getClass().equals(this.getClass());
     }
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails,
-                                                  UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         LoginUser user = (LoginUser) userDetails;
         if (Objects.equals(grantType, user.getGrantType())) {
             try {

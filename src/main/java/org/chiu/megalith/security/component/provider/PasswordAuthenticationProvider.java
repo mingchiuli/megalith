@@ -46,8 +46,7 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
     }
 
     @Override
-    public void authProcess(LoginUser user,
-                            UsernamePasswordAuthenticationToken authentication) {
+    public void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication) {
 
         Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
             String presentedPassword = credentials.toString();

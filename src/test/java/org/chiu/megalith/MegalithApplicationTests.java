@@ -10,7 +10,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 @SpringBootTest
 class MegalithApplicationTests {
@@ -41,28 +40,4 @@ class MegalithApplicationTests {
 
 		userRepository.save(userEntity);
 	}
-
-	@Test
-	void testRTNull() {
-		Map<Object, Object> aaa = redisTemplate.opsForHash().entries("aaa");
-		Set<String> keys = redisTemplate.keys("aa*");
-		HashSet<String> strings = new HashSet<>();
-		strings.add("aaa");
-		strings.add("bbb");
-		List<String> strings1 = redisTemplate.opsForValue().multiGet(strings);
-
-		ArrayList<Object> objects = new ArrayList<>();
-		objects.add(null);
-		objects.add(null);
-
-
-		List<Object> o = objects.stream().filter(Objects::nonNull).toList();
-		System.out.println(aaa);
-
-
-		List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range("redisKey", 0, -1);
-		System.out.println(loginFailureTimeStampRecords);
-
-	}
-
 }

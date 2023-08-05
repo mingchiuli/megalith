@@ -44,9 +44,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request,
-										HttpServletResponse response,
-										Authentication authentication) throws IOException {
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
 		String username = authentication.getName();
@@ -72,8 +70,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 				objectMapper.writeValueAsString(
 						Result.success(
 								LoginSuccessVo.builder()
-										.accessToken(accessToken)
-										.refreshToken(refreshToken)
+										.accessToken("Bearer " + accessToken)
+										.refreshToken("Bearer " + refreshToken)
 										.build())
 						)
 						.getBytes(StandardCharsets.UTF_8)

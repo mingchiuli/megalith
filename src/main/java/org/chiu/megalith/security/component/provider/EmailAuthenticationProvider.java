@@ -26,15 +26,13 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
     @Value("${blog.email-try-count}")
     private int maxTryNum;
 
-    public EmailAuthenticationProvider(StringRedisTemplate redisTemplate,
-                                       UserDetailsService userDetailsService) {
+    public EmailAuthenticationProvider(StringRedisTemplate redisTemplate, UserDetailsService userDetailsService) {
         super(Const.GRANT_TYPE_EMAIL.getInfo(), userDetailsService);
         this.redisTemplate = redisTemplate;
     }
 
     @Override
-    public void authProcess(LoginUser user,
-                            UsernamePasswordAuthenticationToken authentication) {
+    public void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication) {
 
         //username is login email
         String prefix = Const.EMAIL_KEY.getInfo() + user.getUsername();

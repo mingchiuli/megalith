@@ -41,7 +41,7 @@ public class TokenServiceImpl implements TokenService {
                         .map(GrantedAuthority::getAuthority)
                         .orElseThrow(() -> new AuthenticationExceptionImpl("auth exception")),
                 expire);
-        return Collections.singletonMap("accessToken", accessToken);
+        return Collections.singletonMap("accessToken", "Bearer " + accessToken);
     }
 
     @Override

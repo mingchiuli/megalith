@@ -28,8 +28,7 @@ public final class SMSAuthenticationProvider extends ProviderSupport {
     private int maxTryNum;
 
 
-    public SMSAuthenticationProvider(UserDetailsService userDetailsService,
-                                       StringRedisTemplate redisTemplate) {
+    public SMSAuthenticationProvider(UserDetailsService userDetailsService, StringRedisTemplate redisTemplate) {
         super(Const.GRANT_TYPE_PHONE.getInfo(), userDetailsService);
         this.redisTemplate = redisTemplate;
     }
