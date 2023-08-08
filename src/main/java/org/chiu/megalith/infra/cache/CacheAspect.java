@@ -2,8 +2,6 @@ package org.chiu.megalith.infra.cache;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,24 +10,20 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.redisson.api.*;
-import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.time.Duration;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import com.github.benmanes.caffeine.cache.Cache;
 
 /**
  * 统一缓存处理
+ * 
  * @author mingchiuli
- * order: 多个切面执行顺序，越小越先执行
+ *         order: 多个切面执行顺序，越小越先执行
  * @create 2021-12-01 7:48 AM
  */
 @Aspect
@@ -37,8 +31,6 @@ import java.util.concurrent.TimeoutException;
 @Order(2)
 @RequiredArgsConstructor
 public class CacheAspect {
-
-    private static final String LOCK = "blogLock:";
 
     private final StringRedisTemplate redisTemplate;
 
@@ -48,25 +40,18 @@ public class CacheAspect {
 
     private final RedissonClient redisson;
 
-    private final LoadingCache<String, RLock> lockCache = Caffeine.newBuilder()
-            .maximumSize(500)
-            .expireAfterWrite(Duration.ofMinutes(60))
-            .build(this::createRlock);
-
-    private RLock createRlock(String key) {
-        return redisson.getLock(key);
-    }
-
+    private final Cache<String, Object> localCache;
 
     @Pointcut("@annotation(org.chiu.megalith.infra.cache.Cache)")
-    public void pt() {}
+    public void pt() {
+    }
 
     @SneakyThrows
     @Around("pt()")
     public Object around(ProceedingJoinPoint pjp) {
         Signature signature = pjp.getSignature();
-        //类名
-        //调用的方法名
+        // 类名
+        // 调用的方法名
         String methodName = signature.getName();
         Class<?> declaringType = signature.getDeclaringType();
         var parameterTypes = new Class[pjp.getArgs().length];
@@ -74,56 +59,22 @@ public class CacheAspect {
         for (int i = 0; i < args.length; i++) {
             parameterTypes[i] = args[i].getClass();
         }
-        //参数
+        // 参数
         Method method = declaringType.getMethod(methodName, parameterTypes);
 
         Type genericReturnType = method.getGenericReturnType();
         JavaType javaType;
+        
         if (genericReturnType instanceof ParameterizedType parameterizedType) {
             javaType = getTypesReference(parameterizedType);
         } else {
             javaType = objectMapper.getTypeFactory().constructType(genericReturnType);
         }
 
-        String redisKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
+        String cacheKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
+        MultiCacheHandler multiCacheHandler = new MultiCacheHandler(redisTemplate, objectMapper, redisson, pjp, javaType, method);
 
-        String o;
-        //防止redis挂了以后db也访问不了
-        try {
-            o = redisTemplate.opsForValue().get(redisKey);
-        } catch (NestedRuntimeException e) {
-            return pjp.proceed();
-        }
-
-        if (StringUtils.hasLength(o)) {
-            return objectMapper.readValue(o, javaType);
-        }
-
-        String lock = LOCK + redisKey;
-        //已经线程安全
-        RLock rLock = lockCache.get(lock);
-
-        if (!rLock.tryLock(5000, TimeUnit.MILLISECONDS)) {
-            throw new TimeoutException("request timeout");
-        }
-
-        try {
-            //双重检查
-            String r = redisTemplate.opsForValue().get(redisKey);
-
-            if (StringUtils.hasLength(r)) {
-                return objectMapper.readValue(r, javaType);
-            }
-            //执行目标方法
-            Object proceed = pjp.proceed();
-
-            Cache annotation = method.getAnnotation(Cache.class);
-            int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
-            redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(proceed), expire, TimeUnit.MINUTES);
-            return proceed;
-        } finally {
-            rLock.unlock();
-        }
+        return localCache.get(cacheKey, multiCacheHandler::apply);
     }
 
     private JavaType getTypesReference(ParameterizedType parameterizedType) {

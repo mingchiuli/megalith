@@ -61,7 +61,7 @@ public class BlogServiceImpl implements BlogService {
     public BlogExhibitVo findById(Long id, Boolean visible) {
         BlogEntity blogEntity = Boolean.TRUE.equals(visible) ?
                 blogRepository.findByIdAndStatus(id, 0)
-                        .orElseThrow(() -> new NotFoundException("blog not found")) :
+                        .orElseThrow(() -> new NotFoundException(Const.BLOG_NOT_EXIST.getInfo())) :
                 blogRepository.findById(id)
                         .orElseThrow(() -> new NotFoundException(Const.BLOG_NOT_EXIST.getInfo()));
 

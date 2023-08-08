@@ -7,6 +7,8 @@ import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
+
+import com.github.benmanes.caffeine.cache.Cache;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
 import org.springframework.amqp.core.Message;
@@ -26,12 +28,16 @@ public abstract sealed class BlogIndexSupport permits
 
     protected final CacheKeyGenerator cacheKeyGenerator;
 
+    protected final Cache<String, Object> localCache;
+
     protected BlogIndexSupport(StringRedisTemplate redisTemplate,
                                BlogRepository blogRepository,
-                               CacheKeyGenerator cacheKeyGenerator) {
+                               CacheKeyGenerator cacheKeyGenerator,
+                               Cache<String, Object> localCache) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
         this.cacheKeyGenerator = cacheKeyGenerator;
+        this.localCache = localCache;
     }
 
     public abstract boolean supports(BlogIndexEnum blogIndexEnum);

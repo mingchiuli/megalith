@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.github.benmanes.caffeine.cache.Cache;
+
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -32,8 +34,9 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
     public UpdateBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  CacheKeyGenerator cacheKeyGenerator) {
-        super(redisTemplate, blogRepository, cacheKeyGenerator);
+                                  CacheKeyGenerator cacheKeyGenerator,
+                                  Cache<String, Object> localCache) {
+        super(redisTemplate, blogRepository, cacheKeyGenerator, localCache);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -70,6 +73,7 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         keys.add(findPage);
         keys.add(findPageByYear);
         redisTemplate.unlink(keys);
+        localCache.invalidateAll(keys);
     }
 
     @Override

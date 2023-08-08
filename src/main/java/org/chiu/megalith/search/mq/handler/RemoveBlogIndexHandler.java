@@ -14,6 +14,8 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.github.benmanes.caffeine.cache.Cache;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -32,8 +34,9 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
                                   CacheKeyGenerator cacheKeyGenerator,
-                                  BlogService blogService) {
-        super(redisTemplate, blogRepository, cacheKeyGenerator);
+                                  BlogService blogService,
+                                  Cache<String, Object> localCache) {
+        super(redisTemplate, blogRepository, cacheKeyGenerator, localCache);
         this.elasticsearchTemplate = elasticsearchTemplate;
         this.blogService = blogService;
     }
@@ -70,6 +73,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(Const.BLOOM_FILTER_PAGE.getInfo());
         keys.add(Const.BLOOM_FILTER_YEARS.getInfo());
         redisTemplate.unlink(keys);
+        localCache.invalidateAll(keys);
 
         //设置getBlogDetail的bloom
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);

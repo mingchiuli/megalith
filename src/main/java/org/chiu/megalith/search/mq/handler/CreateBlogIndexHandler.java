@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.github.benmanes.caffeine.cache.Cache;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -24,8 +26,9 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
     public CreateBlogIndexHandler(StringRedisTemplate redisTemplate,
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
-                                  CacheKeyGenerator cacheKeyGenerator) {
-        super(redisTemplate, blogRepository, cacheKeyGenerator);
+                                  CacheKeyGenerator cacheKeyGenerator,
+                                  Cache<String, Object> localCache) {
+        super(redisTemplate, blogRepository, cacheKeyGenerator, localCache);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -45,6 +48,7 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         int year = blog.getCreated().getYear();
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
         redisTemplate.unlink(keys);
+        localCache.invalidateAll(keys);
 
         //重新构建该年份的页面bloom
         var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
