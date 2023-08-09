@@ -23,13 +23,13 @@ public class ElasticSearchRabbitConfig {
 
     @Bean("ES_QUEUE")
     Queue queue() {
-        return new Queue(ES_QUEUE);
+        return new Queue(ES_QUEUE, true, false, false);
     }
 
     //ES交换机
     @Bean("ES_EXCHANGE")
     DirectExchange exchange() {
-        return new DirectExchange(ES_EXCHANGE);
+        return new DirectExchange(ES_EXCHANGE, true, false);
     }
 
     //绑定ES队列和ES交换机

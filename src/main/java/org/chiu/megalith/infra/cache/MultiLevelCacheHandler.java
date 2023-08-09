@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
 @AllArgsConstructor
-public class MultiCacheHandler implements Function<String, Object> {
+public class MultiLevelCacheHandler implements Function<String, Object> {
 
     private static final String LOCK = "blogLock:";
 

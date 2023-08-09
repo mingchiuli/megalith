@@ -72,7 +72,7 @@ public class CacheAspect {
         }
 
         String cacheKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
-        MultiCacheHandler multiCacheHandler = new MultiCacheHandler(redisTemplate, objectMapper, redisson, pjp, javaType, method);
+        MultiLevelCacheHandler multiCacheHandler = new MultiLevelCacheHandler(redisTemplate, objectMapper, redisson, pjp, javaType, method);
 
         return localCache.get(cacheKey, multiCacheHandler::apply);
     }

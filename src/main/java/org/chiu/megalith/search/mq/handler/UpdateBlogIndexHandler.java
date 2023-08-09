@@ -5,14 +5,14 @@ import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.impl.BlogServiceImpl;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
+import org.chiu.megalith.infra.config.CacheRabbitConfig;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-
-import com.github.benmanes.caffeine.cache.Cache;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,8 +35,8 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
                                   CacheKeyGenerator cacheKeyGenerator,
-                                  Cache<String, Object> localCache) {
-        super(redisTemplate, blogRepository, cacheKeyGenerator, localCache);
+                                  RabbitTemplate rabbitTemplate) {
+        super(redisTemplate, blogRepository, cacheKeyGenerator, rabbitTemplate);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -73,7 +73,7 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         keys.add(findPage);
         keys.add(findPageByYear);
         redisTemplate.unlink(keys);
-        localCache.invalidateAll(keys);
+        rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
     }
 
     @Override

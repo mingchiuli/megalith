@@ -35,12 +35,12 @@ public class CoopRabbitConfig {
     Queue queue() {
         nodeMark = UUID.randomUUID().toString();
         WS_QUEUE += nodeMark;
-        return new Queue(WS_QUEUE, true, false, true);
+        return new Queue(WS_QUEUE, false, true, true);
     }
 
     @Bean("COOP_TOPIC_EXCHANGE")
     TopicExchange exchange() {
-        return new TopicExchange(WS_TOPIC_EXCHANGE);
+        return new TopicExchange(WS_TOPIC_EXCHANGE, true, false);
     }
 
     @Bean("COOP_BINDING")
@@ -53,15 +53,15 @@ public class CoopRabbitConfig {
     }
 
 
-    @Bean("MessageListenerAdapter")
+    @Bean("coopMessageListenerAdapter")
     MessageListenerAdapter coopMessageListener(CoopMessageListener coopMessageListener) {
         //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
         return new MessageListenerAdapter(coopMessageListener);
     }
 
-    @Bean("CoopMessageListenerContainer")
+    @Bean("coopMessageListenerContainer")
     SimpleMessageListenerContainer coopMessageListenerContainer(ConnectionFactory connectionFactory,
-                                                                @Qualifier("MessageListenerAdapter") MessageListenerAdapter listenerAdapter,
+                                                                @Qualifier("coopMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
                                                                 @Qualifier("COOP_QUEUE") Queue queue) {
         var container = new SimpleMessageListenerContainer();
         listenerAdapter.containerAckMode(AcknowledgeMode.AUTO);

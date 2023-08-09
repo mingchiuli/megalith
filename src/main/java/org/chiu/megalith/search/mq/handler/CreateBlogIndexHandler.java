@@ -3,16 +3,17 @@ package org.chiu.megalith.search.mq.handler;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
+import org.chiu.megalith.infra.config.CacheRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
 import lombok.SneakyThrows;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-
-import com.github.benmanes.caffeine.cache.Cache;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,8 +28,8 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
                                   BlogRepository blogRepository,
                                   ElasticsearchTemplate elasticsearchTemplate,
                                   CacheKeyGenerator cacheKeyGenerator,
-                                  Cache<String, Object> localCache) {
-        super(redisTemplate, blogRepository, cacheKeyGenerator, localCache);
+                                  RabbitTemplate rabbitTemplate) {
+        super(redisTemplate, blogRepository, cacheKeyGenerator, rabbitTemplate);
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
 
@@ -48,7 +49,7 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         int year = blog.getCreated().getYear();
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
         redisTemplate.unlink(keys);
-        localCache.invalidateAll(keys);
+        rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
 
         //重新构建该年份的页面bloom
         var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);

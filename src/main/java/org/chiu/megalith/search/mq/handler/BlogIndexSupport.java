@@ -8,15 +8,17 @@ import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 
-import com.github.benmanes.caffeine.cache.Cache;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.LocalDateTime;
 
-
+@Slf4j
 public abstract sealed class BlogIndexSupport permits
         CreateBlogIndexHandler,
         RemoveBlogIndexHandler,
@@ -28,16 +30,16 @@ public abstract sealed class BlogIndexSupport permits
 
     protected final CacheKeyGenerator cacheKeyGenerator;
 
-    protected final Cache<String, Object> localCache;
+    protected final RabbitTemplate rabbitTemplate;
 
     protected BlogIndexSupport(StringRedisTemplate redisTemplate,
                                BlogRepository blogRepository,
                                CacheKeyGenerator cacheKeyGenerator,
-                               Cache<String, Object> localCache) {
+                               RabbitTemplate rabbitTemplate) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
         this.cacheKeyGenerator = cacheKeyGenerator;
-        this.localCache = localCache;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public abstract boolean supports(BlogIndexEnum blogIndexEnum);
@@ -45,9 +47,7 @@ public abstract sealed class BlogIndexSupport permits
     protected abstract void elasticSearchProcess(BlogEntity blog);
 
     @SneakyThrows
-    public void handle(BlogSearchIndexMessage message,
-                       Channel channel,
-                       Message msg) {
+    public void handle(BlogSearchIndexMessage message, Channel channel, Message msg) {
         String createUUID = msg.getMessageProperties().getHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY);
         long deliveryTag = msg.getMessageProperties().getDeliveryTag();
         if (Boolean.TRUE.equals(redisTemplate.hasKey(Const.CONSUME_MONITOR.getInfo()  + createUUID))) {
@@ -68,7 +68,7 @@ public abstract sealed class BlogIndexSupport permits
                 redisTemplate.delete(Const.CONSUME_MONITOR.getInfo() + createUUID);
             } catch (Exception e) {
                 channel.basicNack(deliveryTag, false, true);
-                throw e;
+                log.error("consume failure", e);
             }
         } else {
             channel.basicNack(deliveryTag, false, false);
