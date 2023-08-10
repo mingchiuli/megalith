@@ -72,9 +72,9 @@ public class MultiLevelCacheAspect {
         }
 
         String cacheKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
-        CacheTask multiCacheHandler = new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method);
+        CacheTask cacheTask = new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method);
 
-        return localCache.get(cacheKey, multiCacheHandler::apply);
+        return localCache.get(cacheKey, cacheTask::apply);
     }
 
     private JavaType getTypesReference(ParameterizedType parameterizedType) {
