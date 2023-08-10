@@ -30,7 +30,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 @Component
 @Order(2)
 @RequiredArgsConstructor
-public class CacheAspect {
+public class MultiLevelCacheAspect {
 
     private final StringRedisTemplate redisTemplate;
 
@@ -72,7 +72,7 @@ public class CacheAspect {
         }
 
         String cacheKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
-        MultiLevelCacheHandler multiCacheHandler = new MultiLevelCacheHandler(redisTemplate, objectMapper, redisson, pjp, javaType, method);
+        CacheTask multiCacheHandler = new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method);
 
         return localCache.get(cacheKey, multiCacheHandler::apply);
     }

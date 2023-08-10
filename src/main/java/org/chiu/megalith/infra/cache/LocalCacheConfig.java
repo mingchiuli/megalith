@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Configuration(proxyBeanMethods = false)
-public class CaffeineConfig {
+public class LocalCacheConfig {
     
     @Bean
     Cache<String, Object> caffeineCache() {

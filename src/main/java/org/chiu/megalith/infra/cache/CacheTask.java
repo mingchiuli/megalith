@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
 @AllArgsConstructor
-public class MultiLevelCacheHandler implements Function<String, Object> {
+public class CacheTask implements Function<String, Object> {
 
     private static final String LOCK = "blogLock:";
 
@@ -70,7 +70,7 @@ public class MultiLevelCacheHandler implements Function<String, Object> {
                 // 执行目标方法
                 Object proceed = pjp.proceed();
 
-                org.chiu.megalith.infra.cache.Cache annotation = method.getAnnotation(org.chiu.megalith.infra.cache.Cache.class);
+                Cache annotation = method.getAnnotation(Cache.class);
                 int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
                 redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(proceed), expire, TimeUnit.MINUTES);
                 return proceed;
