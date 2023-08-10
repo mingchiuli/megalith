@@ -6,7 +6,6 @@ import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.service.impl.BlogServiceImpl;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.config.CacheRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
@@ -50,7 +49,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
     }
 
     @Override
-    protected void redisProcess(BlogEntity blog) {
+    protected Set<String> redisProcess(BlogEntity blog) {
         int year = blog.getCreated().getYear();
         Long id = blog.getId();
         //博客对象本身缓存
@@ -73,8 +72,6 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(Const.BLOOM_FILTER_PAGE.getInfo());
         keys.add(Const.BLOOM_FILTER_YEARS.getInfo());
         redisTemplate.unlink(keys);
-        rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
-
 
         //设置getBlogDetail的bloom
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);
@@ -101,6 +98,8 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         for (int i = lYear; i <= rYear; i++) {
             redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), i, true);
         }
+        
+        return keys;
     }
 
     @Override

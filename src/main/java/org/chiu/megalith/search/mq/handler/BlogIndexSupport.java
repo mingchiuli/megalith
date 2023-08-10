@@ -4,6 +4,7 @@ package org.chiu.megalith.search.mq.handler;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
+import org.chiu.megalith.infra.config.CacheRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
@@ -17,6 +18,7 @@ import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Slf4j
 public abstract sealed class BlogIndexSupport permits
@@ -43,7 +45,7 @@ public abstract sealed class BlogIndexSupport permits
     }
 
     public abstract boolean supports(BlogIndexEnum blogIndexEnum);
-    protected abstract void redisProcess(BlogEntity blog);
+    protected abstract Set<String> redisProcess(BlogEntity blog);
     protected abstract void elasticSearchProcess(BlogEntity blog);
 
     @SneakyThrows
@@ -60,7 +62,8 @@ public abstract sealed class BlogIndexSupport permits
                                 .created(LocalDateTime.of(year, 1,1,1,1,1, 1))
                                 .build());
 
-                redisProcess(blogEntity);
+                Set<String> keys = redisProcess(blogEntity);
+                rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
                 elasticSearchProcess(blogEntity);
                 //手动签收消息
                 //false代表不是批量签收模式
