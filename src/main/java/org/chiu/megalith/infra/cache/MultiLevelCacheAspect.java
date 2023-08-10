@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Objects;
+
 import com.github.benmanes.caffeine.cache.Cache;
 
 /**
@@ -72,9 +74,13 @@ public class MultiLevelCacheAspect {
         }
 
         String cacheKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
-        CacheTask cacheTask = new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method);
 
-        return localCache.get(cacheKey, cacheTask::apply);
+        Object cacheValue = localCache.getIfPresent(cacheKey);
+        if (Objects.nonNull(cacheValue)) {
+            return cacheValue;
+        }
+
+        return localCache.get(cacheKey, new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method)::apply);
     }
 
     private JavaType getTypesReference(ParameterizedType parameterizedType) {
