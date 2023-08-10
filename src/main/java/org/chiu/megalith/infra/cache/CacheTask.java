@@ -45,7 +45,6 @@ public class CacheTask implements Function<String, Object> {
                 o = redisTemplate.opsForValue().get(key);
             } catch (NestedRuntimeException e) {
                 return pjp.proceed();
-                
             }
 
             if (StringUtils.hasLength(o)) {
