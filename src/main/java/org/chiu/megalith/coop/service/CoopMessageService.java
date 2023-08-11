@@ -11,11 +11,11 @@ public interface CoopMessageService {
     
     void chatUser(BaseDto msg);
 
-    void syncBlog(BaseDto msg);
+    void syncContent(BaseDto msg);
 
     void submitBlog(BaseDto msg);
 
-    void quitBlog(BaseDto msg);
+    void quitEdit(BaseDto msg);
 
     void setUserToRedisSession(Long userId, Long blogId);
 

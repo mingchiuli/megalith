@@ -40,7 +40,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void syncBlog(BaseDto msg) {
+    public void syncContent(BaseDto msg) {
         sendToOtherUsers(msg);
     }
 
@@ -50,7 +50,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     }
 
     @Override
-    public void quitBlog(BaseDto msg) {
+    public void quitEdit(BaseDto msg) {
         sendToOtherUsers(msg);
         redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
     }

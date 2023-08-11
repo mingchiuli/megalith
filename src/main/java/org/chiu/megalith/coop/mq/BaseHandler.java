@@ -9,8 +9,7 @@ public abstract class BaseHandler {
 
     protected final String uri;
 
-    protected BaseHandler(SimpMessagingTemplate simpMessagingTemplate,
-                              String uri) {
+    protected BaseHandler(SimpMessagingTemplate simpMessagingTemplate, String uri) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.uri = uri;
     }

@@ -57,8 +57,7 @@ public class CodeFactory {
         return builder.toString();
     }
 
-    public void save(String code,
-                     String prefix) {
+    public void save(String code, String prefix) {
         String lua = "redis.call('hmset', KEYS[1], ARGV[1], ARGV[2], ARGV[3], ARGV[4]);" +
                 "redis.call('expire', KEYS[1], ARGV[5]);";
 

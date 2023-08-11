@@ -22,9 +22,7 @@ public class JwtUtils {
     private String secret;
 
 
-    public String generateToken(String userId,
-                                String role,
-                                long expire) {
+    public String generateToken(String userId, String role, long expire) {
         var nowDate = new Date();
         //过期时间
         var expireDate = new Date(nowDate.getTime() + expire * 1000);

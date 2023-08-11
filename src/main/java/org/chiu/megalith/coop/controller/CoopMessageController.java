@@ -31,7 +31,7 @@ public class CoopMessageController {
 
     @MessageMapping("/sync")
     public Result<Void> syncBlog(@RequestBody SyncContentDto msg) {
-        return Result.success(() -> coopMessageService.syncBlog(msg));
+        return Result.success(() -> coopMessageService.syncContent(msg));
     }
 
     @MessageMapping("/save")
@@ -41,7 +41,7 @@ public class CoopMessageController {
 
     @MessageMapping("/quit")
     public Result<Void> quitBlog(@RequestBody QuitBlogDto msg) {
-        return Result.success(() -> coopMessageService.quitBlog(msg));
+        return Result.success(() -> coopMessageService.quitEdit(msg));
     }
 
     @MessageMapping("/session/{userId}/{blogId}")
