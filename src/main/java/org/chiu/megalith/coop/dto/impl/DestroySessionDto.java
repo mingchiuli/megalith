@@ -5,4 +5,4 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class QuitBlogDto extends BaseDto {}
+public class DestroySessionDto extends BaseDto {}

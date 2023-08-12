@@ -12,8 +12,8 @@ import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.coop.config.CoopRabbitConfig;
-import org.chiu.megalith.coop.dto.impl.SubmitBlogDto;
-import org.chiu.megalith.coop.dto.impl.JoinBlogDto;
+import org.chiu.megalith.coop.dto.impl.DestroySessionDto;
+import org.chiu.megalith.coop.dto.impl.JoinCoopDto;
 import org.chiu.megalith.coop.service.CoopService;
 import org.chiu.megalith.coop.vo.InitCoopVo;
 import org.chiu.megalith.coop.vo.UserEntityVo;
@@ -51,7 +51,7 @@ public class CoopServiceImpl implements CoopService {
     private Integer size;
 
     @Override
-    public InitCoopVo joinCoopBlog(Long blogId, Integer orderNumber) {
+    public InitCoopVo initCoopSession(Long blogId, Integer orderNumber) {
 
         var userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -63,7 +63,7 @@ public class CoopServiceImpl implements CoopService {
                 .nickname(userEntity.getNickname())
                 .build();
 
-        var dto = new JoinBlogDto();
+        var dto = new JoinCoopDto();
         dto.setBlogId(blogId);
         dto.setFromId(userId);
         dto.setUser(userEntityVo);
@@ -94,12 +94,11 @@ public class CoopServiceImpl implements CoopService {
 
         blogService.saveOrUpdate(blogEntityVo, userId);
 
-        var dto = new SubmitBlogDto();
+        var dto = new DestroySessionDto();
         dto.setBlogId(blogId);
         dto.setFromId(userId);
 
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
-
         operations.values(Const.COOP_PREFIX.getInfo() + blogId).stream()
                 .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
                 .filter(user -> Boolean.FALSE.equals(Objects.equals(userId, user.getId())))
@@ -114,7 +113,7 @@ public class CoopServiceImpl implements CoopService {
     }
 
     @Override
-    public PageAdapter<BlogAbstractVo> getCoopBlogs(Integer currentPage) {
+    public PageAdapter<BlogAbstractVo> getCoopBlogsInfo(Integer currentPage) {
 
         Set<String> keys = redisTemplate.keys(Const.COOP_PREFIX.getInfo() + "*");
         int total = keys.size();

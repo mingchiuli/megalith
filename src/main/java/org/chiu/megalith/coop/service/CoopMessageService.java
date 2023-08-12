@@ -9,8 +9,6 @@ import org.chiu.megalith.coop.dto.*;
  */
 public interface CoopMessageService {
     
-    void chatUser(BaseDto msg);
-
     void syncContent(BaseDto msg);
 
     void submitBlog(BaseDto msg);

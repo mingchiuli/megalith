@@ -33,11 +33,7 @@ public class CoopMessageServiceImpl implements CoopMessageService {
     private final StringRedisTemplate redisTemplate;
 
     private final JsonUtils jsonUtils;
-    
-    @Override
-    public void chatUser(BaseDto msg) {
-        sendToOtherUsers(msg);
-    }
+
 
     @Override
     public void syncContent(BaseDto msg) {

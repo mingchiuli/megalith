@@ -1,9 +1,8 @@
 package org.chiu.megalith.coop.controller;
 
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.coop.dto.impl.UserChatDto;
-import org.chiu.megalith.coop.dto.impl.SubmitBlogDto;
-import org.chiu.megalith.coop.dto.impl.QuitBlogDto;
+import org.chiu.megalith.coop.dto.impl.DestroySessionDto;
+import org.chiu.megalith.coop.dto.impl.QuitCoopDto;
 import org.chiu.megalith.coop.dto.impl.SyncContentDto;
 import org.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
@@ -24,23 +23,18 @@ public class CoopMessageController {
 
     private final CoopMessageService coopMessageService;
 
-    @MessageMapping("/chat")
-    public Result<Void> chat(@RequestBody UserChatDto msg) {
-        return Result.success(() -> coopMessageService.chatUser(msg));
-    }
-
     @MessageMapping("/sync")
-    public Result<Void> syncBlog(@RequestBody SyncContentDto msg) {
+    public Result<Void> syncContent(@RequestBody SyncContentDto msg) {
         return Result.success(() -> coopMessageService.syncContent(msg));
     }
 
-    @MessageMapping("/save")
-    public Result<Void> submitBlog(@RequestBody SubmitBlogDto msg) {
+    @MessageMapping("/destroy")
+    public Result<Void> destroySession(@RequestBody DestroySessionDto msg) {
         return Result.success(() -> coopMessageService.submitBlog(msg));
     }
 
     @MessageMapping("/quit")
-    public Result<Void> quitBlog(@RequestBody QuitBlogDto msg) {
+    public Result<Void> quitEdit(@RequestBody QuitCoopDto msg) {
         return Result.success(() -> coopMessageService.quitEdit(msg));
     }
 

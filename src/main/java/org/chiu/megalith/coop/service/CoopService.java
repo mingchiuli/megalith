@@ -11,9 +11,9 @@ import org.chiu.megalith.coop.vo.InitCoopVo;
  */
 public interface CoopService {
     
-    InitCoopVo joinCoopBlog(Long blogId, Integer orderNumber);
+    InitCoopVo initCoopSession(Long blogId, Integer orderNumber);
 
     void submitBlog(Long blogId, BlogEntityVo blogEntityVo);
 
-    PageAdapter<BlogAbstractVo> getCoopBlogs(Integer currentPage);
+    PageAdapter<BlogAbstractVo> getCoopBlogsInfo(Integer currentPage);
 }

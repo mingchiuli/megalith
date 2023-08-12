@@ -21,17 +21,18 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RequestMapping("/coop")
 public class CoopController {
+    
     private final CoopService coopService;
 
     @GetMapping("/init/{blogId}/{orderNumber}")
-    public Result<InitCoopVo> initCoopBlog(@PathVariable @CoopBlogId Long blogId,
+    public Result<InitCoopVo> initCoopSession(@PathVariable @CoopBlogId Long blogId,
                                            @PathVariable Integer orderNumber) {
-        return Result.success(() -> coopService.joinCoopBlog(blogId, orderNumber));
+        return Result.success(() -> coopService.initCoopSession(blogId, orderNumber));
     }
 
     @GetMapping("/blogs/{currentPage}")
-    public Result<PageAdapter<BlogAbstractVo>> getCoopBlogs(@PathVariable Integer currentPage) {
-        return Result.success(() -> coopService.getCoopBlogs(currentPage));
+    public Result<PageAdapter<BlogAbstractVo>> getCoopBlogsInfo(@PathVariable Integer currentPage) {
+        return Result.success(() -> coopService.getCoopBlogsInfo(currentPage));
     }
 
     @PostMapping("/save/{blogId}")
