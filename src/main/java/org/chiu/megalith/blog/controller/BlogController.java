@@ -83,6 +83,14 @@ public class BlogController {
         throw new AuthenticationExceptionImpl("authorization exception");
     }
 
+    @GetMapping("/token/{blogId}")
+    public Result<Boolean> checkReadToken(@PathVariable Long blogId,
+                                          HttpServletRequest request) {
+
+        String token = request.getHeader("Read-Token");
+        return Boolean.TRUE.equals(blogService.checkToken(blogId, token)) ? Result.success(true) : Result.success(false);
+    }
+
     @GetMapping("/status/{blogId}")
     @Bloom(handler = DetailHandler.class)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
