@@ -11,7 +11,6 @@ import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.blog.vo.BlogExhibitVo;
 import org.chiu.megalith.blog.vo.BlogHotReadVo;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -72,9 +71,8 @@ public class BlogController {
 
     @GetMapping("/secret/{blogId}")
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
-                                               HttpServletRequest request) {
+                                               @RequestParam(value = "readToken") String token) {
 
-        String token = request.getHeader("Read-Token");
         boolean valid = blogService.checkToken(blogId, token);
         if (valid) {
             blogService.setReadCount(blogId);
@@ -85,9 +83,8 @@ public class BlogController {
 
     @GetMapping("/token/{blogId}")
     public Result<Boolean> checkReadToken(@PathVariable Long blogId,
-                                          HttpServletRequest request) {
+                                          @RequestParam(value = "readToken") String token) {
 
-        String token = request.getHeader("Read-Token");
         return Boolean.TRUE.equals(blogService.checkToken(blogId, token)) ? Result.success(true) : Result.success(false);
     }
 
