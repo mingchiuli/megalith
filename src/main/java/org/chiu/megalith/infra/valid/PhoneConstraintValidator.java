@@ -12,8 +12,7 @@ import org.springframework.util.StringUtils;
 public class PhoneConstraintValidator implements ConstraintValidator<Phone, String> {
 
     @Override
-    public boolean isValid(String phone,
-                           ConstraintValidatorContext context) {
+    public boolean isValid(String phone, ConstraintValidatorContext context) {
         if (Boolean.FALSE.equals(StringUtils.hasLength(phone))) {
             return true;
         }

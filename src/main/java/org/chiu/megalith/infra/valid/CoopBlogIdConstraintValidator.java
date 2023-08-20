@@ -11,8 +11,7 @@ public class CoopBlogIdConstraintValidator implements ConstraintValidator<CoopBl
     private final BlogService blogService;
 
     @Override
-    public boolean isValid(Long blogId,
-                           ConstraintValidatorContext context) {
+    public boolean isValid(Long blogId, ConstraintValidatorContext context) {
         return blogService.exist(blogId);
     }
 }

@@ -12,8 +12,7 @@ import org.springframework.util.StringUtils;
 public class UsernameConstraintValidator implements ConstraintValidator<Username, String> {
 
     @Override
-    public boolean isValid(String username,
-                           ConstraintValidatorContext context) {
+    public boolean isValid(String username, ConstraintValidatorContext context) {
         if (StringUtils.hasLength(username)) {
             return Boolean.FALSE.equals(username.matches("\\d+")) && Boolean.FALSE.equals(username.contains("@"));
         }
