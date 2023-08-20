@@ -1,7 +1,7 @@
 package org.chiu.megalith.coop.controller;
 
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.coop.dto.impl.DestroySessionDto;
+import org.chiu.megalith.coop.dto.impl.FinishCoopDto;
 import org.chiu.megalith.coop.dto.impl.QuitCoopDto;
 import org.chiu.megalith.coop.dto.impl.SyncContentDto;
 import org.chiu.megalith.coop.service.CoopMessageService;
@@ -29,7 +29,7 @@ public class CoopMessageController {
     }
 
     @MessageMapping("/destroy")
-    public Result<Void> destroySession(@RequestBody DestroySessionDto msg) {
+    public Result<Void> finishCoopDto(@RequestBody FinishCoopDto msg) {
         return Result.success(() -> coopMessageService.submitBlog(msg));
     }
 

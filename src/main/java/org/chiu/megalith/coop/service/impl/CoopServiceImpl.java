@@ -12,7 +12,7 @@ import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.coop.config.CoopRabbitConfig;
-import org.chiu.megalith.coop.dto.impl.DestroySessionDto;
+import org.chiu.megalith.coop.dto.impl.FinishCoopDto;
 import org.chiu.megalith.coop.dto.impl.JoinCoopDto;
 import org.chiu.megalith.coop.service.CoopService;
 import org.chiu.megalith.coop.vo.InitCoopVo;
@@ -94,7 +94,7 @@ public class CoopServiceImpl implements CoopService {
 
         blogService.saveOrUpdate(blogEntityVo, userId);
 
-        var dto = new DestroySessionDto();
+        var dto = new FinishCoopDto();
         dto.setBlogId(blogId);
         dto.setFromId(userId);
 
