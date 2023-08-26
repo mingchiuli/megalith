@@ -51,7 +51,6 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public void createSMSCode(String loginSMS) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'createSMSCode'");
     }
 }

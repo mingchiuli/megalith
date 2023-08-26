@@ -18,7 +18,7 @@ import java.util.Objects;
 @ToString
 @Builder
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Entity
 @DynamicUpdate
 @Table(name ="m_user",

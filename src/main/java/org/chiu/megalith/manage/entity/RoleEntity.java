@@ -18,7 +18,6 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @Builder
-@RequiredArgsConstructor
 @Entity
 @DynamicUpdate
 @Table(name ="m_role",

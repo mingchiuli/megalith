@@ -152,7 +152,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<Integer> searchYears() {
-        Long count = redisTemplate.execute(LuaScriptUtils.countYears, List.of(Const.BLOOM_FILTER_YEARS.getInfo()));
+        Long count = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.countYears, List.of(Const.BLOOM_FILTER_YEARS.getInfo())))
+                .orElse(0L);
         int start = 2021;
         int end = start + count.intValue() - 1 >= start ? start + count.intValue() - 1 : start;
         var years = new ArrayList<Integer>(end - start + 1);
@@ -230,9 +231,10 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size, Long userId) {
 
-        List<BlogEntity> deletedBlogs = redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1).stream()
-                .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
-                .toList();
+        List<BlogEntity> deletedBlogs = Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1))
+                .orElseGet(ArrayList::new).stream()
+                        .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
+                        .toList();
 
         int l = 0;
         for (BlogEntity blog : deletedBlogs) {
@@ -245,16 +247,18 @@ public class BlogServiceImpl implements BlogService {
 
         int start = (currentPage - 1) * size;
 
-        Long total = redisTemplate.execute(LuaScriptUtils.flushDelete,
+        Long total = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.flushDelete,
                 Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
-                String.valueOf(l), "-1");
+                String.valueOf(l), "-1"))
+                        .orElse(0L);
 
         int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
         return PageAdapter.<BlogEntity>builder()
-                .content(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, start, start + size).stream()
-                        .map(str -> jsonUtils.readValue(str, BlogEntity.class))
-                        .toList())
+                .content(Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, start, start + size))
+                        .orElseGet(ArrayList::new).stream()
+                                .map(str -> jsonUtils.readValue(str, BlogEntity.class))
+                                .toList())
                 .last(currentPage == totalPages)
                 .first(currentPage == 1)
                 .pageNumber(currentPage)
@@ -294,8 +298,10 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public VisitStatisticsVo getVisitStatistics() {
-        List<Long> list = redisTemplate.execute(LuaScriptUtils.getVisitLua,
-                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()));
+        List<Long> list = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.getVisitLua,
+                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), 
+                Const.YEAR_VISIT.getInfo())))
+                        .orElseGet(ArrayList::new);
 
         return VisitStatisticsVo.builder()
                 .dayVisit(list.get(0))
@@ -308,7 +314,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public List<BlogHotReadVo> getScoreBlogs() {
         Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet().reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
-        return set.stream()
+        return Optional.ofNullable(set).orElseGet(HashSet::new).stream()
                 .map(item -> BlogHotReadVo.builder()
                         .id(Long.valueOf(item.getValue()))
                         .readCount(item.getScore().longValue())

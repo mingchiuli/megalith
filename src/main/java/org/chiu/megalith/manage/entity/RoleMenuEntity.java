@@ -20,7 +20,6 @@ import java.util.Objects;
 @Builder
 @Setter
 @ToString
-@RequiredArgsConstructor
 @DynamicUpdate
 public class RoleMenuEntity {
 

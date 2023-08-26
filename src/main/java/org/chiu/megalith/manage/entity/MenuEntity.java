@@ -18,7 +18,6 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @Builder
-@RequiredArgsConstructor
 @DynamicUpdate
 @Table(name ="m_menu")
 public class MenuEntity {
