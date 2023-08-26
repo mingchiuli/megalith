@@ -6,18 +6,16 @@ import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.vo.BlogExhibitVo;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.lang.Const;
-import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
-import org.chiu.megalith.coop.config.CoopRabbitConfig;
-import org.chiu.megalith.coop.dto.impl.FinishCoopDto;
 import org.chiu.megalith.coop.dto.impl.JoinCoopDto;
 import org.chiu.megalith.coop.service.CoopService;
 import org.chiu.megalith.coop.vo.InitCoopVo;
 import org.chiu.megalith.coop.vo.UserEntityVo;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
@@ -25,8 +23,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,18 +32,22 @@ import java.util.Set;
  * @create 2022-12-26 1:05 am
  */
 @Service
-@RequiredArgsConstructor
-public class CoopServiceImpl implements CoopService {
+public class CoopServiceImpl extends BaseMessageService implements CoopService {
+
+    public CoopServiceImpl(StringRedisTemplate redisTemplate, 
+                           JsonUtils jsonUtils, 
+                           RabbitTemplate rabbitTemplate,
+                           UserService userService,
+                           BlogService blogService) {
+        super(redisTemplate, jsonUtils, rabbitTemplate);
+        this.userService = userService;
+        this.blogService = blogService;
+    }
 
     private final UserService userService;
 
-    private final StringRedisTemplate redisTemplate;
-
-    private final RabbitTemplate rabbitTemplate;
-
     private final BlogService blogService;
 
-    private final JsonUtils jsonUtils;
 
     @Value("${blog.blog-coop-size}")
     private Integer size;
@@ -68,47 +70,36 @@ public class CoopServiceImpl implements CoopService {
         dto.setFromId(userId);
         dto.setUser(userEntityVo);
 
-        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
-        List<String> usersStr = operations.values(Const.COOP_PREFIX.getInfo() + blogId);
+        BlogEntityVo vo = BlogEntityVo.builder()
+                .title(blogEntity.getTitle())
+                .description(blogEntity.getDescription())
+                .content(blogEntity.getContent())
+                .id(blogEntity.getId())
+                .status(blogEntity.getStatus())
+                .link(blogEntity.getLink())
+                .build();
 
-        usersStr.stream()
-                .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
-                .filter(user -> Boolean.FALSE.equals(Objects.equals(userId, user.getId())))
-                .forEach(user -> {
-                    dto.setToId(user.getId());
-                    rabbitTemplate.convertAndSend(CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                            CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
-                            dto);
-                });
+        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
+        Map<String, String> params = new HashMap<>();
+        params.put(Const.BLOG_CONTENT.getInfo(), jsonUtils.writeValueAsString(vo));
+
+        operations.putAll(Const.COOP_PREFIX.getInfo() + blogId, params);
 
         return InitCoopVo.builder()
                 .blogEntity(blogEntity)
-                .userEntityVos(usersStr)
+                .userEntityVo(userEntityVo)
                 .build();
     }
 
     @Override
-    public void submitBlog(Long blogId, BlogEntityVo blogEntityVo) {
-        
+    public void submitBlog(Long blogId) {
         var userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        blogService.saveOrUpdate(blogEntityVo, userId);
-
-        var dto = new FinishCoopDto();
-        dto.setBlogId(blogId);
-        dto.setFromId(userId);
-
         HashOperations<String, String, String> operations = redisTemplate.opsForHash();
-        operations.values(Const.COOP_PREFIX.getInfo() + blogId).stream()
-                .map(str -> jsonUtils.readValue(str, UserEntityVo.class))
-                .filter(user -> Boolean.FALSE.equals(Objects.equals(userId, user.getId())))
-                .forEach(user -> {
-                    dto.setToId(user.getId());
-                    rabbitTemplate.convertAndSend(CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                            CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
-                            dto);
-                });
-
+        String contentStr = operations.get(Const.COOP_PREFIX.getInfo() + blogId, Const.BLOG_CONTENT.getInfo());
+        BlogEntityVo blogVo = jsonUtils.readValue(contentStr, BlogEntityVo.class);
+        blogService.saveOrUpdate(blogVo, userId);
+        sendToOtherUsers(blogId, userId);
         redisTemplate.delete(Const.COOP_PREFIX.getInfo() + blogId);
     }
 

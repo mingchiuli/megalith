@@ -4,6 +4,7 @@ import org.chiu.megalith.infra.lang.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,8 +21,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(value = AuthenticationExceptionImpl.class)
-    public Result<Object> handler(AuthenticationExceptionImpl e) {
+    @ExceptionHandler(value = BadCredentialsException.class)
+    public Result<Object> handler(BadCredentialsException e) {
         return Result.fail(e.getMessage(), () -> log.error("authentication exception:{}", e));
     }
 

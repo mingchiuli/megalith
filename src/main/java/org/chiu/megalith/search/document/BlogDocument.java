@@ -1,9 +1,7 @@
 package org.chiu.megalith.search.document;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -17,8 +15,6 @@ import java.time.ZonedDateTime;
  */
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(indexName = "bloginfo")
 public class BlogDocument {
 

@@ -6,6 +6,7 @@ import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
+
 import lombok.SneakyThrows;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 @Component
 public final class CreateBlogIndexHandler extends BlogIndexSupport {
+
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     public CreateBlogIndexHandler(StringRedisTemplate redisTemplate,

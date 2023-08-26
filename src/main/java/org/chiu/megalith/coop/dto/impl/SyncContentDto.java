@@ -1,7 +1,6 @@
 package org.chiu.megalith.coop.dto.impl;
 
 import org.chiu.megalith.coop.dto.BaseDto;
-import org.chiu.megalith.coop.lang.OperateType;
 
 import lombok.*;
 
@@ -11,7 +10,7 @@ public class SyncContentDto extends BaseDto {
 
     private String content;
 
-    private Long offset;
+    private Integer offset;
 
-    private OperateType operateType;
+    private String operateType;
 }

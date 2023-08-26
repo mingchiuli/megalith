@@ -80,7 +80,8 @@ public class MultiLevelCacheAspect {
             return cacheValue;
         }
 
-        return localCache.get(cacheKey, new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method)::apply);
+        CacheTaskParams params = new CacheTaskParams(redisTemplate, objectMapper, redisson, pjp, javaType, method);
+        return localCache.get(cacheKey, new CacheTask(params)::apply);
     }
 
     private JavaType getTypesReference(ParameterizedType parameterizedType) {

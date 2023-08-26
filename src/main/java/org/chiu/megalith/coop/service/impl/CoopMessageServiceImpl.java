@@ -3,50 +3,77 @@ package org.chiu.megalith.coop.service.impl;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.coop.config.CoopRabbitConfig;
-import org.chiu.megalith.coop.dto.*;
+import org.chiu.megalith.coop.dto.BaseDto;
+import org.chiu.megalith.coop.dto.impl.FinishCoopDto;
+import org.chiu.megalith.coop.dto.impl.QuitCoopDto;
+import org.chiu.megalith.coop.dto.impl.SyncContentDto;
+import org.chiu.megalith.coop.lang.OperateType;
 import org.chiu.megalith.coop.service.CoopMessageService;
 import org.chiu.megalith.coop.vo.UserEntityVo;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Objects;
 
 /**
  * @author mingchiuli
  * @create 2022-12-28 3:43 pm
  */
 @Service
-@RequiredArgsConstructor
-public class CoopMessageServiceImpl implements CoopMessageService {
+public class CoopMessageServiceImpl extends BaseMessageService implements CoopMessageService {
+
+    public CoopMessageServiceImpl(StringRedisTemplate redisTemplate, 
+                                  JsonUtils jsonUtils,
+                                  RabbitTemplate rabbitTemplate,
+                                  UserService userService) {
+        super(redisTemplate, jsonUtils, rabbitTemplate);
+        this.userService = userService;
+    }
 
     private final UserService userService;
 
-    private final RabbitTemplate rabbitTemplate;
-
-    private final StringRedisTemplate redisTemplate;
-
-    private final JsonUtils jsonUtils;
-
-
     @Override
-    public void syncContent(BaseDto msg) {
+    public void syncContent(SyncContentDto msg) {
+        String changeContent = msg.getContent();
+        String type = msg.getOperateType();
+        Integer offset = msg.getOffset();
+        Object blogId = msg.getBlogId();
+    
+        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
+        String contentValue = operations.get(Const.COOP_PREFIX.getInfo() + blogId, Const.BLOG_CONTENT.getInfo());
+        BlogEntityVo blogVo = jsonUtils.readValue(contentValue, BlogEntityVo.class);
+        String content = blogVo.getContent();
+
+        OperateType operateType = OperateType.valueOf(type);
+        String prefix = content.substring(0, offset);
+        String suffix = content.substring(offset, content.length());
+
+        if (operateType.equals(OperateType.ADD)) {
+            content = prefix + changeContent + suffix;
+        } else {
+            suffix = suffix.substring(offset);
+            content = prefix + suffix;
+        }
+        blogVo.setContent(content);
+        
+        operations.put(Const.COOP_PREFIX.getInfo() + blogId, Const.BLOG_CONTENT.getInfo(), jsonUtils.writeValueAsString(blogVo));
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void submitBlog(BaseDto msg) {
+    public void destroySession(FinishCoopDto msg) {
         sendToOtherUsers(msg);
     }
 
     @Override
-    public void quitEdit(BaseDto msg) {
+    public void quitEdit(QuitCoopDto msg) {
         sendToOtherUsers(msg);
         redisTemplate.opsForHash().delete(Const.COOP_PREFIX.getInfo() + msg.getBlogId(), msg.getFromId().toString());
     }
@@ -63,23 +90,20 @@ public class CoopMessageServiceImpl implements CoopMessageService {
 
         redisTemplate.execute(LuaScriptUtils.sendUserToSessionLua,
                 Collections.singletonList(Const.COOP_PREFIX.getInfo() + blogId),
-                userId, jsonUtils.writeValueAsString(userEntityVo), "21600");
+                userId.toString(), jsonUtils.writeValueAsString(userEntityVo), "21600");
     }
 
     private void sendToOtherUsers(BaseDto msg) {
-        Long fromId = msg.getFromId();
-        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
+        Long blogId = msg.getBlogId();
+        Long userId = msg.getFromId();
+        super.sendToOtherUsers(blogId, userId);
+    }
 
-        operations.values(Const.COOP_PREFIX.getInfo() + msg.getBlogId()).stream()
-                .map(userStr -> jsonUtils.readValue(userStr, UserEntityVo.class))
-                .filter(user -> Boolean.FALSE.equals(Objects.equals(fromId, user.getId())))
-                .forEach(user -> {
-                    msg.setToId(user.getId());
-                    rabbitTemplate.convertAndSend(
-                            CoopRabbitConfig.WS_TOPIC_EXCHANGE,
-                            CoopRabbitConfig.WS_BINDING_KEY + user.getNodeMark(),
-                            msg);
-                });
+    @Override
+    public BlogEntityVo getBlogContent(Long blogId) {
+        HashOperations<String, String, String> operations = redisTemplate.opsForHash();
+        String contentValue = operations.get(Const.COOP_PREFIX.getInfo() + blogId, Const.BLOG_CONTENT.getInfo());
+        return jsonUtils.readValue(contentValue, BlogEntityVo.class);   
     }
 
 }

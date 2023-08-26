@@ -4,8 +4,6 @@ import org.chiu.megalith.blog.entity.BlogEntity;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Collection;
-
 /**
  * @author mingchiuli
  * @create 2023-01-14 1:55 am
@@ -16,5 +14,5 @@ public class InitCoopVo {
 
     private BlogEntity blogEntity;
 
-    private Collection<String> userEntityVos;
+    private UserEntityVo userEntityVo;
 }

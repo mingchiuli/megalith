@@ -16,11 +16,11 @@ public class Result<T> {
     private T data;
 
     public static <T> Result<T> success(T data) {
-        return load("success",data); //200为正常，非200为非正常
+        return load("success",data); 
     }
 
     public static <T> Result<T> success() {
-        return load("success",null); //200为正常，非200为非正常
+        return load("success",null); 
     }
 
     private static <T> Result<T> load(String msg, T data) {

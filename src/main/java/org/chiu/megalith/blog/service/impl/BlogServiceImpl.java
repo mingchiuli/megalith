@@ -61,9 +61,9 @@ public class BlogServiceImpl implements BlogService {
     public BlogExhibitVo findById(Long id, Boolean visible) {
         BlogEntity blogEntity = Boolean.TRUE.equals(visible) ?
                 blogRepository.findByIdAndStatus(id, 0)
-                        .orElseThrow(() -> new NotFoundException(Const.BLOG_NOT_EXIST.getInfo())) :
+                        .orElseThrow(() -> new NotFoundException("blog not exist")) :
                 blogRepository.findById(id)
-                        .orElseThrow(() -> new NotFoundException(Const.BLOG_NOT_EXIST.getInfo()));
+                        .orElseThrow(() -> new NotFoundException("blog not exist"));
 
         UserEntity user = userService.findById(blogEntity.getUserId());
 
@@ -89,7 +89,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogEntity findById(Long id) {
         return blogRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Const.BLOG_NOT_EXIST.getInfo()));
+                .orElseThrow(() -> new NotFoundException("blog not exist"));
     }
 
     @Override
@@ -139,7 +139,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Integer checkStatusByIdAndUserId(Long blogId, Long userId) {
         BlogEntity blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new NotFoundException(Const.BLOG_NOT_EXIST.getInfo()));
+                .orElseThrow(() -> new NotFoundException("blog not exist"));
         Long id = blog.getUserId();   
         return Objects.equals(id, blogId) ? 0 : 1;  
     }
@@ -175,7 +175,7 @@ public class BlogServiceImpl implements BlogService {
 
         if (Objects.nonNull(blogId)) {
             blogEntity = blogRepository.findById(blogId)
-                    .orElseThrow(() -> new NotFoundException(Const.BLOG_NOT_EXIST.getInfo()));
+                    .orElseThrow(() -> new NotFoundException("blog not exist"));
             Assert.isTrue(Objects.equals(blogEntity.getUserId(), userId), "must edit your blog!");
         } else {
             blogEntity = BlogEntity.builder()

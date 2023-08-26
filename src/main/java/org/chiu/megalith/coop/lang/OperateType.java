@@ -4,5 +4,5 @@ public enum OperateType {
 
     REMOVE,
 
-    UPDATE;
+    ADD;
 }

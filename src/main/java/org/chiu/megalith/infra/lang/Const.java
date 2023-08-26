@@ -13,13 +13,13 @@ public enum Const {
     
     SMS_CODE("sms_code"),
 
-    DAY_VISIT("day_visit"),
+    DAY_VISIT("{visit_record}_day"),
 
-    WEEK_VISIT("week_visit"),
+    WEEK_VISIT("{visit_record}_week"),
 
-    MONTH_VISIT("month_visit"),
+    MONTH_VISIT("{visit_record}_month"),
 
-    YEAR_VISIT("year_visit"),
+    YEAR_VISIT("{visit_record}_year"),
 
     LOGIN_USER_CACHE("login:"),
 
@@ -71,7 +71,7 @@ public enum Const {
 
     HOT_READ("hot_read"),
     
-    BLOG_NOT_EXIST("blog not exist");
+    BLOG_CONTENT("content");
 
     private final String info;
 

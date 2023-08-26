@@ -24,58 +24,55 @@ public class CacheTask implements Function<String, Object> {
 
     private static final String LOCK = "blogLock:";
 
-    private StringRedisTemplate redisTemplate;
-
-    private ObjectMapper objectMapper;
-
-    private RedissonClient redisson;
-
-    private ProceedingJoinPoint pjp;
-
-    private JavaType javaType;
-
-    private Method method;
+    private CacheTaskParams cacheTaskParam;
 
     @Override
     @SneakyThrows
     public Object apply(String key) {
-         String o;
-            // 防止redis挂了以后db也访问不了
-            try {
-                o = redisTemplate.opsForValue().get(key);
-            } catch (NestedRuntimeException e) {
-                return pjp.proceed();
+        ObjectMapper objectMapper = cacheTaskParam.getObjectMapper();
+        StringRedisTemplate redisTemplate = cacheTaskParam.getRedisTemplate();
+        RedissonClient redisson = cacheTaskParam.getRedisson();
+        Method method = cacheTaskParam.getMethod();
+        ProceedingJoinPoint pjp = cacheTaskParam.getPjp();
+        JavaType javaType = cacheTaskParam.getJavaType();
+
+        String o;
+        // 防止redis挂了以后db也访问不了
+        try {
+            o = redisTemplate.opsForValue().get(key);
+        } catch (NestedRuntimeException e) {
+            return pjp.proceed();
+        }
+
+        if (StringUtils.hasLength(o)) {
+            return objectMapper.readValue(o, javaType);
+        }
+
+        String lock = LOCK + key;
+        // 已经线程安全
+        RLock rLock = redisson.getLock(lock);
+
+        if (!rLock.tryLock(5000, TimeUnit.MILLISECONDS)) {
+            throw new TimeoutException("request timeout");
+        }
+
+        try {
+            // 双重检查
+            String r = redisTemplate.opsForValue().get(key);
+
+            if (StringUtils.hasLength(r)) {
+                return objectMapper.readValue(r, javaType);
             }
+            // 执行目标方法
+            Object proceed = pjp.proceed();
 
-            if (StringUtils.hasLength(o)) {
-                return objectMapper.readValue(o, javaType);
-            }
-
-            String lock = LOCK + key;
-            // 已经线程安全
-            RLock rLock = redisson.getLock(lock);
-
-            if (!rLock.tryLock(5000, TimeUnit.MILLISECONDS)) {
-                throw new TimeoutException("request timeout");
-            }
-
-            try {
-                // 双重检查
-                String r = redisTemplate.opsForValue().get(key);
-
-                if (StringUtils.hasLength(r)) {
-                    return objectMapper.readValue(r, javaType);
-                }
-                // 执行目标方法
-                Object proceed = pjp.proceed();
-
-                Cache annotation = method.getAnnotation(Cache.class);
-                int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
-                redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(proceed), expire, TimeUnit.MINUTES);
-                return proceed;
-            } finally {
-                rLock.unlock();
-            }
+            Cache annotation = method.getAnnotation(Cache.class);
+            int expire = ThreadLocalRandom.current().nextInt(annotation.expire()) + 1;
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(proceed), expire, TimeUnit.MINUTES);
+            return proceed;
+        } finally {
+            rLock.unlock();
+        }
     }
-    
+
 }

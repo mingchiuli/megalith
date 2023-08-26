@@ -1,5 +1,7 @@
 package org.chiu.megalith.coop.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -13,5 +15,5 @@ public abstract class BaseDto {
 
     protected Long blogId;
 
-    protected Long toId;
+    protected List<Long> toId;
 }

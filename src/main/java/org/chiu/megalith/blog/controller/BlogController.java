@@ -3,7 +3,6 @@ package org.chiu.megalith.blog.controller;
 import org.chiu.megalith.blog.vo.BlogDescriptionVo;
 import org.chiu.megalith.blog.vo.VisitStatisticsVo;
 import org.chiu.megalith.infra.bloom.handler.impl.*;
-import org.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import org.chiu.megalith.infra.bloom.Bloom;
 import org.chiu.megalith.blog.service.BlogService;
@@ -14,6 +13,7 @@ import org.chiu.megalith.blog.vo.BlogHotReadVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,7 +47,7 @@ public class BlogController {
             String authority = authentication.getAuthorities().stream()
                     .findFirst()
                     .map(GrantedAuthority::getAuthority)
-                    .orElseThrow();
+                    .orElseThrow(() -> new BadCredentialsException("role exception"));
 
             if (("ROLE_" + highestRole).equals(authority)) {
                 blog = blogService.findById(id, true);
@@ -78,7 +78,7 @@ public class BlogController {
             blogService.setReadCount(blogId);
             return Result.success(() -> blogService.findById(blogId, true));
         }
-        throw new AuthenticationExceptionImpl("authorization exception");
+        throw new BadCredentialsException("authorization exception");
     }
 
     @GetMapping("/token/{blogId}")
@@ -95,7 +95,7 @@ public class BlogController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer status = blogService.findStatusById(blogId);
 
-        if (status == 0) {
+        if (Integer.valueOf(0).equals(status)) {
             return Result.success(0);
         }
 

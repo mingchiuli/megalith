@@ -2,7 +2,6 @@ package org.chiu.megalith.coop.service;
 
 import org.chiu.megalith.coop.vo.BlogAbstractVo;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.coop.vo.InitCoopVo;
 
 /**
@@ -13,7 +12,7 @@ public interface CoopService {
     
     InitCoopVo initCoopSession(Long blogId, Integer orderNumber);
 
-    void submitBlog(Long blogId, BlogEntityVo blogEntityVo);
+    void submitBlog(Long blogId);
 
     PageAdapter<BlogAbstractVo> getCoopBlogsInfo(Integer currentPage);
 }

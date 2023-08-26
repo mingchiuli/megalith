@@ -4,7 +4,6 @@ import org.chiu.megalith.blog.dto.BlogEntityDto;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
-import org.chiu.megalith.infra.exception.AuthenticationExceptionImpl;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -20,6 +19,7 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -102,7 +102,7 @@ public class BlogManagerController {
             BlogEntity blogEntity = blogService.findById(id);
 
             if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
-                throw new AuthenticationExceptionImpl("must delete own blog");
+                throw new BadCredentialsException("must delete own blog");
             }
 
             blogService.delete(blogEntity);
@@ -139,7 +139,7 @@ public class BlogManagerController {
             redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo() + blogId, token, 24, TimeUnit.HOURS);
             return Result.success(token);
         }
-        throw new AuthenticationExceptionImpl("user mismatch");
+        throw new BadCredentialsException("user mismatch");
     }
 
     @GetMapping("/blogs")
@@ -195,7 +195,7 @@ public class BlogManagerController {
         Long bdUserId = blogService.findUserIdById(id);
 
         if (Boolean.FALSE.equals(Objects.equals(highestRole, authority) || Objects.equals(userId, bdUserId))) {
-            throw new AuthenticationExceptionImpl("user unmatch");
+            throw new BadCredentialsException("user unmatch");
         }
 
         Integer year = blogService.changeBlogStatus(id, status);

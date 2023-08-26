@@ -2,7 +2,6 @@ package org.chiu.megalith.coop.controller;
 
 import org.chiu.megalith.coop.vo.BlogAbstractVo;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.valid.CoopBlogId;
 import org.chiu.megalith.coop.service.CoopService;
@@ -26,7 +25,7 @@ public class CoopController {
 
     @GetMapping("/init/{blogId}/{orderNumber}")
     public Result<InitCoopVo> initCoopSession(@PathVariable @CoopBlogId Long blogId,
-                                           @PathVariable Integer orderNumber) {
+                                              @PathVariable Integer orderNumber) {
         return Result.success(() -> coopService.initCoopSession(blogId, orderNumber));
     }
 
@@ -36,8 +35,7 @@ public class CoopController {
     }
 
     @PostMapping("/save/{blogId}")
-    public Result<Void> submitBlog(@PathVariable @CoopBlogId Long blogId,
-                                   @RequestBody @Validated BlogEntityVo blogEntityVo) {
-        return Result.success(() -> coopService.submitBlog(blogId, blogEntityVo));
+    public Result<Void> submitBlog(@PathVariable @CoopBlogId Long blogId) {
+        return Result.success(() -> coopService.submitBlog(blogId));
     }
 }

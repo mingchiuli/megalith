@@ -1,6 +1,7 @@
 package org.chiu.megalith.coop.controller;
 
 import org.chiu.megalith.infra.lang.Result;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.coop.dto.impl.FinishCoopDto;
 import org.chiu.megalith.coop.dto.impl.QuitCoopDto;
 import org.chiu.megalith.coop.dto.impl.SyncContentDto;
@@ -29,8 +30,8 @@ public class CoopMessageController {
     }
 
     @MessageMapping("/destroy")
-    public Result<Void> finishCoopDto(@RequestBody FinishCoopDto msg) {
-        return Result.success(() -> coopMessageService.submitBlog(msg));
+    public Result<Void> finishCoop(@RequestBody FinishCoopDto msg) {
+        return Result.success(() -> coopMessageService.destroySession(msg));
     }
 
     @MessageMapping("/quit")
@@ -42,6 +43,11 @@ public class CoopMessageController {
     public Result<Void> setUserToRedisSession(@DestinationVariable Long userId,
                                               @DestinationVariable Long blogId) {
         return Result.success(() -> coopMessageService.setUserToRedisSession(userId, blogId));
+    }
+
+    @MessageMapping("/blog/{blogId}")
+    public Result<BlogEntityVo> getBlogContent(@DestinationVariable Long blogId) {
+        return Result.success(() -> coopMessageService.getBlogContent(blogId));
     }
 
 }
