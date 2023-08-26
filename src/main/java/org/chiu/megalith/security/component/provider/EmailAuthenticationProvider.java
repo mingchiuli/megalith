@@ -50,7 +50,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
 
             if (Boolean.FALSE.equals(code.equalsIgnoreCase(authentication.getCredentials().toString()))) {
                 Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
-                if (ttl == 0) {
+                if (Long.valueOf(0).equals(ttl)) {
                     throw new BadCredentialsException("code expired");
                 }
                 throw new BadCredentialsException("code mismatch");

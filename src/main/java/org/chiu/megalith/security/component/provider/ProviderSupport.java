@@ -33,19 +33,19 @@ public abstract sealed class ProviderSupport extends DaoAuthenticationProvider p
     }
 
     private static class LastProvider {
-        private static final AuthenticationProvider lastProvider;
+        private static final AuthenticationProvider lastChainProvider;
 
         static {
             ProviderManager manager = SpringUtils.getBean(ProviderManager.class);
             List<AuthenticationProvider> providers = manager.getProviders();
-            lastProvider = providers.get(providers.size() - 1);
+            lastChainProvider = providers.get(providers.size() - 1);
         }
     }
 
     protected abstract void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
 
     private boolean lastProvider() {
-        return LastProvider.lastProvider.getClass().equals(this.getClass());
+        return LastProvider.lastChainProvider.getClass().equals(this.getClass());
     }
 
     @Override

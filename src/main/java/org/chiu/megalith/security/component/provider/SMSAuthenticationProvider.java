@@ -50,7 +50,7 @@ public final class SMSAuthenticationProvider extends ProviderSupport {
 
             if (Boolean.FALSE.equals(Objects.equals(code, authentication.getCredentials().toString()))) {
                 Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
-                if (ttl == 0) {
+                if (Long.valueOf(0).equals(ttl)) {
                     throw new BadCredentialsException("sms expired");
                 }
                 throw new BadCredentialsException("sms mismatch");

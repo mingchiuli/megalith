@@ -52,8 +52,8 @@ public class CacheTask implements Function<String, Object> {
         // 已经线程安全
         RLock rLock = redisson.getLock(lock);
 
-        if (!rLock.tryLock(5000, TimeUnit.MILLISECONDS)) {
-            throw new TimeoutException("request timeout");
+        if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
+            throw new TimeoutException("get lock timeout");
         }
 
         try {

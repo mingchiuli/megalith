@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
 
     private void passwordNotMatchProcess(String username) {
         String prefix = Const.PASSWORD_KEY.getInfo() + username;
-        List<String> loginFailureTimeStampRecords = redisTemplate.opsForList().range(prefix, 0, -1);
+        List<String> loginFailureTimeStampRecords = Optional.ofNullable(redisTemplate.opsForList().range(prefix, 0, -1)).orElseGet(ArrayList::new);
         int len = loginFailureTimeStampRecords.size();
         int l = 0;
 
