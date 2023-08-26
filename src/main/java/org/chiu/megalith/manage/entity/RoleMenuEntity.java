@@ -17,6 +17,7 @@ import java.util.Objects;
 @Table(name ="m_role_menu")
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Setter
 @ToString

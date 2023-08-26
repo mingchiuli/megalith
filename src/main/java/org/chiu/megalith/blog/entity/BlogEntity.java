@@ -18,6 +18,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @DynamicUpdate
 @Builder
 @Table(name ="m_blog",

@@ -17,6 +17,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @DynamicUpdate
 @Table(name ="m_menu")
