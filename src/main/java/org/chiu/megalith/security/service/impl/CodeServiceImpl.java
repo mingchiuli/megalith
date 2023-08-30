@@ -36,13 +36,13 @@ public class CodeServiceImpl implements CodeService {
         boolean res = Boolean.FALSE.equals(redisTemplate.hasKey(key));
         if (res) {
             String code = codeFactory.create(Const.EMAIL_CODE.getInfo());
-            codeFactory.save(code, key);
             var simpMsg = new SimpleMailMessage();
             simpMsg.setFrom(from);
             simpMsg.setTo(loginEmail);
             simpMsg.setSubject("login code");
             simpMsg.setText(code);
             javaMailSender.send(simpMsg);
+            codeFactory.save(code, key);
             return;
         }
         throw new CodeException("code existed");
