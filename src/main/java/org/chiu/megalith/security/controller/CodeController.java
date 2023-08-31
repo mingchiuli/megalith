@@ -24,7 +24,7 @@ public class CodeController {
     private final UserService userService;
 
     @GetMapping("/email")
-    public Result<Void> createEmailCode(@RequestParam(value = "loginEmail") String loginEmail) {
+    public Result<Void> createEmailCode(@RequestParam(value = "loginName") String loginEmail) {
         return Result.success(() -> {
             userService.findByEmail(loginEmail);
             codeService.createEmailCode(loginEmail);
@@ -32,7 +32,7 @@ public class CodeController {
     }
 
     @GetMapping("/sms")
-    public Result<Void> createSmsCode(@RequestParam(value = "loginSMS") String loginSMS) {
+    public Result<Void> createSmsCode(@RequestParam(value = "loginName") String loginSMS) {
         return Result.success(() -> codeService.createSMSCode(loginSMS));
     }
 }
