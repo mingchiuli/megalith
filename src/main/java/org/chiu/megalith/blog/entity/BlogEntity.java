@@ -41,7 +41,7 @@ public class BlogEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "content")
+    @Column(name = "content", length = 65535)
     private String content;
 
     @Column(name = "created")
