@@ -1,5 +1,6 @@
 package org.chiu.megalith.security.user;
 
+import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -10,6 +11,7 @@ import java.util.Collection;
  * @author mingchiuli
  * @create 2023-01-14 9:19 am
  */
+@Getter
 public class LoginUser extends User {
 
     public static final ThreadLocal<AuthenticationException> loginException = new ThreadLocal<>();
@@ -34,11 +36,4 @@ public class LoginUser extends User {
         this.userId = userId;
     }
 
-    public String getGrantType() {
-        return grantType;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
 }

@@ -1,10 +1,13 @@
 package org.chiu.megalith.infra.lang;
 
 
+import lombok.Getter;
+
 /**
  * @author mingchiuli
  * @create 2021-12-14 11:58 AM
  */
+@Getter
 public enum Const {
 
     GRANT_TYPE_EMAIL("email"),
@@ -65,19 +68,11 @@ public enum Const {
 
     BLOOM_FILTER_YEARS("bloom_filter_years"),
 
-    JSON_WEB_TOKEN("jwt"),
-
-    ROLE_TOKEN_TOOL("ROLE_token_tool"),
-
     HOT_READ("hot_read"),
     
     BLOG_CONTENT("content");
 
     private final String info;
-
-    public String getInfo() {
-        return info;
-    }
 
     Const(String info) {
         this.info = info;

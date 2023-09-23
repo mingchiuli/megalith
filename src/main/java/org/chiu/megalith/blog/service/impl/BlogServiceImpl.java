@@ -155,7 +155,7 @@ public class BlogServiceImpl implements BlogService {
         Long count = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.countYears, List.of(Const.BLOOM_FILTER_YEARS.getInfo())))
                 .orElse(0L);
         int start = 2021;
-        int end = start + count.intValue() - 1 >= start ? start + count.intValue() - 1 : start;
+        int end = Math.max(start + count.intValue() - 1, start);
         var years = new ArrayList<Integer>(end - start + 1);
         for (int year = start; year <= end; year++) {
             years.add(year);
