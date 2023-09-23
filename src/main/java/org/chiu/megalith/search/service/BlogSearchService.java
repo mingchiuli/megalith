@@ -1,7 +1,7 @@
 package org.chiu.megalith.search.service;
 
 
-import org.chiu.megalith.blog.dto.BlogEntityDto;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.search.vo.BlogDocumentVo;
 
@@ -13,5 +13,5 @@ public interface BlogSearchService {
 
     PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keywords, Boolean allInfo, String year);
 
-    PageAdapter<BlogEntityDto> searchAllBlogs(String keywords, Integer currentPage, Integer size);
+    PageAdapter<BlogEntityVo> searchAllBlogs(String keywords, Integer currentPage, Integer size);
 }

@@ -6,9 +6,11 @@ import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.repository.MenuRepository;
 import org.chiu.megalith.manage.service.MenuService;
 import org.chiu.megalith.manage.service.RoleService;
-import org.chiu.megalith.manage.vo.MenuEntityVo;
+import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.vo.MenuEntityVo;
+import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,7 +30,7 @@ public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
 
     @Override
-    public List<MenuEntityVo> getCurrentUserNav(Long userId) {
+    public List<MenuVo> getCurrentUserNav(Long userId) {
 
         UserEntity userEntity = userService.findById(userId);
         String role = userEntity.getRole();
@@ -36,8 +38,8 @@ public class MenuServiceImpl implements MenuService {
         List<Long> menuIds = roleService.getNavMenuIds(role);
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
 
-        List<MenuEntityVo> menuEntityVos = menus.stream()
-                .map(menu -> MenuEntityVo.builder()
+        List<MenuVo> menuEntities = menus.stream()
+                .map(menu -> MenuVo.builder()
                         .menuId(menu.getMenuId())
                         .parentId(menu.getParentId())
                         .icon(menu.getIcon())
@@ -52,21 +54,34 @@ public class MenuServiceImpl implements MenuService {
                 .toList();
 
         // 转树状结构
-        return buildTreeMenu(menuEntityVos);
+        return buildTreeMenu(menuEntities);
     }
 
     @Override
-    public MenuEntity findById(Long id) {
-        return menuRepository.findById(id)
+    public MenuEntityVo findById(Long id) {
+        MenuEntity menuEntity = menuRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("menu not exist"));
+
+        return MenuEntityVo.builder()
+                .menuId(menuEntity.getMenuId())
+                .url(menuEntity.getUrl())
+                .title(menuEntity.getTitle())
+                .type(menuEntity.getType())
+                .name(menuEntity.getName())
+                .component(menuEntity.getComponent())
+                .orderNum(menuEntity.getOrderNum())
+                .parentId(menuEntity.getParentId())
+                .icon(menuEntity.getIcon())
+                .status(menuEntity.getStatus())
+                .build();
     }
 
     @Override
-    public List<MenuEntityVo> tree() {
+    public List<MenuVo> tree() {
 
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
-        List<MenuEntityVo> menuEntityVos = menus.stream()
-                .map(menu -> MenuEntityVo.builder()
+        List<MenuVo> menuEntities = menus.stream()
+                .map(menu -> MenuVo.builder()
                         .menuId(menu.getMenuId())
                         .parentId(menu.getParentId())
                         .icon(menu.getIcon())
@@ -80,11 +95,11 @@ public class MenuServiceImpl implements MenuService {
                         .build())
                 .toList();
 
-        return buildTreeMenu(menuEntityVos);
+        return buildTreeMenu(menuEntities);
     }
 
     @Override
-    public void saveOrUpdate(MenuEntityVo menu) {
+    public void saveOrUpdate(MenuEntityReq menu) {
 
         var menuEntity = MenuEntity.builder()
                 .menuId(menu.getMenuId())
@@ -108,7 +123,7 @@ public class MenuServiceImpl implements MenuService {
         menuRepository.deleteById(id);
     }
 
-    private List<MenuEntityVo> buildTreeMenu(List<MenuEntityVo> menus) {
+    private List<MenuVo> buildTreeMenu(List<MenuVo> menus) {
         //2.组装父子的树形结构
         //2.1 找到所有一级分类
         return menus.stream()
@@ -118,7 +133,7 @@ public class MenuServiceImpl implements MenuService {
                 .toList();
     }
 
-    private List<MenuEntityVo> getChildren(MenuEntityVo root, List<MenuEntityVo> all) {
+    private List<MenuVo> getChildren(MenuVo root, List<MenuVo> all) {
         return all.stream()
                 .filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId()))
                 .peek(menu -> menu.setChildren(getChildren(menu, all)))

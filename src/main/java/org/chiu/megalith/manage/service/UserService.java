@@ -2,8 +2,9 @@ package org.chiu.megalith.manage.service;
 
 
 import org.chiu.megalith.manage.entity.UserEntity;
-import org.chiu.megalith.manage.vo.UserEntityVo;
+import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.manage.vo.UserEntityVo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ public interface UserService {
 
     void updateLoginTime(String username, LocalDateTime time);
 
-    void saveOrUpdate(UserEntityVo userEntityVo);
+    void saveOrUpdate(UserEntityReq userEntityReq);
 
     UserEntity findById(Long userId);
 
@@ -24,7 +25,7 @@ public interface UserService {
 
     void changeUserStatusByUsername(String username, Integer status);
 
-    PageAdapter<UserEntity> listPage(Integer currentPage, Integer size);
+    PageAdapter<UserEntityVo> listPage(Integer currentPage, Integer size);
 
     void deleteUsers(List<Long> ids);
 

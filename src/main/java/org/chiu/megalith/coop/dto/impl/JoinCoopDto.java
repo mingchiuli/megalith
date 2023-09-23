@@ -1,12 +1,12 @@
 package org.chiu.megalith.coop.dto.impl;
 
-import org.chiu.megalith.coop.dto.BaseDto;
-import org.chiu.megalith.coop.vo.UserEntityVo;
+import org.chiu.megalith.coop.dto.BaseTransferDto;
+import org.chiu.megalith.coop.dto.UserEntityDto;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class JoinCoopDto extends BaseDto {
+public class JoinCoopDto extends BaseTransferDto {
 
-    private UserEntityVo user;
+    private UserEntityDto user;
 }

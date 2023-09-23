@@ -3,6 +3,7 @@ package org.chiu.megalith.coop.vo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import lombok.Builder;
 import lombok.Data;
+import org.chiu.megalith.coop.dto.UserEntityDto;
 
 /**
  * @author mingchiuli
@@ -14,5 +15,5 @@ public class InitCoopVo {
 
     private BlogEntity blogEntity;
 
-    private UserEntityVo userEntityVo;
+    private UserEntityDto userEntityDto;
 }

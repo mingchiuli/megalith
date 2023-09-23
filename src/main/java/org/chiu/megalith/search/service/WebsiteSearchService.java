@@ -2,7 +2,7 @@ package org.chiu.megalith.search.service;
 
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.search.vo.WebsiteDocumentVo;
-import org.chiu.megalith.search.vo.WebsiteVo;
+import org.chiu.megalith.search.req.WebsiteDocumentReq;
 
 /**
  * @author mingchiuli
@@ -10,7 +10,7 @@ import org.chiu.megalith.search.vo.WebsiteVo;
  */
 public interface WebsiteSearchService {
 
-    void saveOrUpdate(WebsiteVo document);
+    void saveOrUpdate(WebsiteDocumentReq document);
 
     void delete(String id);
 

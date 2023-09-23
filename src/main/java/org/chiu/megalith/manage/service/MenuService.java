@@ -1,8 +1,9 @@
 package org.chiu.megalith.manage.service;
 
 
-import org.chiu.megalith.manage.entity.MenuEntity;
+import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
+import org.chiu.megalith.manage.vo.MenuVo;
 
 import java.util.List;
 
@@ -12,13 +13,13 @@ import java.util.List;
  */
 public interface MenuService {
 
-    List<MenuEntityVo> getCurrentUserNav(Long userId);
+    List<MenuVo> getCurrentUserNav(Long userId);
 
-    MenuEntity findById(Long id);
+    MenuEntityVo findById(Long id);
 
-    List<MenuEntityVo> tree();
+    List<MenuVo> tree();
 
-    void saveOrUpdate(MenuEntityVo menu);
+    void saveOrUpdate(MenuEntityReq menu);
 
     void delete(Long id);
 }

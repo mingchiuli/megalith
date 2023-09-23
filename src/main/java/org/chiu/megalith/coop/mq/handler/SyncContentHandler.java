@@ -1,6 +1,6 @@
 package org.chiu.megalith.coop.mq.handler;
 
-import org.chiu.megalith.coop.dto.BaseDto;
+import org.chiu.megalith.coop.dto.BaseTransferDto;
 import org.chiu.megalith.coop.dto.impl.SyncContentDto;
 import org.chiu.megalith.coop.mq.BaseHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,7 +14,7 @@ public class SyncContentHandler extends BaseHandler {
     }
 
     @Override
-    public boolean supports(BaseDto msg) {
+    public boolean supports(BaseTransferDto msg) {
         return msg instanceof SyncContentDto;
     }
 }

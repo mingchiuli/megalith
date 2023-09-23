@@ -1,9 +1,9 @@
 package org.chiu.megalith.coop.service;
 
-import org.chiu.megalith.blog.vo.BlogEntityVo;
-import org.chiu.megalith.coop.dto.impl.FinishCoopDto;
-import org.chiu.megalith.coop.dto.impl.QuitCoopDto;
-import org.chiu.megalith.coop.dto.impl.SyncContentDto;
+import org.chiu.megalith.coop.vo.BlogEntityVo;
+import org.chiu.megalith.coop.vo.FinishCoopVo;
+import org.chiu.megalith.coop.vo.QuitCoopVo;
+import org.chiu.megalith.coop.vo.SyncContentVo;
 
 
 /**
@@ -12,11 +12,11 @@ import org.chiu.megalith.coop.dto.impl.SyncContentDto;
  */
 public interface CoopMessageService {
     
-    void syncContent(SyncContentDto msg);
+    void syncContent(SyncContentVo msg);
 
-    void destroySession(FinishCoopDto msg);
+    void destroySession(FinishCoopVo msg);
 
-    void quitEdit(QuitCoopDto msg);
+    void quitEdit(QuitCoopVo msg);
 
     void setUserToRedisSession(Long userId, Long blogId);
 

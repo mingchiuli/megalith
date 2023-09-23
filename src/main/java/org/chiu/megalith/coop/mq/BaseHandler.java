@@ -2,7 +2,7 @@ package org.chiu.megalith.coop.mq;
 
 import java.util.List;
 
-import org.chiu.megalith.coop.dto.BaseDto;
+import org.chiu.megalith.coop.dto.BaseTransferDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 public abstract class BaseHandler {
@@ -16,9 +16,9 @@ public abstract class BaseHandler {
         this.url = url;
     }
 
-    public abstract boolean supports(BaseDto msg);
+    public abstract boolean supports(BaseTransferDto msg);
 
-    public void handle(BaseDto msg) {
+    public void handle(BaseTransferDto msg) {
         Long blogId = msg.getBlogId();
         List<Long> toIds = msg.getToId();
         toIds.forEach(id -> simpMessagingTemplate.convertAndSendToUser(id.toString(), "/" + blogId + url, msg));

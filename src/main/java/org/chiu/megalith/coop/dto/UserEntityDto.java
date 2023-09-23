@@ -1,4 +1,4 @@
-package org.chiu.megalith.coop.vo;
+package org.chiu.megalith.coop.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class UserEntityVo {
+public class UserEntityDto {
 
     private Long id;
 

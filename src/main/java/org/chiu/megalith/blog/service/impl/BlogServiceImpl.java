@@ -3,7 +3,7 @@ package org.chiu.megalith.blog.service.impl;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.cache.Cache;
-import org.chiu.megalith.blog.dto.BlogEntityDto;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
@@ -14,6 +14,7 @@ import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -169,7 +170,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity saveOrUpdate(BlogEntityVo blog, Long userId) {
+    public BlogEntity saveOrUpdate(BlogEntityReq blog, Long userId) {
         Long blogId = blog.getId();
 
         BlogEntity blogEntity;
@@ -192,17 +193,17 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
+    public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page = Objects.equals(authority, highestRole) ?
                 blogRepository.findAll(pageRequest) :
                 blogRepository.findAllByUserId(pageRequest, userId);
 
-        List<BlogEntityDto> entities = page.getContent()
+        List<BlogEntityVo> entities = page.getContent()
                 .stream()
                 .map(blogEntity ->
-                        BlogEntityDto.builder()
+                        BlogEntityVo.builder()
                                 .id(blogEntity.getId())
                                 .title(blogEntity.getTitle())
                                 .description(blogEntity.getDescription())
@@ -216,7 +217,7 @@ public class BlogServiceImpl implements BlogService {
                                 .build())
                 .toList();
 
-        return PageAdapter.<BlogEntityDto>builder()
+        return PageAdapter.<BlogEntityVo>builder()
                 .content(entities)
                 .last(page.isLast())
                 .first(page.isFirst())

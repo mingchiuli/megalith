@@ -9,7 +9,7 @@ import lombok.Data;
  * @create 2023-04-11 6:40 pm
  */
 @Data
-public abstract class BaseDto {
+public abstract class BaseTransferDto {
 
     protected Long fromId;
 

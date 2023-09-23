@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             throws IOException, ServletException {
 
         String jwt = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (Boolean.FALSE.equals(StringUtils.hasLength(jwt))) {
+        if (!StringUtils.hasLength(jwt)) {
             chain.doFilter(request, response);
             return;
         }

@@ -6,10 +6,11 @@ import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.RoleService;
-import org.chiu.megalith.manage.vo.RoleEntityVo;
+import org.chiu.megalith.manage.req.RoleEntityReq;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.vo.RoleEntityVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,22 +36,56 @@ public class RoleServiceImpl implements RoleService {
     private final RoleMenuService roleMenuService;
 
     @Override
-    public RoleEntity info(Long id) {
-        return roleRepository.findById(id)
+    public RoleEntityVo info(Long id) {
+        RoleEntity roleEntity = roleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("role not exist"));
+
+        return RoleEntityVo.builder()
+                .code(roleEntity.getCode())
+                .name(roleEntity.getName())
+                .remark(roleEntity.getRemark())
+                .status(roleEntity.getStatus())
+                .updated(roleEntity.getUpdated())
+                .created(roleEntity.getCreated())
+                .id(roleEntity.getId())
+                .build();
     }
 
     @Override
-    public PageAdapter<RoleEntity> getPage(Integer currentPage, Integer size) {
+    public PageAdapter<RoleEntityVo> getPage(Integer currentPage, Integer size) {
         var pageRequest = PageRequest.of(currentPage - 1,
                 size,
                 Sort.by("created").ascending());
         Page<RoleEntity> page = roleRepository.findAll(pageRequest);
-        return new PageAdapter<>(page);
+
+        List<RoleEntityVo> content = new ArrayList<>();
+        page.getContent().forEach(role -> {
+            RoleEntityVo roleEntityVo = RoleEntityVo.builder()
+                    .code(role.getCode())
+                    .name(role.getName())
+                    .remark(role.getRemark())
+                    .status(role.getStatus())
+                    .updated(role.getUpdated())
+                    .created(role.getCreated())
+                    .id(role.getId())
+                    .build();
+            content.add(roleEntityVo);
+        });
+
+        return PageAdapter.<RoleEntityVo>builder()
+                .empty(page.isEmpty())
+                .first(page.isFirst())
+                .last(page.isLast())
+                .pageNumber(page.getPageable().getPageNumber())
+                .content(content)
+                .totalPages(page.getTotalPages())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .build();
     }
 
     @Override
-    public void saveOrUpdate(RoleEntityVo roleVo) {
+    public void saveOrUpdate(RoleEntityReq roleVo) {
 
         Long id = roleVo.getId();
         RoleEntity roleEntity;

@@ -1,9 +1,9 @@
 package org.chiu.megalith.manage.service;
 
 
-import org.chiu.megalith.manage.entity.RoleEntity;
-import org.chiu.megalith.manage.vo.RoleEntityVo;
+import org.chiu.megalith.manage.req.RoleEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.manage.vo.RoleEntityVo;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface RoleService {
 
-    RoleEntity info(Long id);
+    RoleEntityVo info(Long id);
 
-    PageAdapter<RoleEntity> getPage(Integer current, Integer size);
+    PageAdapter<RoleEntityVo> getPage(Integer current, Integer size);
 
-    void saveOrUpdate(RoleEntityVo role);
+    void saveOrUpdate(RoleEntityReq role);
 
     void delete(List<Long> ids);
 

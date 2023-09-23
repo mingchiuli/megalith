@@ -4,7 +4,7 @@ import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.search.service.WebsiteSearchService;
 import org.chiu.megalith.search.vo.WebsiteDocumentVo;
-import org.chiu.megalith.search.vo.WebsiteVo;
+import org.chiu.megalith.search.req.WebsiteDocumentReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -23,8 +23,8 @@ public class WebsiteSearchController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> save(@Validated @RequestBody WebsiteVo websiteVo) {
-        return Result.success(() -> websiteSearchService.saveOrUpdate(websiteVo));
+    public Result<Void> save(@Validated @RequestBody WebsiteDocumentReq websiteDocumentReq) {
+        return Result.success(() -> websiteSearchService.saveOrUpdate(websiteDocumentReq));
     }
 
     @GetMapping("/delete/{id}")

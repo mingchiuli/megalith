@@ -1,9 +1,9 @@
 package org.chiu.megalith.blog.controller;
 
-import org.chiu.megalith.blog.dto.BlogEntityDto;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.blog.vo.BlogEntityVo;
+import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -61,7 +61,7 @@ public class BlogManagerController {
     }
 
     @PostMapping("/save")
-    public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityVo blog) {
+    public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityReq blog) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
         BlogEntity blogEntity = blogService.saveOrUpdate(blog, userId);
         //通知消息给mq,更新并删除缓存
@@ -143,8 +143,8 @@ public class BlogManagerController {
     }
 
     @GetMapping("/blogs")
-    public Result<PageAdapter<BlogEntityDto>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
-                                                          @RequestParam(defaultValue = "5") Integer size) {
+    public Result<PageAdapter<BlogEntityVo>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
+                                                         @RequestParam(defaultValue = "5") Integer size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.valueOf(authentication.getName());
         String authority = authentication.getAuthorities().stream()

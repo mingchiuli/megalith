@@ -5,7 +5,7 @@ import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
-import org.chiu.megalith.blog.dto.BlogEntityDto;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.chiu.megalith.search.service.BlogSearchService;
@@ -106,7 +106,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     }
 
     @Override
-    public PageAdapter<BlogEntityDto> searchAllBlogs(String keywords, Integer currentPage, Integer size) {
+    public PageAdapter<BlogEntityVo> searchAllBlogs(String keywords, Integer currentPage, Integer size) {
         long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
         var nativeQuery = NativeQuery.builder()
@@ -129,7 +129,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % size == 0 ? totalHits / size : totalHits / size + 1;
 
-        List<BlogEntityDto> entities = search.getSearchHits().stream()
+        List<BlogEntityVo> entities = search.getSearchHits().stream()
                 .map(hit -> {
                     BlogDocument document = hit.getContent();
                     Long id = document.getId();
@@ -139,7 +139,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                     } catch (NotFoundException e) {
                         readCount = blogService.findById(id, true).getReadCount();
                     }
-                    return BlogEntityDto.builder()
+                    return BlogEntityVo.builder()
                             .id(id)
                             .title(document.getTitle())
                             .description(document.getDescription())
@@ -153,7 +153,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 })
                 .toList();
 
-        return PageAdapter.<BlogEntityDto>builder()
+        return PageAdapter.<BlogEntityVo>builder()
                 .totalElements(totalHits)
                 .pageNumber(currentPage)
                 .pageSize(size)

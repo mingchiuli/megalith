@@ -1,10 +1,11 @@
 package org.chiu.megalith.manage.controller;
 
-import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.service.MenuService;
-import org.chiu.megalith.manage.vo.MenuEntityVo;
+import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.vo.MenuEntityVo;
+import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +27,7 @@ public class MenuController {
     private final MenuService menuService;
 
     @GetMapping("/nav")
-    public Result<List<MenuEntityVo>> nav() {
+    public Result<List<MenuVo>> nav() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.valueOf(authentication.getName());
         return Result.success(() -> menuService.getCurrentUserNav(userId));
@@ -34,19 +35,19 @@ public class MenuController {
 
     @GetMapping("/info/{id}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<MenuEntity> info(@PathVariable(name = "id") Long id) {
+    public Result<MenuEntityVo> info(@PathVariable(name = "id") Long id) {
         return Result.success(() -> menuService.findById(id));
     }
 
     @GetMapping("/list")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<List<MenuEntityVo>> list() {
+    public Result<List<MenuVo>> list() {
         return Result.success(menuService::tree);
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> saveOrUpdate(@Validated @RequestBody MenuEntityVo menu) {
+    public Result<Void> saveOrUpdate(@Validated @RequestBody MenuEntityReq menu) {
         return Result.success(() -> menuService.saveOrUpdate(menu));
     }
 

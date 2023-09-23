@@ -9,7 +9,7 @@ import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.search.document.WebsiteDocument;
 import org.chiu.megalith.search.service.WebsiteSearchService;
 import org.chiu.megalith.search.vo.WebsiteDocumentVo;
-import org.chiu.megalith.search.vo.WebsiteVo;
+import org.chiu.megalith.search.req.WebsiteDocumentReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +46,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     private final List<String> fields = List.of("title", "description");
 
     @Override
-    public void saveOrUpdate(WebsiteVo websiteVo) {
-        String id = websiteVo.getId();
+    public void saveOrUpdate(WebsiteDocumentReq websiteDocumentReq) {
+        String id = websiteDocumentReq.getId();
         WebsiteDocument document;
 
         if (Objects.nonNull(id)) {
@@ -61,7 +61,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                     .build();
         }
 
-        BeanUtils.copyProperties(websiteVo, document);
+        BeanUtils.copyProperties(websiteDocumentReq, document);
         elasticsearchTemplate.save(document);
     }
 

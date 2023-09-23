@@ -1,9 +1,10 @@
 package org.chiu.megalith.blog.service;
 
-import org.chiu.megalith.blog.dto.BlogEntityDto;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -34,9 +35,9 @@ public interface BlogService {
 
     Long count();
 
-    BlogEntity saveOrUpdate(BlogEntityVo blog, Long userId);
+    BlogEntity saveOrUpdate(BlogEntityReq blog, Long userId);
 
-    PageAdapter<BlogEntityDto> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority);
+    PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority);
 
     BlogEntity recoverDeletedBlog(Long id, Integer idx, Long userId);
 

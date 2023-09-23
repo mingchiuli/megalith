@@ -39,7 +39,7 @@ public final class SMSAuthenticationProvider extends ProviderSupport {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(prefix);
 
-        if (Boolean.FALSE.equals(entries.isEmpty())) {
+        if (!entries.isEmpty()) {
             String code = entries.get("sms");
             String tryCount = entries.get("try_count");
 
@@ -48,7 +48,7 @@ public final class SMSAuthenticationProvider extends ProviderSupport {
                 throw new BadCredentialsException("sms reach max try number");
             }
 
-            if (Boolean.FALSE.equals(Objects.equals(code, authentication.getCredentials().toString()))) {
+            if (!Objects.equals(code, authentication.getCredentials().toString())) {
                 Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
                 if (Long.valueOf(0).equals(ttl)) {
                     throw new BadCredentialsException("sms expired");

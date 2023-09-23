@@ -39,7 +39,7 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         var entries = hashOperations.entries(prefix);
 
-        if (Boolean.FALSE.equals(entries.isEmpty())) {
+        if (!entries.isEmpty()) {
             String code = entries.get("code");
             String tryCount = entries.get("try_count");
 

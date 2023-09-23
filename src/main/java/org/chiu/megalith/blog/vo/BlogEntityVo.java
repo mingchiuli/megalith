@@ -1,33 +1,31 @@
 package org.chiu.megalith.blog.vo;
 
-import org.chiu.megalith.infra.valid.ListValue;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.validator.constraints.URL;
+
+import java.time.LocalDateTime;
 
 /**
  * @author mingchiuli
- * @create 2022-12-01 9:26 pm
+ * @create 2022-12-03 11:36 pm
  */
-@Data
 @Builder
+@Data
 public class BlogEntityVo {
 
     private Long id;
 
-    @NotBlank(message = "标题不能为空")
     private String title;
 
-    @NotBlank(message = "摘要不能为空")
     private String description;
 
-    @NotBlank(message = "内容不能为空")
     private String content;
 
-    @ListValue(values = {0,1})
-    private Integer status;
+    private Long readCount;
 
-    @URL
-    private String link;
+    private Double recentReadCount;
+
+    private LocalDateTime created;
+
+    private Integer status;
 }

@@ -3,9 +3,12 @@ package org.chiu.megalith.manage.vo;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
-public class MenuEntityVo {
+public class MenuVo {
 
     private Long menuId;
 
@@ -26,4 +29,7 @@ public class MenuEntityVo {
     private Integer orderNum;
 
     private Integer status;
+
+    @Builder.Default
+    private List<MenuVo> children = new ArrayList<>();
 }

@@ -3,11 +3,12 @@ package org.chiu.megalith.manage.service.impl;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.repository.UserRepository;
 import org.chiu.megalith.manage.service.UserService;
-import org.chiu.megalith.manage.vo.UserEntityVo;
+import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.vo.UserEntityVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,8 +40,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveOrUpdate(UserEntityVo userEntityVo) {
-        Long id = userEntityVo.getId();
+    public void saveOrUpdate(UserEntityReq userEntityReq) {
+        Long id = userEntityReq.getId();
         UserEntity userEntity;
         var now = LocalDateTime.now();
 
@@ -47,22 +49,22 @@ public class UserServiceImpl implements UserService {
             userEntity = userRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("user not exist"));
 
-            Optional.ofNullable(userEntityVo.getPassword()).ifPresentOrElse(password ->
-                    userEntityVo.setPassword(passwordEncoder.encode(password)), () ->
-                    userEntityVo.setPassword(userEntity.getPassword()));
+            Optional.ofNullable(userEntityReq.getPassword()).ifPresentOrElse(password ->
+                    userEntityReq.setPassword(passwordEncoder.encode(password)), () ->
+                    userEntityReq.setPassword(userEntity.getPassword()));
         } else {
             userEntity = UserEntity.builder()
                     .created(now)
                     .lastLogin(now)
                     .build();
-            userEntityVo.setPassword(
-                    passwordEncoder.encode(Optional.ofNullable(userEntityVo.getPassword())
+            userEntityReq.setPassword(
+                    passwordEncoder.encode(Optional.ofNullable(userEntityReq.getPassword())
                                     .orElseThrow(() -> new CommitException("password is required"))
                     )
             );
         }
 
-        BeanUtils.copyProperties(userEntityVo, userEntity);
+        BeanUtils.copyProperties(userEntityReq, userEntity);
         userRepository.save(userEntity);
     }
 
@@ -83,12 +85,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageAdapter<UserEntity> listPage(Integer currentPage, Integer size) {
+    public PageAdapter<UserEntityVo> listPage(Integer currentPage, Integer size) {
         var pageRequest = PageRequest.of(currentPage - 1,
                 size,
                 Sort.by("created").ascending());
         Page<UserEntity> page = userRepository.findAll(pageRequest);
-        return new PageAdapter<>(page);
+
+        List<UserEntityVo> content = new ArrayList<>();
+        page.getContent().forEach(user -> {
+            UserEntityVo userEntityVo = UserEntityVo.builder()
+                    .email(user.getEmail())
+                    .phone(user.getPhone())
+                    .role(user.getRole())
+                    .id(user.getId())
+                    .nickname(user.getNickname())
+                    .status(user.getStatus())
+                    .avatar(user.getAvatar())
+                    .created(user.getCreated())
+                    .lastLogin(user.getLastLogin())
+                    .username(user.getUsername())
+                    .build();
+            content.add(userEntityVo);
+        });
+
+        return PageAdapter.<UserEntityVo>builder()
+                .empty(page.isEmpty())
+                .first(page.isFirst())
+                .last(page.isLast())
+                .pageNumber(page.getPageable().getPageNumber())
+                .content(content)
+                .totalPages(page.getTotalPages())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .build();
     }
 
     @Override

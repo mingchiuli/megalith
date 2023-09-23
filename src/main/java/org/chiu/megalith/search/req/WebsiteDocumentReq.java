@@ -1,4 +1,4 @@
-package org.chiu.megalith.search.vo;
+package org.chiu.megalith.search.req;
 
 import org.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.URL;
  */
 @Data
 @Builder
-public class WebsiteVo {
+public class WebsiteDocumentReq {
 
     private String id;
 
