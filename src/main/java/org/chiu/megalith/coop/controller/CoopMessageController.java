@@ -1,9 +1,9 @@
 package org.chiu.megalith.coop.controller;
 
 import org.chiu.megalith.coop.vo.BlogEntityVo;
-import org.chiu.megalith.coop.vo.FinishCoopVo;
-import org.chiu.megalith.coop.vo.QuitCoopVo;
-import org.chiu.megalith.coop.vo.SyncContentVo;
+import org.chiu.megalith.coop.req.FinishCoopReq;
+import org.chiu.megalith.coop.req.QuitCoopReq;
+import org.chiu.megalith.coop.req.SyncContentReq;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +25,17 @@ public class CoopMessageController {
     private final CoopMessageService coopMessageService;
 
     @MessageMapping("/sync")
-    public Result<Void> syncContent(@RequestBody SyncContentVo msg) {
+    public Result<Void> syncContent(@RequestBody SyncContentReq msg) {
         return Result.success(() -> coopMessageService.syncContent(msg));
     }
 
     @MessageMapping("/destroy")
-    public Result<Void> finishCoop(@RequestBody FinishCoopVo msg) {
+    public Result<Void> finishCoop(@RequestBody FinishCoopReq msg) {
         return Result.success(() -> coopMessageService.destroySession(msg));
     }
 
     @MessageMapping("/quit")
-    public Result<Void> quitEdit(@RequestBody QuitCoopVo msg) {
+    public Result<Void> quitEdit(@RequestBody QuitCoopReq msg) {
         return Result.success(() -> coopMessageService.quitEdit(msg));
     }
 

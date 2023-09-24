@@ -3,6 +3,9 @@ package org.chiu.megalith.coop.service.impl;
 import org.chiu.megalith.coop.dto.impl.FinishCoopDto;
 import org.chiu.megalith.coop.dto.impl.QuitCoopDto;
 import org.chiu.megalith.coop.dto.impl.SyncContentDto;
+import org.chiu.megalith.coop.req.FinishCoopReq;
+import org.chiu.megalith.coop.req.QuitCoopReq;
+import org.chiu.megalith.coop.req.SyncContentReq;
 import org.chiu.megalith.coop.vo.*;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.JsonUtils;
@@ -43,7 +46,7 @@ public class CoopMessageServiceImpl extends BaseCoopService implements CoopMessa
     }
 
     @Override
-    public void syncContent(SyncContentVo msg) {
+    public void syncContent(SyncContentReq msg) {
         String changeContent = msg.getContent();
         String type = msg.getOperateType();
         Integer offset = msg.getOffset();
@@ -77,7 +80,7 @@ public class CoopMessageServiceImpl extends BaseCoopService implements CoopMessa
     }
 
     @Override
-    public void destroySession(FinishCoopVo msg) {
+    public void destroySession(FinishCoopReq msg) {
         FinishCoopDto finishCoopDto = new FinishCoopDto();
         finishCoopDto.setBlogId(msg.getBlogId());
         finishCoopDto.setFromId(msg.getFromId());
@@ -85,7 +88,7 @@ public class CoopMessageServiceImpl extends BaseCoopService implements CoopMessa
     }
 
     @Override
-    public void quitEdit(QuitCoopVo msg) {
+    public void quitEdit(QuitCoopReq msg) {
         QuitCoopDto quitCoopDto = new QuitCoopDto();
         quitCoopDto.setBlogId(msg.getBlogId());
         quitCoopDto.setFromId(msg.getFromId());
