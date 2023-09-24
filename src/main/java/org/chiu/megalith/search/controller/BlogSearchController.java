@@ -23,7 +23,7 @@ public class BlogSearchController {
 
     private final BlogSearchService blogSearchService;
 
-    @GetMapping("/blog")
+    @GetMapping("/public/blog")
     public Result<PageAdapter<BlogDocumentVo>> selectBlogsByES(@RequestParam(value = "currentPage", defaultValue = "-1") Integer currentPage,
                                                                @RequestParam(value = "allInfo") Boolean allInfo,
                                                                @RequestParam(value = "year", required = false) String year,
