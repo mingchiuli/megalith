@@ -1,8 +1,8 @@
 plugins {
 	java
 	id("org.springframework.boot") version "3.1.4"
-	id("io.spring.dependency-management") version "1.1.2"
-//	id("org.graalvm.buildtools.native") version "0.9.23"
+	id("io.spring.dependency-management") version "1.1.3"
+//	id("org.graalvm.buildtools.native") version "0.9.27"
 }
 
 group = "com.chiu"
@@ -32,9 +32,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.security:spring-security-messaging")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-	implementation("org.redisson:redisson-spring-boot-starter:3.23.1")
-	implementation("com.github.ben-manes.caffeine:caffeine:3.1.6")
-	implementation("io.netty:netty-resolver-dns-native-macos:4.1.94.Final") {
+	implementation("org.redisson:redisson-spring-boot-starter:3.23.5")
+	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+	implementation("io.netty:netty-resolver-dns-native-macos:4.1.98.Final") {
 		artifact {
 			classifier = "osx-aarch_64"
 		}
