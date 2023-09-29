@@ -1,8 +1,8 @@
 package org.chiu.megalith.coop.config.interceptor;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.chiu.megalith.infra.jwt.JwtUtils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
@@ -42,17 +42,13 @@ public class MessageInterceptor implements ChannelInterceptor {
                 try {
                     jwt = token.substring("Bearer ".length());
                 } catch (IndexOutOfBoundsException e) {
-                    throw new JwtException("token invalid");
-                }
-                Claims claim = jwtUtils.getClaimByToken(jwt)
-                        .orElseThrow(() -> new JwtException("token invalid"));
-
-                if (jwtUtils.isTokenExpired(claim.getExpiration())) {
-                    throw new JwtException("token expired");
+                    throw new JWTVerificationException("token invalid");
                 }
 
-                String userId = claim.getSubject();
-                String role = (String) claim.get("role");
+                DecodedJWT decodedJWT = jwtUtils.getJWTVerifierByToken(jwt);
+
+                String userId = decodedJWT.getSubject();
+                String role = decodedJWT.getClaim("role").asString();
 
                 accessor.setUser(new PreAuthenticatedAuthenticationToken(userId, null,
                         AuthorityUtils.createAuthorityList(role)));

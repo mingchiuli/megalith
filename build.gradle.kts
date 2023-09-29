@@ -31,7 +31,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.security:spring-security-messaging")
-	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	implementation("com.auth0:java-jwt:4.4.0")
 	implementation("org.redisson:redisson-spring-boot-starter:3.23.5")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 	implementation("io.netty:netty-resolver-dns-native-macos:4.1.98.Final") {
@@ -39,8 +39,6 @@ dependencies {
 			classifier = "osx-aarch_64"
 		}
 	}
-	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
-	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

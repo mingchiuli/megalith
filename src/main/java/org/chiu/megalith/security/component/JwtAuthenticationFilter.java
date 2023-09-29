@@ -1,10 +1,10 @@
 package org.chiu.megalith.security.component;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.chiu.megalith.infra.jwt.JwtUtils;
 import org.chiu.megalith.infra.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         try {
             authentication = getAuthentication(jwt);
-        } catch (JwtException e) {
+        } catch (JWTVerificationException e) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(
@@ -70,18 +70,12 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         try {
             jwt = token.substring("Bearer ".length());
         } catch (IndexOutOfBoundsException e) {
-            throw new JwtException("token invalid");
-        }
-        
-        Claims claim = jwtUtils.getClaimByToken(jwt)
-                .orElseThrow(() -> new JwtException("token invalid"));
-
-        if (jwtUtils.isTokenExpired(claim.getExpiration())) {
-            throw new JwtException("token expired");
+            throw new JWTVerificationException("token invalid");
         }
 
-        String userId = claim.getSubject();
-        String role = (String) claim.get("role");
+        DecodedJWT decodedJWT = jwtUtils.getJWTVerifierByToken(jwt);
+        String userId = decodedJWT.getSubject();
+        String role = decodedJWT.getClaim("role").asString();
         return new PreAuthenticatedAuthenticationToken(userId,
                 null,
                 AuthorityUtils.createAuthorityList(role));
