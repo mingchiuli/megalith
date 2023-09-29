@@ -32,7 +32,7 @@ public class LogController {
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> start() {
         return Result.success(() -> {
-            if (Boolean.FALSE.equals(logContainer.isRunning())) {
+            if (!logContainer.isRunning()) {
                 logContainer.start();
             }
         });
