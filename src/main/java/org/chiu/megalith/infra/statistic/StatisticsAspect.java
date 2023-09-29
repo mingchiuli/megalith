@@ -1,5 +1,6 @@
 package org.chiu.megalith.infra.statistic;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +11,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.net.InetAddress;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author mingchiuli
@@ -32,9 +36,38 @@ public class StatisticsAspect {
     @SneakyThrows
     @Before("pt()")
     public void before() {
-        String addr = InetAddress.getLocalHost().getHostAddress();
+        HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+        String ipAddr = getIpAddr(request);
         redisTemplate.execute(LuaScriptUtils.statisticLua,
-                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()), 
-                addr);
+                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()),
+                ipAddr);
+    }
+
+    private String getIpAddr(HttpServletRequest request) {
+        // nginx代理获取的真实用户ip
+        String ip = request.getHeader("X-Real-IP");
+        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Forwarded-For");
+        }
+        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        /*
+          对于通过多个代理的情况， 第一个IP为客户端真实IP,多个IP按照','分割 "***.***.***.***".length() =
+          15
+         */
+        if (Objects.nonNull(ip) && ip.length() > 15) {
+            int idx = ip.indexOf(",");
+            if (idx > 0) {
+                ip = ip.substring(0, idx);
+            }
+        }
+        return ip;
     }
 }
