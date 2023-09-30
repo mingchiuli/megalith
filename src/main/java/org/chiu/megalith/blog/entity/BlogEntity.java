@@ -22,8 +22,7 @@ import java.util.Objects;
 @DynamicUpdate
 @Builder
 @Table(name ="m_blog",
-        indexes = {@Index(columnList = "created"), @Index(columnList = "user_id"),
-                @Index(name = "IDX_ID_USERID", columnList = "id,user_id")})
+        indexes = {@Index(columnList = "created"), @Index(columnList = "user_id"), @Index(columnList = "id,user_id")})
 public class BlogEntity {
 
     @Id
