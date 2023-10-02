@@ -41,7 +41,7 @@ public interface BlogService {
 
     BlogEntity recoverDeletedBlog(Long id, Integer idx, Long userId);
 
-    PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size, Long userId);
+    PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId);
 
     Integer changeBlogStatus(Long id, Integer status);
 

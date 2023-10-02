@@ -1,5 +1,6 @@
 package org.chiu.megalith.blog.controller;
 
+import org.chiu.megalith.blog.vo.BlogDeleteVo;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.service.BlogService;
@@ -156,8 +157,8 @@ public class BlogManagerController {
     }
 
     @GetMapping("/deleted")
-    public Result<PageAdapter<BlogEntity>> getDeletedBlogs(@RequestParam Integer currentPage,
-                                                           @RequestParam Integer size) {
+    public Result<PageAdapter<BlogDeleteVo>> getDeletedBlogs(@RequestParam Integer currentPage,
+                                                             @RequestParam Integer size) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
         return Result.success(() -> blogService.findDeletedBlogs(currentPage, size, userId));
     }

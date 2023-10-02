@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * @author mingchiuli
@@ -230,7 +231,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageAdapter<BlogEntity> findDeletedBlogs(Integer currentPage, Integer size, Long userId) {
+    public PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId) {
 
         List<BlogEntity> deletedBlogs = Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1))
                 .orElseGet(ArrayList::new).stream()
@@ -255,11 +256,25 @@ public class BlogServiceImpl implements BlogService {
 
         int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
-        return PageAdapter.<BlogEntity>builder()
-                .content(Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, start, start + size))
-                        .orElseGet(ArrayList::new).stream()
-                                .map(str -> jsonUtils.readValue(str, BlogEntity.class))
-                                .toList())
+        List<BlogEntity> rawList = Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, start, start + size)).orElseGet(ArrayList::new).stream()
+                .map(str -> jsonUtils.readValue(str, BlogEntity.class))
+                .toList();
+
+        List<BlogDeleteVo> content = new ArrayList<>();
+        rawList.forEach(item -> content.add(BlogDeleteVo.builder()
+                .link(item.getLink())
+                .content(item.getContent())
+                .readCount(item.getReadCount())
+                .title(item.getTitle())
+                .status(item.getStatus())
+                .created(item.getCreated())
+                .id(item.getId())
+                .userId(item.getUserId())
+                .description(item.getDescription())
+                .build()));
+
+        return PageAdapter.<BlogDeleteVo>builder()
+                .content(content)
                 .last(currentPage == totalPages)
                 .first(currentPage == 1)
                 .pageNumber(currentPage)
