@@ -162,6 +162,9 @@ public class BlogServiceImpl implements BlogService {
         for (int year = start; year <= end; year++) {
             years.add(year);
         }
+        if (years.size() == 1) {
+            years.add(start);
+        }
         return years;
     }
 
