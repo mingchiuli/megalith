@@ -62,7 +62,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(listPage);
         keys.add(getCountByYear);
         keys.add(findByIdAndInvisible);
-        //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom
+        //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom，后面逻辑重建
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         keys.add(Const.BLOOM_FILTER_PAGE.getInfo());
         keys.add(Const.BLOOM_FILTER_YEARS.getInfo());
