@@ -1,6 +1,5 @@
 package org.chiu.megalith.search.mq.handler;
 
-import org.chiu.megalith.blog.controller.BlogController;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
@@ -57,16 +56,11 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
         String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
         String getCountByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
-        String getBlogStatus = cacheKeyGenerator.generateKey(BlogController.class, "getBlogStatus", new Class[]{Long.class}, new Object[]{id});
-        String searchYears = cacheKeyGenerator.generateKey(BlogController.class, "searchYears", new Class[]{}, new Object[]{});
-
         //删掉所有摘要缓存
         Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo());
 
         keys.add(listPage);
         keys.add(getCountByYear);
-        keys.add(getBlogStatus);
-        keys.add(searchYears);
         keys.add(findByIdAndInvisible);
         //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());

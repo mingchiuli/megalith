@@ -40,7 +40,10 @@ public class CacheKeyGenerator {
         String className = declaringType.getSimpleName();
         Method method = declaringType.getMethod(methodName, parameterTypes);
         var annotation = method.getAnnotation(Cache.class);
-        String prefix = annotation.prefix().getInfo();
+        String prefix = null;
+        if (Objects.nonNull(annotation)) {
+            prefix = annotation.prefix().getInfo();
+        }
 
         return StringUtils.hasLength(prefix) ?
                 prefix + "::" + className + "::" + methodName + params :
