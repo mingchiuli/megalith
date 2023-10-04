@@ -6,6 +6,7 @@ import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -58,4 +59,6 @@ public interface BlogService {
     void delete(BlogEntity blogEntity);
 
     Integer checkStatusByIdAndUserId(Long blogId, Long userId);
+
+    String upload(MultipartFile image);
 }

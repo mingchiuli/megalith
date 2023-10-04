@@ -36,4 +36,14 @@ public class ThreadPoolConfig {
                 Executors.defaultThreadFactory(),
                 new ThreadPoolExecutor.AbortPolicy());
     }
+
+    @Bean("imgUploadThreadPoolExecutor")
+    ThreadPoolExecutor imgUploadThreadPoolExecutor(ThreadPoolConfigProperties pool) {
+        return new ThreadPoolExecutor(10,
+                15,
+                pool.getKeepAliveTime(), TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(1000),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.AbortPolicy());
+    }
 }

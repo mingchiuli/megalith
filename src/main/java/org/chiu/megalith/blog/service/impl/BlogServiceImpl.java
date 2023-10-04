@@ -1,5 +1,10 @@
 package org.chiu.megalith.blog.service.impl;
 
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.cache.Cache;
@@ -16,6 +21,7 @@ import org.chiu.megalith.infra.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +33,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author mingchiuli
@@ -37,6 +46,7 @@ import java.util.*;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BlogServiceImpl implements BlogService {
 
     private final BlogRepository blogRepository;
@@ -52,6 +62,39 @@ public class BlogServiceImpl implements BlogService {
 
     @Value("${blog.highest-role}")
     private String highestRole;
+
+    @Value("${blog.oos.accessKeyId}")
+    private String keyId;
+
+    @Value("${blog.oos.accessKeySecret}")
+    private String keySecret;
+
+    @Value("${blog.oos.bucketName}")
+    private String bucket;
+
+    @Value("${blog.oos.endpoint}")
+    private String ep;
+
+    @Value("${blog.oos.host}")
+    private String host;
+
+    @Qualifier("imgUploadThreadPoolExecutor")
+    private final ThreadPoolExecutor executor;
+
+    private OSS ossClient;
+
+    @PostConstruct
+    private void init() {
+        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
+        String endpoint = ep;
+        // 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+        String accessKeyId = keyId;
+        String accessKeySecret = keySecret;
+        // 填写Object完整路径，例如exampledir/exampleobject.txt。Object完整路径中不能包含Bucket名称。
+        // 创建OSSClient实例。
+        ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+    }
+
 
     public List<Long> findIds(Pageable pageRequest) {
         return blogRepository.findIds(pageRequest);
@@ -143,6 +186,23 @@ public class BlogServiceImpl implements BlogService {
                 .orElseThrow(() -> new NotFoundException("blog not exist"));
         Long id = blog.getUserId();   
         return Objects.equals(id, blogId) ? 0 : 1;  
+    }
+
+    @SneakyThrows
+    @Override
+    public String upload(MultipartFile image) {
+        Assert.notNull(image, "upload miss");
+        String username = UUID.randomUUID().toString();
+        String originalFilename = image.getOriginalFilename();
+        originalFilename = Optional.ofNullable(originalFilename)
+                .orElseGet(() -> UUID.randomUUID().toString())
+                .replace(" ", "");
+        String objectName = username + "/" + originalFilename;
+        byte[] imageBytes = image.getBytes();
+
+        executor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes)));
+        //https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
+        return host + "/" + objectName;
     }
 
     @Override

@@ -27,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -213,5 +214,10 @@ public class BlogManagerController {
                 correlationData);
 
         return Result.success();
+    }
+
+    @PostMapping("/upload")
+    public Result<String> upload(@RequestParam MultipartFile image) {
+        return Result.success(() -> blogService.upload(image));
     }
 }
