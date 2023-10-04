@@ -94,6 +94,9 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         for (int i = lYear; i <= rYear; i++) {
             redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), i, true);
         }
+
+        //删除最近热度
+        redisTemplate.opsForZSet().remove(Const.HOT_READ.getInfo(), blog.getId().toString());
         
         return keys;
     }
