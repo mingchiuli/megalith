@@ -63,19 +63,19 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    @Value("${blog.oos.accessKeyId}")
+    @Value("${blog.oss.accessKeyId}")
     private String keyId;
 
-    @Value("${blog.oos.accessKeySecret}")
+    @Value("${blog.oss.accessKeySecret}")
     private String keySecret;
 
-    @Value("${blog.oos.bucketName}")
+    @Value("${blog.oss.bucketName}")
     private String bucket;
 
-    @Value("${blog.oos.endpoint}")
+    @Value("${blog.oss.endpoint}")
     private String ep;
 
-    @Value("${blog.oos.host}")
+    @Value("${blog.oss.host}")
     private String host;
 
     @Qualifier("imgUploadThreadPoolExecutor")
