@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -53,13 +55,12 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         int year = blog.getCreated().getYear();
         Long id = blog.getId();
         //博客对象本身缓存
-        String listPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
+        String findById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
         String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
         String getCountByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
         //删掉所有摘要缓存
-        Set<String> keys = redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo());
-
-        keys.add(listPage);
+        Set<String> keys = Optional.ofNullable(redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())).orElseGet(HashSet::new);
+        keys.add(findById);
         keys.add(getCountByYear);
         keys.add(findByIdAndInvisible);
         //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom，后面逻辑重建

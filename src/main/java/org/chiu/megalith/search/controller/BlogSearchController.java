@@ -34,7 +34,7 @@ public class BlogSearchController {
     @GetMapping("/sys/blogs")
     public Result<PageAdapter<BlogEntityVo>> searchAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                             @RequestParam(defaultValue = "5") Integer size,
-                                                            @RequestParam(value = "keyword")  @Size(min = 1, max = 20) String keywords) {
+                                                            @RequestParam(value = "keywords")  @Size(min = 1, max = 20) String keywords) {
         return Result.success(() -> blogSearchService.searchAllBlogs(keywords, currentPage, size));
     }
 
