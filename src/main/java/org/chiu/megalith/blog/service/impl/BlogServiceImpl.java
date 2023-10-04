@@ -190,7 +190,7 @@ public class BlogServiceImpl implements BlogService {
 
     @SneakyThrows
     @Override
-    public String upload(MultipartFile image) {
+    public String uploadOss(MultipartFile image) {
         Assert.notNull(image, "upload miss");
         String username = UUID.randomUUID().toString();
         String originalFilename = image.getOriginalFilename();
@@ -203,6 +203,12 @@ public class BlogServiceImpl implements BlogService {
         executor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes)));
         //https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
         return host + "/" + objectName;
+    }
+
+    @Override
+    public void deleteOss(String url) {
+        String objectName = url.replace(host + "/", "");
+        ossClient.deleteObject(bucket, objectName);
     }
 
     @Override

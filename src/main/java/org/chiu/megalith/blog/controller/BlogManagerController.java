@@ -216,8 +216,13 @@ public class BlogManagerController {
         return Result.success();
     }
 
-    @PostMapping("/upload")
-    public Result<String> upload(@RequestParam MultipartFile image) {
-        return Result.success(() -> blogService.upload(image));
+    @PostMapping("/oss/upload")
+    public Result<String> uploadOss(@RequestParam MultipartFile image) {
+        return Result.success(() -> blogService.uploadOss(image));
+    }
+
+    @PostMapping("/oss/delete")
+    public Result<Void> deleteOss(@RequestParam String url) {
+        return Result.success(() -> blogService.deleteOss(url));
     }
 }
