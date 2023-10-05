@@ -36,15 +36,13 @@ public interface BlogService {
 
     Long count();
 
-    BlogEntity saveOrUpdate(BlogEntityReq blog, Long userId);
+    void saveOrUpdate(BlogEntityReq blog, Long userId);
 
     PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority);
 
-    BlogEntity recoverDeletedBlog(Long id, Integer idx, Long userId);
+    void recoverDeletedBlog(Long id, Integer idx, Long userId);
 
     PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId);
-
-    Integer changeBlogStatus(Long id, Integer status);
 
     Boolean exist(Long blogId);
 
@@ -56,11 +54,16 @@ public interface BlogService {
 
     Long findUserIdById(Long id);
 
-    void delete(BlogEntity blogEntity);
+    void deleteBatch(List<Long> ids, Long userId, String authority);
 
     Integer checkStatusByIdAndUserId(Long blogId, Long userId);
 
     String uploadOss(MultipartFile image);
 
     void deleteOss(String url);
+
+    void setBlogStatus(Long id, Long userId, Integer status, String authority);
+
+    String setBlogToken(Long blogId);
+
 }

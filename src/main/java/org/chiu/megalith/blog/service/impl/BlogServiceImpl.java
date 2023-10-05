@@ -6,6 +6,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.chiu.megalith.blog.vo.*;
+import org.chiu.megalith.infra.search.BlogIndexEnum;
+import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
@@ -20,6 +22,9 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.req.BlogEntityReq;
+import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +35,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author mingchiuli
@@ -56,6 +66,8 @@ public class BlogServiceImpl implements BlogService {
     private final JsonUtils jsonUtils;
 
     private final UserService userService;
+
+    private final RabbitTemplate rabbitTemplate;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -212,6 +224,42 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public void setBlogStatus(Long id, Long userId, Integer status, String authority) {
+        Long bdUserId = findUserIdById(id);
+
+        if (Boolean.FALSE.equals(Objects.equals(highestRole, authority) || Objects.equals(userId, bdUserId))) {
+            throw new BadCredentialsException("user unmatch");
+        }
+
+        Integer year = changeBlogStatus(id, status);
+
+        var correlationData = new CorrelationData();
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                BlogIndexEnum.UPDATE.name() + "_" + id,
+                30,
+                TimeUnit.MINUTES);
+
+        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+                ElasticSearchRabbitConfig.ES_BINDING_KEY,
+                new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
+                correlationData);
+    }
+
+    @Override
+    public String setBlogToken(Long blogId) {
+        Long dbUserId = findUserIdById(blogId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        long userId = Long.parseLong(authentication.getName());
+
+        if (Objects.equals(userId, dbUserId)) {
+            String token = UUID.randomUUID().toString();
+            redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo() + blogId, token, 24, TimeUnit.HOURS);
+            return token;
+        }
+        throw new BadCredentialsException("user mismatch");
+    }
+
+    @Override
     @Cache(prefix = Const.BLOG_STATUS)
     public Integer findStatusById(Long blogId) {
         return blogRepository.findStatusById(blogId);
@@ -239,7 +287,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity saveOrUpdate(BlogEntityReq blog, Long userId) {
+    public void saveOrUpdate(BlogEntityReq blog, Long userId) {
         Long blogId = blog.getId();
 
         BlogEntity blogEntity;
@@ -258,7 +306,26 @@ public class BlogServiceImpl implements BlogService {
 
         BeanUtils.copyProperties(blog, blogEntity);
         blogRepository.save(blogEntity);
-        return blogEntity;
+
+        //通知消息给mq,更新并删除缓存
+        //防止重复消费
+        BlogIndexEnum type;
+        if (Objects.nonNull(blog.getId())) {
+            type = BlogIndexEnum.UPDATE;
+        } else {
+            type = BlogIndexEnum.CREATE;
+        }
+
+        var correlationData = new CorrelationData();
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                type + "_" + blogEntity.getId(),
+                30,
+                TimeUnit.MINUTES);
+
+        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+                ElasticSearchRabbitConfig.ES_BINDING_KEY,
+                new BlogSearchIndexMessage(blogEntity.getId(), type, blogEntity.getCreated().getYear()),
+                correlationData);
     }
 
     @Override
@@ -354,7 +421,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity recoverDeletedBlog(Long id, Integer idx, Long userId) {
+    public void recoverDeletedBlog(Long id, Integer idx, Long userId) {
 
         String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
 
@@ -362,10 +429,19 @@ public class BlogServiceImpl implements BlogService {
         BlogEntity blog = blogRepository.save(tempBlog);
 
         redisTemplate.opsForList().remove(Const.QUERY_DELETED.getInfo() + userId, 1, str);
-        return blog;
+
+        var correlationData = new CorrelationData();
+        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                BlogIndexEnum.CREATE.name() + "_" + id,
+                30,
+                TimeUnit.MINUTES);
+
+        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+                ElasticSearchRabbitConfig.ES_BINDING_KEY,
+                new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
+                correlationData);
     }
 
-    @Override
     public Integer changeBlogStatus(Long id, Integer status) {
         int year = blogRepository.findById(id)
                 .orElseThrow()
@@ -413,7 +489,33 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void delete(BlogEntity blogEntity) {
-        blogRepository.delete(blogEntity);
+    @Transactional
+    public void deleteBatch(List<Long> ids, Long userId, String authority) {
+        ids.forEach(id -> {
+            BlogEntity blogEntity = findById(id);
+
+            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
+                throw new BadCredentialsException("must delete own blog");
+            }
+
+            blogRepository.delete(blogEntity);
+
+            blogEntity.setCreated(LocalDateTime.now());
+
+            redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
+                    Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                    jsonUtils.writeValueAsString(blogEntity), "604800");
+
+            //防止重复消费
+            var correlationData = new CorrelationData();
+            redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
+                    BlogIndexEnum.REMOVE.name() + "_" + id,
+                    30,
+                    TimeUnit.MINUTES);
+
+            rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+                    ElasticSearchRabbitConfig.ES_BINDING_KEY,
+                    new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
+        });
     }
 }
