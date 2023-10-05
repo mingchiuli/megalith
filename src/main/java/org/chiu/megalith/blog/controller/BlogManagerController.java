@@ -1,8 +1,8 @@
 package org.chiu.megalith.blog.controller;
 
 import org.chiu.megalith.blog.vo.BlogDeleteVo;
+import org.chiu.megalith.blog.vo.BlogEditVo;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
-import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.chiu.megalith.infra.lang.Result;
@@ -35,9 +35,9 @@ public class BlogManagerController {
     private String highestRole;
 
     @GetMapping("/echo/{id}")
-    public Result<BlogEntity> getEchoDetail(@PathVariable(name = "id") Long id) {
+    public Result<BlogEditVo> getEchoDetail(@PathVariable(name = "id") Long id) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
-        return Result.success(() -> blogService.findByIdAndUserId(id, userId));
+        return Result.success(() -> blogService.findEdit(id, userId));
     }
 
     @PostMapping("/save")

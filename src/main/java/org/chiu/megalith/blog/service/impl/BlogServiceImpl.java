@@ -484,9 +484,18 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogEntity findByIdAndUserId(Long id, Long userId) {
-        return blogRepository.findByIdAndUserId(id, userId)
+    public BlogEditVo findEdit(Long id, Long userId) {
+        BlogEntity blogEntity = blogRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new NotFoundException("must edit your blog"));
+
+        return BlogEditVo.builder()
+                .id(blogEntity.getId())
+                .title(blogEntity.getTitle())
+                .description(blogEntity.getDescription())
+                .content(blogEntity.getContent())
+                .link(blogEntity.getLink())
+                .status(blogEntity.getStatus())
+                .build();
     }
 
     @Override

@@ -50,7 +50,7 @@ public interface BlogService {
 
     List<BlogHotReadVo> getScoreBlogs();
 
-    BlogEntity findByIdAndUserId(Long id, Long userId);
+    BlogEditVo findEdit(Long id, Long userId);
 
     Long findUserIdById(Long id);
 
