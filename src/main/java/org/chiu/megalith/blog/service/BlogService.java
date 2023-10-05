@@ -58,7 +58,7 @@ public interface BlogService {
 
     Integer checkStatusByIdAndUserId(Long blogId, Long userId);
 
-    String uploadOss(MultipartFile image);
+    String uploadOss(MultipartFile image, Long userId);
 
     void deleteOss(String url);
 

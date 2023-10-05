@@ -107,7 +107,14 @@ public class BlogManagerController {
 
     @PostMapping("/oss/upload")
     public Result<String> uploadOss(@RequestParam MultipartFile image) {
-        return Result.success(() -> blogService.uploadOss(image));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authority = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow();
+
+        Long userId = Long.valueOf(authentication.getName());
+        return Result.success(() -> blogService.uploadOss(image, userId));
     }
 
     @GetMapping("/oss/delete")

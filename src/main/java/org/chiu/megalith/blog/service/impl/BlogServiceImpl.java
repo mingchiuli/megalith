@@ -202,14 +202,15 @@ public class BlogServiceImpl implements BlogService {
 
     @SneakyThrows
     @Override
-    public String uploadOss(MultipartFile image) {
+    public String uploadOss(MultipartFile image, Long userId) {
         Assert.notNull(image, "upload miss");
-        String username = UUID.randomUUID().toString();
+        String nickname = userService.findById(userId).getNickname();
+        String uuid = UUID.randomUUID().toString();
         String originalFilename = image.getOriginalFilename();
         originalFilename = Optional.ofNullable(originalFilename)
                 .orElseGet(() -> UUID.randomUUID().toString())
                 .replace(" ", "");
-        String objectName = username + "/" + originalFilename;
+        String objectName = nickname + "/" + uuid + "-" + originalFilename;
         byte[] imageBytes = image.getBytes();
 
         executor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes)));
