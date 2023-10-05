@@ -63,13 +63,13 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    @Value("${blog.oss.accessKeyId}")
+    @Value("${blog.oss.access-key-id}")
     private String keyId;
 
-    @Value("${blog.oss.accessKeySecret}")
+    @Value("${blog.oss.access-key-secret}")
     private String keySecret;
 
-    @Value("${blog.oss.bucketName}")
+    @Value("${blog.oss.bucket-name}")
     private String bucket;
 
     @Value("${blog.oss.endpoint}")

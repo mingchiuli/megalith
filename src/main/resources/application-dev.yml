@@ -42,6 +42,6 @@ blog:
   oss:
     host: https://oss-cn-hangzhou.aliyuncs.com
     endpoint: https://oss-cn-hangzhou.aliyuncs.com
-    bucketName: blog
-    accessKeyId: accessKeyId
-    accessKeySecret: accessKeySecret
+    bucket-name: blog
+    access-key-id: accessKeyId
+    access-key-secret: accessKeySecret
