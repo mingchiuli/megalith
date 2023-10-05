@@ -1,5 +1,6 @@
 package org.chiu.megalith.search.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class BlogDocumentVo {
 
     private String link;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 
     private Float score;
