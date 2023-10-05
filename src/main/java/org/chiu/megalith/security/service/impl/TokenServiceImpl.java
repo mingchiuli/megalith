@@ -35,12 +35,9 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Map<String, String> refreshToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String accessToken = jwtUtils.generateToken(authentication.getName(),
-                authentication.getAuthorities().stream()
-                        .findFirst()
-                        .map(GrantedAuthority::getAuthority)
-                        .orElseThrow(() -> new BadCredentialsException("auth exception")),
-                expire);
+        Long userId = Long.valueOf(authentication.getName());
+        UserEntity user = userService.findById(userId);
+        String accessToken = jwtUtils.generateToken(authentication.getName(), user.getRole(), expire);
         return Collections.singletonMap("accessToken", "Bearer " + accessToken);
     }
 
