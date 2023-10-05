@@ -110,7 +110,7 @@ public class BlogManagerController {
         return Result.success(() -> blogService.uploadOss(image));
     }
 
-    @PostMapping("/oss/delete")
+    @GetMapping("/oss/delete")
     public Result<Void> deleteOss(@RequestParam String url) {
         return Result.success(() -> blogService.deleteOss(url));
     }
