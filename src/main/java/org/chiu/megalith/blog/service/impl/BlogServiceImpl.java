@@ -115,7 +115,7 @@ public class BlogServiceImpl implements BlogService {
     @Cache(prefix = Const.HOT_BLOG)
     @Override
     public BlogExhibitVo findById(Long id, Boolean visible) {
-        BlogEntity blogEntity = Boolean.TRUE.equals(visible) ?
+        BlogEntity blogEntity = Boolean.FALSE.equals(visible) ?
                 blogRepository.findByIdAndStatus(id, 0)
                         .orElseThrow(() -> new NotFoundException("blog not exist")) :
                 blogRepository.findById(id)
