@@ -35,7 +35,7 @@ public class TokenServiceImpl implements TokenService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.valueOf(authentication.getName());
         UserEntity user = userService.findById(userId);
-        String accessToken = jwtUtils.generateToken(authentication.getName(), user.getRole(), expire);
+        String accessToken = jwtUtils.generateToken(authentication.getName(), "ROLE_" + user.getRole(), expire);
         return Collections.singletonMap("accessToken", "Bearer " + accessToken);
     }
 
