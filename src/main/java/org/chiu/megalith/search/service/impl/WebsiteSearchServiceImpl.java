@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.chiu.megalith.infra.exception.NotFoundException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.search.document.WebsiteDocument;
 import org.chiu.megalith.search.service.WebsiteSearchService;
 import org.chiu.megalith.search.vo.WebsiteDocumentVo;
@@ -18,8 +19,6 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -73,15 +72,11 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Override
     public PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityUtils.getLoginAuthentication();
         boolean auth = false;
 
         if (Objects.nonNull(authentication)) {
-            String authority = authentication.getAuthorities().stream()
-                    .findFirst()
-                    .map(GrantedAuthority::getAuthority)
-                    .orElseThrow();
-
+            String authority = SecurityUtils.getLoginAuthority();
             if (("ROLE_" + highestRole).equals(authority)) {
                 auth = true;
             }

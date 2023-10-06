@@ -1,6 +1,7 @@
 package org.chiu.megalith.security.service.impl;
 
 import org.chiu.megalith.infra.jwt.JwtUtils;
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.security.service.TokenService;
@@ -8,8 +9,6 @@ import org.chiu.megalith.security.vo.UserInfoVo;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -32,16 +31,15 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Map<String, String> refreshToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = Long.valueOf(authentication.getName());
+        Long userId = SecurityUtils.getLoginUserId();
         UserEntity user = userService.findById(userId);
-        String accessToken = jwtUtils.generateToken(authentication.getName(), "ROLE_" + user.getRole(), expire);
+        String accessToken = jwtUtils.generateToken(userId.toString(), "ROLE_" + user.getRole(), expire);
         return Collections.singletonMap("accessToken", "Bearer " + accessToken);
     }
 
     @Override
     public UserInfoVo userinfo() {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        Long userId = SecurityUtils.getLoginUserId();
         UserEntity userEntity = userService.findById(userId);
 
         return UserInfoVo.builder()

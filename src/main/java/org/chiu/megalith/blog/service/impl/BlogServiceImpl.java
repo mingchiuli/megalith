@@ -14,6 +14,7 @@ import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
+import org.chiu.megalith.infra.utils.MessageUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.infra.exception.NotFoundException;
@@ -23,7 +24,6 @@ import org.chiu.megalith.infra.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -68,6 +68,8 @@ public class BlogServiceImpl implements BlogService {
     private final UserService userService;
 
     private final RabbitTemplate rabbitTemplate;
+
+    private final MessageUtils messageUtils;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -229,21 +231,15 @@ public class BlogServiceImpl implements BlogService {
         Long bdUserId = findUserIdById(id);
 
         if (Boolean.FALSE.equals(Objects.equals(highestRole, authority) || Objects.equals(userId, bdUserId))) {
-            throw new BadCredentialsException("user unmatch");
+            throw new BadCredentialsException("user mismatch");
         }
 
         Integer year = changeBlogStatus(id, status);
 
-        var correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                BlogIndexEnum.UPDATE.name() + "_" + id,
-                30,
-                TimeUnit.MINUTES);
-
-        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+        messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
-                correlationData);
+                BlogIndexEnum.UPDATE.name(), id);
     }
 
     @Override
@@ -290,7 +286,6 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void saveOrUpdate(BlogEntityReq blog, Long userId) {
         Long blogId = blog.getId();
-
         BlogEntity blogEntity;
 
         if (Objects.nonNull(blogId)) {
@@ -311,22 +306,16 @@ public class BlogServiceImpl implements BlogService {
         //通知消息给mq,更新并删除缓存
         //防止重复消费
         BlogIndexEnum type;
-        if (Objects.nonNull(blog.getId())) {
+        if (Objects.nonNull(blogId)) {
             type = BlogIndexEnum.UPDATE;
         } else {
             type = BlogIndexEnum.CREATE;
         }
 
-        var correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                type + "_" + blogEntity.getId(),
-                30,
-                TimeUnit.MINUTES);
-
-        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+        messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(blogEntity.getId(), type, blogEntity.getCreated().getYear()),
-                correlationData);
+                new BlogSearchIndexMessage(blogId, type, blogEntity.getCreated().getYear()),
+                type.name(), blogId);
     }
 
     @Override
@@ -425,22 +414,15 @@ public class BlogServiceImpl implements BlogService {
     public void recoverDeletedBlog(Long id, Integer idx, Long userId) {
 
         String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
-
         BlogEntity tempBlog = jsonUtils.readValue(str, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
 
         redisTemplate.opsForList().remove(Const.QUERY_DELETED.getInfo() + userId, 1, str);
 
-        var correlationData = new CorrelationData();
-        redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                BlogIndexEnum.CREATE.name() + "_" + id,
-                30,
-                TimeUnit.MINUTES);
-
-        rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+        messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
-                correlationData);
+                BlogIndexEnum.CREATE.name(), id);
     }
 
     public Integer changeBlogStatus(Long id, Integer status) {
@@ -516,16 +498,10 @@ public class BlogServiceImpl implements BlogService {
                     Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
                     jsonUtils.writeValueAsString(blogEntity), "604800");
 
-            //防止重复消费
-            var correlationData = new CorrelationData();
-            redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                    BlogIndexEnum.REMOVE.name() + "_" + id,
-                    30,
-                    TimeUnit.MINUTES);
-
-            rabbitTemplate.convertAndSend(ElasticSearchRabbitConfig.ES_EXCHANGE,
+            messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
                     ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                    new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()), correlationData);
+                    new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()),
+                    BlogIndexEnum.REMOVE.name(), id);
         });
     }
 }

@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.manage.service.MenuService;
 import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.infra.lang.Result;
@@ -7,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +27,7 @@ public class MenuController {
 
     @GetMapping("/nav")
     public Result<List<MenuVo>> nav() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = Long.valueOf(authentication.getName());
+        Long userId = SecurityUtils.getLoginUserId();
         return Result.success(() -> menuService.getCurrentUserNav(userId));
     }
 

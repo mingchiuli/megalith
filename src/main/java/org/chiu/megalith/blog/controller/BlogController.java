@@ -11,12 +11,11 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.blog.vo.BlogExhibitVo;
 import org.chiu.megalith.blog.vo.BlogHotReadVo;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,16 +39,11 @@ public class BlogController {
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityUtils.getLoginAuthentication();
         BlogExhibitVo blog;
 
         if (Boolean.FALSE.equals(authentication instanceof AnonymousAuthenticationToken)) {
-            String authority = authentication.getAuthorities().stream()
-                    .findFirst()
-                    .map(GrantedAuthority::getAuthority)
-                    .orElseThrow(() -> new BadCredentialsException("role exception"));
-
-            if (("ROLE_" + highestRole).equals(authority)) {
+            if (("ROLE_" + highestRole).equals(SecurityUtils.getLoginAuthority())) {
                 blog = blogService.findById(id, true);
             } else {
                 blog = blogService.findById(id, false);
@@ -92,7 +86,7 @@ public class BlogController {
     @Bloom(handler = DetailHandler.class)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityUtils.getLoginAuthentication();
         Integer status = blogService.findStatusById(blogId);
 
         if (Integer.valueOf(0).equals(status)) {
@@ -103,12 +97,7 @@ public class BlogController {
             return Result.success(1);
         }
 
-        String authority = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElseThrow();
-
-        if (("ROLE_" + highestRole).equals(authority)) {
+        if (("ROLE_" + highestRole).equals(SecurityUtils.getLoginAuthority())) {
             return Result.success(0);
         }
 
