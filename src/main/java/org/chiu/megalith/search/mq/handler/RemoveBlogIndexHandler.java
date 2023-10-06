@@ -96,7 +96,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         }
 
         //删除最近热度
-        redisTemplate.opsForZSet().remove(Const.HOT_READ.getInfo(), blog.getId().toString());
+        redisTemplate.opsForZSet().remove(Const.HOT_READ.getInfo(), id.toString());
         
         return keys;
     }
