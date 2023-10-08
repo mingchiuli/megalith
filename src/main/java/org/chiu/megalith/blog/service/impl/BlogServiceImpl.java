@@ -257,6 +257,11 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public List<Integer> getYears() {
+        return blogRepository.getYears();
+    }
+
+    @Override
     @Cache(prefix = Const.BLOG_STATUS)
     public Integer findStatusById(Long blogId) {
         return blogRepository.findStatusById(blogId);

@@ -53,7 +53,6 @@ public record BlogRunnable(ThreadPoolExecutor executor,
                         } catch (NotFoundException e) {
                             blogService.findById(id, true);
                         }
-                        blogController.getBlogStatus(id);
                     }));
         }
     }

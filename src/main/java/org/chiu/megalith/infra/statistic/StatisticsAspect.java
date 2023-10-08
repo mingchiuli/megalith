@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.beans.FeatureDescriptor;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +37,12 @@ public class StatisticsAspect {
     @SneakyThrows
     @Before("pt()")
     public void before() {
-        HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+        HttpServletRequest request;
+        try {
+            request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+        } catch (IllegalStateException e) {
+            return;
+        }
         String ipAddr = getIpAddr(request);
         redisTemplate.execute(LuaScriptUtils.statisticLua,
                 List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()),

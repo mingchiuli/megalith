@@ -66,4 +66,6 @@ public interface BlogService {
 
     String setBlogToken(Long blogId);
 
+    List<Integer> getYears();
+
 }

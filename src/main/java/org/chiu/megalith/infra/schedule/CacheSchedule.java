@@ -47,7 +47,7 @@ public class CacheSchedule {
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
-   @Scheduled(cron = "0 0 0/2 * * ?")
+   @Scheduled(cron = "0/10 * * * * ?")
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
@@ -67,7 +67,7 @@ public class CacheSchedule {
     }
 
     private void exec() {
-        List<Integer> years = blogService.searchYears();
+        List<Integer> years = blogService.getYears();
         int maxPoolSize = executor.getMaximumPoolSize();
         //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
         CompletableFuture.runAsync(() -> {
@@ -133,7 +133,6 @@ public class CacheSchedule {
 
         //searchYears和getCountByYear
         CompletableFuture.runAsync(() -> {
-            blogController.searchYears();
             //getCountByYear的bloom和缓存
             years.forEach(year -> {
                 redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
