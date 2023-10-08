@@ -24,7 +24,6 @@ import org.chiu.megalith.infra.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,8 +65,6 @@ public class BlogServiceImpl implements BlogService {
     private final JsonUtils jsonUtils;
 
     private final UserService userService;
-
-    private final RabbitTemplate rabbitTemplate;
 
     private final MessageUtils messageUtils;
 
