@@ -1,6 +1,7 @@
 package org.chiu.megalith.infra.config;
 
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,5 +15,14 @@ public class MessageConverterConfig {
     @Bean(name = "jsonMessageConverter")
     Jackson2JsonMessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
+    }
+
+    /**
+     * 用于日志发送
+     * @return
+     */
+    @Bean(name = "simpleMessageConverter")
+    SimpleMessageConverter messageConverter() {
+        return new SimpleMessageConverter();
     }
 }

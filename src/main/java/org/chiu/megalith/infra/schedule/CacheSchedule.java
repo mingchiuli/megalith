@@ -47,7 +47,7 @@ public class CacheSchedule {
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
-   @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0 0/2 * * ?")
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");

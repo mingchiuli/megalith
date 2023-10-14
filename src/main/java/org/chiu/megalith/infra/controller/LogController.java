@@ -21,17 +21,11 @@ public class LogController {
 
     private final RabbitListenerEndpointRegistry registry;
 
-    private MessageListenerContainer logContainer;
-
-    @PostConstruct
-    private void setLogContainer() {
-        logContainer = registry.getListenerContainer("log");
-    }
-
     @MessageMapping("/start")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> start() {
         return Result.success(() -> {
+            MessageListenerContainer logContainer = registry.getListenerContainer("log");
             if (!logContainer.isRunning()) {
                 logContainer.start();
             }
@@ -42,6 +36,7 @@ public class LogController {
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> stop() {
         return Result.success(() -> {
+            MessageListenerContainer logContainer = registry.getListenerContainer("log");
             if (logContainer.isRunning()) {
                 logContainer.stop();
             }

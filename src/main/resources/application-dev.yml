@@ -32,9 +32,9 @@ spring:
       password: 123456
       host: 127.0.0.1
 
-logging:
-  level:
-    web: debug
+#logging:
+#  level:
+#    web: debug
 
 blog:
   jwt:
