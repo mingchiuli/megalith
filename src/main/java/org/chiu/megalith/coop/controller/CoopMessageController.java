@@ -1,10 +1,8 @@
 package org.chiu.megalith.coop.controller;
 
-import org.chiu.megalith.coop.vo.BlogEntityVo;
 import org.chiu.megalith.coop.req.FinishCoopReq;
 import org.chiu.megalith.coop.req.QuitCoopReq;
 import org.chiu.megalith.coop.req.SyncContentReq;
-import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.coop.service.CoopMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -25,29 +23,29 @@ public class CoopMessageController {
     private final CoopMessageService coopMessageService;
 
     @MessageMapping("/sync")
-    public Result<Void> syncContent(@RequestBody SyncContentReq msg) {
-        return Result.success(() -> coopMessageService.syncContent(msg));
+    public void syncContent(@RequestBody SyncContentReq msg) {
+        coopMessageService.syncContent(msg);
     }
 
     @MessageMapping("/destroy")
-    public Result<Void> finishCoop(@RequestBody FinishCoopReq msg) {
-        return Result.success(() -> coopMessageService.destroySession(msg));
+    public void finishCoop(@RequestBody FinishCoopReq msg) {
+        coopMessageService.destroySession(msg);
     }
 
     @MessageMapping("/quit")
-    public Result<Void> quitEdit(@RequestBody QuitCoopReq msg) {
-        return Result.success(() -> coopMessageService.quitEdit(msg));
+    public void quitEdit(@RequestBody QuitCoopReq msg) {
+        coopMessageService.quitEdit(msg);
     }
 
     @MessageMapping("/session/{userId}/{blogId}")
-    public Result<Void> setUserToRedisSession(@DestinationVariable Long userId,
+    public void setUserToRedisSession(@DestinationVariable Long userId,
                                               @DestinationVariable Long blogId) {
-        return Result.success(() -> coopMessageService.setUserToRedisSession(userId, blogId));
+        coopMessageService.setUserToRedisSession(userId, blogId);
     }
 
     @MessageMapping("/blog/{blogId}")
-    public Result<BlogEntityVo> getBlogContent(@DestinationVariable Long blogId) {
-        return Result.success(() -> coopMessageService.getBlogContent(blogId));
+    public void getBlogContent(@DestinationVariable Long blogId) {
+        coopMessageService.getBlogContent(blogId);
     }
 
 }
