@@ -1,5 +1,6 @@
 package org.chiu.megalith.coop.config;
 
+import org.chiu.megalith.coop.config.interceptor.CSRFChannelInterceptor;
 import org.chiu.megalith.coop.config.interceptor.MessageInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final MessageInterceptor messageInterceptor;
 
+    private final CSRFChannelInterceptor csrfChannelInterceptor;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/coop", "/log")
@@ -39,6 +42,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(messageInterceptor);
+        registration.interceptors(messageInterceptor, csrfChannelInterceptor);
     }
 }
