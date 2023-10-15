@@ -20,6 +20,7 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -93,19 +94,21 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                             termQuery.field("status").value(0)));
         }
 
-        Optional.ofNullable(keyword).ifPresentOrElse(word -> {
+        if (StringUtils.hasLength(keyword)) {
             boolBuilder.must(mustQuery ->
                     mustQuery.multiMatch(multiQuery ->
-                            multiQuery.fields(fields).query(word)));
+                            multiQuery.fields(fields).query(keyword)));
             nativeQueryBuilder
                     .withSort(sort ->
                             sort.score(score ->
                                     score.order(SortOrder.Desc)))
                     .withHighlightQuery(ESHighlightBuilderUtils.websiteHighlightQuery);
-        }, () -> nativeQueryBuilder
-                .withSort(sortQuery ->
-                        sortQuery.field(fieldQuery ->
-                                fieldQuery.field("created").order(SortOrder.Desc))));
+        } else {
+            nativeQueryBuilder
+                    .withSort(sortQuery ->
+                            sortQuery.field(fieldQuery ->
+                                    fieldQuery.field("created").order(SortOrder.Desc)));
+        }
 
         var matchQuery = nativeQueryBuilder
                 .withQuery(new Query.Builder()
