@@ -148,4 +148,27 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                 .content(vos)
                 .build();
     }
+
+    @Override
+    public WebsiteDocumentVo searchById(String id) {
+        WebsiteDocument document = elasticsearchTemplate.get(id, WebsiteDocument.class);
+        if (Objects.isNull(document)) {
+            throw new NotFoundException("document miss");
+        }
+
+        int status = document.getStatus();
+        String authority = SecurityUtils.getLoginAuthority();
+        if (status == 1 && !("ROLE_" + highestRole).equals(authority)) {
+            throw new NotFoundException("document miss");
+        }
+
+        return WebsiteDocumentVo.builder()
+                .id(document.getId())
+                .title(document.getTitle())
+                .description(document.getDescription())
+                .link(document.getLink())
+                .status(document.getStatus())
+                .created(document.getCreated())
+                .build();
+    }
 }

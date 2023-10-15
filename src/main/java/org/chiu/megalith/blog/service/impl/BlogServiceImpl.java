@@ -303,7 +303,7 @@ public class BlogServiceImpl implements BlogService {
         }
 
         BeanUtils.copyProperties(blog, blogEntity);
-        blogRepository.save(blogEntity);
+        BlogEntity saved = blogRepository.save(blogEntity);
 
         //通知消息给mq,更新并删除缓存
         //防止重复消费
@@ -312,6 +312,7 @@ public class BlogServiceImpl implements BlogService {
             type = BlogIndexEnum.UPDATE;
         } else {
             type = BlogIndexEnum.CREATE;
+            blogId = saved.getId();
         }
 
         messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,

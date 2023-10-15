@@ -38,4 +38,9 @@ public class WebsiteSearchController {
                                                          @RequestParam(required = false) String keyword) {
         return Result.success(() -> websiteSearchService.search(currentPage, keyword));
     }
+
+    @GetMapping("/info/{id}")
+    public Result<WebsiteDocumentVo> searchById(@PathVariable String id) {
+        return Result.success(() -> websiteSearchService.searchById(id));
+    }
 }
