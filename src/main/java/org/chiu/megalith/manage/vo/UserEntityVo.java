@@ -21,8 +21,6 @@ public class UserEntityVo {
 
     private String phone;
 
-    private String password;
-
     private Integer status;
 
     private LocalDateTime created;
