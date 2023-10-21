@@ -89,8 +89,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         var boolBuilder = new BoolQuery.Builder();
 
         if (Boolean.FALSE.equals(auth)) {
-            boolBuilder.must(mustQuery ->
-                    mustQuery.term(termQuery ->
+            boolBuilder.filter(filterQuery ->
+                    filterQuery.term(termQuery ->
                             termQuery.field("status").value(0)));
         }
 

@@ -53,11 +53,11 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         .must(mustQuery1 ->
                                                 mustQuery1.multiMatch(multiQuery ->
                                                         multiQuery.fields(fields).query(keywords)))
-                                        .must(mustQuery2 ->
-                                                mustQuery2.term(termQuery ->
+                                        .filter(filterQuery2 ->
+                                                filterQuery2.term(termQuery ->
                                                         termQuery.field("status").value(0)))
-                                        .must(mustQuery3 ->
-                                                mustQuery3.range(rangeQuery ->
+                                        .filter(filterQuery3 ->
+                                                filterQuery3.range(rangeQuery ->
                                                         rangeQuery.field("created")
                                                                 .from(StringUtils.hasLength(year) ? year + "-01-01T00:00:00.000" : null)
                                                                 .to(StringUtils.hasLength(year) ? year + "-12-31T23:59:59.999" : null)))))
@@ -116,8 +116,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         .must(mustQuery1 ->
                                                 mustQuery1.multiMatch(multiQuery -> multiQuery.
                                                         fields(fields).query(keywords)))
-                                        .must(mustQuery2 ->
-                                                mustQuery2.term(termQuery ->
+                                        .filter(filterQuery2 ->
+                                                filterQuery2.term(termQuery ->
                                                         termQuery.field("userId").value(userId)))))
                 .withPageable(PageRequest.of(currentPage - 1, size))
                 .withSort(sortQuery ->
