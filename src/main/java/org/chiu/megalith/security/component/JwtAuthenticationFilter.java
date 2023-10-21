@@ -23,7 +23,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
-import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 
