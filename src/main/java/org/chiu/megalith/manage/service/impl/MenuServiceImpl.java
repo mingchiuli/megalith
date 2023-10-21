@@ -7,13 +7,15 @@ import org.chiu.megalith.manage.repository.MenuRepository;
 import org.chiu.megalith.manage.service.MenuService;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.MenuEntityReq;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_NOT_EXIST;
 
 /**
  * @author mingchiuli
@@ -60,7 +62,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MenuEntityVo findById(Long id) {
         MenuEntity menuEntity = menuRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("menu not exist"));
+                .orElseThrow(() -> new MissException(MENU_NOT_EXIST.getMsg()));
 
         return MenuEntityVo.builder()
                 .menuId(menuEntity.getMenuId())

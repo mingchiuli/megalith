@@ -20,6 +20,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.ACCESSOR_NULL;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
+
 /**
  * @author mingchiuli
  * @create 2022-06-17 9:46 PM
@@ -34,19 +38,18 @@ public class MessageInterceptor implements ChannelInterceptor {
     public Message<?> preSend(@NonNull Message<?> message,
             @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        Assert.isTrue(Objects.nonNull(accessor), "accessor is null");
+        Assert.isTrue(Objects.nonNull(accessor), ACCESSOR_NULL.getMsg());
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
             if (StringUtils.hasLength(token)) {
                 String jwt;
                 try {
-                    jwt = token.substring("Bearer ".length());
+                    jwt = token.substring(TOKEN_PREFIX.getInfo().length());
                 } catch (IndexOutOfBoundsException e) {
-                    throw new JWTVerificationException("token invalid");
+                    throw new JWTVerificationException(TOKEN_INVALID.getMsg());
                 }
 
                 DecodedJWT decodedJWT = jwtUtils.getJWTVerifierByToken(jwt);
-
                 String userId = decodedJWT.getSubject();
                 String role = decodedJWT.getClaim("role").asString();
 

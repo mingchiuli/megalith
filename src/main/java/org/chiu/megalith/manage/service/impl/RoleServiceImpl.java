@@ -7,7 +7,7 @@ import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_NOT_EXIST;
 
 /**
  * @author mingchiuli
@@ -38,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleEntityVo info(Long id) {
         RoleEntity roleEntity = roleRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("role not exist"));
+                .orElseThrow(() -> new MissException("role not exist"));
 
         return RoleEntityVo.builder()
                 .code(roleEntity.getCode())
@@ -93,7 +95,7 @@ public class RoleServiceImpl implements RoleService {
 
         if (Objects.nonNull(id)) {
             roleEntity = roleRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("role not exist"));
+                    .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
             roleEntity.setUpdated(now);
         } else {
             roleEntity = RoleEntity.builder()
@@ -109,7 +111,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Long> getNavMenuIds(String role) {
         RoleEntity roleEntity = roleRepository.findByCode(role)
-                .orElseThrow(() -> new NotFoundException("role not exist"));
+                .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
         Long id = roleEntity.getId();
         return roleMenuService.findMenuIdsByRoleId(id);
     }

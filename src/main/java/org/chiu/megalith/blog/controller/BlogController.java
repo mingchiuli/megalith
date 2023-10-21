@@ -3,10 +3,12 @@ package org.chiu.megalith.blog.controller;
 import org.chiu.megalith.blog.vo.BlogDescriptionVo;
 import org.chiu.megalith.blog.vo.VisitStatisticsVo;
 import org.chiu.megalith.infra.bloom.handler.impl.*;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.bloom.Bloom;
 import org.chiu.megalith.blog.service.BlogService;
+import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.Result;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.blog.vo.BlogExhibitVo;
 import org.chiu.megalith.blog.vo.BlogHotReadVo;
@@ -43,7 +45,7 @@ public class BlogController {
         BlogExhibitVo blog;
 
         if (Boolean.FALSE.equals(authentication instanceof AnonymousAuthenticationToken)) {
-            if (("ROLE_" + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+            if ((Const.ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
                 blog = blogService.findById(id, true);
             } else {
                 blog = blogService.findById(id, false);
@@ -89,16 +91,16 @@ public class BlogController {
         Authentication authentication = SecurityUtils.getLoginAuthentication();
         Integer status = blogService.findStatusById(blogId);
 
-        if (Integer.valueOf(0).equals(status)) {
-            return Result.success(0);
+        if (StatusEnum.NORMAL.getCode().equals(status)) {
+            return Result.success(StatusEnum.NORMAL.getCode());
         }
 
         if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
-            return Result.success(1);
+            return Result.success(StatusEnum.HIDE.getCode());
         }
 
         if (("ROLE_" + highestRole).equals(SecurityUtils.getLoginAuthority())) {
-            return Result.success(0);
+            return Result.success(StatusEnum.NORMAL.getCode());
         }
 
         String userId = authentication.getName();
@@ -123,7 +125,7 @@ public class BlogController {
             Long id = item.getId();
             try {
                 title = blogService.findById(id, false).getTitle();
-            } catch (NotFoundException e) {
+            } catch (MissException e) {
                 title = blogService.findById(id, true).getTitle();
             }
             item.setTitle(title);

@@ -2,7 +2,6 @@ package org.chiu.megalith.manage.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -59,9 +58,20 @@ public class MenuEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+
         MenuEntity that = (MenuEntity) o;
-        return menuId != null && Objects.equals(menuId, that.menuId);
+
+        if (!Objects.equals(menuId, that.menuId)) return false;
+        if (!Objects.equals(parentId, that.parentId)) return false;
+        if (!Objects.equals(title, that.title)) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        if (!Objects.equals(url, that.url)) return false;
+        if (!Objects.equals(component, that.component)) return false;
+        if (!Objects.equals(type, that.type)) return false;
+        if (!Objects.equals(icon, that.icon)) return false;
+        if (!Objects.equals(orderNum, that.orderNum)) return false;
+        return Objects.equals(status, that.status);
     }
 
     @Override

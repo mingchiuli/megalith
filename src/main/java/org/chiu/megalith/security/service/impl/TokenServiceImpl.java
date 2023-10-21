@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
+import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
+
 /**
  * @author mingchiuli
  * @create 2023-03-30 4:29 am
@@ -33,8 +36,8 @@ public class TokenServiceImpl implements TokenService {
     public Map<String, String> refreshToken() {
         Long userId = SecurityUtils.getLoginUserId();
         UserEntity user = userService.findById(userId);
-        String accessToken = jwtUtils.generateToken(userId.toString(), "ROLE_" + user.getRole(), expire);
-        return Collections.singletonMap("accessToken", "Bearer " + accessToken);
+        String accessToken = jwtUtils.generateToken(userId.toString(), ROLE_PREFIX.getInfo() + user.getRole(), expire);
+        return Collections.singletonMap("accessToken", TOKEN_PREFIX.getInfo() + accessToken);
     }
 
     @Override

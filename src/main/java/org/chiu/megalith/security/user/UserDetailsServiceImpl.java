@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
+
 
 @Component
 @RequiredArgsConstructor
@@ -39,15 +42,15 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 		if (username.contains("@")) {
 			grantType = Const.GRANT_TYPE_EMAIL.getInfo();
             user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("email not exist"));
+                    .orElseThrow(() -> new UsernameNotFoundException(EMAIL_NOT_EXIST.getMsg()));
 		} else if (username.matches("\\d+")){
 			grantType = Const.GRANT_TYPE_PHONE.getInfo();
             user = userRepository.findByPhone(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("phone not exist"));
+                    .orElseThrow(() -> new UsernameNotFoundException(PHONE_NOT_EXIST.getMsg()));
 		} else {
 			grantType = Const.GRANT_TYPE_PASSWORD.getInfo();
             user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("username not exist"));
+                    .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_EXIST.getMsg()));
 		}
 
 		//通过User去自动比较用户名和密码
@@ -57,7 +60,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 				true,
 				true,
 				user.getStatus() == 0,
-				AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()),
+				AuthorityUtils.createAuthorityList(ROLE_PREFIX.getInfo() + user.getRole()),
 				grantType,
 				user.getId());
 	}

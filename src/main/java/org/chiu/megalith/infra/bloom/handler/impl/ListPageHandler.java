@@ -1,13 +1,15 @@
 package org.chiu.megalith.infra.bloom.handler.impl;
 
 import org.chiu.megalith.infra.bloom.handler.BloomHandler;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+
+import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
 
 @Component
 @RequiredArgsConstructor
@@ -21,12 +23,14 @@ public class ListPageHandler extends BloomHandler {
         Integer year = (Integer) args[1];
 
         if (Objects.equals(year, Integer.MIN_VALUE)) {
-            if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_PAGE.getInfo(), currentPage))) {
-                throw new NotFoundException("Not found " + currentPage + " page");
+            Boolean bit = redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_PAGE.getInfo(), currentPage);
+            if (Boolean.FALSE.equals(bit)) {
+                throw new MissException(NO_FOUND.getMsg() + currentPage + " page");
             }
         } else {
-            if (Boolean.FALSE.equals(redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, currentPage))) {
-                throw new NotFoundException("Not found " + year + " year " + currentPage + " page");
+            Boolean bit = redisTemplate.opsForValue().getBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, currentPage);
+            if (Boolean.FALSE.equals(bit)) {
+                throw new MissException("Not found " + year + " year " + currentPage + " page");
             }
         }
     }

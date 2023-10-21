@@ -13,32 +13,39 @@ public class Result<T> {
 
     private String msg;
 
+    private Integer code;
+
     private T data;
 
     public static <T> Result<T> success(T data) {
-        return load("success",data); 
+        return load(200, "success",data);
     }
 
     public static <T> Result<T> success() {
-        return load("success",null); 
+        return load(200, "success",null);
     }
 
-    private static <T> Result<T> load(String msg, T data) {
+    private static <T> Result<T> load(Integer code, String msg, T data) {
         Result<T> r = new Result<>();
+        r.setCode(code);
         r.setData(data);
         r.setMsg(msg);
         return r;
     }
     public static <T> Result<T> fail(String msg, T data) {
-        return load(msg, data);
+        return load(400, msg, data);
     }
 
     public static <T> Result<T> fail() {
-        return load(null, null);
+        return load(400, null, null);
     }
 
     public static <T> Result<T> fail(String msg) {
-        return load(msg, null);
+        return load(400, msg, null);
+    }
+
+    public static <T> Result<T> fail(Integer code, String msg) {
+        return load(code, msg, null);
     }
 
     public static Result<Void> success(Runnable runnable) {
@@ -53,5 +60,10 @@ public class Result<T> {
     public static <T> Result<T> fail(String msg, Runnable runnable) {
         runnable.run();
         return fail(msg);
+    }
+
+    public static <T> Result<T> fail(Integer code, String msg, Runnable runnable) {
+        runnable.run();
+        return fail(code, msg);
     }
 }

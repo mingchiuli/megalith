@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.PASSWORD_MISMATCH;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.PASSWORD_MISS;
+
 /**
  * @author mingchiuli
  * @create 2023-01-14 9:02
@@ -54,10 +57,10 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
             if (!passwordEncoder.matches(presentedPassword, user.getPassword())) {
                 String username = user.getUsername();
                 passwordNotMatchProcess(username);
-                throw new BadCredentialsException("Failed to authenticate since password does not match stored value");
+                throw new BadCredentialsException(PASSWORD_MISMATCH.getMsg());
             }
         }, () -> {
-            throw new BadCredentialsException("Failed to authenticate since no credentials provided");
+            throw new BadCredentialsException(PASSWORD_MISS.getMsg());
         });
     }
 

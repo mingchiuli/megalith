@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
+import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
+
 
 @Component
 @RequiredArgsConstructor
@@ -63,15 +66,15 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 				accessExpire);
 
 		String refreshToken = jwtUtils.generateToken(userId,
-				"ROLE_REFRESH_TOKEN",
+				ROLE_PREFIX.getInfo() + "REFRESH_TOKEN",
 				refreshExpire);
 
 		outputStream.write(
 				objectMapper.writeValueAsString(
 						Result.success(
 								LoginSuccessVo.builder()
-										.accessToken("Bearer " + accessToken)
-										.refreshToken("Bearer " + refreshToken)
+										.accessToken(TOKEN_PREFIX.getInfo() + accessToken)
+										.refreshToken(TOKEN_PREFIX.getInfo() + refreshToken)
 										.build())
 						)
 						.getBytes(StandardCharsets.UTF_8)

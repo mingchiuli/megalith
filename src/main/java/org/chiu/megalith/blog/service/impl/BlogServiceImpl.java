@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.chiu.megalith.blog.vo.*;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
@@ -17,7 +18,7 @@ import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.utils.MessageUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.JsonUtils;
@@ -48,6 +49,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 /**
  * @author mingchiuli
@@ -115,10 +118,10 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogExhibitVo findById(Long id, Boolean visible) {
         BlogEntity blogEntity = Boolean.FALSE.equals(visible) ?
-                blogRepository.findByIdAndStatus(id, 0)
-                        .orElseThrow(() -> new NotFoundException("blog not exist")) :
+                blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
+                        .orElseThrow(() -> new MissException(NO_FOUND)) :
                 blogRepository.findById(id)
-                        .orElseThrow(() -> new NotFoundException("blog not exist"));
+                        .orElseThrow(() -> new MissException(NO_FOUND));
 
         UserEntity user = userService.findById(blogEntity.getUserId());
 
@@ -144,7 +147,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogEntity findById(Long id) {
         return blogRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("blog not exist"));
+                .orElseThrow(() -> new MissException(NO_FOUND));
     }
 
     @Override
@@ -194,15 +197,15 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Integer checkStatusByIdAndUserId(Long blogId, Long userId) {
         BlogEntity blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new NotFoundException("blog not exist"));
+                .orElseThrow(() -> new MissException(NO_FOUND));
         Long id = blog.getUserId();   
-        return Objects.equals(id, blogId) ? 0 : 1;  
+        return Objects.equals(id, blogId) ? StatusEnum.NORMAL.getCode() : StatusEnum.HIDE.getCode();
     }
 
     @SneakyThrows
     @Override
     public String uploadOss(MultipartFile image, Long userId) {
-        Assert.notNull(image, "upload miss");
+        Assert.notNull(image, UPLOAD_MISS.getMsg());
         String nickname = userService.findById(userId).getNickname();
         String uuid = UUID.randomUUID().toString();
         String originalFilename = image.getOriginalFilename();
@@ -228,7 +231,7 @@ public class BlogServiceImpl implements BlogService {
         Long bdUserId = findUserIdById(id);
 
         if (Boolean.FALSE.equals(Objects.equals(highestRole, authority) || Objects.equals(userId, bdUserId))) {
-            throw new BadCredentialsException("user mismatch");
+            throw new BadCredentialsException(USER_MISS.getMsg());
         }
 
         Integer year = changeBlogStatus(id, status);
@@ -250,7 +253,7 @@ public class BlogServiceImpl implements BlogService {
             redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo() + blogId, token, 24, TimeUnit.HOURS);
             return token;
         }
-        throw new BadCredentialsException("user mismatch");
+        throw new BadCredentialsException(USER_MISS.getMsg());
     }
 
     @Override
@@ -292,8 +295,8 @@ public class BlogServiceImpl implements BlogService {
 
         if (Objects.nonNull(blogId)) {
             blogEntity = blogRepository.findById(blogId)
-                    .orElseThrow(() -> new NotFoundException("blog not exist"));
-            Assert.isTrue(Objects.equals(blogEntity.getUserId(), userId), "must edit your blog!");
+                    .orElseThrow(() -> new MissException(NO_FOUND));
+            Assert.isTrue(Objects.equals(blogEntity.getUserId(), userId), EDIT_NO_AUTH.getMsg());
         } else {
             blogEntity = BlogEntity.builder()
                     .created(LocalDateTime.now())
@@ -471,7 +474,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogEditVo findEdit(Long id, Long userId) {
         BlogEntity blogEntity = blogRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new NotFoundException("must edit your blog"));
+                .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
 
         return BlogEditVo.builder()
                 .id(blogEntity.getId())
@@ -490,7 +493,7 @@ public class BlogServiceImpl implements BlogService {
             BlogEntity blogEntity = findById(id);
 
             if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
-                throw new BadCredentialsException("must delete own blog");
+                throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
             }
 
             blogRepository.delete(blogEntity);

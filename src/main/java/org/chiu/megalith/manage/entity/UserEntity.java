@@ -2,7 +2,6 @@ package org.chiu.megalith.manage.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -65,9 +64,21 @@ public class UserEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+
         UserEntity that = (UserEntity) o;
-        return id != null && Objects.equals(id, that.id);
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(username, that.username)) return false;
+        if (!Objects.equals(nickname, that.nickname)) return false;
+        if (!Objects.equals(avatar, that.avatar)) return false;
+        if (!Objects.equals(email, that.email)) return false;
+        if (!Objects.equals(phone, that.phone)) return false;
+        if (!Objects.equals(password, that.password)) return false;
+        if (!Objects.equals(status, that.status)) return false;
+        if (!Objects.equals(created, that.created)) return false;
+        if (!Objects.equals(lastLogin, that.lastLogin)) return false;
+        return Objects.equals(role, that.role);
     }
 
     @Override

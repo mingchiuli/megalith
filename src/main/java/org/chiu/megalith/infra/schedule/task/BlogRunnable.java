@@ -2,7 +2,7 @@ package org.chiu.megalith.infra.schedule.task;
 
 import org.chiu.megalith.blog.controller.BlogController;
 import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -50,7 +50,7 @@ public record BlogRunnable(ThreadPoolExecutor executor,
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
                         try {
                             blogService.findById(id, false);
-                        } catch (NotFoundException e) {
+                        } catch (MissException e) {
                             blogService.findById(id, true);
                         }
                     }));

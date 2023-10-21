@@ -5,7 +5,7 @@ import org.chiu.megalith.coop.vo.BlogAbstractVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.vo.BlogExhibitVo;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.manage.req.BlogEntityReq;
@@ -118,7 +118,7 @@ public class CoopServiceImpl extends BaseCoopService implements CoopService {
                             BlogExhibitVo vo;
                             try {
                                 vo = blogService.findById(id, true);
-                            } catch (NotFoundException e) {
+                            } catch (MissException e) {
                                 vo = blogService.findById(id, false);
                             }
                             return BlogAbstractVo.builder()

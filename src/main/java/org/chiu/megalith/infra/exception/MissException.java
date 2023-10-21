@@ -4,15 +4,15 @@ import org.chiu.megalith.infra.lang.ExceptionMessage;
 
 /**
  * @author mingchiuli
- * @create 2022-12-22 10:04 am
+ * @create 2022-07-07 11:06 AM
  */
-public class CommitException extends BaseException {
+public class MissException extends BaseException {
 
-    public CommitException(String message) {
+    public MissException(String message) {
         super(message);
     }
 
-    public CommitException(ExceptionMessage exceptionMessage) {
+    public MissException(ExceptionMessage exceptionMessage) {
         super(exceptionMessage);
     }
 }

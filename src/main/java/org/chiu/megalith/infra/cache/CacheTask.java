@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.GET_LOCK_TIMEOUT;
+
 @AllArgsConstructor
 public class CacheTask implements Function<String, Object> {
 
@@ -53,7 +55,7 @@ public class CacheTask implements Function<String, Object> {
         RLock rLock = redisson.getLock(lock);
 
         if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
-            throw new TimeoutException("get lock timeout");
+            throw new TimeoutException(GET_LOCK_TIMEOUT.getMsg());
         }
 
         try {

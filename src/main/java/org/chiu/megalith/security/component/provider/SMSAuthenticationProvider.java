@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
+
 /**
  * @author mingchiuli
  * @create 2023-03-08 1:59 am
@@ -45,20 +47,20 @@ public final class SMSAuthenticationProvider extends ProviderSupport {
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {
                 redisTemplate.delete(prefix);
-                throw new BadCredentialsException("sms reach max try number");
+                throw new BadCredentialsException(SMS_TRY_MAX.getMsg());
             }
 
             if (!Objects.equals(code, authentication.getCredentials().toString())) {
                 Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
                 if (Long.valueOf(0).equals(ttl)) {
-                    throw new BadCredentialsException("sms expired");
+                    throw new BadCredentialsException(SMS_EXPIRED.getMsg());
                 }
-                throw new BadCredentialsException("sms mismatch");
+                throw new BadCredentialsException(SMS_MISMATCH.getMsg());
             }
 
             redisTemplate.delete(prefix);
         } else {
-            throw new BadCredentialsException("sms not exist");
+            throw new BadCredentialsException(SMS_NOT_EXIST.getMsg());
         }
     }
 }

@@ -2,7 +2,6 @@ package org.chiu.megalith.blog.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -58,9 +57,19 @@ public class BlogEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+
         BlogEntity that = (BlogEntity) o;
-        return id != null && Objects.equals(id, that.id);
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(userId, that.userId)) return false;
+        if (!Objects.equals(title, that.title)) return false;
+        if (!Objects.equals(description, that.description)) return false;
+        if (!Objects.equals(content, that.content)) return false;
+        if (!Objects.equals(created, that.created)) return false;
+        if (!Objects.equals(status, that.status)) return false;
+        if (!Objects.equals(link, that.link)) return false;
+        return Objects.equals(readCount, that.readCount);
     }
 
     @Override

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.infra.exception.CodeException;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.CODE_EXISTED;
+
 
 /**
  * @author mingchiuli
@@ -45,7 +47,7 @@ public class CodeServiceImpl implements CodeService {
             codeFactory.save(code, key);
             return;
         }
-        throw new CodeException("code existed");
+        throw new CodeException(CODE_EXISTED);
     }
 
 

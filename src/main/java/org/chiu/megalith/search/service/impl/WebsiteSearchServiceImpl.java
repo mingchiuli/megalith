@@ -3,7 +3,8 @@ package org.chiu.megalith.search.service.impl;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
+import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
@@ -25,7 +26,10 @@ import org.springframework.util.StringUtils;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.DOCUMENT_NOT_EXIST;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.WEB_NOT_EXIST;
 
 /**
  * @author mingchiuli
@@ -53,7 +57,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         if (Objects.nonNull(id)) {
             document = elasticsearchTemplate.get(id, WebsiteDocument.class);
             if (Objects.isNull(document)) {
-                throw new NotFoundException("web record is miss");
+                throw new MissException(WEB_NOT_EXIST);
             }
         } else {
             document = WebsiteDocument.builder()
@@ -78,7 +82,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         if (Objects.nonNull(authentication)) {
             String authority = SecurityUtils.getLoginAuthority();
-            if (("ROLE_" + highestRole).equals(authority)) {
+            if ((ROLE_PREFIX.getInfo() + highestRole).equals(authority)) {
                 auth = true;
             }
         }
@@ -153,13 +157,13 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     public WebsiteDocumentVo searchById(String id) {
         WebsiteDocument document = elasticsearchTemplate.get(id, WebsiteDocument.class);
         if (Objects.isNull(document)) {
-            throw new NotFoundException("document miss");
+            throw new MissException(DOCUMENT_NOT_EXIST);
         }
 
         int status = document.getStatus();
         String authority = SecurityUtils.getLoginAuthority();
-        if (status == 1 && !("ROLE_" + highestRole).equals(authority)) {
-            throw new NotFoundException("document miss");
+        if (status == 1 && !(Const.ROLE_PREFIX.getInfo() + highestRole).equals(authority)) {
+            throw new MissException(DOCUMENT_NOT_EXIST);
         }
 
         return WebsiteDocumentVo.builder()

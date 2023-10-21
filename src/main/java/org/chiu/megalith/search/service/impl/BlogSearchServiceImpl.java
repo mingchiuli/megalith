@@ -2,7 +2,7 @@ package org.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
@@ -136,7 +136,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                     Long readCount;
                     try {
                         readCount = blogService.findById(id, false).getReadCount();
-                    } catch (NotFoundException e) {
+                    } catch (MissException e) {
                         readCount = blogService.findById(id, true).getReadCount();
                     }
                     return BlogEntityVo.builder()

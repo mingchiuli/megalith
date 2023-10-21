@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
+
 /**
  * @author mingchiuli
  * @create 2022-12-30 10:57 am
@@ -45,20 +47,20 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {
                 redisTemplate.delete(prefix);
-                throw new BadCredentialsException("code reach max try number");
+                throw new BadCredentialsException(CODE_TRY_MAX.getMsg());
             }
 
             if (Boolean.FALSE.equals(code.equalsIgnoreCase(authentication.getCredentials().toString()))) {
                 Long ttl = redisTemplate.execute(LuaScriptUtils.emailOrPhoneLua, Collections.singletonList(prefix), "try_count");
                 if (Long.valueOf(0).equals(ttl)) {
-                    throw new BadCredentialsException("code expired");
+                    throw new BadCredentialsException(CODE_EXPIRED.getMsg());
                 }
-                throw new BadCredentialsException("code mismatch");
+                throw new BadCredentialsException(CODE_MISMATCH.getMsg());
             }
 
             redisTemplate.delete(prefix);
         } else {
-            throw new BadCredentialsException("code not exist");
+            throw new BadCredentialsException(CODE_NOT_EXIST.getMsg());
         }
     }
 }

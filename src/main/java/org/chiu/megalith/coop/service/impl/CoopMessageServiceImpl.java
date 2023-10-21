@@ -63,7 +63,7 @@ public class CoopMessageServiceImpl extends BaseCoopService implements CoopMessa
 
         if (operateType.equals(OperateType.ADD)) {
             content = prefix + changeContent + suffix;
-        } else {
+        } else if (operateType.equals(OperateType.DEL)){
             suffix = suffix.substring(offset);
             content = prefix + suffix;
         }

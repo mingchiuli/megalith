@@ -27,6 +27,12 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = BaseException.class)
+    public Result<String> handler(BaseException e){
+        return Result.fail(e.getCode(), e.getMessage(),  () -> log.error("diy exception------------{}", e));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result<String> handler(MethodArgumentNotValidException e) {
         return e.getBindingResult().getAllErrors().stream()
@@ -45,7 +51,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AccessDeniedException.class)
     public Result<String> handler(AccessDeniedException e){
-        return Result.fail(e.getMessage(),  () -> log.error("authorization exception------------{}",e));
+        return Result.fail(e.getMessage(),  () -> log.error("authorization exception------------{}", e));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

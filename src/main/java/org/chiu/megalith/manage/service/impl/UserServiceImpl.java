@@ -5,7 +5,7 @@ import org.chiu.megalith.manage.repository.UserRepository;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.infra.exception.CommitException;
-import org.chiu.megalith.infra.exception.NotFoundException;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.UserEntityVo;
@@ -13,7 +13,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -21,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 /**
  * @author mingchiuli
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         if (Objects.nonNull(id)) {
             userEntity = userRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("user not exist"));
+                    .orElseThrow(() -> new MissException(USER_NOT_EXIST));
 
             Optional.ofNullable(userEntityReq.getPassword()).ifPresentOrElse(password ->
                     userEntityReq.setPassword(passwordEncoder.encode(password)), () ->
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService {
                     .build();
             userEntityReq.setPassword(
                     passwordEncoder.encode(Optional.ofNullable(userEntityReq.getPassword())
-                                    .orElseThrow(() -> new CommitException("password is required"))
+                                    .orElseThrow(() -> new CommitException(PASSWORD_REQUIRED))
                     )
             );
         }
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("user not exist"));
+                .orElseThrow(() -> new MissException(USER_NOT_EXIST));
     }
 
     @Override
@@ -133,7 +134,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("email not exist"));
+                .orElseThrow(() -> new MissException(EMAIL_NOT_EXIST));
     }
 
 

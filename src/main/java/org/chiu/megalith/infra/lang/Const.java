@@ -1,6 +1,5 @@
 package org.chiu.megalith.infra.lang;
 
-
 import lombok.Getter;
 
 /**
@@ -70,7 +69,11 @@ public enum Const {
 
     HOT_READ("hot_read"),
     
-    BLOG_CONTENT("content");
+    BLOG_CONTENT("content"),
+
+    TOKEN_PREFIX("Bearer "),
+
+    ROLE_PREFIX("ROLE_");
 
     private final String info;
 
