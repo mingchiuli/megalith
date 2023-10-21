@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 
 import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
+import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 
 @Component
@@ -71,7 +72,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     private Authentication getAuthentication(String token) {
         String jwt;
         try {
-            jwt = token.substring(ROLE_PREFIX.getInfo().length());
+            jwt = token.substring(TOKEN_PREFIX.getInfo().length());
         } catch (IndexOutOfBoundsException e) {
             throw new JWTVerificationException(TOKEN_INVALID.getMsg());
         }
