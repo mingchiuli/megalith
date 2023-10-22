@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.schedule.task;
+package org.chiu.megalith.blog.schedule.task;
 
 import org.chiu.megalith.blog.controller.BlogController;
 import org.chiu.megalith.blog.service.BlogService;

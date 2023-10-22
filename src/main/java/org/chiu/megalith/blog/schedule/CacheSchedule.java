@@ -1,11 +1,11 @@
-package org.chiu.megalith.infra.schedule;
+package org.chiu.megalith.blog.schedule;
 
 import org.chiu.megalith.blog.controller.BlogController;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.lang.Const;
-import org.chiu.megalith.infra.schedule.task.BlogRunnable;
-import org.chiu.megalith.infra.schedule.task.BlogsRunnable;
-import org.chiu.megalith.infra.schedule.task.PageMarker;
+import org.chiu.megalith.blog.schedule.task.BlogRunnable;
+import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
+import org.chiu.megalith.blog.schedule.task.PageMarker;
 import org.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
