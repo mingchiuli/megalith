@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
 public @interface ListValue {
-    String message() default "{org.chiu.megalith.common.valid.ListValue.message}";
+    String message() default "{org.chiu.megalith.infra.valid.ListValue.message}";
 
     Class<?>[] groups() default { };
 

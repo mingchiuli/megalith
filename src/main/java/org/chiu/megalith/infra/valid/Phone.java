@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Phone {
 
-    String message() default "{org.chiu.megalith.common.valid.phone.message}";
+    String message() default "{org.chiu.megalith.infra.valid.phone.message}";
 
     Class<?>[] groups() default { };
 

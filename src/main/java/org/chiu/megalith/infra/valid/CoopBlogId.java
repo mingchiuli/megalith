@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface CoopBlogId {
 
-    String message() default "{org.chiu.megalith.common.valid.coopBlogId.message}";
+    String message() default "{com.chiu.megalith.infra.valid.coopBlogId.message}";
 
     Class<?>[] groups() default { };
 
