@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Username {
 
-    String message() default "{org.chiu.megalith.common.valid.username.message}";
+    String message() default "{com.chiu.megalith.infra.valid.username.message}";
 
     Class<?>[] groups() default { };
 

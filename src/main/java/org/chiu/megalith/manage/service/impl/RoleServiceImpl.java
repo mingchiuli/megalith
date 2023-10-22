@@ -1,6 +1,6 @@
 package org.chiu.megalith.manage.service.impl;
 
-
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.chiu.megalith.manage.repository.RoleRepository;
@@ -109,15 +109,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Long> getNavMenuIds(String role) {
-        RoleEntity roleEntity = roleRepository.findByCode(role)
-                .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
-        Long id = roleEntity.getId();
-        return roleMenuService.findMenuIdsByRoleId(id);
-    }
-
-
-    @Override
     @Transactional
     public void delete(List<Long> ids) {
         ids.forEach(id -> {
@@ -139,5 +130,26 @@ public class RoleServiceImpl implements RoleService {
                 .toList();
         roleMenuService.saveAll(roleMenuEntities);
         return menuIds;
+    }
+
+    @Override
+    public List<RoleEntityVo> getValidAll() {
+        List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
+        List<RoleEntityVo> vos = new ArrayList<>();
+        entities.forEach(item -> vos.add(RoleEntityVo.builder()
+                .code(item.getCode())
+                .id(item.getId())
+                .status(item.getStatus())
+                .name(item.getName())
+                .build()));
+        return vos;
+    }
+
+    @Override
+    public List<Long> getNavMenuIdsNormal(String role) {
+        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(role, StatusEnum.NORMAL.getCode())
+                .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
+        Long id = roleEntity.getId();
+        return roleMenuService.findMenuIdsByRoleId(id);
     }
 }

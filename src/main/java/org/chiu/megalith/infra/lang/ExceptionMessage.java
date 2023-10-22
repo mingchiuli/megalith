@@ -63,8 +63,11 @@ public enum ExceptionMessage {
 
     SMS_NOT_EXIST(29, "sms not exist"),
 
-    PHONE_NOT_EXIST(30, "phone not exist");
+    PHONE_NOT_EXIST(30, "phone not exist"),
 
+    ROLE_DISABLED(31, "role disabled"),
+
+    MENU_INVALID_OPERATE(32, "先删除子菜单，不允许直接删除父菜单");
 
     private final String msg;
 

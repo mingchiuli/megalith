@@ -1,5 +1,6 @@
 package org.chiu.megalith.search.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 
@@ -25,6 +26,7 @@ public class WebsiteDocumentVo {
 
     private String link;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private ZonedDateTime created;
 
     private Float score;

@@ -1,6 +1,7 @@
 package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
+import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.security.user.LoginUser;
 import org.chiu.megalith.infra.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +29,10 @@ public final class EmailAuthenticationProvider extends ProviderSupport {
     @Value("${blog.email-try-count}")
     private int maxTryNum;
 
-    public EmailAuthenticationProvider(StringRedisTemplate redisTemplate, UserDetailsService userDetailsService) {
-        super(Const.GRANT_TYPE_EMAIL.getInfo(), userDetailsService);
+    public EmailAuthenticationProvider(StringRedisTemplate redisTemplate,
+                                       UserDetailsService userDetailsService,
+                                       RoleRepository roleRepository) {
+        super(Const.GRANT_TYPE_EMAIL.getInfo(), userDetailsService, roleRepository);
         this.redisTemplate = redisTemplate;
     }
 

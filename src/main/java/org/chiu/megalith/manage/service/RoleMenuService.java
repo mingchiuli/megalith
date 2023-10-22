@@ -12,6 +12,8 @@ public interface RoleMenuService {
 
     void deleteByRoleId(Long roleId);
 
+    void deleteByMenuId(Long menuId);
+
     List<Long> findMenuIdsByRoleId(Long id);
 
     void saveAll(List<RoleMenuEntity> roleMenus);

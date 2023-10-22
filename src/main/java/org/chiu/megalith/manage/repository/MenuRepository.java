@@ -13,4 +13,6 @@ import java.util.List;
 public interface MenuRepository extends JpaRepository<MenuEntity, Long> {
     
     List<MenuEntity> findAllByOrderByOrderNumDesc();
+
+    List<MenuEntity> findByParentId(Long id);
 }

@@ -21,7 +21,9 @@ public interface RoleService {
 
     void delete(List<Long> ids);
 
-    List<Long> getNavMenuIds(String role);
-
     List<Long> perm(Long roleId, List<Long> menuIds);
+
+    List<RoleEntityVo> getValidAll();
+
+    List<Long> getNavMenuIdsNormal(String role);
 }

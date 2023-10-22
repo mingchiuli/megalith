@@ -36,6 +36,12 @@ public class RoleController {
         return Result.success(() -> roleService.getPage(currentPage, pageSize));
     }
 
+    @GetMapping("/valid/all")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    public Result<List<RoleEntityVo>> getValidAll() {
+        return Result.success(roleService::getValidAll);
+    }
+
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<Void> saveOrUpdate(@Validated @RequestBody RoleEntityReq role) {

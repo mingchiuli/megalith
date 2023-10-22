@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +52,13 @@ public class UserServiceImpl implements UserService {
             userEntity = userRepository.findById(id)
                     .orElseThrow(() -> new MissException(USER_NOT_EXIST));
 
-            Optional.ofNullable(userEntityReq.getPassword()).ifPresentOrElse(password ->
-                    userEntityReq.setPassword(passwordEncoder.encode(password)), () ->
-                    userEntityReq.setPassword(userEntity.getPassword()));
+            String password = userEntityReq.getPassword();
+            if (StringUtils.hasLength(password)) {
+                userEntityReq.setPassword(passwordEncoder.encode(password));
+            } else {
+                userEntityReq.setPassword(userEntity.getPassword());
+            }
+
         } else {
             userEntity = UserEntity.builder()
                     .created(now)
@@ -73,11 +79,6 @@ public class UserServiceImpl implements UserService {
     public UserEntity findById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new MissException(USER_NOT_EXIST));
-    }
-
-    @Override
-    public void changeUserStatusById(Long id, Integer status) {
-        userRepository.setUserStatusById(id, status);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
+import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.security.user.LoginUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
@@ -30,8 +31,10 @@ public final class SMSAuthenticationProvider extends ProviderSupport {
     private int maxTryNum;
 
 
-    public SMSAuthenticationProvider(UserDetailsService userDetailsService, StringRedisTemplate redisTemplate) {
-        super(Const.GRANT_TYPE_PHONE.getInfo(), userDetailsService);
+    public SMSAuthenticationProvider(UserDetailsService userDetailsService,
+                                     StringRedisTemplate redisTemplate,
+                                     RoleRepository roleRepository) {
+        super(Const.GRANT_TYPE_PHONE.getInfo(), userDetailsService, roleRepository);
         this.redisTemplate = redisTemplate;
     }
 

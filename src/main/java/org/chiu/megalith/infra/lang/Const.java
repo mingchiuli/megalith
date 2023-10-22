@@ -73,7 +73,9 @@ public enum Const {
 
     TOKEN_PREFIX("Bearer "),
 
-    ROLE_PREFIX("ROLE_");
+    ROLE_PREFIX("ROLE_"),
+
+    HOT_ROLE_MENU("hot_role_menu:");
 
     private final String info;
 

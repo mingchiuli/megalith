@@ -35,9 +35,4 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Modifying
     @Transactional
     void setUserStatusByUsername(String username, Integer status);
-
-    @Query(value = "UPDATE UserEntity user set user.status = :status where user.id = :id")
-    @Modifying
-    @Transactional
-    void setUserStatusById(Long id, Integer status);
 }

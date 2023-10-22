@@ -6,6 +6,8 @@ import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
 import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
 import org.chiu.megalith.blog.schedule.task.PageMarker;
+import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
@@ -143,8 +145,12 @@ public class CacheSchedule {
 
         //unlock user & del statistic & del hot read
         CompletableFuture.runAsync(() -> {
-            List<Long> ids = userService.findIdsByStatus(1);
-            ids.forEach(id -> userService.changeUserStatusById(id, 0));
+            List<Long> ids = userService.findIdsByStatus(StatusEnum.HIDE.getCode());
+            ids.forEach(id -> {
+                UserEntity user = userService.findById(id);
+                user.setStatus(StatusEnum.NORMAL.getCode());
+            });
+
             var now = LocalDateTime.now();
 
             int hourOfDay = now.getHour();

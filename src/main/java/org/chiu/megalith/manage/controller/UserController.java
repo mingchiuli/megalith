@@ -26,13 +26,6 @@ public class UserController {
         return Result.success(() -> userService.saveOrUpdate(userEntityReq));
     }
 
-    @GetMapping("/status/{id}/{status}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> setUserStatus(@PathVariable(value = "id") Long userId,
-                                      @PathVariable(value = "status") Integer status) {
-        return Result.success(() -> userService.changeUserStatusById(userId, status));
-    }
-
     @GetMapping("/page/{currentPage}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<PageAdapter<UserEntityVo>> page(@PathVariable(value = "currentPage") Integer currentPage,

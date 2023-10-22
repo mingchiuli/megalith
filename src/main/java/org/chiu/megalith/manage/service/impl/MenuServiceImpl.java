@@ -1,6 +1,8 @@
 package org.chiu.megalith.manage.service.impl;
 
+import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.manage.entity.UserEntity;
+import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.repository.MenuRepository;
@@ -12,9 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_INVALID_OPERATE;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_NOT_EXIST;
 
 /**
@@ -31,13 +35,15 @@ public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
 
+    private final RoleMenuService roleMenuService;
+
     @Override
     public List<MenuVo> getCurrentUserNav(Long userId) {
 
         UserEntity userEntity = userService.findById(userId);
         String role = userEntity.getRole();
 
-        List<Long> menuIds = roleService.getNavMenuIds(role);
+        List<Long> menuIds = roleService.getNavMenuIdsNormal(role);
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
 
         List<MenuVo> menuEntities = menus.stream()
@@ -120,9 +126,15 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
-        
+        List<MenuEntity> menus = menuRepository.findByParentId(id);
+        if (Boolean.FALSE.equals(menus.isEmpty())) {
+            throw new CommitException(MENU_INVALID_OPERATE);
+        }
+
         menuRepository.deleteById(id);
+        roleMenuService.deleteByMenuId(id);
     }
 
     private List<MenuVo> buildTreeMenu(List<MenuVo> menus) {

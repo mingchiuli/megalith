@@ -24,6 +24,11 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     }
 
     @Override
+    public void deleteByMenuId(Long menuId) {
+        roleMenuRepository.deleteByMenuId(menuId);
+    }
+
+    @Override
     public List<Long> findMenuIdsByRoleId(Long id) {
         return roleMenuRepository.findMenuIdsByRoleId(id);
     }

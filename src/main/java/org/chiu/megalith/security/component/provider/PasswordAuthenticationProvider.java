@@ -1,6 +1,8 @@
 package org.chiu.megalith.security.component.provider;
 
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
+import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.security.user.LoginUser;
 import org.chiu.megalith.infra.lang.Const;
@@ -42,8 +44,9 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
     public PasswordAuthenticationProvider(PasswordEncoder passwordEncoder,
                                           StringRedisTemplate redisTemplate,
                                           UserService userService,
-                                          UserDetailsService userDetailsService) {
-        super(Const.GRANT_TYPE_PASSWORD.getInfo(), userDetailsService);
+                                          UserDetailsService userDetailsService,
+                                          RoleRepository roleRepository) {
+        super(Const.GRANT_TYPE_PASSWORD.getInfo(), userDetailsService, roleRepository);
         this.passwordEncoder = passwordEncoder;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
@@ -81,7 +84,7 @@ public final class PasswordAuthenticationProvider extends ProviderSupport {
         }
 
         if (len - l + 1 >= maxTryNum) {
-            userService.changeUserStatusByUsername(username, 1);
+            userService.changeUserStatusByUsername(username, StatusEnum.HIDE.getCode());
         }
 
         redisTemplate.execute(LuaScriptUtils.passwordLua, Collections.singletonList(prefix),
