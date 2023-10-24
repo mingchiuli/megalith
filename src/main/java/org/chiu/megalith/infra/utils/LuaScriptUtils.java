@@ -2,7 +2,6 @@ package org.chiu.megalith.infra.utils;
 
 import org.springframework.data.redis.core.script.RedisScript;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
