@@ -26,6 +26,8 @@ public class BlogDeleteVo {
 
     private Integer status;
 
+    private Integer idx;
+
     private String link;
 
     private Long readCount;

@@ -362,6 +362,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId) {
 
         List<BlogEntity> deletedBlogs = Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1))
@@ -380,29 +381,35 @@ public class BlogServiceImpl implements BlogService {
 
         int start = (currentPage - 1) * size;
 
-        Long total = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.flushDelete,
-                Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
-                String.valueOf(l), "-1"))
-                        .orElse(0L);
+        List<String> resp = Optional.ofNullable(
+                redisTemplate.execute(LuaScriptUtils.listDeletedRedisScript,
+                        Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                        String.valueOf(l), "-1", String.valueOf(size), String.valueOf(start))
+        ).orElseGet(ArrayList::new);
 
+        Long total = (long) resp.size();
         int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
-        List<BlogEntity> rawList = Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, start, start + size)).orElseGet(ArrayList::new).stream()
+        List<BlogDeleteVo> content = new ArrayList<>();
+
+        List<BlogEntity> list = resp.stream()
                 .map(str -> jsonUtils.readValue(str, BlogEntity.class))
                 .toList();
 
-        List<BlogDeleteVo> content = new ArrayList<>();
-        rawList.forEach(item -> content.add(BlogDeleteVo.builder()
-                .link(item.getLink())
-                .content(item.getContent())
-                .readCount(item.getReadCount())
-                .title(item.getTitle())
-                .status(item.getStatus())
-                .created(item.getCreated())
-                .id(item.getId())
-                .userId(item.getUserId())
-                .description(item.getDescription())
-                .build()));
+        for (BlogEntity item : list) {
+            content.add(BlogDeleteVo.builder()
+                    .idx(l++)
+                    .link(item.getLink())
+                    .content(item.getContent())
+                    .readCount(item.getReadCount())
+                    .title(item.getTitle())
+                    .status(item.getStatus())
+                    .created(item.getCreated())
+                    .id(item.getId())
+                    .userId(item.getUserId())
+                    .description(item.getDescription())
+                    .build());
+        }
 
         return PageAdapter.<BlogDeleteVo>builder()
                 .content(content)
@@ -419,11 +426,18 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void recoverDeletedBlog(Long id, Integer idx, Long userId) {
 
-        String str = redisTemplate.opsForList().index(Const.QUERY_DELETED.getInfo() + userId, idx);
+        String str = Optional.ofNullable(
+                redisTemplate.execute(LuaScriptUtils.recoverDeletedScript,
+                        Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                        String.valueOf(idx))
+        ).orElse("");
+
+        if (Boolean.FALSE.equals(StringUtils.hasLength(str))) {
+            return;
+        }
+
         BlogEntity tempBlog = jsonUtils.readValue(str, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
-
-        redisTemplate.opsForList().remove(Const.QUERY_DELETED.getInfo() + userId, 1, str);
 
         messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
@@ -446,6 +460,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public VisitStatisticsVo getVisitStatistics() {
         List<Long> list = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.getVisitLua,
                         List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(),

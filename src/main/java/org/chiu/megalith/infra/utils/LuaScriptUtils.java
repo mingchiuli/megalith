@@ -2,6 +2,7 @@ package org.chiu.megalith.infra.utils;
 
 import org.springframework.data.redis.core.script.RedisScript;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,13 +53,25 @@ public class LuaScriptUtils {
                     "redis.call('rpush', KEYS[1], ARGV[1]);" +
                     "redis.call('expire', KEYS[1], ARGV[2]);");
 
-    public static final RedisScript<Long> flushDelete = RedisScript.of(
-            "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
-                    "return redis.call('llen', KEYS[1]);",
-            Long.class);
-
-
     public static final RedisScript<Long> countYears = RedisScript.of(
         "return redis.call('bitcount', KEYS[1]);", 
-        Long.class);        
+        Long.class);
+
+    public static final RedisScript<List> listDeletedRedisScript = RedisScript.of(
+            "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
+                    "local total = redis.call('llen', KEYS[1]);" +
+                    "local totalPages = 0;" +
+                    "if (total % ARGV[3] == 0) then " +
+                    "totalPages = math.floor(total / ARGV[3]);" +
+                    "else " +
+                    "totalPages = math.floor(total / ARGV[3]) + 1;" +
+                    "end;" +
+                    "return redis.call('lrange', KEYS[1], ARGV[4], ARGV[3] + ARGV[4]);",
+            List.class);
+
+    public static final RedisScript<String> recoverDeletedScript = RedisScript.of(
+            "local str =  redis.call('lindex', KEYS[1], ARGV[1]);" +
+                    "redis.call('lrem', KEYS[1], '1', str)" +
+                    "return str;",
+            String.class);
 }
