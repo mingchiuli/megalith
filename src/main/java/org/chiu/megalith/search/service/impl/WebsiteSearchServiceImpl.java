@@ -47,7 +47,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    private final List<String> fields = List.of("title", "description");
+    private final List<String> fields = List.of("title", "description^2");
 
     @Override
     public void saveOrUpdate(WebsiteDocumentReq websiteDocumentReq) {

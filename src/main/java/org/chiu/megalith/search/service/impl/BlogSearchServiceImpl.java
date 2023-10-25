@@ -42,7 +42,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
-    private final List<String> fields = List.of("title", "description", "content");
+    private final List<String> fields = List.of("title", "description", "content^2");
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keywords, Boolean allInfo, String year) {
