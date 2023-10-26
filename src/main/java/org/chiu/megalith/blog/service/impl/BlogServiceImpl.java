@@ -344,6 +344,7 @@ public class BlogServiceImpl implements BlogService {
                                         Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), blogEntity.getId().toString()))
                                                 .orElse(0.0))
                                 .status(blogEntity.getStatus())
+                                .link(blogEntity.getLink())
                                 .created(blogEntity.getCreated())
                                 .content(blogEntity.getContent())
                                 .build())
@@ -381,21 +382,21 @@ public class BlogServiceImpl implements BlogService {
 
         int start = (currentPage - 1) * size;
 
-        List<String> resp = Optional.ofNullable(
+        List resp = Optional.ofNullable(
                 redisTemplate.execute(LuaScriptUtils.listDeletedRedisScript,
                         Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
-                        String.valueOf(l), "-1", String.valueOf(size), String.valueOf(start))
+                        String.valueOf(l), "-1", String.valueOf(size - 1), String.valueOf(start))
         ).orElseGet(ArrayList::new);
 
-        Long total = (long) resp.size();
+        List<String> respList = resp.subList(0, resp.size() - 1);
+        Long total = (long) resp.get(resp.size() - 1);
         int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
-        List<BlogDeleteVo> content = new ArrayList<>();
-
-        List<BlogEntity> list = resp.stream()
+        List<BlogEntity> list = respList.stream()
                 .map(str -> jsonUtils.readValue(str, BlogEntity.class))
                 .toList();
 
+        List<BlogDeleteVo> content = new ArrayList<>();
         for (BlogEntity item : list) {
             content.add(BlogDeleteVo.builder()
                     .idx(l++)

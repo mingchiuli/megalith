@@ -29,11 +29,11 @@ public class RoleController {
         return Result.success(() -> roleService.info(id));
     }
 
-    @GetMapping("/page")
+    @GetMapping("/roles")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<PageAdapter<RoleEntityVo>> getPage(@RequestParam(defaultValue = "1") Integer currentPage,
-                                                     @RequestParam(defaultValue = "5") Integer pageSize) {
-        return Result.success(() -> roleService.getPage(currentPage, pageSize));
+                                                     @RequestParam(defaultValue = "5") Integer size) {
+        return Result.success(() -> roleService.getPage(currentPage, size));
     }
 
     @GetMapping("/valid/all")

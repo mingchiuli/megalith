@@ -59,13 +59,10 @@ public class LuaScriptUtils {
     public static final RedisScript<List> listDeletedRedisScript = RedisScript.of(
             "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
                     "local total = redis.call('llen', KEYS[1]);" +
-                    "local totalPages = 0;" +
-                    "if (total % ARGV[3] == 0) then " +
-                    "totalPages = math.floor(total / ARGV[3]);" +
-                    "else " +
-                    "totalPages = math.floor(total / ARGV[3]) + 1;" +
-                    "end;" +
-                    "return redis.call('lrange', KEYS[1], ARGV[4], ARGV[3] + ARGV[4]);",
+                    "local resp = redis.call('lrange', KEYS[1], ARGV[4], ARGV[3] + ARGV[4]);" +
+                    "local len = #resp;" +
+                    "resp[len + 1] = total;" +
+                    "return resp",
             List.class);
 
     public static final RedisScript<String> recoverDeletedScript = RedisScript.of(

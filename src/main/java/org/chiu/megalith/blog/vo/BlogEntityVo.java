@@ -22,6 +22,8 @@ public class BlogEntityVo {
 
     private String content;
 
+    private String link;
+
     private Long readCount;
 
     private Double recentReadCount;
