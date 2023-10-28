@@ -11,7 +11,7 @@ import java.util.List;
  * @create 2022-11-27 11:53 am
  */
 public interface RoleMenuRepository extends JpaRepository<RoleMenuEntity, Long> {
-    
+
     @Query(value = "SELECT roleMenu.menuId from RoleMenuEntity roleMenu where roleMenu.roleId = ?1")
     List<Long> findMenuIdsByRoleId(Long id);
 

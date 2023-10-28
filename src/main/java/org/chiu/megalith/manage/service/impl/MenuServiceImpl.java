@@ -1,6 +1,7 @@
 package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.exception.CommitException;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.UserService;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_INVALID_OPERATE;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_NOT_EXIST;
@@ -42,11 +44,25 @@ public class MenuServiceImpl implements MenuService {
 
         UserEntity userEntity = userService.findById(userId);
         String role = userEntity.getRole();
+        List<Long> menuIds = roleService.getNavMenuIdsByRoleId(role);
+        return buildMenu(menuIds, true);
+    }
 
-        List<Long> menuIds = roleService.getNavMenuIdsNormal(role);
+    @Override
+    public List<MenuVo> getNormalMenusInfo() {
+        List<Long> menuIds = menuRepository.findAllIds();
+        return buildMenu(menuIds, true);
+    }
+
+    @Override
+    public List<MenuVo> buildMenu(List<Long> menuIds, Boolean statusCheck) {
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
+        Stream<MenuEntity> menuStream = menus.stream();
+        if (Boolean.TRUE.equals(statusCheck)) {
+            menuStream = menuStream.filter(menu -> StatusEnum.NORMAL.getCode().equals(menu.getStatus()));
+        }
 
-        List<MenuVo> menuEntities = menus.stream()
+        List<MenuVo> menuEntities = menuStream
                 .map(menu -> MenuVo.builder()
                         .menuId(menu.getMenuId())
                         .parentId(menu.getParentId())
@@ -60,7 +76,6 @@ public class MenuServiceImpl implements MenuService {
                         .status(menu.getStatus())
                         .build())
                 .toList();
-
         // 转树状结构
         return buildTreeMenu(menuEntities);
     }

@@ -17,5 +17,4 @@ public interface RoleMenuService {
     List<Long> findMenuIdsByRoleId(Long id);
 
     void saveAll(List<RoleMenuEntity> roleMenus);
-
 }

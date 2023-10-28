@@ -47,8 +47,6 @@ public class RoleServiceImpl implements RoleService {
                 .name(roleEntity.getName())
                 .remark(roleEntity.getRemark())
                 .status(roleEntity.getStatus())
-                .updated(roleEntity.getUpdated())
-                .created(roleEntity.getCreated())
                 .id(roleEntity.getId())
                 .build();
     }
@@ -120,7 +118,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public List<Long> perm(Long roleId, List<Long> menuIds) {
+    public List<Long> savePerm(Long roleId, List<Long> menuIds) {
         roleMenuService.deleteByRoleId(roleId);
         List<RoleMenuEntity> roleMenuEntities = menuIds.stream()
                 .map(menuId -> RoleMenuEntity.builder()
@@ -146,7 +144,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Long> getNavMenuIdsNormal(String role) {
+    public List<Long> getNavMenuIdsByRoleId(String role) {
         RoleEntity roleEntity = roleRepository.findByCodeAndStatus(role, StatusEnum.NORMAL.getCode())
                 .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
         Long id = roleEntity.getId();

@@ -22,4 +22,8 @@ public interface MenuService {
     void saveOrUpdate(MenuEntityReq menu);
 
     void delete(Long id);
+
+    List<MenuVo> buildMenu(List<Long> menuIds, Boolean status);
+
+    List<MenuVo> getNormalMenusInfo();
 }

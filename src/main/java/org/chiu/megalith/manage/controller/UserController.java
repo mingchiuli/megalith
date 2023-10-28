@@ -1,11 +1,13 @@
 package org.chiu.megalith.manage.controller;
 
 import org.chiu.megalith.manage.entity.UserEntity;
+import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.vo.RoleEntityVo;
 import org.chiu.megalith.manage.vo.UserEntityVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +21,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
+    private final RoleService roleService;
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
@@ -55,6 +59,12 @@ public class UserController {
                 .lastLogin(user.getLastLogin())
                 .username(user.getUsername())
                 .build());
+    }
+
+    @GetMapping("/role/valid/all")
+    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    public Result<List<RoleEntityVo>> getValidAll() {
+        return Result.success(roleService::getValidAll);
     }
 
 }
