@@ -112,6 +112,7 @@ public class MenuServiceImpl implements MenuService {
                         .title(menu.getTitle())
                         .name(menu.getName())
                         .component(menu.getComponent())
+                        .name(menu.getName())
                         .type(menu.getType())
                         .orderNum(menu.getOrderNum())
                         .status(menu.getStatus())
@@ -122,7 +123,12 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    @Transactional
     public void saveOrUpdate(MenuEntityReq menu) {
+
+        if (StatusEnum.HIDE.getCode().equals(menu.getStatus())) {
+            disableChildrenMenu(menu.getMenuId());
+        }
 
         var menuEntity = MenuEntity.builder()
                 .menuId(menu.getMenuId())
@@ -138,6 +144,17 @@ public class MenuServiceImpl implements MenuService {
                 .build();
 
         menuRepository.save(menuEntity);
+    }
+
+    private void disableChildrenMenu(Long menuId) {
+        List<MenuEntity> menus = menuRepository.findByParentId(menuId);
+        if (Boolean.FALSE.equals(menus.isEmpty())) {
+            menus.forEach(menu -> {
+                menu.setStatus(StatusEnum.HIDE.getCode());
+                menuRepository.save(menu);
+                disableChildrenMenu(menu.getMenuId());
+            });
+        }
     }
 
     @Override

@@ -2,11 +2,13 @@ package org.chiu.megalith.manage.req;
 
 import org.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author mingchiuli
@@ -14,6 +16,8 @@ import java.util.List;
  */
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MenuEntityReq {
 
     private Long menuId;
@@ -32,7 +36,7 @@ public class MenuEntityReq {
     @NotBlank
     private String component;
 
-    @NotBlank
+    @NotNull
     private Integer type;
 
     @NotBlank
@@ -42,7 +46,4 @@ public class MenuEntityReq {
 
     @ListValue(values = {0, 1})
     private Integer status;
-
-    @Builder.Default
-    private List<MenuEntityReq> children = new ArrayList<>();
 }
