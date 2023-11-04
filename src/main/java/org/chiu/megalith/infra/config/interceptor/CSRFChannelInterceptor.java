@@ -1,4 +1,4 @@
-package org.chiu.megalith.coop.config.interceptor;
+package org.chiu.megalith.infra.config.interceptor;
 
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;

@@ -526,4 +526,11 @@ public class BlogServiceImpl implements BlogService {
                     BlogIndexEnum.REMOVE.name(), id);
         });
     }
+
+
+    @Override
+    public BlogEntity findByIdAndUserId(Long id, Long userId) {
+        return blogRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new MissException(NO_FOUND));
+    }
 }

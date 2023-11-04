@@ -1,8 +1,9 @@
-package org.chiu.megalith.coop.config;
+package org.chiu.megalith.infra.config;
 
-import org.chiu.megalith.coop.config.interceptor.CSRFChannelInterceptor;
-import org.chiu.megalith.coop.config.interceptor.MessageInterceptor;
 import lombok.RequiredArgsConstructor;
+
+import org.chiu.megalith.infra.config.interceptor.CSRFChannelInterceptor;
+import org.chiu.megalith.infra.config.interceptor.MessageInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -26,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/coop", "/log")
+        registry.addEndpoint("/log")
                 .setAllowedOriginPatterns("*");
     }
 
@@ -35,7 +36,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //客户端向服务器发消息的前缀
         //客户端订阅消息的前缀
         registry.setApplicationDestinationPrefixes("/app")
-                .enableSimpleBroker("/user", "/logs")
+                .enableSimpleBroker("/logs")
                 .setTaskScheduler(new DefaultManagedTaskScheduler())
                 .setHeartbeatValue(new long[] {5000, 5000});
     }

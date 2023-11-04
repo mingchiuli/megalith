@@ -12,6 +12,8 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_EXCEPTION;
 
 public class SecurityUtils {
 
+    private SecurityUtils(){}
+
     public static String getLoginAuthority() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (Objects.isNull(authentication)) {

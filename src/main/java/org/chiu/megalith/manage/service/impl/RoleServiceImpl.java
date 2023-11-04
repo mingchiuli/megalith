@@ -40,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleEntityVo info(Long id) {
         RoleEntity roleEntity = roleRepository.findById(id)
-                .orElseThrow(() -> new MissException("role not exist"));
+                .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
 
         return RoleEntityVo.builder()
                 .code(roleEntity.getCode())
