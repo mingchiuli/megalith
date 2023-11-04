@@ -26,17 +26,21 @@ public class CacheTask implements Function<String, Object> {
 
     private static final String LOCK = "blogLock:";
 
-    private CacheTaskParams cacheTaskParam;
+    private StringRedisTemplate redisTemplate;
+
+    private ObjectMapper objectMapper;
+
+    private RedissonClient redisson;
+
+    private ProceedingJoinPoint pjp;
+
+    private JavaType javaType;
+
+    private Method method;
 
     @Override
     @SneakyThrows
     public Object apply(String key) {
-        ObjectMapper objectMapper = cacheTaskParam.getObjectMapper();
-        StringRedisTemplate redisTemplate = cacheTaskParam.getRedisTemplate();
-        RedissonClient redisson = cacheTaskParam.getRedisson();
-        Method method = cacheTaskParam.getMethod();
-        ProceedingJoinPoint pjp = cacheTaskParam.getPjp();
-        JavaType javaType = cacheTaskParam.getJavaType();
 
         String o;
         // 防止redis挂了以后db也访问不了
