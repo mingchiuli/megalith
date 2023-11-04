@@ -11,11 +11,11 @@ import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.cache.Cache;
-import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.utils.MessageUtils;
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.infra.exception.MissException;
@@ -36,8 +36,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -245,10 +243,10 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public String setBlogToken(Long blogId) {
         Long dbUserId = findUserIdById(blogId);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        long userId = Long.parseLong(authentication.getName());
+        Long userId = SecurityUtils.getLoginUserId();
 
         if (Objects.equals(userId, dbUserId)) {
+            blogRepository.setStatus(blogId, StatusEnum.HIDE.getCode());
             String token = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo() + blogId, token, 24, TimeUnit.HOURS);
             return token;
