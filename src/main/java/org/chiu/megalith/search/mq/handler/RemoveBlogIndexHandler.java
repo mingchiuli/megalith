@@ -88,13 +88,9 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         }
 
         //getCountByYear的bloom
-        List<Integer> years = blogService.searchYears();
-        int lYear = years.get(0);
-        int rYear = years.get(1);
-        for (int i = lYear; i <= rYear; i++) {
-            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), i, true);
-        }
-
+        List<Integer> years = blogService.getYears();
+        years.forEach(y -> redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), y, true));
+    
         //删除最近热度
         redisTemplate.opsForZSet().remove(Const.HOT_READ.getInfo(), id.toString());
         
