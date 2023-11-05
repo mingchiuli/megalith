@@ -1,4 +1,11 @@
 spring:
+  mail:
+    port: 465
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
   profiles:
     default: dev
     active: dev
