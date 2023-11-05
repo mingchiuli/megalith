@@ -5,6 +5,8 @@ import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -26,6 +28,7 @@ import java.util.Objects;
 @Component
 @Order(0)
 @RequiredArgsConstructor
+@Slf4j
 public class StatisticsAspect {
 
     private final StringRedisTemplate redisTemplate;
@@ -73,6 +76,7 @@ public class StatisticsAspect {
                 ip = ip.substring(0, idx);
             }
         }
+        log.info("访问ip为: {}", ip);
         return ip;
     }
 }
