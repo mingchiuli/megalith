@@ -49,7 +49,7 @@ public class CacheSchedule {
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
-    @Scheduled(cron = "0 0 0/2 * * ?")
+    @Scheduled(cron = "0 0 0/1 * * ?")
     public void configureTask() {
 
         RLock rLock = redisson.getLock("cacheKey");
@@ -71,7 +71,7 @@ public class CacheSchedule {
     private void exec() {
         List<Integer> years = blogService.getYears();
         int maxPoolSize = executor.getMaximumPoolSize();
-        //getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
+        // getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
         CompletableFuture.runAsync(() -> {
             var thread = Thread.currentThread();
             var pageMarker = new PageMarker();
@@ -93,7 +93,7 @@ public class CacheSchedule {
         }, executor);
 
         CompletableFuture.runAsync(() -> {
-            //listPage接口，分别考虑缓存和bloom
+            // listPage接口，分别考虑缓存和bloom
             Long count = blogService.count();
             int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
             int batchPageTotal = totalPage % 20 == 0 ? totalPage / 20 : totalPage / 20 + 1;
@@ -117,9 +117,9 @@ public class CacheSchedule {
         }, executor);
 
         CompletableFuture.runAsync(() -> {
-            //listByYear接口，分别考虑缓存和bloom
+            // listByYear接口，分别考虑缓存和bloom
             for (Integer year : years) {
-                //当前年份的总页数
+                // 当前年份的总页数
                 executor.execute(() -> {
                     int count = blogService.getCountByYear(year);
                     int totalPage = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
@@ -134,16 +134,13 @@ public class CacheSchedule {
         }, executor);
 
         //searchYears和getCountByYear
-        CompletableFuture.runAsync(() -> {
-            //getCountByYear的bloom和缓存
+        CompletableFuture.runAsync(() -> 
             years.forEach(year -> {
                 redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
                 blogService.getCountByYear(year);
-            });
+            }), executor);
 
-        }, executor);
-
-        //unlock user & del statistic & del hot read
+        // unlock user & del statistic & del hot read
         CompletableFuture.runAsync(() -> {
             List<Long> ids = userService.findIdsByStatus(StatusEnum.HIDE.getCode());
             ids.forEach(id -> {

@@ -56,7 +56,6 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
  */
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BlogServiceImpl implements BlogService {
 
     private final BlogRepository blogRepository;
@@ -107,7 +106,6 @@ public class BlogServiceImpl implements BlogService {
         ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
     }
 
-
     public List<Long> findIds(Pageable pageRequest) {
         return blogRepository.findIds(pageRequest);
     }
@@ -115,14 +113,17 @@ public class BlogServiceImpl implements BlogService {
     @Cache(prefix = Const.HOT_BLOG)
     @Override
     public BlogExhibitVo findById(Long id, Boolean visible) {
-        BlogEntity blogEntity = Boolean.FALSE.equals(visible) ?
+        BlogEntity blogEntity = Boolean.FALSE.equals(visible) ? 
                 blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
-                        .orElseThrow(() -> new MissException(NO_FOUND)) :
+                        .orElseGet(BlogEntity::new) : 
                 blogRepository.findById(id)
                         .orElseThrow(() -> new MissException(NO_FOUND));
 
+        if (Objects.isNull(blogEntity.getId())) {
+            return BlogExhibitVo.builder().build();
+        }
+        
         UserEntity user = userService.findById(blogEntity.getUserId());
-
         return BlogExhibitVo.builder()
                 .title(blogEntity.getTitle())
                 .description(blogEntity.getDescription())
@@ -155,25 +156,24 @@ public class BlogServiceImpl implements BlogService {
                 blogPageSize,
                 Sort.by("created").descending());
 
-        Page<BlogEntity> page = Objects.equals(year, Integer.MIN_VALUE) ?
-                blogRepository.findPage(pageRequest) :
-                blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1 , 0, 0, 0), LocalDateTime.of(year, 12, 31 , 23, 59, 59));
+        Page<BlogEntity> page = Objects.equals(year, Integer.MIN_VALUE) ? blogRepository.findPage(pageRequest)
+                : blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1, 0, 0, 0),
+                        LocalDateTime.of(year, 12, 31, 23, 59, 59));
 
-
-        return new PageAdapter<>(page.map(blogEntity ->
-                BlogDescriptionVo.builder()
-                        .id(blogEntity.getId())
-                        .description(blogEntity.getDescription())
-                        .title(blogEntity.getTitle())
-                        .created(blogEntity.getCreated())
-                        .link(blogEntity.getLink())
-                        .build()));
+        return new PageAdapter<>(page.map(blogEntity -> BlogDescriptionVo.builder()
+                .id(blogEntity.getId())
+                .description(blogEntity.getDescription())
+                .title(blogEntity.getTitle())
+                .created(blogEntity.getCreated())
+                .link(blogEntity.getLink())
+                .build()));
     }
 
     @Override
     @Cache(prefix = Const.HOT_BLOG)
     public Integer getCountByYear(Integer year) {
-        return blogRepository.countByCreatedBetween(LocalDateTime.of(year, 1, 1 , 0, 0, 0), LocalDateTime.of(year, 12, 31 , 23, 59, 59));
+        return blogRepository.countByCreatedBetween(LocalDateTime.of(year, 1, 1, 0, 0, 0),
+                LocalDateTime.of(year, 12, 31, 23, 59, 59));
     }
 
     @Override
@@ -196,7 +196,7 @@ public class BlogServiceImpl implements BlogService {
     public Integer checkStatusByIdAndUserId(Long blogId, Long userId) {
         BlogEntity blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new MissException(NO_FOUND));
-        Long id = blog.getUserId();   
+        Long id = blog.getUserId();
         return Objects.equals(id, blogId) ? StatusEnum.NORMAL.getCode() : StatusEnum.HIDE.getCode();
     }
 
@@ -214,7 +214,7 @@ public class BlogServiceImpl implements BlogService {
         byte[] imageBytes = image.getBytes();
 
         executor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes)));
-        //https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
+        // https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
         return host + "/" + objectName;
     }
 
@@ -267,7 +267,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<Integer> searchYears() {
-        Long count = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.countYears, List.of(Const.BLOOM_FILTER_YEARS.getInfo())))
+        Long count = Optional
+                .ofNullable(
+                        redisTemplate.execute(LuaScriptUtils.countYears, List.of(Const.BLOOM_FILTER_YEARS.getInfo())))
                 .orElse(0L);
         int start = 2021;
         int end = Math.max(start + count.intValue() - 1, start);
@@ -306,8 +308,8 @@ public class BlogServiceImpl implements BlogService {
         BeanUtils.copyProperties(blog, blogEntity);
         BlogEntity saved = blogRepository.save(blogEntity);
 
-        //通知消息给mq,更新并删除缓存
-        //防止重复消费
+        // 通知消息给mq,更新并删除缓存
+        // 防止重复消费
         BlogIndexEnum type;
         if (Objects.nonNull(blogId)) {
             type = BlogIndexEnum.UPDATE;
@@ -326,26 +328,25 @@ public class BlogServiceImpl implements BlogService {
     public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = Objects.equals(authority, highestRole) ?
-                blogRepository.findAll(pageRequest) :
-                blogRepository.findAllByUserId(pageRequest, userId);
+        Page<BlogEntity> page = Objects.equals(authority, highestRole) ? blogRepository.findAll(pageRequest)
+                : blogRepository.findAllByUserId(pageRequest, userId);
 
         List<BlogEntityVo> entities = page.getContent()
                 .stream()
-                .map(blogEntity ->
-                        BlogEntityVo.builder()
-                                .id(blogEntity.getId())
-                                .title(blogEntity.getTitle())
-                                .description(blogEntity.getDescription())
-                                .readCount(blogEntity.getReadCount())
-                                .recentReadCount(
-                                        Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), blogEntity.getId().toString()))
-                                                .orElse(0.0))
-                                .status(blogEntity.getStatus())
-                                .link(blogEntity.getLink())
-                                .created(blogEntity.getCreated())
-                                .content(blogEntity.getContent())
-                                .build())
+                .map(blogEntity -> BlogEntityVo.builder()
+                        .id(blogEntity.getId())
+                        .title(blogEntity.getTitle())
+                        .description(blogEntity.getDescription())
+                        .readCount(blogEntity.getReadCount())
+                        .recentReadCount(
+                                Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(),
+                                        blogEntity.getId().toString()))
+                                        .orElse(0.0))
+                        .status(blogEntity.getStatus())
+                        .link(blogEntity.getLink())
+                        .created(blogEntity.getCreated())
+                        .content(blogEntity.getContent())
+                        .build())
                 .toList();
 
         return PageAdapter.<BlogEntityVo>builder()
@@ -364,10 +365,11 @@ public class BlogServiceImpl implements BlogService {
     @SuppressWarnings("unchecked")
     public PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId) {
 
-        List<BlogEntity> deletedBlogs = Optional.ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1))
+        List<BlogEntity> deletedBlogs = Optional
+                .ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1))
                 .orElseGet(ArrayList::new).stream()
-                        .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
-                        .toList();
+                .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
+                .toList();
 
         int l = 0;
         for (BlogEntity blog : deletedBlogs) {
@@ -383,8 +385,8 @@ public class BlogServiceImpl implements BlogService {
         List resp = Optional.ofNullable(
                 redisTemplate.execute(LuaScriptUtils.listDeletedRedisScript,
                         Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
-                        String.valueOf(l), "-1", String.valueOf(size - 1), String.valueOf(start))
-        ).orElseGet(ArrayList::new);
+                        String.valueOf(l), "-1", String.valueOf(size - 1), String.valueOf(start)))
+                .orElseGet(ArrayList::new);
 
         List<String> respList = resp.subList(0, resp.size() - 1);
         Long total = (long) resp.get(resp.size() - 1);
@@ -428,8 +430,8 @@ public class BlogServiceImpl implements BlogService {
         String str = Optional.ofNullable(
                 redisTemplate.execute(LuaScriptUtils.recoverDeletedScript,
                         Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
-                        String.valueOf(idx))
-        ).orElse("");
+                        String.valueOf(idx)))
+                .orElse("");
 
         if (Boolean.FALSE.equals(StringUtils.hasLength(str))) {
             return;
@@ -462,8 +464,8 @@ public class BlogServiceImpl implements BlogService {
     @SuppressWarnings("unchecked")
     public VisitStatisticsVo getVisitStatistics() {
         List<Long> list = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.getVisitLua,
-                        List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(),
-                                Const.YEAR_VISIT.getInfo())))
+                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(),
+                        Const.YEAR_VISIT.getInfo())))
                 .orElseGet(ArrayList::new);
 
         return VisitStatisticsVo.builder()
@@ -476,7 +478,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<BlogHotReadVo> getScoreBlogs() {
-        Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet().reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
+        Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet()
+                .reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
         return Optional.ofNullable(set).orElseGet(HashSet::new).stream()
                 .map(item -> BlogHotReadVo.builder()
                         .id(Long.valueOf(item.getValue()))
@@ -506,7 +509,8 @@ public class BlogServiceImpl implements BlogService {
         ids.forEach(id -> {
             BlogEntity blogEntity = findById(id);
 
-            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
+            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId))
+                    && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
                 throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
             }
 
@@ -524,7 +528,6 @@ public class BlogServiceImpl implements BlogService {
                     BlogIndexEnum.REMOVE.name(), id);
         });
     }
-
 
     @Override
     public BlogEntity findByIdAndUserId(Long id, Long userId) {
