@@ -88,8 +88,8 @@ public class MultiLevelCacheAspect {
         Type[] arguments = parameterizedType.getActualTypeArguments();
         var javaTypes = new JavaType[arguments.length];
         for (int i = 0; i < javaTypes.length; i++) {
-            if (arguments[i] instanceof ParameterizedType _parameterizedType) {
-                JavaType type = getTypesReference(_parameterizedType);
+            if (arguments[i] instanceof ParameterizedType parameterizedTyp) {
+                JavaType type = getTypesReference(parameterizedTyp);
                 javaTypes[i] = type;
             } else {
                 javaTypes[i] = objectMapper.getTypeFactory().constructType(arguments[i]);

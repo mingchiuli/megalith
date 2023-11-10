@@ -4,15 +4,21 @@ import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.repository.UserRepository;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.req.UserEntityReq;
+import org.chiu.megalith.infra.cache.Cache;
+import org.chiu.megalith.infra.cache.CacheKeyGenerator;
+import org.chiu.megalith.infra.config.CacheRabbitConfig;
 import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.infra.exception.MissException;
+import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.UserEntityVo;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -36,6 +42,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
+
+    private final CacheKeyGenerator cacheKeyGenerator;
+
+    private final StringRedisTemplate redisTemplate;
+
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public void updateLoginTime(String username, LocalDateTime time) {
@@ -73,9 +85,15 @@ public class UserServiceImpl implements UserService {
 
         BeanUtils.copyProperties(userEntityReq, userEntity);
         userRepository.save(userEntity);
+
+        //删除缓存
+        String key = cacheKeyGenerator.generateKey(getClass(), "findById", new Class[]{Long.class}, new Object[]{id});
+        redisTemplate.delete(key);
+        rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", key);
     }
 
     @Override
+    @Cache(prefix = Const.HOT_USER)
     public UserEntity findById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new MissException(USER_NOT_EXIST));

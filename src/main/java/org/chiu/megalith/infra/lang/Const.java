@@ -75,7 +75,9 @@ public enum Const {
 
     ROLE_PREFIX("ROLE_"),
 
-    HOT_ROLE_MENU("hot_role_menu:");
+    HOT_ROLE_MENU("hot_role_menu:"),
+    
+    HOT_USER("hot_user");
 
     private final String info;
 
