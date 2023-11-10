@@ -47,10 +47,11 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
     @SneakyThrows
     @Override
     protected Set<String> redisProcess(BlogEntity blog) {
-        //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom
+        //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom，编辑暂存区数据
         Set<String> keys = Optional.ofNullable(redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())).orElseGet(HashSet::new);
         int year = blog.getCreated().getYear();
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
+        keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
         redisTemplate.unlink(keys);
 
         //重新构建该年份的页面bloom

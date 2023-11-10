@@ -4,6 +4,7 @@ import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.impl.BlogServiceImpl;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
+import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -69,6 +70,8 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         keys.add(findByIdAndInvisible);
         keys.add(findPage);
         keys.add(findPageByYear);
+        //暂存区
+        keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
         redisTemplate.unlink(keys);
 
         return keys;

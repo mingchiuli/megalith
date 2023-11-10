@@ -4,7 +4,6 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
@@ -202,9 +201,8 @@ public class BlogServiceImpl implements BlogService {
 
     @SneakyThrows
     @Override
-    public String uploadOss(MultipartFile image, Long userId) {
+    public String uploadOss(MultipartFile image, String nickname) {
         Assert.notNull(image, UPLOAD_MISS.getMsg());
-        String nickname = userService.findById(userId).getNickname();
         String uuid = UUID.randomUUID().toString();
         String originalFilename = image.getOriginalFilename();
         originalFilename = Optional.ofNullable(originalFilename)
@@ -490,8 +488,23 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEditVo findEdit(Long id, Long userId) {
-        BlogEntity blogEntity = blogRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
+        String str;
+        if (Objects.isNull(id)) {
+            str = redisTemplate.opsForValue().get(Const.TEMP_EDIT_BLOG.getInfo() + userId);
+        } else {
+            str = redisTemplate.opsForValue().get(Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id);
+        }
+        // 暂存区
+        BlogEntity blogEntity;
+        if (StringUtils.hasLength(str)) {
+            blogEntity = jsonUtils.readValue(str, BlogEntity.class);
+        } else if (Objects.isNull(id)) {
+            //新文章
+            blogEntity = new BlogEntity();
+        } else {
+            blogEntity = blogRepository.findByIdAndUserId(id, userId)
+                    .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
+        }
 
         return BlogEditVo.builder()
                 .id(blogEntity.getId())
@@ -533,5 +546,14 @@ public class BlogServiceImpl implements BlogService {
     public BlogEntity findByIdAndUserId(Long id, Long userId) {
         return blogRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new MissException(NO_FOUND));
+    }
+
+    @Override
+    public void saveTmp(BlogEntityReq blog, Long userId) {
+        if (Objects.isNull(blog.getId())) {
+            redisTemplate.opsForValue().set(Const.TEMP_EDIT_BLOG.getInfo() + userId, jsonUtils.writeValueAsString(blog), 7, TimeUnit.DAYS);
+        } else {
+            redisTemplate.opsForValue().set(Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + blog.getId(), jsonUtils.writeValueAsString(blog), 7, TimeUnit.DAYS);
+        }
     }
 }

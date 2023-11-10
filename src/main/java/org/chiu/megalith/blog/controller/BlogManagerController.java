@@ -32,10 +32,17 @@ public class BlogManagerController {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    @GetMapping("/echo/{id}")
-    public Result<BlogEditVo> getEchoDetail(@PathVariable(name = "id") Long id) {
+    @GetMapping("/echo")
+    public Result<BlogEditVo> getEchoDetail(@RequestParam(value = "blogId", required = false) Long id) {
         Long userId = SecurityUtils.getLoginUserId();
         return Result.success(() -> blogService.findEdit(id, userId));
+    }
+
+    @PostMapping("/tmp/save")
+    public Result<Void> saveTmpBlog(@RequestBody BlogEntityReq blog) {
+        Long userId = SecurityUtils.getLoginUserId();
+        blogService.saveTmp(blog, userId);
+        return Result.success();
     }
 
     @PostMapping("/save")
@@ -90,9 +97,8 @@ public class BlogManagerController {
     }
 
     @PostMapping("/oss/upload")
-    public Result<String> uploadOss(@RequestParam MultipartFile image) {
-        Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> blogService.uploadOss(image, userId));
+    public Result<String> uploadOss(@RequestParam MultipartFile image, @RequestParam String nickname) {
+        return Result.success(() -> blogService.uploadOss(image, nickname));
     }
 
     @GetMapping("/oss/delete")

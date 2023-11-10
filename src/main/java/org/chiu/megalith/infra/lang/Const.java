@@ -9,6 +9,8 @@ import lombok.Getter;
 @Getter
 public enum Const {
 
+    TEMP_EDIT_BLOG("temp_blog_blog:"),
+
     GRANT_TYPE_EMAIL("email"),
 
     EMAIL_CODE("email_code"),
@@ -75,9 +77,7 @@ public enum Const {
 
     ROLE_PREFIX("ROLE_"),
 
-    HOT_ROLE_MENU("hot_role_menu:"),
-    
-    HOT_USER("hot_user");
+    HOT_ROLE_MENU("hot_role_menu:");
 
     private final String info;
 

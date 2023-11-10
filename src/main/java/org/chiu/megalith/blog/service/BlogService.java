@@ -60,7 +60,7 @@ public interface BlogService {
 
     Integer checkStatusByIdAndUserId(Long blogId, Long userId);
 
-    String uploadOss(MultipartFile image, Long userId);
+    String uploadOss(MultipartFile image, String nickname);
 
     void deleteOss(String url);
 
@@ -69,5 +69,7 @@ public interface BlogService {
     String setBlogToken(Long blogId);
 
     List<Integer> getYears();
+
+    void saveTmp(BlogEntityReq blog, Long userId);
 
 }
