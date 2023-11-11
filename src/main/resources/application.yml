@@ -38,8 +38,6 @@ server:
 
 logging:
   config: classpath:logback-spring.xml
-  level:
-    '[org.springframework.web.socket.config.WebSocketMessageBrokerStats]': off
 
 blog:
   thread:
@@ -50,8 +48,6 @@ blog:
   default-role: user
   email-try-count: 3
   blog-page-size: 5
-  blog-coop-size: 5
-  web-page-size: 9
   password-error-intervalTime: 900000
   jwt:
     access-token-expire: 21600

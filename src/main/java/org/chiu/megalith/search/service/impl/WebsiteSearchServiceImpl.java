@@ -41,9 +41,6 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
-    @Value("${blog.web-page-size}")
-    private int webPageSize;
-
     @Value("${blog.highest-role}")
     private String highestRole;
 
@@ -75,7 +72,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     }
 
     @Override
-    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword) {
+    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword, Integer pageSize) {
 
         Authentication authentication = SecurityUtils.getLoginAuthentication();
         boolean auth = false;
@@ -88,7 +85,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         }
 
         var nativeQueryBuilder = NativeQuery.builder()
-                .withPageable(PageRequest.of(currentPage - 1, webPageSize));
+                .withPageable(PageRequest.of(currentPage - 1, pageSize));
 
         var boolBuilder = new BoolQuery.Builder();
 
@@ -123,7 +120,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         SearchHits<WebsiteDocument> search = elasticsearchTemplate.search(matchQuery, WebsiteDocument.class);
         long totalHits = search.getTotalHits();
-        long totalPage = totalHits % webPageSize == 0 ? totalHits / webPageSize : totalHits / webPageSize + 1;
+        long totalPage = totalHits % pageSize == 0 ? totalHits / pageSize : totalHits / pageSize + 1;
 
         List<WebsiteDocumentVo> vos = search.getSearchHits().stream()
                 .map(hit -> {
@@ -144,7 +141,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         return PageAdapter.<WebsiteDocumentVo>builder()
                 .first(currentPage == 1)
                 .last(currentPage == totalPage)
-                .pageSize(webPageSize)
+                .pageSize(pageSize)
                 .pageNumber(currentPage)
                 .empty(totalHits == 0)
                 .totalElements(totalHits)
