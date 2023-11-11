@@ -64,8 +64,6 @@ public interface BlogService {
 
     void deleteOss(String url);
 
-    void setBlogStatus(Long id, Long userId, Integer status, String authority);
-
     String setBlogToken(Long blogId);
 
     List<Integer> getYears();

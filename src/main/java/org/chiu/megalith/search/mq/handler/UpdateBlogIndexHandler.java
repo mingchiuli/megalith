@@ -5,6 +5,7 @@ import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.impl.BlogServiceImpl;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -65,11 +66,14 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
         String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
 
-        Set<String> keys = new HashSet<>(7);
+        Set<String> keys = new HashSet<>();
         keys.add(findByIdAndVisible);
         keys.add(findByIdAndInvisible);
         keys.add(findPage);
         keys.add(findPageByYear);
+        if (StatusEnum.NORMAL.getCode().equals(blog.getStatus())) {
+            keys.add(Const.READ_TOKEN.getInfo() + id);
+        }
         //暂存区
         keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
         redisTemplate.unlink(keys);

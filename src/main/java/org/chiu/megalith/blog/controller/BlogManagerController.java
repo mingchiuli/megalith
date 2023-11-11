@@ -88,14 +88,6 @@ public class BlogManagerController {
         return Result.success(() -> blogService.recoverDeletedBlog(id, idx, userId));
     }
 
-    @GetMapping("/status/{id}/{status}")
-    public Result<Void> setBlogStatus(@PathVariable(value = "id") Long id,
-                                      @PathVariable(value = "status") Integer status) {
-        String authority = SecurityUtils.getLoginAuthority();
-        Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> blogService.setBlogStatus(id, userId, status, authority));
-    }
-
     @PostMapping("/oss/upload")
     public Result<String> uploadOss(@RequestParam MultipartFile image, @RequestParam String nickname) {
         return Result.success(() -> blogService.uploadOss(image, nickname));

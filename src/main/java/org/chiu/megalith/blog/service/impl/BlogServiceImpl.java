@@ -223,22 +223,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void setBlogStatus(Long id, Long userId, Integer status, String authority) {
-        Long bdUserId = findUserIdById(id);
-
-        if (Boolean.FALSE.equals(Objects.equals(highestRole, authority) || Objects.equals(userId, bdUserId))) {
-            throw new BadCredentialsException(USER_MISS.getMsg());
-        }
-
-        Integer year = changeBlogStatus(id, status);
-
-        messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
-                ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(id, BlogIndexEnum.UPDATE, year),
-                BlogIndexEnum.UPDATE.name(), id);
-    }
-
-    @Override
     public String setBlogToken(Long blogId) {
         Long dbUserId = findUserIdById(blogId);
         Long userId = SecurityUtils.getLoginUserId();
@@ -442,15 +426,6 @@ public class BlogServiceImpl implements BlogService {
                 ElasticSearchRabbitConfig.ES_BINDING_KEY,
                 new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
                 BlogIndexEnum.CREATE.name(), id);
-    }
-
-    public Integer changeBlogStatus(Long id, Integer status) {
-        int year = blogRepository.findById(id)
-                .orElseThrow()
-                .getCreated()
-                .getYear();
-        blogRepository.setStatus(id, status);
-        return year;
     }
 
     @Override
