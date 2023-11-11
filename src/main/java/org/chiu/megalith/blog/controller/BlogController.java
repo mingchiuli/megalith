@@ -81,7 +81,9 @@ public class BlogController {
     public Result<Boolean> checkReadToken(@PathVariable Long blogId,
                                           @RequestParam(value = "readToken") String token) {
 
-        return Boolean.TRUE.equals(blogService.checkToken(blogId, token)) ? Result.success(true) : Result.success(false);
+        return Boolean.TRUE.equals(blogService.checkToken(blogId, token)) ?
+                Result.success(true) : 
+                Result.success(false);
     }
 
     @GetMapping("/status/{blogId}")
