@@ -70,41 +70,7 @@ public class RoleController {
 
         List<MenuVo> menusInfo = menuService.getNormalMenusInfo();
         List<Long> menuIdsByRole = roleMenuService.findMenuIdsByRoleId(roleId);
-        List<MenuRoleVo> roleVos = new ArrayList<>();
-        List<MenuRoleVo> menuRoleVos = resetMenusInfo(menusInfo, menuIdsByRole, null, roleVos);
-
+        List<MenuRoleVo> menuRoleVos = roleMenuService.setCheckMenusInfo(menusInfo, menuIdsByRole, null, new ArrayList<>());
         return Result.success(menuRoleVos);
-    }
-
-    private List<MenuRoleVo> resetMenusInfo(List<MenuVo> menusInfo, List<Long> menuIdsByRole, MenuRoleVo.MenuRoleVoBuilder parent, List<MenuRoleVo> parentChildren) {
-        menusInfo.forEach(item -> {
-
-            item.setType(null);
-            item.setName(null);
-            item.setIcon(null);
-            item.setOrderNum(null);
-            item.setParentId(null);
-            item.setUrl(null);
-            item.setComponent(null);
-
-            MenuRoleVo.MenuRoleVoBuilder builder = MenuRoleVo.builder()
-                    .title(item.getTitle())
-                    .menuId(item.getMenuId());
-
-            if (menuIdsByRole.contains(item.getMenuId())) {
-                builder.check(true);
-            }
-
-            if (Boolean.FALSE.equals(item.getChildren().isEmpty())) {
-                ArrayList<MenuRoleVo> children = new ArrayList<>();
-                builder.children(children);
-                resetMenusInfo(item.getChildren(), menuIdsByRole, builder, children);
-            }
-
-            parentChildren.add(builder.build());
-
-        });
-
-        return parentChildren;
     }
 }
