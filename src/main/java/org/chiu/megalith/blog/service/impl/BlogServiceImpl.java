@@ -496,8 +496,17 @@ public class BlogServiceImpl implements BlogService {
         }
         // 暂存区
         BlogEntity blogEntity;
+        BlogEntityReq req;
         if (StringUtils.hasLength(str)) {
-            blogEntity = jsonUtils.readValue(str, BlogEntity.class);
+            req = jsonUtils.readValue(str, BlogEntityReq.class);
+            blogEntity = BlogEntity.builder()
+                    .id(req.getId())
+                    .content(req.getContent())
+                    .description(req.getDescription())
+                    .title(req.getTitle())
+                    .status(req.getStatus())
+                    .link(req.getLink())
+                    .build();
         } else if (Objects.isNull(id)) {
             //新文章
             blogEntity = new BlogEntity();
