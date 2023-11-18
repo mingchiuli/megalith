@@ -59,9 +59,9 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .title(blog.getTitle());
 
         if (PushActionEnum.APPEND.getCode().equals(operateTypeCode)) {
-            blogBuilder = blogBuilder.content((blogContent + contentChange).intern());
+            blogBuilder = blogBuilder.content(blogContent + contentChange);
         } else if (PushActionEnum.SUBSTRACT.getCode().equals(operateTypeCode)) {
-            blogBuilder = blogBuilder.content((blogContent.substring(0, blogContent.length() - contentChange.length())).intern());
+            blogBuilder = blogBuilder.content(blogContent.substring(0, blogContent.length() - contentChange.length()));
         } else {
             // 前端向服务端推全量
             simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
