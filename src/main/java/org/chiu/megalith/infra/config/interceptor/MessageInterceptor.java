@@ -35,8 +35,7 @@ public class MessageInterceptor implements ChannelInterceptor {
     private final JwtUtils jwtUtils;
 
     @Override
-    public Message<?> preSend(@NonNull Message<?> message,
-            @NonNull MessageChannel channel) {
+    public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         Assert.isTrue(Objects.nonNull(accessor), ACCESSOR_NULL.getMsg());
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {

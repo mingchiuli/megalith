@@ -3,9 +3,9 @@ package org.chiu.megalith.blog.controller;
 import org.chiu.megalith.blog.vo.BlogDeleteVo;
 import org.chiu.megalith.blog.vo.BlogEditVo;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
+import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.utils.SecurityUtils;
-import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 
@@ -38,10 +38,10 @@ public class BlogManagerController {
         return Result.success(() -> blogService.findEdit(id, userId));
     }
 
-    @PostMapping("/tmp/save")
-    public Result<Void> saveTmpBlog(@RequestBody BlogEntityReq blog) {
+    @PostMapping("/push/all")
+    public Result<Void> pullSaveBlog(@RequestBody BlogEntityReq blog) {
         Long userId = SecurityUtils.getLoginUserId();
-        blogService.saveTmp(blog, userId);
+        blogService.pushAll(blog, userId);
         return Result.success();
     }
 

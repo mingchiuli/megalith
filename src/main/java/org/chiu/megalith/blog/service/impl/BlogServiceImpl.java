@@ -12,6 +12,7 @@ import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
+import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.utils.MessageUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
@@ -22,7 +23,7 @@ import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.manage.req.BlogEntityReq;
+
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -463,12 +464,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEditVo findEdit(Long id, Long userId) {
-        String str;
-        if (Objects.isNull(id)) {
-            str = redisTemplate.opsForValue().get(Const.TEMP_EDIT_BLOG.getInfo() + userId);
-        } else {
-            str = redisTemplate.opsForValue().get(Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id);
-        }
+        String str = redisTemplate.<String, String>opsForHash().get(Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id, "blog");
         // 暂存区
         BlogEntity blogEntity;
         BlogEntityReq req;
@@ -484,7 +480,13 @@ public class BlogServiceImpl implements BlogService {
                     .build();
         } else if (Objects.isNull(id)) {
             //新文章
-            blogEntity = new BlogEntity();
+            blogEntity = BlogEntity.builder()
+                    .status(0)
+                    .content("")
+                    .description("")
+                    .link("")
+                    .title("")
+                    .build();
         } else {
             blogEntity = blogRepository.findByIdAndUserId(id, userId)
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
@@ -533,11 +535,10 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void saveTmp(BlogEntityReq blog, Long userId) {
-        if (Objects.isNull(blog.getId())) {
-            redisTemplate.opsForValue().set(Const.TEMP_EDIT_BLOG.getInfo() + userId, jsonUtils.writeValueAsString(blog), 7, TimeUnit.DAYS);
-        } else {
-            redisTemplate.opsForValue().set(Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + blog.getId(), jsonUtils.writeValueAsString(blog), 7, TimeUnit.DAYS);
-        }
+    public void pushAll(BlogEntityReq blog, Long userId) {
+        Long id = blog.getId();
+        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
+        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
+                "blog", "version", jsonUtils.writeValueAsString(blog), "-1", "604800");
     }
 }

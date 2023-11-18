@@ -44,9 +44,10 @@ public class LuaScriptUtils {
                     "redis.call('rpush', KEYS[1], ARGV[3]);" +
                     "redis.call('expire', KEYS[1], ARGV[4])");
 
-    public static final RedisScript<Void> sendUserToSessionLua = RedisScript.of(
-            "redis.call('hset', KEYS[1], ARGV[1], ARGV[2]);" +
-                    "redis.call('expire', KEYS[1], ARGV[3]);");
+    public static final RedisScript<Void> sendBlogToTempLua = RedisScript.of(
+            "redis.call('hset', KEYS[1], ARGV[1], ARGV[3]);" +
+                    "redis.call('hset', KEYS[1], ARGV[2], ARGV[4]);" +
+                    "redis.call('expire', KEYS[1], ARGV[5]);");
 
     public static final RedisScript<Void> setBlogDeleteLua = RedisScript.of(
                     "redis.call('rpush', KEYS[1], ARGV[1]);" +

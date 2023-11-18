@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public enum Const {
 
-    TEMP_EDIT_BLOG("temp_blog_blog:"),
+    TEMP_EDIT_BLOG("temp_edit_blog:"),
 
     GRANT_TYPE_EMAIL("email"),
 

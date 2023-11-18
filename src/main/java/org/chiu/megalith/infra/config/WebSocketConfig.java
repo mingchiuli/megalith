@@ -27,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/log")
+        registry.addEndpoint("/edit","/log")
                 .setAllowedOriginPatterns("*");
     }
 
@@ -36,7 +36,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //客户端向服务器发消息的前缀
         //客户端订阅消息的前缀
         registry.setApplicationDestinationPrefixes("/app")
-                .enableSimpleBroker("/logs")
+                .enableSimpleBroker("/logs", "/edits")
                 .setTaskScheduler(new DefaultManagedTaskScheduler())
                 .setHeartbeatValue(new long[] {5000, 5000});
     }

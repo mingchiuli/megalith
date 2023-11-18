@@ -1,10 +1,9 @@
 package org.chiu.megalith.blog.service;
 
-import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.entity.BlogEntity;
+import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,6 +67,6 @@ public interface BlogService {
 
     List<Integer> getYears();
 
-    void saveTmp(BlogEntityReq blog, Long userId);
+    void pushAll(BlogEntityReq blog, Long userId);
 
 }

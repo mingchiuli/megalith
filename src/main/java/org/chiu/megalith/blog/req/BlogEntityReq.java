@@ -1,4 +1,4 @@
-package org.chiu.megalith.manage.req;
+package org.chiu.megalith.blog.req;
 
 import org.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
