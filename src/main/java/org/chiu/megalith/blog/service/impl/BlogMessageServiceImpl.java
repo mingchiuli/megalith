@@ -34,12 +34,6 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         Long id = req.getId();
         Integer operateTypeCode = req.getOperateTypeCode();
         Integer version = req.getVersion();
-        BlogEntityReqBuilder blogBuilder = BlogEntityReq.builder()
-                .description(req.getDescription())
-                .link(req.getLink())
-                .status(req.getStatus())
-                .title(req.getTitle())
-                .id(id);
 
         String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
 
@@ -57,10 +51,17 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         String blogContent = blog.getContent();
 
         String contentChange = req.getContentChange();
+        BlogEntityReqBuilder blogBuilder = BlogEntityReq.builder()
+                .id(id)
+                .description(blog.getDescription())
+                .status(blog.getStatus())
+                .link(blog.getLink())
+                .title(blog.getTitle());
+
         if (PushActionEnum.APPEND.getCode().equals(operateTypeCode)) {
-            blogBuilder.content(blogContent + contentChange);
+            blogBuilder = blogBuilder.content(blogContent + contentChange);
         } else if (PushActionEnum.SUBSTRACT.getCode().equals(operateTypeCode)) {
-            blogBuilder.content(blogContent.substring(0, blogContent.length() - contentChange.length()));
+            blogBuilder = blogBuilder.content(blogContent.substring(0, blogContent.length() - contentChange.length()));
         } else {
             // 前端向服务端推全量
             simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
