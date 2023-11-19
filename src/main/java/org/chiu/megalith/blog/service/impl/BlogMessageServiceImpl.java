@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
+import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.req.BlogEntityReq.BlogEntityReqBuilder;
 import org.chiu.megalith.blog.service.BlogMessageService;
@@ -47,7 +48,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         }
 
         String blogString = entries.get("blog");
-        BlogEntityReq blog = jsonUtils.readValue(blogString, BlogEntityReq.class);
+        BlogEditPushAllReq blog = jsonUtils.readValue(blogString, BlogEditPushAllReq.class);
         String blogContent = blog.getContent();
 
         String contentChange = req.getContentChange();
@@ -70,6 +71,14 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
         redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
                 "blog", "version", jsonUtils.writeValueAsString(blogBuilder.build()), String.valueOf(version), "604800");
+    }
+
+    @Override
+    public void pushAll(BlogEditPushAllReq blog, Long userId) {
+        Long id = blog.getId();
+        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
+        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
+                "blog", "version", jsonUtils.writeValueAsString(blog), "-1", "604800");
     }
 
 }

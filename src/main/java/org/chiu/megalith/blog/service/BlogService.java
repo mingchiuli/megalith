@@ -67,6 +67,4 @@ public interface BlogService {
 
     List<Integer> getYears();
 
-    void pushAll(BlogEntityReq blog, Long userId);
-
 }

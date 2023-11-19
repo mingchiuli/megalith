@@ -38,13 +38,6 @@ public class BlogManagerController {
         return Result.success(() -> blogService.findEdit(id, userId));
     }
 
-    @PostMapping("/push/all")
-    public Result<Void> pullSaveBlog(@RequestBody BlogEntityReq blog) {
-        Long userId = SecurityUtils.getLoginUserId();
-        blogService.pushAll(blog, userId);
-        return Result.success();
-    }
-
     @PostMapping("/save")
     public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityReq blog) {
         Long userId = SecurityUtils.getLoginUserId();

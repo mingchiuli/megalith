@@ -12,6 +12,7 @@ import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
+import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.utils.MessageUtils;
@@ -467,9 +468,9 @@ public class BlogServiceImpl implements BlogService {
         String str = redisTemplate.<String, String>opsForHash().get(Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id, "blog");
         // 暂存区
         BlogEntity blogEntity;
-        BlogEntityReq req;
+        BlogEditPushAllReq req;
         if (StringUtils.hasLength(str)) {
-            req = jsonUtils.readValue(str, BlogEntityReq.class);
+            req = jsonUtils.readValue(str, BlogEditPushAllReq.class);
             blogEntity = BlogEntity.builder()
                     .id(req.getId())
                     .content(req.getContent())
@@ -532,13 +533,5 @@ public class BlogServiceImpl implements BlogService {
     public BlogEntity findByIdAndUserId(Long id, Long userId) {
         return blogRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new MissException(NO_FOUND));
-    }
-
-    @Override
-    public void pushAll(BlogEntityReq blog, Long userId) {
-        Long id = blog.getId();
-        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
-        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
-                "blog", "version", jsonUtils.writeValueAsString(blog), "-1", "604800");
     }
 }
