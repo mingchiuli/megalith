@@ -35,6 +35,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         Long id = req.getId();
         Integer operateTypeCode = req.getOperateTypeCode();
         Integer version = req.getVersion();
+        Integer index = req.getIndex();
 
         String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
 
@@ -59,14 +60,13 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .link(blog.getLink())
                 .title(blog.getTitle());
 
+        String prefix = blogContent.substring(0, index);
         if (PushActionEnum.APPEND.getCode().equals(operateTypeCode)) {
-            blogBuilder = blogBuilder.content(blogContent + contentChange);
+            String suffix = blogContent.substring(index, blogContent.length());
+            blogBuilder = blogBuilder.content(prefix + contentChange + suffix);
         } else if (PushActionEnum.SUBSTRACT.getCode().equals(operateTypeCode)) {
-            blogBuilder = blogBuilder.content(blogContent.substring(0, blogContent.length() - contentChange.length()));
-        } else {
-            // 前端向服务端推全量
-            simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
-            return;
+            String suffix = blogContent.substring(index + contentChange.length(), blogContent.length());
+            blogBuilder = blogBuilder.content(prefix + suffix);
         }
 
         redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),

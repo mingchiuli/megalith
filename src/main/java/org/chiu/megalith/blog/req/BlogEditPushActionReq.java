@@ -13,4 +13,6 @@ public class BlogEditPushActionReq {
     private Integer operateTypeCode;
 
     private Integer version;
+
+    private Integer index;
 }
