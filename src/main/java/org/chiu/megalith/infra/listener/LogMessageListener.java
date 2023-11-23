@@ -18,7 +18,7 @@ public class LogMessageListener {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @RabbitListener(id = "log", concurrency = "5",queues = LogRabbitConfig.LOG_QUEUE, autoStartup = "false", ackMode = "AUTO", messageConverter = "simpleMessageConverter")
+    @RabbitListener(id = "log",queues = LogRabbitConfig.LOG_QUEUE, autoStartup = "false", ackMode = "AUTO", messageConverter = "simpleMessageConverter")
     public void processMessage(String msg) {
         simpMessagingTemplate.convertAndSend("/logs/log", msg);
     }
