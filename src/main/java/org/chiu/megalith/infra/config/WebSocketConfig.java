@@ -7,7 +7,7 @@ import org.chiu.megalith.infra.config.interceptor.MessageInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
+import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -37,7 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //客户端订阅消息的前缀
         registry.setApplicationDestinationPrefixes("/app")
                 .enableSimpleBroker("/logs", "/edits")
-                .setTaskScheduler(new DefaultManagedTaskScheduler())
+                .setTaskScheduler(new SimpleAsyncTaskScheduler())
                 .setHeartbeatValue(new long[] {5000, 5000});
     }
 

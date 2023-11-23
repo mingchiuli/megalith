@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,7 +45,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
@@ -90,8 +90,7 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.oss.host}")
     private String host;
 
-    @Qualifier("imgUploadThreadPoolExecutor")
-    private final ThreadPoolExecutor executor;
+    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     private OSS ossClient;
 
@@ -137,8 +136,8 @@ public class BlogServiceImpl implements BlogService {
                 .build();
     }
 
-    @Async("readCountThreadPoolExecutor")
     @Override
+    @Async
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
         redisTemplate.opsForZSet().incrementScore(Const.HOT_READ.getInfo(), id.toString(), 1);
