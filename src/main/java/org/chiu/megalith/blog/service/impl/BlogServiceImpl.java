@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,7 +47,6 @@ import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
@@ -69,6 +69,9 @@ public class BlogServiceImpl implements BlogService {
 
     private final MessageUtils messageUtils;
 
+    @Qualifier("taskExecutor")
+    private final ExecutorService taskExecutor;
+
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
@@ -89,8 +92,6 @@ public class BlogServiceImpl implements BlogService {
 
     @Value("${blog.oss.host}")
     private String host;
-
-    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     private OSS ossClient;
 
@@ -137,7 +138,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Async
+    @Async("taskExecutor")
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
         redisTemplate.opsForZSet().incrementScore(Const.HOT_READ.getInfo(), id.toString(), 1);
@@ -212,7 +213,7 @@ public class BlogServiceImpl implements BlogService {
         String objectName = nickname + "/" + uuid + "-" + originalFilename;
         byte[] imageBytes = image.getBytes();
 
-        executor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes)));
+        taskExecutor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes)));
         // https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
         return host + "/" + objectName;
     }

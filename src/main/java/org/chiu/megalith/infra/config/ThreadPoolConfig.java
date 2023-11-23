@@ -4,10 +4,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author mingchiuli
@@ -25,5 +22,10 @@ public class ThreadPoolConfig {
                 new LinkedBlockingDeque<>(30),
                 Executors.defaultThreadFactory(),
                 new ThreadPoolExecutor.AbortPolicy());
+    }
+
+    @Bean("taskExecutor")
+    ExecutorService executorService() {
+        return Executors.newVirtualThreadPerTaskExecutor();
     }
 }
