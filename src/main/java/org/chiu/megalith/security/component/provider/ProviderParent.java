@@ -12,8 +12,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.Objects;
-
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 /**
@@ -41,6 +39,10 @@ public abstract sealed class ProviderParent extends DaoAuthenticationProvider pe
         this.roleRepository = roleRepository;
     }
 
+    protected boolean supports(String type) {
+        return grantType.equals(type);
+    }
+
     protected abstract void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
 
     private void checkRoleStatus(LoginUser user) {
@@ -61,7 +63,7 @@ public abstract sealed class ProviderParent extends DaoAuthenticationProvider pe
 
     protected boolean authenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         LoginUser user = (LoginUser) userDetails;
-        if (Objects.equals(grantType, user.getGrantType())) {
+        if (supports(user.getGrantType())) {
             checkRoleStatus(user);
             authProcess(user, authentication);
             return true;
