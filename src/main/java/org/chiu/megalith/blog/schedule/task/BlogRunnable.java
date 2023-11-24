@@ -9,51 +9,28 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.locks.LockSupport;
 
 /**
  * @author mingchiuli
  * @create 2023-06-24 5:00 pm
  */
-public record BlogRunnable(ThreadPoolExecutor executor,
-                           BlogController blogController,
-                           BlogService blogService,
-                           StringRedisTemplate redisTemplate,
-                           Thread thread,
-                           PageMarker pageMarker) implements Runnable {
+public record BlogRunnable (
+        BlogService blogService,
+        StringRedisTemplate redisTemplate,
+        PageRequest pageRequest) implements Runnable {
 
     @Override
     public void run() {
-        if (!pageMarker.fin) {
-            List<Long> idList = null;
-            synchronized (thread) {
-                if (!pageMarker.fin) {
-                    var pageRequest = PageRequest.of(pageMarker.curPageNo, 50);
-                    idList = blogService.findIds(pageRequest);
-                    int size = idList.size();
-                    if (size < 50 && !pageMarker.fin) {
-                        pageMarker.fin = true;
+        List<Long> idList = blogService.findIds(pageRequest);
+        Optional.ofNullable(idList).ifPresent(ids ->
+                ids.forEach(id -> {
+                    redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
+                    try {
+                        blogService.findById(id, false);
+                    } catch (MissException e) {
+                        blogService.findById(id, true);
                     }
-                    if (size == 50) {
-                        pageMarker.curPageNo++;
-                    }
-
-                    if (thread.isInterrupted() && executor.getActiveCount() < executor.getMaximumPoolSize() >> 1) {
-                        LockSupport.unpark(thread);
-                    }
-                }
-            }
-
-            Optional.ofNullable(idList).ifPresent(ids ->
-                    ids.forEach(id -> {
-                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), id, true);
-                        try {
-                            blogService.findById(id, false);
-                        } catch (MissException e) {
-                            blogService.findById(id, true);
-                        }
-                    }));
-        }
+                })
+        );
     }
 }

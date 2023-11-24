@@ -5,7 +5,6 @@ import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
 import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
-import org.chiu.megalith.blog.schedule.task.PageMarker;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
@@ -14,6 +13,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.LockSupport;
 
 /**
  * @author mingchiuli
@@ -31,8 +30,8 @@ import java.util.concurrent.locks.LockSupport;
 @RequiredArgsConstructor
 public class CacheSchedule {
 
-    @Qualifier("scheduledThreadPoolExecutor")
-    private final ThreadPoolExecutor executor;
+    @Qualifier("taskExecutor")
+    private final ExecutorService taskExecutor;
 
     private final BlogService blogService;
 
@@ -70,59 +69,32 @@ public class CacheSchedule {
 
     private void exec() {
         List<Integer> years = blogService.getYears();
-        int maxPoolSize = executor.getMaximumPoolSize();
+        Long count = blogService.count();
         // getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
         CompletableFuture.runAsync(() -> {
-            var thread = Thread.currentThread();
-            var pageMarker = new PageMarker();
-
-            for (;;) {
-                if (executor.getMaximumPoolSize() > executor.getActiveCount()) {
-                    var runnable = new BlogRunnable(executor, blogController, blogService, redisTemplate, thread, pageMarker);
-                    executor.execute(runnable);
-
-                    if (pageMarker.fin) {
-                        break;
-                    }
-                } else {
-                    thread.interrupt();
-                    LockSupport.park();
-                    Thread.interrupted();
-                }
+            int totalPage = (int) (count % 10 == 0 ? count / 10 : count / 10 + 1);
+            for (int i = 1; i <= totalPage; i++) {
+                var runnable = new BlogRunnable(blogService, redisTemplate, PageRequest.of(i, 5));
+                taskExecutor.execute(runnable);
             }
-        }, executor);
+        }, taskExecutor);
 
         CompletableFuture.runAsync(() -> {
             // listPage接口，分别考虑缓存和bloom
-            Long count = blogService.count();
             int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
-            int batchPageTotal = totalPage % 20 == 0 ? totalPage / 20 : totalPage / 20 + 1;
-            var thread = Thread.currentThread();
-            var pageMarker = new PageMarker();
-
-            for (;;) {
-                if (maxPoolSize > executor.getActiveCount()) {
-                    var runnable = new BlogsRunnable(thread, pageMarker, executor, redisTemplate, blogService, batchPageTotal, totalPage);
-                    executor.execute(runnable);
-
-                    if (pageMarker.fin) {
-                        break;
-                    }
-                } else {
-                    thread.interrupt();
-                    LockSupport.park();
-                    Thread.interrupted();
-                }
+            for (int i = 1; i <= totalPage; i++) {
+                var runnable = new BlogsRunnable(redisTemplate, blogService, i);
+                taskExecutor.execute(runnable);
             }
-        }, executor);
+        }, taskExecutor);
 
         CompletableFuture.runAsync(() -> {
             // listByYear接口，分别考虑缓存和bloom
             for (Integer year : years) {
                 // 当前年份的总页数
-                executor.execute(() -> {
-                    int count = blogService.getCountByYear(year);
-                    int totalPage = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
+                taskExecutor.execute(() -> {
+                    int countByYear = blogService.getCountByYear(year);
+                    int totalPage = countByYear % blogPageSize == 0 ? countByYear / blogPageSize : countByYear / blogPageSize + 1;
 
                     for (int no = 1; no <= totalPage; no++) {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
@@ -131,14 +103,14 @@ public class CacheSchedule {
                 });
             }
 
-        }, executor);
+        }, taskExecutor);
 
         //searchYears和getCountByYear
         CompletableFuture.runAsync(() -> 
             years.forEach(year -> {
                 redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
                 blogService.getCountByYear(year);
-            }), executor);
+            }), taskExecutor);
 
         // unlock user & del statistic & del hot read
         CompletableFuture.runAsync(() -> {
@@ -168,6 +140,6 @@ public class CacheSchedule {
                     redisTemplate.delete(Const.YEAR_VISIT.getInfo());
                 }
             }
-        }, executor);
+        }, taskExecutor);
     }
 }
