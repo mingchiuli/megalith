@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 /**
  * @author mingchiuli
@@ -42,7 +42,7 @@ public class CodeFactory {
     private String createEmailCode() {
         var builder = new StringBuilder();
         for (int i = 0; i < 5; i++) {
-            int idx = ThreadLocalRandom.current().nextInt(code.length);
+            int idx = new Random().nextInt(code.length);
             builder.append(code[idx]);
         }
         return builder.toString();
@@ -51,7 +51,7 @@ public class CodeFactory {
     private String createSMS() {
         var builder = new StringBuilder();
         for (int i = 0; i < 6; i++) {
-            int idx = ThreadLocalRandom.current().nextInt(sms.length);
+            int idx = new Random().nextInt(sms.length);
             builder.append(sms[idx]);
         }
         return builder.toString();
