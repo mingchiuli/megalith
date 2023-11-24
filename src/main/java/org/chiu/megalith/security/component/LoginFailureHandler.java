@@ -1,7 +1,6 @@
 package org.chiu.megalith.security.component;
 
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.security.user.LoginUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,8 +24,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
-		LoginUser.loginUserCache.remove();
-        LoginUser.loginException.remove();
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		ServletOutputStream outputStream = response.getOutputStream();

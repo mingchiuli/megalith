@@ -51,21 +51,20 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
 		String username = authentication.getName();
-		LoginUser user = LoginUser.loginUserCache.get();
-		LoginUser.loginUserCache.remove();
 		redisTemplate.delete(Const.PASSWORD_KEY.getInfo() + username);
 
 		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
 		// 生成jwt
-		String userId = user.getUserId().toString();
-		String accessToken = jwtUtils.generateToken(userId,
+		LoginUser user = (LoginUser) authentication.getPrincipal();
+		Long userId = user.getUserId();
+		String accessToken = jwtUtils.generateToken(userId.toString(),
 				authentication.getAuthorities().stream()
 						.findFirst()
 						.map(GrantedAuthority::getAuthority)
 						.orElseThrow(),
 				accessExpire);
 
-		String refreshToken = jwtUtils.generateToken(userId,
+		String refreshToken = jwtUtils.generateToken(userId.toString(),
 				ROLE_PREFIX.getInfo() + "REFRESH_TOKEN",
 				refreshExpire);
 

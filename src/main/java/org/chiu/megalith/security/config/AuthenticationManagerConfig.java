@@ -1,11 +1,11 @@
 package org.chiu.megalith.security.config;
 
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.security.component.provider.CustomProviderManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 
 import java.util.List;
 
@@ -21,6 +21,6 @@ public class AuthenticationManagerConfig {
 
     @Bean
     AuthenticationManager authenticationManager() {
-        return new ProviderManager(providers, null);
+        return new CustomProviderManager(providers);
     }
 }

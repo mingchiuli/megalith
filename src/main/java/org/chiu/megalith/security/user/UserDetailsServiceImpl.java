@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
 import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
@@ -24,14 +22,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		LoginUser usr = LoginUser.loginUserCache.get();
-		if (Objects.nonNull(usr)) {
-			return usr;
-		}
-
-		usr = loadUserByUsernameFromDb(username);
-		LoginUser.loginUserCache.set(usr);
-		return usr;
+		return loadUserByUsernameFromDb(username);
 	}
 
 	private LoginUser loadUserByUsernameFromDb(String username) {

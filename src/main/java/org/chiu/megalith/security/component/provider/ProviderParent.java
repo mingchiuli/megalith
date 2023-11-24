@@ -2,27 +2,25 @@ package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
-import org.chiu.megalith.infra.utils.SpringUtils;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.security.user.LoginUser;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.List;
 import java.util.Objects;
 
-import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_DISABLED;
-import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_NOT_EXIST;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 /**
  * @author mingchiuli
  * @create 2023-01-31 2:09 am
  */
-public abstract sealed class ProviderSupport extends DaoAuthenticationProvider permits
+public abstract sealed class ProviderParent extends DaoAuthenticationProvider permits
         EmailAuthenticationProvider,
         PasswordAuthenticationProvider,
         SMSAuthenticationProvider {
@@ -33,24 +31,14 @@ public abstract sealed class ProviderSupport extends DaoAuthenticationProvider p
 
     protected RoleRepository roleRepository;
 
-    protected ProviderSupport(String grantType,
-                              UserDetailsService userDetailsService,
-                              RoleRepository roleRepository) {
+    protected ProviderParent(String grantType,
+                             UserDetailsService userDetailsService,
+                             RoleRepository roleRepository) {
         setUserDetailsService(userDetailsService);
         setHideUserNotFoundExceptions(false);
         this.grantType = grantType;
         this.userDetailsService = userDetailsService;
         this.roleRepository = roleRepository;
-    }
-
-    private static class LastProvider {
-        private static final AuthenticationProvider lastChainProvider;
-
-        static {
-            ProviderManager manager = SpringUtils.getBean(ProviderManager.class);
-            List<AuthenticationProvider> providers = manager.getProviders();
-            lastChainProvider = providers.get(providers.size() - 1);
-        }
     }
 
     protected abstract void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
@@ -71,31 +59,26 @@ public abstract sealed class ProviderSupport extends DaoAuthenticationProvider p
         }
     }
 
-    private boolean lastProvider() {
-        return LastProvider.lastChainProvider.getClass().equals(this.getClass());
+    protected boolean authenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        LoginUser user = (LoginUser) userDetails;
+        if (Objects.equals(grantType, user.getGrantType())) {
+            checkRoleStatus(user);
+            authProcess(user, authentication);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        LoginUser user = (LoginUser) userDetails;
-        if (Objects.equals(grantType, user.getGrantType())) {
-            try {
-                checkRoleStatus(user);
-                authProcess(user, authentication);
-            } catch (AuthenticationException e) {
-                if (Boolean.FALSE.equals(lastProvider())) {
-                    LoginUser.loginException.set(e);
-                }
-                throw e;
-            }
-        } else {
-            if (lastProvider()) {
-                AuthenticationException e = LoginUser.loginException.get();
-                LoginUser.loginException.remove();
-                throw e;
-            } else {
-                throw new BadCredentialsException("hint:try to process next provider");
-            }
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        UserDetails user = retrieveUser(authentication.getName(), (UsernamePasswordAuthenticationToken) authentication);
+        if (!user.isAccountNonLocked()) {
+            throw new LockedException(ACCOUNT_LOCKED.getMsg());
         }
+        boolean result = authenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
+        if (result) {
+            return createSuccessAuthentication(user, authentication, user);
+        }
+        return null;
     }
 }

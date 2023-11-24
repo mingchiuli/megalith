@@ -67,7 +67,12 @@ public enum ExceptionMessage {
 
     ROLE_DISABLED(31, "role disabled"),
 
-    MENU_INVALID_OPERATE(32, "先删除子菜单，不允许直接删除父菜单");
+    MENU_INVALID_OPERATE(32, "先删除子菜单，不允许直接删除父菜单"),
+
+    INVALID_LOGIN_OPERATE(33, "非法登录"),
+
+    ACCOUNT_LOCKED(34, "账户被锁");
+
 
     private final String msg;
 
