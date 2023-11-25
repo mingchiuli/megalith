@@ -42,6 +42,7 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
+<!--        这行导致:processaot卡死-->
         <appender-ref ref="AMQP"/>
     </root>
 </configuration>
