@@ -1,6 +1,5 @@
 package org.chiu.megalith.blog.schedule;
 
-import org.chiu.megalith.blog.controller.BlogController;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
@@ -34,8 +33,6 @@ public class CacheSchedule {
     private final ExecutorService taskExecutor;
 
     private final BlogService blogService;
-
-    private final BlogController blogController;
 
     private final StringRedisTemplate redisTemplate;
 
@@ -72,9 +69,10 @@ public class CacheSchedule {
         Long count = blogService.count();
         // getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
         CompletableFuture.runAsync(() -> {
-            int totalPage = (int) (count % 10 == 0 ? count / 10 : count / 10 + 1);
+            int pageSize = 10;
+            int totalPage = (int) (count % pageSize == 0 ? count / pageSize : count / pageSize + 1);
             for (int i = 1; i <= totalPage; i++) {
-                var runnable = new BlogRunnable(blogService, redisTemplate, PageRequest.of(i, 5));
+                var runnable = new BlogRunnable(blogService, redisTemplate, PageRequest.of(i, pageSize));
                 taskExecutor.execute(runnable);
             }
         }, taskExecutor);
