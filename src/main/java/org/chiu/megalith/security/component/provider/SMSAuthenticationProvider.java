@@ -3,12 +3,12 @@ package org.chiu.megalith.security.component.provider;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.manage.repository.RoleRepository;
-import org.chiu.megalith.security.user.LoginUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +39,7 @@ public final class SMSAuthenticationProvider extends ProviderParent {
     }
 
     @Override
-    protected void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication) {
+    protected void authProcess(UserDetails user, UsernamePasswordAuthenticationToken authentication) {
         String prefix = Const.PHONE_KEY.getInfo() + user.getUsername();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(prefix);

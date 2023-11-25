@@ -1,11 +1,11 @@
 package org.chiu.megalith.security.component.provider;
 
+import org.chiu.megalith.infra.lang.Const;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.INVALID_LOGIN_OPERATE;
 
@@ -17,13 +17,27 @@ public class CustomProviderManager extends ProviderManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Authentication result;
+        String username = authentication.getName();
+        String grantType;
+        if (username.contains("@")) {
+            grantType = Const.GRANT_TYPE_EMAIL.getInfo();
+        } else if (username.matches("\\d+")) {
+            grantType = Const.GRANT_TYPE_PHONE.getInfo();
+        } else {
+            grantType = Const.GRANT_TYPE_PASSWORD.getInfo();
+        }
+
         for (AuthenticationProvider provider : getProviders()) {
-            result = provider.authenticate(authentication);
-            if (Objects.nonNull(result)) {
-                return result;
+            if (!supports(grantType, (ProviderParent) provider)) {
+                continue;
             }
+
+            return provider.authenticate(authentication);
         }
         throw new BadCredentialsException(INVALID_LOGIN_OPERATE.getMsg());
+    }
+
+    private boolean supports(String grantType, ProviderParent provider) {
+        return provider.supports(grantType);
     }
 }

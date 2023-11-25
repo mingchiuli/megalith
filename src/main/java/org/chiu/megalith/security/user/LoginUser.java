@@ -13,8 +13,6 @@ import java.util.Collection;
 @Getter
 public class LoginUser extends User {
 
-    private final String grantType;
-
     private final Long userId;
 
     public LoginUser(String username,
@@ -24,10 +22,8 @@ public class LoginUser extends User {
                      boolean credentialsNonExpired,
                      boolean accountNonLocked,
                      Collection<? extends GrantedAuthority> authorities,
-                     String grantType,
                      Long userId) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.grantType = grantType;
         this.userId = userId;
     }
 

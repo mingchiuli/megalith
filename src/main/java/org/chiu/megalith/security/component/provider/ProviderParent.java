@@ -3,7 +3,6 @@ package org.chiu.megalith.security.component.provider;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.repository.RoleRepository;
-import org.chiu.megalith.security.user.LoginUser;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -43,9 +42,9 @@ public abstract sealed class ProviderParent extends DaoAuthenticationProvider pe
         return grantType.equals(type);
     }
 
-    protected abstract void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication);
+    protected abstract void authProcess(UserDetails user, UsernamePasswordAuthenticationToken authentication);
 
-    private void checkRoleStatus(LoginUser user) {
+    private void checkRoleStatus(UserDetails user) {
         String role = user.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
@@ -61,14 +60,9 @@ public abstract sealed class ProviderParent extends DaoAuthenticationProvider pe
         }
     }
 
-    protected boolean authenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        LoginUser user = (LoginUser) userDetails;
-        if (supports(user.getGrantType())) {
-            checkRoleStatus(user);
-            authProcess(user, authentication);
-            return true;
-        }
-        return false;
+    @Override
+    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        authProcess(userDetails, authentication);
     }
 
     @Override
@@ -77,10 +71,8 @@ public abstract sealed class ProviderParent extends DaoAuthenticationProvider pe
         if (!user.isAccountNonLocked()) {
             throw new LockedException(ACCOUNT_LOCKED.getMsg());
         }
-        boolean result = authenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
-        if (result) {
-            return createSuccessAuthentication(user, authentication, user);
-        }
-        return null;
+        checkRoleStatus(user);
+        additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
+        return createSuccessAuthentication(user, authentication, user);
     }
 }

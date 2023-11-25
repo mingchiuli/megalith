@@ -4,12 +4,12 @@ import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.service.UserService;
-import org.chiu.megalith.security.user.LoginUser;
 import org.chiu.megalith.infra.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -53,7 +53,7 @@ public final class PasswordAuthenticationProvider extends ProviderParent {
     }
 
     @Override
-    public void authProcess(LoginUser user, UsernamePasswordAuthenticationToken authentication) {
+    public void authProcess(UserDetails user, UsernamePasswordAuthenticationToken authentication) {
 
         Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
             String presentedPassword = credentials.toString();
