@@ -11,6 +11,7 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
 
 import java.util.UUID;
 
@@ -26,6 +27,8 @@ public class CacheRabbitConfig {
 
     private final Jackson2JsonMessageConverter jsonMessageConverter;
 
+    @Qualifier("mqExecutor")
+    private final TaskExecutor executor;
 
     @Bean("CACHE_QUEUE")
     Queue queue() {
@@ -60,10 +63,11 @@ public class CacheRabbitConfig {
         var container = new SimpleMessageListenerContainer();
         listenerAdapter.containerAckMode(AcknowledgeMode.MANUAL);
         listenerAdapter.setMessageConverter(jsonMessageConverter);
-        container.setConcurrency("5-10");
+        container.setConcurrency("5");
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queue.getName());
         container.setMessageListener(listenerAdapter);
+        container.setTaskExecutor(executor);
         return container;
     }
 
