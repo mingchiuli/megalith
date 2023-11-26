@@ -22,6 +22,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByPhone(String phone);
 
+    Optional<UserEntity> findByUsernameOrEmailOrPhone(String username, String email, String phone);
+
     @Query(value = "SELECT user.id from UserEntity user where user.status = :status")
     List<Long> findByStatus(Integer status);
 

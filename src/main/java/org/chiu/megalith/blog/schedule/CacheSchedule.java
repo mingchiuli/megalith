@@ -69,7 +69,7 @@ public class CacheSchedule {
         Long count = blogService.count();
         // getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
         CompletableFuture.runAsync(() -> {
-            int pageSize = 10;
+            int pageSize = 20;
             int totalPage = (int) (count % pageSize == 0 ? count / pageSize : count / pageSize + 1);
             for (int i = 1; i <= totalPage; i++) {
                 var runnable = new BlogRunnable(blogService, redisTemplate, PageRequest.of(i, pageSize));

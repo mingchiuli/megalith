@@ -18,14 +18,7 @@ public class CustomProviderManager extends ProviderManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        String grantType;
-        if (username.contains("@")) {
-            grantType = Const.GRANT_TYPE_EMAIL.getInfo();
-        } else if (username.matches("\\d+")) {
-            grantType = Const.GRANT_TYPE_PHONE.getInfo();
-        } else {
-            grantType = Const.GRANT_TYPE_PASSWORD.getInfo();
-        }
+        String grantType = getAuthGrantType(username);
 
         for (AuthenticationProvider provider : getProviders()) {
             if (!supports(grantType, (ProviderParent) provider)) {
@@ -35,6 +28,16 @@ public class CustomProviderManager extends ProviderManager {
             return provider.authenticate(authentication);
         }
         throw new BadCredentialsException(INVALID_LOGIN_OPERATE.getMsg());
+    }
+
+    private String getAuthGrantType(String username) {
+        if (username.contains("@")) {
+            return Const.GRANT_TYPE_EMAIL.getInfo();
+        } else if (username.matches("\\d+")) {
+            return Const.GRANT_TYPE_PHONE.getInfo();
+        } else {
+            return Const.GRANT_TYPE_PASSWORD.getInfo();
+        }
     }
 
     private boolean supports(String grantType, ProviderParent provider) {

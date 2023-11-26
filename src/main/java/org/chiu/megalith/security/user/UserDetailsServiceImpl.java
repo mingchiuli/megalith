@@ -26,18 +26,8 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 
 	private LoginUser loadUserByUsernameFromDb(String username) {
 
-		UserEntity user;
-
-		if (username.contains("@")) {
-            user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException(EMAIL_NOT_EXIST.getMsg()));
-		} else if (username.matches("\\d+")){
-            user = userRepository.findByPhone(username)
-                    .orElseThrow(() -> new UsernameNotFoundException(PHONE_NOT_EXIST.getMsg()));
-		} else {
-            user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_EXIST.getMsg()));
-		}
+		UserEntity user = userRepository.findByUsernameOrEmailOrPhone(username, username, username)
+				.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_EXIST.getMsg()));
 
 		//通过User去自动比较用户名和密码
 		return new LoginUser(username,

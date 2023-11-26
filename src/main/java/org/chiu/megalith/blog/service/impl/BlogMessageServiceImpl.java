@@ -34,8 +34,10 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
         Long id = req.getId();
         Integer operateTypeCode = req.getOperateTypeCode();
+        PushActionEnum pushActionEnum = PushActionEnum.getInstance(operateTypeCode);
         Integer version = req.getVersion();
-        Integer index = req.getIndex();
+        Integer indexStart = req.getIndexStart();
+        Integer indexEnd = req.getIndexEnd();
 
         String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
 
@@ -60,13 +62,13 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .link(blog.getLink())
                 .title(blog.getTitle());
 
-        String prefix = blogContent.substring(0, index);
-        if (PushActionEnum.APPEND.getCode().equals(operateTypeCode)) {
-            String suffix = blogContent.substring(index, blogContent.length());
-            blogBuilder = blogBuilder.content(prefix + contentChange + suffix);
-        } else if (PushActionEnum.SUBSTRACT.getCode().equals(operateTypeCode)) {
-            String suffix = blogContent.substring(index + contentChange.length(), blogContent.length());
-            blogBuilder = blogBuilder.content(prefix + suffix);
+        switch (pushActionEnum) {
+            case REMOVE -> blogBuilder.content("");
+            case TAIL_APPEND -> blogBuilder.content(blogContent + contentChange);
+            case TAIL_SUBTRACT -> blogBuilder.content(blogContent.substring(0, indexStart));
+            case HEAD_APPEND -> blogBuilder.content(contentChange + blogContent);
+            case HEAD_SUBTRACT -> blogBuilder.content(blogContent.substring(indexStart));
+            case REPLACE -> blogBuilder.content(blogContent.substring(0, indexStart) + contentChange + blogContent.substring(indexEnd));
         }
 
         redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
