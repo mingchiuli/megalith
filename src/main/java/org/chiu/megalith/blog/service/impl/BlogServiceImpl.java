@@ -493,6 +493,19 @@ public class BlogServiceImpl implements BlogService {
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
         }
 
+        //初始化暂存区
+        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+        BlogEditPushAllReq blog = BlogEditPushAllReq.builder()
+                .id(blogEntity.getId())
+                .title(blogEntity.getTitle())
+                .description(blogEntity.getDescription())
+                .content(blogEntity.getContent())
+                .link(blogEntity.getLink())
+                .status(blogEntity.getStatus())
+                .build();
+        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
+                "blog", "version", jsonUtils.writeValueAsString(blog), "-1", "604800");
+
         return BlogEditVo.builder()
                 .id(blogEntity.getId())
                 .title(blogEntity.getTitle())

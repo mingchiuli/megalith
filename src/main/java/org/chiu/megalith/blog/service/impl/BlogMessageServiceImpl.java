@@ -38,6 +38,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         Integer version = req.getVersion();
         Integer indexStart = req.getIndexStart();
         Integer indexEnd = req.getIndexEnd();
+        String contentChange = req.getContentChange();
 
         String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
 
@@ -54,7 +55,6 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         BlogEditPushAllReq blog = jsonUtils.readValue(blogString, BlogEditPushAllReq.class);
         String blogContent = blog.getContent();
 
-        String contentChange = req.getContentChange();
         BlogEntityReqBuilder blogBuilder = BlogEntityReq.builder()
                 .id(id)
                 .description(blog.getDescription())
