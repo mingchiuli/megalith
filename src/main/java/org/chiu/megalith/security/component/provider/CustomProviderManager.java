@@ -21,7 +21,7 @@ public class CustomProviderManager extends ProviderManager {
         String grantType = getAuthGrantType(username);
 
         for (AuthenticationProvider provider : getProviders()) {
-            if (!supports(grantType, (ProviderParent) provider)) {
+            if (!supports(grantType, (ProviderBase) provider)) {
                 continue;
             }
 
@@ -40,7 +40,7 @@ public class CustomProviderManager extends ProviderManager {
         }
     }
 
-    private boolean supports(String grantType, ProviderParent provider) {
+    private boolean supports(String grantType, ProviderBase provider) {
         return provider.supports(grantType);
     }
 }

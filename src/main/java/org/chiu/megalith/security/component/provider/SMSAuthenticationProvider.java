@@ -23,7 +23,7 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
  * @create 2023-03-08 1:59 am
  */
 @Component
-public final class SMSAuthenticationProvider extends ProviderParent {
+public final class SMSAuthenticationProvider extends ProviderBase {
 
     private final StringRedisTemplate redisTemplate;
 

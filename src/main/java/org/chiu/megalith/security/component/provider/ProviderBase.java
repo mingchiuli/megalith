@@ -17,7 +17,7 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
  * @author mingchiuli
  * @create 2023-01-31 2:09 am
  */
-public abstract sealed class ProviderParent extends DaoAuthenticationProvider permits
+public abstract sealed class ProviderBase extends DaoAuthenticationProvider permits
         EmailAuthenticationProvider,
         PasswordAuthenticationProvider,
         SMSAuthenticationProvider {
@@ -28,9 +28,9 @@ public abstract sealed class ProviderParent extends DaoAuthenticationProvider pe
 
     protected RoleRepository roleRepository;
 
-    protected ProviderParent(String grantType,
-                             UserDetailsService userDetailsService,
-                             RoleRepository roleRepository) {
+    protected ProviderBase(String grantType,
+                           UserDetailsService userDetailsService,
+                           RoleRepository roleRepository) {
         setUserDetailsService(userDetailsService);
         setHideUserNotFoundExceptions(false);
         this.grantType = grantType;

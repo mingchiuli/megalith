@@ -22,7 +22,7 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
  */
 
 @Component
-public final class EmailAuthenticationProvider extends ProviderParent {
+public final class EmailAuthenticationProvider extends ProviderBase {
 
     private final StringRedisTemplate redisTemplate;
 

@@ -27,7 +27,7 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.PASSWORD_MISS;
  * @create 2023-01-14 9:02
  */
 @Component
-public final class PasswordAuthenticationProvider extends ProviderParent {
+public final class PasswordAuthenticationProvider extends ProviderBase {
 
     private final PasswordEncoder passwordEncoder;
 
