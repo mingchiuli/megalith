@@ -28,7 +28,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     List<Long> findByStatus(Integer status);
 
 
-    @Query(value = "UPDATE UserEntity user set user.lastLogin = ?2 where user.username = ?1")
+    @Query(value = "UPDATE UserEntity user set user.lastLogin = ?2 where (user.username = ?1 or user.email = ?1 or user.phone = ?1)")
     @Modifying
     @Transactional
     void updateLoginTime(String username, LocalDateTime time);

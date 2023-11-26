@@ -53,7 +53,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		String username = authentication.getName();
 		redisTemplate.delete(Const.PASSWORD_KEY.getInfo() + username);
 
-		userService.updateLoginTime(authentication.getName(), LocalDateTime.now());
+		userService.updateLoginTime(username, LocalDateTime.now());
 		// 生成jwt
 		LoginUser user = (LoginUser) authentication.getPrincipal();
 		Long userId = user.getUserId();
