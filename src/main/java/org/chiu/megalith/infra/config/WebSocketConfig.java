@@ -33,11 +33,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
+        SimpleAsyncTaskScheduler taskScheduler = new SimpleAsyncTaskScheduler();
+        taskScheduler.setVirtualThreads(true);
         //客户端向服务器发消息的前缀
         //客户端订阅消息的前缀
         registry.setApplicationDestinationPrefixes("/app")
                 .enableSimpleBroker("/logs", "/edits")
-                .setTaskScheduler(new SimpleAsyncTaskScheduler())
+                .setTaskScheduler(taskScheduler)
                 .setHeartbeatValue(new long[] {5000, 5000});
     }
 
