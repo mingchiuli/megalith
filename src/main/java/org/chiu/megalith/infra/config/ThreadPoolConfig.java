@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 @Configuration(proxyBeanMethods = false)
 public class ThreadPoolConfig {
 
-    @Bean("taskExecutor")
+    @Bean("commonExecutor")
     ExecutorService executorService() {
         return Executors.newVirtualThreadPerTaskExecutor();
     }

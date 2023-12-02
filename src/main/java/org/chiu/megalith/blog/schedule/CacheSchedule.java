@@ -29,7 +29,7 @@ import java.util.concurrent.*;
 @RequiredArgsConstructor
 public class CacheSchedule {
 
-    @Qualifier("taskExecutor")
+    @Qualifier("commonExecutor")
     private final ExecutorService taskExecutor;
 
     private final BlogService blogService;

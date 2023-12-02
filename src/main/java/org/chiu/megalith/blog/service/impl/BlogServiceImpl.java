@@ -2,6 +2,10 @@ package org.chiu.megalith.blog.service.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.model.ObjectMetadata;
+import com.aliyun.oss.model.SetBucketCORSRequest;
+import com.aliyun.oss.model.SetBucketCORSRequest.CORSRule;
+
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.chiu.megalith.blog.vo.*;
@@ -69,7 +73,7 @@ public class BlogServiceImpl implements BlogService {
 
     private final MessageUtils messageUtils;
 
-    @Qualifier("taskExecutor")
+    @Qualifier("commonExecutor")
     private final ExecutorService taskExecutor;
 
     @Value("${blog.blog-page-size}")
@@ -105,6 +109,15 @@ public class BlogServiceImpl implements BlogService {
         // 填写Object完整路径，例如exampledir/exampleobject.txt。Object完整路径中不能包含Bucket名称。
         // 创建OSSClient实例。
         ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        //允许跨域
+        List<CORSRule> bucketCORSRules = ossClient.getBucketCORSRules(bucket);
+         CORSRule corsRule = new SetBucketCORSRequest.CORSRule();
+        List<String> allowedOrigins = corsRule.getAllowedOrigins();
+        List<String> allowedMethods = corsRule.getAllowedMethods();
+        allowedMethods.add("GET");
+        allowedMethods.add("POST");
+        allowedOrigins.add("*");
+        bucketCORSRules.add(corsRule);
     }
 
     public List<Long> findIds(Pageable pageRequest) {
@@ -114,16 +127,16 @@ public class BlogServiceImpl implements BlogService {
     @Cache(prefix = Const.HOT_BLOG)
     @Override
     public BlogExhibitVo findById(Long id, Boolean visible) {
-        BlogEntity blogEntity = Boolean.FALSE.equals(visible) ? 
-                blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
-                        .orElseGet(BlogEntity::new) : 
-                blogRepository.findById(id)
-                        .orElseThrow(() -> new MissException(NO_FOUND));
+        BlogEntity blogEntity = Boolean.FALSE.equals(
+                visible) ? blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
+                        .orElseGet(BlogEntity::new)
+                        : blogRepository.findById(id)
+                                .orElseThrow(() -> new MissException(NO_FOUND));
 
         if (Objects.isNull(blogEntity.getId())) {
             return BlogExhibitVo.builder().build();
         }
-        
+
         UserEntity user = userService.findById(blogEntity.getUserId());
         return BlogExhibitVo.builder()
                 .title(blogEntity.getTitle())
@@ -138,7 +151,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Async("taskExecutor")
+    @Async("commonExecutor")
     public void setReadCount(Long id) {
         blogRepository.setReadCount(id);
         redisTemplate.opsForZSet().incrementScore(Const.HOT_READ.getInfo(), id.toString(), 1);
@@ -213,7 +226,12 @@ public class BlogServiceImpl implements BlogService {
         String objectName = nickname + "/" + uuid + "-" + originalFilename;
         byte[] imageBytes = image.getBytes();
 
-        taskExecutor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes)));
+        var meta = new ObjectMetadata();
+        meta.setCacheControl("no-cache");
+        //只支持上传图片，其他文件类型需改造
+        meta.setContentType("image/jpg");
+
+        taskExecutor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes), meta));
         // https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
         return host + "/" + objectName;
     }
@@ -465,7 +483,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEditVo findEdit(Long id, Long userId) {
-        String str = redisTemplate.<String, String>opsForHash().get(Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id, "blog");
+        String str = redisTemplate.<String, String>opsForHash()
+                .get(Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId
+                        : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id, "blog");
         // 暂存区
         BlogEntity blogEntity;
         BlogEditPushAllReq req;
@@ -480,7 +500,7 @@ public class BlogServiceImpl implements BlogService {
                     .link(req.getLink())
                     .build();
         } else if (Objects.isNull(id)) {
-            //新文章
+            // 新文章
             blogEntity = BlogEntity.builder()
                     .status(0)
                     .content("")
@@ -493,8 +513,9 @@ public class BlogServiceImpl implements BlogService {
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
         }
 
-        //初始化暂存区
-        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+        // 初始化暂存区
+        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId
+                : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
         BlogEditPushAllReq blog = BlogEditPushAllReq.builder()
                 .id(blogEntity.getId())
                 .title(blogEntity.getTitle())
