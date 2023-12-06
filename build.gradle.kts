@@ -33,7 +33,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-messaging")
 	implementation("com.aliyun.oss:aliyun-sdk-oss:3.16.1")
 	implementation("com.auth0:java-jwt:4.4.0")
-	implementation("org.redisson:redisson-spring-boot-starter:3.23.5")
+	implementation("org.redisson:redisson-spring-boot-starter:3.24.3")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 	implementation("io.netty:netty-resolver-dns-native-macos:4.1.98.Final") {
 		artifact {
