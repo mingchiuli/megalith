@@ -6,6 +6,7 @@ import org.chiu.megalith.blog.schedule.task.BlogRunnable;
 import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.entity.UserEntity;
+import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
@@ -79,7 +80,9 @@ public class CacheSchedule {
 
         CompletableFuture.runAsync(() -> {
             // listPage接口，分别考虑缓存和bloom
-            int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
+            int totalPage = (int) (count % blogPageSize == 0 ? 
+                    count / blogPageSize : 
+                    count / blogPageSize + 1);
             for (int i = 1; i <= totalPage; i++) {
                 var runnable = new BlogsRunnable(redisTemplate, blogService, i);
                 taskExecutor.execute(runnable);
@@ -92,7 +95,9 @@ public class CacheSchedule {
                 // 当前年份的总页数
                 taskExecutor.execute(() -> {
                     int countByYear = blogService.getCountByYear(year);
-                    int totalPage = countByYear % blogPageSize == 0 ? countByYear / blogPageSize : countByYear / blogPageSize + 1;
+                    int totalPage = countByYear % blogPageSize == 0 ? 
+                            countByYear / blogPageSize : 
+                            countByYear / blogPageSize + 1;
 
                     for (int no = 1; no <= totalPage; no++) {
                         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
@@ -103,12 +108,11 @@ public class CacheSchedule {
 
         }, taskExecutor);
 
-        //searchYears和getCountByYear
-        CompletableFuture.runAsync(() -> 
-            years.forEach(year -> {
-                redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
-                blogService.getCountByYear(year);
-            }), taskExecutor);
+        // searchYears和getCountByYear
+        CompletableFuture.runAsync(() -> years.forEach(year -> {
+            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
+            blogService.getCountByYear(year);
+        }), taskExecutor);
 
         // unlock user & del statistic & del hot read
         CompletableFuture.runAsync(() -> {
@@ -116,6 +120,17 @@ public class CacheSchedule {
             ids.forEach(id -> {
                 UserEntity user = userService.findById(id);
                 user.setStatus(StatusEnum.NORMAL.getCode());
+                UserEntityReq req = UserEntityReq.builder()
+                        .avatar(user.getAvatar())
+                        .email(user.getEmail())
+                        .id(user.getId())
+                        .nickname(user.getNickname())
+                        .status(user.getStatus())
+                        .role(user.getRole())
+                        .phone(user.getPhone())
+                        .username(user.getUsername())
+                        .build();
+                userService.saveOrUpdate(req);
             });
 
             var now = LocalDateTime.now();
