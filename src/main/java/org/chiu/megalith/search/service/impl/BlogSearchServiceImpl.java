@@ -17,7 +17,6 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -106,8 +105,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     }
 
     @Override
-    public PageAdapter<BlogEntityVo> searchAllBlogs(String keywords, Integer currentPage, Integer size) {
-        long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+    public PageAdapter<BlogEntityVo> searchAllBlogs(String keywords, Integer currentPage, Integer size, Long userId) {
 
         var nativeQuery = NativeQuery.builder()
                 .withQuery(query ->
@@ -121,8 +119,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                         termQuery.field("userId").value(userId)))))
                 .withPageable(PageRequest.of(currentPage - 1, size))
                 .withSort(sortQuery ->
-                        sortQuery.field(fieldQuery ->
-                                fieldQuery.field("created").order(SortOrder.Desc)))
+                        sortQuery.score(score ->
+                                score.order(SortOrder.Desc)))
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);

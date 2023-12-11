@@ -3,6 +3,7 @@ package org.chiu.megalith.search.controller;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.search.service.BlogSearchService;
 import org.chiu.megalith.search.vo.BlogDocumentVo;
 
@@ -35,7 +36,8 @@ public class BlogSearchController {
     public Result<PageAdapter<BlogEntityVo>> searchAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                             @RequestParam(defaultValue = "5") Integer size,
                                                             @RequestParam(value = "keywords")  @Size(min = 1, max = 20) String keywords) {
-        return Result.success(() -> blogSearchService.searchAllBlogs(keywords, currentPage, size));
+        Long userId = SecurityUtils.getLoginUserId();                                                        
+        return Result.success(() -> blogSearchService.searchAllBlogs(keywords, currentPage, size, userId));
     }
 
 }
