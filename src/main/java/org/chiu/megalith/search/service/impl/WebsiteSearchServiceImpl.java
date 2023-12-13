@@ -50,6 +50,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     public void saveOrUpdate(WebsiteDocumentReq websiteDocumentReq) {
         String id = websiteDocumentReq.getId();
         WebsiteDocument document;
+        var now = ZonedDateTime.now();
 
         if (Objects.nonNull(id)) {
             document = elasticsearchTemplate.get(id, WebsiteDocument.class);
@@ -58,11 +59,11 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
             }
         } else {
             document = WebsiteDocument.builder()
-                    .created(ZonedDateTime.now())
+                    .created(now)
                     .build();
         }
         
-        document.setUpdated(ZonedDateTime.now());
+        document.setUpdated(now);
         BeanUtils.copyProperties(websiteDocumentReq, document);
         elasticsearchTemplate.save(document);
     }
