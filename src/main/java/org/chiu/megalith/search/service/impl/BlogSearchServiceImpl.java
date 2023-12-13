@@ -146,6 +146,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                             .recentReadCount(Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), document.getId().toString()))
                                     .orElse(0.0))
                             .created(document.getCreated().toLocalDateTime())
+                            .updated(document.getUpdated().toLocalDateTime())
                             .status(document.getStatus())
                             .build();
                 })

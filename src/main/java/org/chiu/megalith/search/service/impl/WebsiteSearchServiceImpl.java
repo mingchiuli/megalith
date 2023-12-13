@@ -132,6 +132,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                             .link(document.getLink())
                             .status(document.getStatus())
                             .created(document.getCreated())
+                            .updated(document.getUpdated())
                             .highlight(hit.getHighlightFields())
                             .score(hit.getScore())
                             .build();

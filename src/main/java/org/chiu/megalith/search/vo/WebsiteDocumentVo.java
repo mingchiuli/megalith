@@ -29,6 +29,9 @@ public class WebsiteDocumentVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private ZonedDateTime created;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private ZonedDateTime updated;
+
     private Float score;
 
     private Map<String, List<String>> highlight;
