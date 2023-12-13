@@ -61,7 +61,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                     .created(ZonedDateTime.now())
                     .build();
         }
-
+        
+        document.setUpdated(ZonedDateTime.now());
         BeanUtils.copyProperties(websiteDocumentReq, document);
         elasticsearchTemplate.save(document);
     }
