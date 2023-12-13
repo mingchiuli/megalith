@@ -28,6 +28,8 @@ public class CodeFactory {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
     };
 
+    private Random random = new Random();
+
     private final StringRedisTemplate redisTemplate;
 
     public String create(String type) {
@@ -41,8 +43,9 @@ public class CodeFactory {
 
     private String createEmailCode() {
         var builder = new StringBuilder();
+        
         for (int i = 0; i < 5; i++) {
-            int idx = new Random().nextInt(code.length);
+            int idx = random.nextInt(code.length);
             builder.append(code[idx]);
         }
         return builder.toString();
@@ -51,7 +54,7 @@ public class CodeFactory {
     private String createSMS() {
         var builder = new StringBuilder();
         for (int i = 0; i < 6; i++) {
-            int idx = new Random().nextInt(sms.length);
+            int idx = random.nextInt(sms.length);
             builder.append(sms[idx]);
         }
         return builder.toString();

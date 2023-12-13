@@ -1,6 +1,5 @@
 package org.chiu.megalith.blog.schedule.task;
 
-import org.chiu.megalith.blog.controller.BlogController;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;

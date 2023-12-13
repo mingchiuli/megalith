@@ -42,9 +42,6 @@ server:
   port: 8081
   max-http-request-header-size: 10MB
 
-logging:
-  config: classpath:logback-spring.xml
-
 blog:
   highest-role: admin
   default-role: user
