@@ -45,6 +45,9 @@ public class BlogEntity {
     @Column(name = "created")
     private LocalDateTime created;
 
+    @Column(name = "updated")
+    private LocalDateTime updated;
+
     @Column(name = "status")
     private Integer status;
 
@@ -67,6 +70,7 @@ public class BlogEntity {
         if (!Objects.equals(description, that.description)) return false;
         if (!Objects.equals(content, that.content)) return false;
         if (!Objects.equals(created, that.created)) return false;
+        if (!Objects.equals(updated, that.updated)) return false;
         if (!Objects.equals(status, that.status)) return false;
         if (!Objects.equals(link, that.link)) return false;
         return Objects.equals(readCount, that.readCount);

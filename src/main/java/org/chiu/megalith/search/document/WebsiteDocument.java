@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
  */
 @Data
 @Builder
-@Document(indexName = "websiteinfo")
+@Document(indexName = "website_index")
 public class WebsiteDocument {
 
     @Id
@@ -37,5 +37,8 @@ public class WebsiteDocument {
 
     @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
     private ZonedDateTime created;
+
+    @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
+    private ZonedDateTime updated;
 
 }
