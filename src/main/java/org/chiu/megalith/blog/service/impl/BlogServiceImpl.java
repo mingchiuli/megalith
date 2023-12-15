@@ -554,8 +554,6 @@ public class BlogServiceImpl implements BlogService {
 
             blogRepository.delete(blogEntity);
 
-            blogEntity.setCreated(LocalDateTime.now());
-
             redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
                     Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
                     jsonUtils.writeValueAsString(blogEntity), "604800");
