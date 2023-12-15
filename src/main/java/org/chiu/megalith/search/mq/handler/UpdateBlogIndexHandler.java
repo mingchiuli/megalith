@@ -94,6 +94,6 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
                 .updated(ZonedDateTime.of(blog.getUpdated(), ZoneId.of("Asia/Shanghai")))
                 .build();
 
-        elasticsearchTemplate.save(blogDocument);
+        elasticsearchTemplate.update(blogDocument);
     }
 }
