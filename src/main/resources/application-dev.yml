@@ -6,7 +6,7 @@ spring:
     properties:
       from: dinglei@163.com #邮件发信人（即真实邮箱）
   jpa:
-    show-sql: true
+    show-sql: false
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://127.0.0.1:3306/vueblog?serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
