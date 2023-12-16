@@ -1,9 +1,6 @@
 package org.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -16,13 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -33,10 +28,6 @@ import java.util.Optional;
 public class BlogSearchServiceImpl implements BlogSearchService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
-
-    private final StringRedisTemplate redisTemplate;
-
-    private final BlogService blogService;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -130,21 +121,11 @@ public class BlogSearchServiceImpl implements BlogSearchService {
         List<BlogEntityVo> entities = search.getSearchHits().stream()
                 .map(hit -> {
                     BlogDocument document = hit.getContent();
-                    Long id = document.getId();
-                    Long readCount;
-                    try {
-                        readCount = blogService.findById(id, false).getReadCount();
-                    } catch (MissException e) {
-                        readCount = blogService.findById(id, true).getReadCount();
-                    }
                     return BlogEntityVo.builder()
-                            .id(id)
+                            .id(document.getId())
                             .title(document.getTitle())
                             .description(document.getDescription())
                             .content(document.getContent())
-                            .readCount(readCount)
-                            .recentReadCount(Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(), document.getId().toString()))
-                                    .orElse(0.0))
                             .created(document.getCreated().toLocalDateTime())
                             .updated(document.getUpdated().toLocalDateTime())
                             .status(document.getStatus())
