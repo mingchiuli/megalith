@@ -2,7 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.2.1"
 	id("io.spring.dependency-management") version "1.1.4"
-//	id("org.graalvm.buildtools.native") version "0.9.28"
+	id("org.graalvm.buildtools.native") version "0.9.28"
 }
 
 group = "com.chiu"
@@ -30,16 +30,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.security:spring-security-messaging")
-	implementation("com.aliyun.oss:aliyun-sdk-oss:3.16.1")
 	implementation("com.auth0:java-jwt:4.4.0")
-	implementation("org.redisson:redisson-spring-boot-starter:3.24.3")
+	implementation("org.redisson:redisson-spring-boot-starter:3.25.2")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
-	implementation("io.netty:netty-resolver-dns-native-macos:4.1.98.Final") {
-		artifact {
-			classifier = "osx-aarch_64"
-		}
-	}
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

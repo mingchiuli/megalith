@@ -1,37 +1,27 @@
 package org.chiu.megalith.blog.service.impl;
 
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.model.ObjectMetadata;
-import com.aliyun.oss.model.SetBucketCORSRequest;
-import com.aliyun.oss.model.SetBucketCORSRequest.CORSRule;
-
-import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
+import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
-import org.chiu.megalith.infra.utils.LuaScriptUtils;
+import org.chiu.megalith.infra.utils.*;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.infra.utils.MessageUtils;
-import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.infra.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
 
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -47,7 +38,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -73,8 +63,9 @@ public class BlogServiceImpl implements BlogService {
 
     private final MessageUtils messageUtils;
 
-    @Qualifier("commonExecutor")
-    private final ExecutorService taskExecutor;
+    private final OssHttpService ossHttpService;
+
+    private final OssSignUtils ossSignUtils;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -82,43 +73,9 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    @Value("${blog.oss.access-key-id}")
-    private String keyId;
-
-    @Value("${blog.oss.access-key-secret}")
-    private String keySecret;
-
-    @Value("${blog.oss.bucket-name}")
-    private String bucket;
-
-    @Value("${blog.oss.endpoint}")
-    private String ep;
-
     @Value("${blog.oss.host}")
     private String host;
 
-    private OSS ossClient;
-
-    @PostConstruct
-    private void init() {
-        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
-        String endpoint = ep;
-        // 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-        String accessKeyId = keyId;
-        String accessKeySecret = keySecret;
-        // 填写Object完整路径，例如exampledir/exampleobject.txt。Object完整路径中不能包含Bucket名称。
-        // 创建OSSClient实例。
-        ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-        //允许跨域
-        List<CORSRule> bucketCORSRules = ossClient.getBucketCORSRules(bucket);
-         CORSRule corsRule = new SetBucketCORSRequest.CORSRule();
-        List<String> allowedOrigins = corsRule.getAllowedOrigins();
-        List<String> allowedMethods = corsRule.getAllowedMethods();
-        allowedMethods.add("GET");
-        allowedMethods.add("POST");
-        allowedOrigins.add("*");
-        bucketCORSRules.add(corsRule);
-    }
 
     public List<Long> findIds(Pageable pageRequest) {
         return blogRepository.findIds(pageRequest);
@@ -216,22 +173,24 @@ public class BlogServiceImpl implements BlogService {
 
     @SneakyThrows
     @Override
-    public String uploadOss(MultipartFile image, String nickname) {
+    public String uploadOss(MultipartFile image, Long userId) {
         Assert.notNull(image, UPLOAD_MISS.getMsg());
         String uuid = UUID.randomUUID().toString();
         String originalFilename = image.getOriginalFilename();
         originalFilename = Optional.ofNullable(originalFilename)
                 .orElseGet(() -> UUID.randomUUID().toString())
                 .replace(" ", "");
-        String objectName = nickname + "/" + uuid + "-" + originalFilename;
+        UserEntity user = userService.findById(userId);
+        String objectName = user.getNickname() + "/" + uuid + "-" + originalFilename;
         byte[] imageBytes = image.getBytes();
 
-        var meta = new ObjectMetadata();
-        meta.setCacheControl("no-cache");
-        //只支持上传图片，其他文件类型需改造
-        meta.setContentType("image/jpg");
-
-        taskExecutor.execute(() -> ossClient.putObject(bucket, objectName, new ByteArrayInputStream(imageBytes), meta));
+        Map<String, String> headers = new HashMap<>();
+        String gmtDate = ossSignUtils.getGMTDate();
+        headers.put(HttpHeaders.DATE, gmtDate);
+        headers.put(HttpHeaders.AUTHORIZATION, ossSignUtils.getAuthorization(objectName, "PUT", "image/jpg"));
+        headers.put(HttpHeaders.CACHE_CONTROL, "no-cache");
+        headers.put(HttpHeaders.CONTENT_TYPE, "image/jpg");
+        ossHttpService.putOssObject(objectName, imageBytes, headers);
         // https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
         return host + "/" + objectName;
     }
@@ -239,7 +198,11 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void deleteOss(String url) {
         String objectName = url.replace(host + "/", "");
-        ossClient.deleteObject(bucket, objectName);
+        Map<String, String> headers = new HashMap<>();
+        String gmtDate = ossSignUtils.getGMTDate();
+        headers.put(HttpHeaders.DATE, gmtDate);
+        headers.put(HttpHeaders.AUTHORIZATION, ossSignUtils.getAuthorization(objectName, "DELETE", ""));
+        ossHttpService.deleteOssObject(objectName, headers);
     }
 
     @Override

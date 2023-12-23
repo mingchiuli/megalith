@@ -82,8 +82,9 @@ public class BlogManagerController {
     }
 
     @PostMapping("/oss/upload")
-    public Result<String> uploadOss(@RequestParam MultipartFile image, @RequestParam String nickname) {
-        return Result.success(() -> blogService.uploadOss(image, nickname));
+    public Result<String> uploadOss(@RequestParam MultipartFile image) {
+        Long userId = SecurityUtils.getLoginUserId();
+        return Result.success(() -> blogService.uploadOss(image, userId));
     }
 
     @GetMapping("/oss/delete")

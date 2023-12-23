@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     hikari:
       maximum-pool-size: 100
@@ -51,3 +53,6 @@ blog:
   jwt:
     access-token-expire: 21600
     refresh-token-expire: 604800
+  oss:
+    host: https://${blog.oss.bucket-name}.oss-cn-hangzhou.aliyuncs.com
+    endpoint: oss-cn-hangzhou.aliyuncs.com
