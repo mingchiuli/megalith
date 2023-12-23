@@ -11,6 +11,7 @@ spring:
       max-request-size: 5MB
       enabled: true
   mail:
+    host: smtp.163.com
     port: 465
     properties:
       mail:
