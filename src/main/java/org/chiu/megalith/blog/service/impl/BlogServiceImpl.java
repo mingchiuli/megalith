@@ -72,8 +72,8 @@ public class BlogServiceImpl implements BlogService {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    @Value("${blog.oss.host}")
-    private String host;
+    @Value("${blog.oss.base-url}")
+    private String baseUrl;
 
 
     public List<Long> findIds(Pageable pageRequest) {
@@ -191,12 +191,12 @@ public class BlogServiceImpl implements BlogService {
         headers.put(HttpHeaders.CONTENT_TYPE, "image/jpg");
         ossHttpService.putOssObject(objectName, imageBytes, headers);
         // https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
-        return host + "/" + objectName;
+        return baseUrl + "/" + objectName;
     }
 
     @Override
     public void deleteOss(String url) {
-        String objectName = url.replace(host + "/", "");
+        String objectName = url.replace(baseUrl + "/", "");
         Map<String, String> headers = new HashMap<>();
         String gmtDate = ossSignUtils.getGMTDate();
         headers.put(HttpHeaders.DATE, gmtDate);

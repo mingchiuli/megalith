@@ -52,5 +52,5 @@ blog:
     access-token-expire: 21600
     refresh-token-expire: 604800
   oss:
-    host: https://${blog.oss.bucket-name}.oss-cn-hangzhou.aliyuncs.com
+    base-url: https://${blog.oss.bucket-name}.${blog.oss.endpoint}
     endpoint: oss-cn-hangzhou.aliyuncs.com

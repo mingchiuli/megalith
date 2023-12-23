@@ -20,13 +20,15 @@ public class HttpConfiguration {
     @Value("${blog.oss.endpoint}")
     private String ep;
 
+    @Value("${blog.oss.base-url}")
+    private String baseUrl;
+
     @Bean
     OssHttpService ossHttpService() {
-        String host = bucketName + "." + ep;
 
         WebClient client = WebClient.builder()
-                .baseUrl("https://" + host)
-                .defaultHeader(HttpHeaders.HOST, host)
+                .baseUrl(baseUrl)
+                .defaultHeader(HttpHeaders.HOST, bucketName + "." + ep)
                 .build();
 
         WebClientAdapter webClientAdapter = WebClientAdapter.create(client);
