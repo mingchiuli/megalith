@@ -16,10 +16,7 @@ import org.springframework.stereotype.Component;
 
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author mingchiuli
@@ -59,7 +56,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
         String getCountByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
         //删掉所有摘要缓存
-        Set<String> keys = Optional.ofNullable(redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())).orElseGet(HashSet::new);
+        Set<String> keys = Optional.ofNullable(redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())).orElseGet(LinkedHashSet::new);
         keys.add(Const.READ_TOKEN.getInfo() + id);
         keys.add(findById);
         keys.add(getCountByYear);

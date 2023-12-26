@@ -1,5 +1,6 @@
 package org.chiu.megalith.search.mq;
 
+import lombok.extern.slf4j.Slf4j;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import org.chiu.megalith.search.mq.handler.BlogIndexSupport;
@@ -17,12 +18,13 @@ import java.util.List;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class BlogMessageListener {
 
     private final List<BlogIndexSupport> elasticsearchHandlers;
 
     @RabbitListener(queues = ElasticSearchRabbitConfig.ES_QUEUE, 
-            concurrency = "5-10",
+            concurrency = "10",
             messageConverter = "jsonMessageConverter",
             executor = "mqExecutor")
     public void handler(BlogSearchIndexMessage message, Channel channel, Message msg) {

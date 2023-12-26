@@ -3,6 +3,8 @@ package org.chiu.megalith.security.vo;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author mingchiuli
  * @create 2023-04-15 2:14 pm
@@ -10,7 +12,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserInfoVo {
+public class UserInfoVo implements Serializable {
 
     private String nickname;
 

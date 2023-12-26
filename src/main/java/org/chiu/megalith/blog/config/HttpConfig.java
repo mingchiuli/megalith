@@ -12,7 +12,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import java.time.Duration;
 
 @Configuration(proxyBeanMethods = false)
-public class HttpConfiguration {
+public class HttpConfig {
 
     @Value("${blog.oss.bucket-name}")
     private String bucketName;

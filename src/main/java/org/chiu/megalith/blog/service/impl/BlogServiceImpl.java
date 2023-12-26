@@ -33,7 +33,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -504,18 +503,21 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Transactional
     public void deleteBatch(List<Long> ids, Long userId, String authority) {
+        List<BlogEntity> blogList = new ArrayList<>();
         ids.forEach(id -> {
             BlogEntity blogEntity = findById(id);
-
             if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId))
                     && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
                 throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
             }
+            blogList.add(blogEntity);
+        });
 
-            blogRepository.delete(blogEntity);
+        blogRepository.deleteAllById(ids);
 
+        blogList.forEach(blogEntity -> {
+            Long id = blogEntity.getId();
             redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
                     Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
                     jsonUtils.writeValueAsString(blogEntity), "604800");
@@ -525,6 +527,7 @@ public class BlogServiceImpl implements BlogService {
                     new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()),
                     BlogIndexEnum.REMOVE.name(), id);
         });
+
     }
 
     @Override

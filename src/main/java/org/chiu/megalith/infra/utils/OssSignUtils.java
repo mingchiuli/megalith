@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Calendar;
 import java.util.Locale;
-import java.util.TimeZone;
 
 @Component
 public class OssSignUtils {
@@ -36,10 +36,9 @@ public class OssSignUtils {
     }
 
     public String getGMTDate() {
-        Calendar cd = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.UK);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return sdf.format(cd.getTime());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.UK);
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT"));
+        return dateTimeFormatter.format(now);
     }
 
     private String buildSignData(String date, String canonicalizedResource, String methodName, String contentType) {

@@ -27,7 +27,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		ServletOutputStream outputStream = response.getOutputStream();
-		Result<Object> result = Result.fail(exception.getMessage());
+		Result<Void> result = Result.fail(exception.getMessage());
 		outputStream.write(
 				objectMapper.writeValueAsString(result).getBytes(StandardCharsets.UTF_8)
 		);
