@@ -55,12 +55,14 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         String findById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
         String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
         String getCountByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
+        String status = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
         //删掉所有摘要缓存
         Set<String> keys = Optional.ofNullable(redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())).orElseGet(LinkedHashSet::new);
         keys.add(Const.READ_TOKEN.getInfo() + id);
         keys.add(findById);
         keys.add(getCountByYear);
         keys.add(findByIdAndInvisible);
+        keys.add(status);
         //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom，后面逻辑重建
         keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         keys.add(Const.BLOOM_FILTER_PAGE.getInfo());
@@ -68,7 +70,6 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         //暂存区
         keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
         //内容状态信息
-        keys.add(Const.BLOG_STATUS.getInfo() + id);
         redisTemplate.unlink(keys);
 
         //设置getBlogDetail的bloom

@@ -55,7 +55,7 @@ public enum Const {
 
     HOT_BLOG("hot_blog"),
 
-    BLOG_STATUS("blog_status:"),
+    BLOG_STATUS("blog_status"),
 
     CONSUME_MONITOR("consume:"),
 
