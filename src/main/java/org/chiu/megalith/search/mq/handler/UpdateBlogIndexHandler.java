@@ -76,6 +76,8 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         }
         //暂存区
         keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
+        //内容状态信息
+        keys.add(Const.BLOG_STATUS.getInfo() + id);
         redisTemplate.unlink(keys);
 
         return keys;

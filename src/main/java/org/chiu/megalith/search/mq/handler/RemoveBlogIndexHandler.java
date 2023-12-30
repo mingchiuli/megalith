@@ -67,6 +67,8 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(Const.BLOOM_FILTER_YEARS.getInfo());
         //暂存区
         keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
+        //内容状态信息
+        keys.add(Const.BLOG_STATUS.getInfo() + id);
         redisTemplate.unlink(keys);
 
         //设置getBlogDetail的bloom
