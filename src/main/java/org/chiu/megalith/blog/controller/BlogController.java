@@ -80,10 +80,8 @@ public class BlogController {
     @GetMapping("/token/{blogId}")
     public Result<Boolean> checkReadToken(@PathVariable Long blogId,
                                           @RequestParam(value = "readToken") String token) {
-
-        return Boolean.TRUE.equals(blogService.checkToken(blogId, token)) ?
-                Result.success(true) : 
-                Result.success(false);
+        Boolean checked = blogService.checkToken(blogId, token);
+        return Result.success(checked);
     }
 
     @GetMapping("/status/{blogId}")
@@ -94,7 +92,7 @@ public class BlogController {
         Integer status = blogService.findStatusById(blogId);
 
         if (StatusEnum.NORMAL.getCode().equals(status)) {
-            return Result.success(StatusEnum.NORMAL.getCode());
+            return Result.success(status);
         }
 
         if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
