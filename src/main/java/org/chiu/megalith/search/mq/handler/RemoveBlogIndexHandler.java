@@ -70,7 +70,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         //暂存区
         keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
         //内容状态信息
-        redisTemplate.unlink(keys);
+        redisTemplate.delete(keys);
 
         //设置getBlogDetail的bloom
         redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);
