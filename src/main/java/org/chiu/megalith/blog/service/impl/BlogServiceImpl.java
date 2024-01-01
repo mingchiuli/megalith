@@ -32,6 +32,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -186,7 +187,7 @@ public class BlogServiceImpl implements BlogService {
         String gmtDate = ossSignUtils.getGMTDate();
         headers.put(HttpHeaders.DATE, gmtDate);
         headers.put(HttpHeaders.AUTHORIZATION, ossSignUtils.getAuthorization(objectName, "PUT", "image/jpg"));
-        headers.put(HttpHeaders.CACHE_CONTROL, "no-cache");
+        headers.put(HttpHeaders.CACHE_CONTROL, CacheControlServerHttpHeadersWriter.PRAGMA_VALUE);
         headers.put(HttpHeaders.CONTENT_TYPE, "image/jpg");
         ossHttpService.putOssObject(objectName, imageBytes, headers);
         // https://bloglmc.oss-cn-hangzhou.aliyuncs.com/admin/42166d224f4a20a45eca28b691529822730ed0ee.jpeg
@@ -438,12 +439,27 @@ public class BlogServiceImpl implements BlogService {
     public List<BlogHotReadVo> getScoreBlogs() {
         Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet()
                 .reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
-        return Optional.ofNullable(set).orElseGet(HashSet::new).stream()
+        List<BlogHotReadVo> items = Optional.ofNullable(set).orElseGet(LinkedHashSet::new).stream()
                 .map(item -> BlogHotReadVo.builder()
                         .id(Long.valueOf(item.getValue()))
                         .readCount(item.getScore().longValue())
                         .build())
                 .toList();
+
+        List<Long> ids = items.stream()
+                .map(BlogHotReadVo::getId)
+                .toList();
+        List<BlogEntity> blogs = blogRepository.findAllById(ids);
+        items.forEach(item -> {
+            String title = blogs.stream()
+                    .filter(blog -> blog.getId().equals(item.getId()))
+                    .findAny()
+                    .orElseThrow(() -> new MissException(NO_FOUND))
+                    .getTitle();
+            item.setTitle(title);
+        });
+
+        return items;
     }
 
     @Override

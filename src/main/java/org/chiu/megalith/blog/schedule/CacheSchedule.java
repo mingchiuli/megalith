@@ -1,5 +1,6 @@
 package org.chiu.megalith.blog.schedule;
 
+import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
@@ -34,6 +35,8 @@ public class CacheSchedule {
     private final ExecutorService taskExecutor;
 
     private final BlogService blogService;
+
+    private final BlogRepository blogRepository;
 
     private final StringRedisTemplate redisTemplate;
 

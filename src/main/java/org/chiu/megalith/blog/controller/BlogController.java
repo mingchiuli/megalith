@@ -3,7 +3,6 @@ package org.chiu.megalith.blog.controller;
 import org.chiu.megalith.blog.vo.BlogDescriptionVo;
 import org.chiu.megalith.blog.vo.VisitStatisticsVo;
 import org.chiu.megalith.infra.bloom.handler.impl.*;
-import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.bloom.Bloom;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.lang.Const;
@@ -120,16 +119,6 @@ public class BlogController {
     @GetMapping("/scores")
     public Result<List<BlogHotReadVo>> getScoreBlogs() {
         List<BlogHotReadVo> hotList = blogService.getScoreBlogs();
-        hotList.forEach(item -> {
-            String title;
-            Long id = item.getId();
-            try {
-                title = blogService.findById(id, false).getTitle();
-            } catch (MissException e) {
-                title = blogService.findById(id, true).getTitle();
-            }
-            item.setTitle(title);
-        });
         return Result.success(hotList);
     }
 
