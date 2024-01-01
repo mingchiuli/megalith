@@ -2,7 +2,7 @@ package org.chiu.megalith.search.mq.handler;
 
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
-import org.chiu.megalith.blog.service.impl.BlogServiceImpl;
+import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
@@ -54,18 +54,18 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         long count = blogRepository.countByCreatedAfter(blog.getCreated());
         count++;
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
-        String findPage = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageNo, Integer.MIN_VALUE});
+        String findPage = cacheKeyGenerator.generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageNo, Integer.MIN_VALUE});
 
         //分年份的页数
         long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
         countYear++;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
-        String findPageByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
+        String findPageByYear = cacheKeyGenerator.generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
 
         //博客对象本身缓存
-        String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
-        String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
-        String status = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
+        String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
+        String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
+        String status = cacheKeyGenerator.generateKey(BlogWrapper.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
 
         Set<String> keys = new HashSet<>();
         keys.add(findByIdAndVisible);

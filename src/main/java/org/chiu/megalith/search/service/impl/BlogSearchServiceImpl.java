@@ -1,6 +1,7 @@
 package org.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -45,7 +46,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                         multiQuery.fields(fields).query(keywords)))
                                         .filter(filterQuery2 ->
                                                 filterQuery2.term(termQuery ->
-                                                        termQuery.field("status").value(0)))
+                                                        termQuery.field("status").value(StatusEnum.NORMAL.getCode())))
                                         .filter(filterQuery3 ->
                                                 filterQuery3.range(rangeQuery ->
                                                         rangeQuery.field("created")

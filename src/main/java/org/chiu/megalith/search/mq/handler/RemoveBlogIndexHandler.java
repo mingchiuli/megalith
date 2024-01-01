@@ -3,7 +3,7 @@ package org.chiu.megalith.search.mq.handler;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.blog.service.impl.BlogServiceImpl;
+import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
@@ -52,10 +52,10 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         int year = blog.getCreated().getYear();
         Long id = blog.getId();
         //博客对象本身缓存
-        String findById = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
-        String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
-        String getCountByYear = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
-        String status = cacheKeyGenerator.generateKey(BlogServiceImpl.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
+        String findById = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, false});
+        String findByIdAndInvisible = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class, Boolean.class}, new Object[]{id, true});
+        String getCountByYear = cacheKeyGenerator.generateKey(BlogWrapper.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
+        String status = cacheKeyGenerator.generateKey(BlogWrapper.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
         //删掉所有摘要缓存
         Set<String> keys = Optional.ofNullable(redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())).orElseGet(LinkedHashSet::new);
         keys.add(Const.READ_TOKEN.getInfo() + id);
