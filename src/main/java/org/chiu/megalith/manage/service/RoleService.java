@@ -25,5 +25,4 @@ public interface RoleService {
 
     List<RoleEntityVo> getValidAll();
 
-    List<Long> getNavMenuIdsByRoleId(String role);
 }

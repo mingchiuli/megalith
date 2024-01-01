@@ -8,13 +8,11 @@ import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.MenuRoleVo;
-import org.chiu.megalith.manage.vo.MenuVo;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +25,6 @@ import java.util.List;
 public class RoleController {
 
     private final RoleService roleService;
-
-    private final MenuService menuService;
 
     private final RoleMenuService roleMenuService;
 
@@ -67,10 +63,6 @@ public class RoleController {
     @GetMapping("/perm/{roleId}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<List<MenuRoleVo>> getMenusInfo(@PathVariable Long roleId) {
-
-        List<MenuVo> menusInfo = menuService.getNormalMenusInfo();
-        List<Long> menuIdsByRole = roleMenuService.findMenuIdsByRoleId(roleId);
-        List<MenuRoleVo> menuRoleVos = roleMenuService.setCheckMenusInfo(menusInfo, menuIdsByRole, null, new ArrayList<>());
-        return Result.success(menuRoleVos);
+        return Result.success(() -> roleMenuService.getMenusInfo(roleId));
     }
 }

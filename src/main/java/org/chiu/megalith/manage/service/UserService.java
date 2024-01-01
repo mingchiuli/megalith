@@ -1,7 +1,6 @@
 package org.chiu.megalith.manage.service;
 
 
-import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.manage.vo.UserEntityVo;
@@ -19,7 +18,7 @@ public interface UserService {
 
     void saveOrUpdate(UserEntityReq userEntityReq);
 
-    UserEntity findById(Long userId);
+    UserEntityVo findById(Long userId);
 
     void changeUserStatusByUsername(String username, Integer status);
 
@@ -29,5 +28,5 @@ public interface UserService {
 
     List<Long> findIdsByStatus(Integer status);
 
-    UserEntity findByEmail(String email);
+    UserEntityVo findByEmail(String email);
 }

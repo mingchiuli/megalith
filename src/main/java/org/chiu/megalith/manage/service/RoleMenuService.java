@@ -1,7 +1,6 @@
 package org.chiu.megalith.manage.service;
 
 
-import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.chiu.megalith.manage.vo.MenuRoleVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 
@@ -13,13 +12,11 @@ import java.util.List;
  */
 public interface RoleMenuService {
 
-    void deleteByRoleId(Long roleId);
+    List<Long> getNavMenuIdsByRoleId(String role);
 
-    void deleteByMenuId(Long menuId);
+    List<MenuVo> getCurrentUserNav(Long userId);
 
-    List<Long> findMenuIdsByRoleId(Long id);
+    List<MenuRoleVo> getMenusInfo(Long roleId);
 
-    void saveAll(List<RoleMenuEntity> roleMenus);
-
-    List<MenuRoleVo> setCheckMenusInfo(List<MenuVo> menusInfo, List<Long> menuIdsByRole, MenuRoleVo.MenuRoleVoBuilder parent, List<MenuRoleVo> parentChildren);
+    List<MenuVo> tree();
 }

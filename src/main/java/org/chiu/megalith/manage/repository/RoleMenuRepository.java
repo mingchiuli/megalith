@@ -2,7 +2,9 @@ package org.chiu.megalith.manage.repository;
 
 import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,4 +20,9 @@ public interface RoleMenuRepository extends JpaRepository<RoleMenuEntity, Long> 
     void deleteByRoleId(Long roleId);
 
     void deleteByMenuId(Long menuId);
+
+    @Query(value = "delete from RoleMenuEntity roleMenu where roleMenu.roleId in (?1)")
+    @Modifying
+    @Transactional
+    void deleteAllByRoleId(List<Long> ids);
 }

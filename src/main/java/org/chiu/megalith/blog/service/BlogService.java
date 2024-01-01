@@ -1,10 +1,10 @@
 package org.chiu.megalith.blog.service;
 
-import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,21 +17,9 @@ public interface BlogService {
 
     List<Long> findIds(Pageable pageRequest);
 
-    BlogExhibitVo findById(Long id, Boolean visible);
-
-    void setReadCount(Long id);
-
-    BlogEntity findById(Long id);
-
-    BlogEntity findByIdAndUserId(Long id, Long userId);
-
     PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year);
 
     Integer getCountByYear(Integer year);
-
-    Boolean checkToken(Long blogId, String token);
-
-    Integer findStatusById(Long blogId);
 
     List<Integer> searchYears();
 
@@ -45,19 +33,14 @@ public interface BlogService {
 
     PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId);
 
-    Boolean exist(Long blogId);
-
     VisitStatisticsVo getVisitStatistics();
 
     List<BlogHotReadVo> getScoreBlogs();
 
     BlogEditVo findEdit(Long id, Long userId);
 
-    Long findUserIdById(Long id);
 
     void deleteBatch(List<Long> ids, Long userId, String authority);
-
-    Integer checkStatusByIdAndUserId(Long blogId, Long userId);
 
     String uploadOss(MultipartFile image, Long userId);
 
@@ -67,4 +50,11 @@ public interface BlogService {
 
     List<Integer> getYears();
 
+    BlogExhibitVo getLockedBlog(Long blogId, String token);
+
+    Boolean checkToken(Long blogId, String token);
+
+    BlogExhibitVo getBlogDetail(Authentication authentication, Long id);
+
+    Integer getBlogStatus(Authentication authentication, Long blogId);
 }

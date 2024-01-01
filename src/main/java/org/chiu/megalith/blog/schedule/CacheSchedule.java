@@ -1,15 +1,15 @@
 package org.chiu.megalith.blog.schedule;
 
-import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
+import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
 import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
 import org.chiu.megalith.infra.lang.StatusEnum;
-import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.vo.UserEntityVo;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,7 +36,7 @@ public class CacheSchedule {
 
     private final BlogService blogService;
 
-    private final BlogRepository blogRepository;
+    private final BlogWrapper blogWrapper;
 
     private final StringRedisTemplate redisTemplate;
 
@@ -76,7 +76,7 @@ public class CacheSchedule {
             int pageSize = 20;
             int totalPage = (int) (count % pageSize == 0 ? count / pageSize : count / pageSize + 1);
             for (int i = 1; i <= totalPage; i++) {
-                var runnable = new BlogRunnable(blogService, redisTemplate, PageRequest.of(i, pageSize));
+                var runnable = new BlogRunnable(blogService, blogWrapper, redisTemplate, PageRequest.of(i, pageSize));
                 taskExecutor.execute(runnable);
             }
         }, taskExecutor);
@@ -121,7 +121,7 @@ public class CacheSchedule {
         CompletableFuture.runAsync(() -> {
             List<Long> ids = userService.findIdsByStatus(StatusEnum.HIDE.getCode());
             ids.forEach(id -> {
-                UserEntity user = userService.findById(id);
+                UserEntityVo user = userService.findById(id);
                 user.setStatus(StatusEnum.NORMAL.getCode());
                 UserEntityReq req = UserEntityReq.builder()
                         .avatar(user.getAvatar())

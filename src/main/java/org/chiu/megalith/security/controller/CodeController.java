@@ -2,7 +2,6 @@ package org.chiu.megalith.security.controller;
 
 import org.chiu.megalith.security.service.CodeService;
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.manage.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +20,9 @@ public class CodeController {
 
     private final CodeService codeService;
 
-    private final UserService userService;
-
     @GetMapping("/email")
     public Result<Void> createEmailCode(@RequestParam(value = "loginName") String loginEmail) {
-        return Result.success(() -> {
-            userService.findByEmail(loginEmail);
-            codeService.createEmailCode(loginEmail);
-        });
+        return Result.success(() -> codeService.createEmailCode(loginEmail));
     }
 
     @GetMapping("/sms")

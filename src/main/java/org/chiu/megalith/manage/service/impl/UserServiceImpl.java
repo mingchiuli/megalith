@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
             } else {
                 userEntityReq.setPassword(userEntity.getPassword());
             }
-
         } else {
             userEntity = UserEntity.builder()
                     .created(now)
@@ -76,9 +75,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity findById(Long userId) {
-        return userRepository.findById(userId)
+    public UserEntityVo findById(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new MissException(USER_NOT_EXIST));
+
+        return UserEntityVo.builder()
+                .id(userEntity.getId())
+                .username(userEntity.getUsername())
+                .nickname(userEntity.getNickname())
+                .avatar(userEntity.getAvatar())
+                .email(userEntity.getEmail())
+                .phone(userEntity.getPhone())
+                .status(userEntity.getStatus())
+                .created(userEntity.getCreated())
+                .lastLogin(userEntity.getLastLogin())
+                .role(userEntity.getRole())
+                .build();
     }
 
     @Override
@@ -133,10 +145,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity findByEmail(String email) {
-        return userRepository.findByEmail(email)
+    public UserEntityVo findByEmail(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new MissException(EMAIL_NOT_EXIST));
+
+        return UserEntityVo.builder()
+                .id(userEntity.getId())
+                .username(userEntity.getUsername())
+                .nickname(userEntity.getNickname())
+                .avatar(userEntity.getAvatar())
+                .email(userEntity.getEmail())
+                .phone(userEntity.getPhone())
+                .status(userEntity.getStatus())
+                .created(userEntity.getCreated())
+                .lastLogin(userEntity.getLastLogin())
+                .role(userEntity.getRole())
+                .build();
     }
-
-
 }

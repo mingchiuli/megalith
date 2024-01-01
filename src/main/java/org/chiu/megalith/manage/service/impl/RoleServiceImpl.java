@@ -4,19 +4,18 @@ import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.chiu.megalith.manage.repository.RoleRepository;
-import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
+import org.chiu.megalith.manage.wrapper.RoleWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
 
-    private final RoleMenuService roleMenuService;
+    private final RoleWrapper roleWrapper;
 
     @Override
     public RoleEntityVo info(Long id) {
@@ -107,26 +106,20 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @Transactional
     public void delete(List<Long> ids) {
-        ids.forEach(id -> {
-            roleRepository.deleteById(id);
-            roleMenuService.deleteByRoleId(id);
-        });
+        roleWrapper.delete(ids);
     }
 
 
     @Override
-    @Transactional
     public List<Long> savePerm(Long roleId, List<Long> menuIds) {
-        roleMenuService.deleteByRoleId(roleId);
         List<RoleMenuEntity> roleMenuEntities = menuIds.stream()
                 .map(menuId -> RoleMenuEntity.builder()
                         .menuId(menuId)
                         .roleId(roleId)
                         .build())
                 .toList();
-        roleMenuService.saveAll(roleMenuEntities);
+        roleWrapper.savePerm(roleId, roleMenuEntities);
         return menuIds;
     }
 
@@ -141,13 +134,5 @@ public class RoleServiceImpl implements RoleService {
                 .name(item.getName())
                 .build()));
         return vos;
-    }
-
-    @Override
-    public List<Long> getNavMenuIdsByRoleId(String role) {
-        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(role, StatusEnum.NORMAL.getCode())
-                .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
-        Long id = roleEntity.getId();
-        return roleMenuService.findMenuIdsByRoleId(id);
     }
 }

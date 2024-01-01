@@ -11,7 +11,6 @@ import org.chiu.megalith.infra.page.PageAdapter;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,9 +28,6 @@ public class BlogManagerController {
 
     private final BlogService blogService;
 
-    @Value("${blog.highest-role}")
-    private String highestRole;
-
     @GetMapping("/echo")
     public Result<BlogEditVo> getEchoDetail(@RequestParam(value = "blogId", required = false) Long id) {
         Long userId = SecurityUtils.getLoginUserId();
@@ -41,17 +37,14 @@ public class BlogManagerController {
     @PostMapping("/save")
     public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityReq blog) {
         Long userId = SecurityUtils.getLoginUserId();
-        blogService.saveOrUpdate(blog, userId);
-        return Result.success();
+        return Result.success(() -> blogService.saveOrUpdate(blog, userId));
     }
 
     @PostMapping("/delete")
     public Result<Void> deleteBlogs(@RequestBody List<Long> ids) {
         String authority = SecurityUtils.getLoginAuthority();
         Long userId = SecurityUtils.getLoginUserId();
-
-        blogService.deleteBatch(ids, userId, authority);
-        return Result.success();
+        return Result.success(() -> blogService.deleteBatch(ids, userId, authority));
     }
 
     @GetMapping("/lock/{blogId}")

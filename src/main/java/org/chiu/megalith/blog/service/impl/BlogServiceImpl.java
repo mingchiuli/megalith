@@ -3,18 +3,18 @@ package org.chiu.megalith.blog.service.impl;
 import lombok.SneakyThrows;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.blog.vo.*;
+import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import org.chiu.megalith.infra.utils.*;
-import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.manage.entity.UserEntity;
-import org.chiu.megalith.manage.service.UserService;
+import org.chiu.megalith.manage.repository.UserRepository;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -30,8 +30,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.HttpHeaders;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -58,13 +59,15 @@ public class BlogServiceImpl implements BlogService {
 
     private final JsonUtils jsonUtils;
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     private final MessageUtils messageUtils;
 
     private final OssHttpService ossHttpService;
 
     private final OssSignUtils ossSignUtils;
+
+    private final BlogWrapper blogWrapper;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -80,70 +83,14 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.findIds(pageRequest);
     }
 
-    @Cache(prefix = Const.HOT_BLOG)
     @Override
-    public BlogExhibitVo findById(Long id, Boolean visible) {
-        BlogEntity blogEntity = Boolean.FALSE.equals(
-                visible) ? blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
-                        .orElseGet(BlogEntity::new)
-                        : blogRepository.findById(id)
-                                .orElseThrow(() -> new MissException(NO_FOUND));
-
-        if (Objects.isNull(blogEntity.getId())) {
-            return BlogExhibitVo.builder().build();
-        }
-
-        UserEntity user = userService.findById(blogEntity.getUserId());
-        return BlogExhibitVo.builder()
-                .title(blogEntity.getTitle())
-                .description(blogEntity.getDescription())
-                .content(blogEntity.getContent())
-                .readCount(blogEntity.getReadCount())
-                .nickname(user.getNickname())
-                .avatar(user.getAvatar())
-                .created(blogEntity.getCreated())
-                .readCount(blogEntity.getReadCount())
-                .build();
-    }
-
-    @Override
-    @Async("commonExecutor")
-    public void setReadCount(Long id) {
-        blogRepository.setReadCount(id);
-        redisTemplate.opsForZSet().incrementScore(Const.HOT_READ.getInfo(), id.toString(), 1);
-    }
-
-    @Override
-    public BlogEntity findById(Long id) {
-        return blogRepository.findById(id)
-                .orElseThrow(() -> new MissException(NO_FOUND));
-    }
-
-    @Override
-    @Cache(prefix = Const.HOT_BLOGS)
     public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year) {
-        var pageRequest = PageRequest.of(currentPage - 1,
-                blogPageSize,
-                Sort.by("created").descending());
-
-        Page<BlogEntity> page = Objects.equals(year, Integer.MIN_VALUE) ? blogRepository.findPage(pageRequest)
-                : blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1, 0, 0, 0),
-                        LocalDateTime.of(year, 12, 31, 23, 59, 59));
-
-        return new PageAdapter<>(page.map(blogEntity -> BlogDescriptionVo.builder()
-                .id(blogEntity.getId())
-                .description(blogEntity.getDescription())
-                .title(blogEntity.getTitle())
-                .created(blogEntity.getCreated())
-                .link(blogEntity.getLink())
-                .build()));
+        return blogWrapper.findPage(currentPage, year);
     }
 
     @Override
-    @Cache(prefix = Const.HOT_BLOG)
     public Integer getCountByYear(Integer year) {
-        return blogRepository.countByCreatedBetween(LocalDateTime.of(year, 1, 1, 0, 0, 0),
-                LocalDateTime.of(year, 12, 31, 23, 59, 59));
+        return blogWrapper.getCountByYear(year);
     }
 
     @Override
@@ -157,17 +104,44 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Cache(prefix = Const.HOT_BLOG)
-    public Long findUserIdById(Long id) {
-        return blogRepository.findUserIdById(id);
+    public BlogExhibitVo getBlogDetail(Authentication authentication, Long id) {
+        BlogExhibitVo blog;
+
+        if (Boolean.FALSE.equals(authentication instanceof AnonymousAuthenticationToken)) {
+            if ((Const.ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+                blog = blogWrapper.findById(id, true);
+            } else {
+                blog = blogWrapper.findById(id, false);
+            }
+        } else {
+            blog = blogWrapper.findById(id, false);
+        }
+        blogWrapper.setReadCount(id);
+        return blog;
     }
 
     @Override
-    public Integer checkStatusByIdAndUserId(Long blogId, Long userId) {
+    public Integer getBlogStatus(Authentication authentication, Long blogId) {
+        Integer status = blogWrapper.findStatusById(blogId);
+
+        if (StatusEnum.NORMAL.getCode().equals(status)) {
+            return status;
+        }
+
+        if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
+            return StatusEnum.HIDE.getCode();
+        }
+
+        if (("ROLE_" + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+            return StatusEnum.NORMAL.getCode();
+        }
+
+        String userId = authentication.getName();
+
         BlogEntity blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new MissException(NO_FOUND));
         Long id = blog.getUserId();
-        return Objects.equals(id, blogId) ? StatusEnum.NORMAL.getCode() : StatusEnum.HIDE.getCode();
+        return Objects.equals(id, Long.valueOf(userId)) ? StatusEnum.NORMAL.getCode() : StatusEnum.HIDE.getCode();
     }
 
     @SneakyThrows
@@ -179,7 +153,8 @@ public class BlogServiceImpl implements BlogService {
         originalFilename = Optional.ofNullable(originalFilename)
                 .orElseGet(() -> UUID.randomUUID().toString())
                 .replace(" ", "");
-        UserEntity user = userService.findById(userId);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new MissException(NO_FOUND));
         String objectName = user.getNickname() + "/" + uuid + "-" + originalFilename;
         byte[] imageBytes = image.getBytes();
 
@@ -206,7 +181,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public String setBlogToken(Long blogId) {
-        Long dbUserId = findUserIdById(blogId);
+        Long dbUserId = blogRepository.findUserIdById(blogId);
         Long userId = SecurityUtils.getLoginUserId();
 
         if (Objects.equals(userId, dbUserId)) {
@@ -224,9 +199,13 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Cache(prefix = Const.BLOG_STATUS)
-    public Integer findStatusById(Long blogId) {
-        return blogRepository.findStatusById(blogId);
+    public BlogExhibitVo getLockedBlog(Long blogId, String token) {
+        boolean valid = checkToken(blogId, token);
+        if (valid) {
+            blogWrapper.setReadCount(blogId);
+            return blogWrapper.findById(blogId, true);
+        }
+        throw new BadCredentialsException(TOKEN_INVALID.getMsg());
     }
 
     @Override
@@ -415,11 +394,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Boolean exist(Long blogId) {
-        return blogRepository.existsById(blogId);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public VisitStatisticsVo getVisitStatistics() {
         List<Long> list = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.getVisitLua,
@@ -522,7 +496,8 @@ public class BlogServiceImpl implements BlogService {
     public void deleteBatch(List<Long> ids, Long userId, String authority) {
         List<BlogEntity> blogList = new ArrayList<>();
         ids.forEach(id -> {
-            BlogEntity blogEntity = findById(id);
+            BlogEntity blogEntity = blogRepository.findById(id)
+                    .orElseThrow(() -> new MissException(NO_FOUND));
             if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId))
                     && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
                 throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
@@ -544,11 +519,5 @@ public class BlogServiceImpl implements BlogService {
                     BlogIndexEnum.REMOVE.name(), id);
         });
 
-    }
-
-    @Override
-    public BlogEntity findByIdAndUserId(Long id, Long userId) {
-        return blogRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new MissException(NO_FOUND));
     }
 }

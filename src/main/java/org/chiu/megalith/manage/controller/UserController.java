@@ -1,6 +1,5 @@
 package org.chiu.megalith.manage.controller;
 
-import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.req.UserEntityReq;
@@ -46,19 +45,7 @@ public class UserController {
     @GetMapping("/info/{id}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<UserEntityVo> info(@PathVariable(value = "id") Long id) {
-        UserEntity user = userService.findById(id);
-        return Result.success(UserEntityVo.builder()
-                .email(user.getEmail())
-                .phone(user.getPhone())
-                .role(user.getRole())
-                .id(user.getId())
-                .nickname(user.getNickname())
-                .status(user.getStatus())
-                .avatar(user.getAvatar())
-                .created(user.getCreated())
-                .lastLogin(user.getLastLogin())
-                .username(user.getUsername())
-                .build());
+        return Result.success(() -> userService.findById(id));
     }
 
     @GetMapping("/role/valid/all")

@@ -5,17 +5,13 @@ import org.chiu.megalith.blog.vo.VisitStatisticsVo;
 import org.chiu.megalith.infra.bloom.handler.impl.*;
 import org.chiu.megalith.infra.bloom.Bloom;
 import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.blog.vo.BlogExhibitVo;
 import org.chiu.megalith.blog.vo.BlogHotReadVo;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -41,20 +37,7 @@ public class BlogController {
     @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
         Authentication authentication = SecurityUtils.getLoginAuthentication();
-        BlogExhibitVo blog;
-
-        if (Boolean.FALSE.equals(authentication instanceof AnonymousAuthenticationToken)) {
-            if ((Const.ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
-                blog = blogService.findById(id, true);
-            } else {
-                blog = blogService.findById(id, false);
-            }
-        } else {
-            blog = blogService.findById(id, false);
-        }
-
-        blogService.setReadCount(id);
-        return Result.success(blog);
+        return Result.success(() -> blogService.getBlogDetail(authentication, id));
     }
 
     @GetMapping("/page/{currentPage}")
@@ -67,43 +50,20 @@ public class BlogController {
     @GetMapping("/secret/{blogId}")
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
                                                @RequestParam(value = "readToken") String token) {
-
-        boolean valid = blogService.checkToken(blogId, token);
-        if (valid) {
-            blogService.setReadCount(blogId);
-            return Result.success(() -> blogService.findById(blogId, true));
-        }
-        throw new BadCredentialsException("authorization exception");
+        return Result.success(blogService.getLockedBlog(blogId, token));
     }
 
     @GetMapping("/token/{blogId}")
     public Result<Boolean> checkReadToken(@PathVariable Long blogId,
                                           @RequestParam(value = "readToken") String token) {
-        Boolean checked = blogService.checkToken(blogId, token);
-        return Result.success(checked);
+        return Result.success(() -> blogService.checkToken(blogId, token));
     }
 
     @GetMapping("/status/{blogId}")
     @Bloom(handler = DetailHandler.class)
     public Result<Integer> getBlogStatus(@PathVariable Long blogId) {
-
         Authentication authentication = SecurityUtils.getLoginAuthentication();
-        Integer status = blogService.findStatusById(blogId);
-
-        if (StatusEnum.NORMAL.getCode().equals(status)) {
-            return Result.success(status);
-        }
-
-        if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
-            return Result.success(StatusEnum.HIDE.getCode());
-        }
-
-        if (("ROLE_" + highestRole).equals(SecurityUtils.getLoginAuthority())) {
-            return Result.success(StatusEnum.NORMAL.getCode());
-        }
-
-        String userId = authentication.getName();
-        return Result.success(() -> blogService.checkStatusByIdAndUserId(blogId, Long.valueOf(userId)));
+        return Result.success(() -> blogService.getBlogStatus(authentication, blogId));
     }
 
     @GetMapping("/years")
@@ -118,8 +78,7 @@ public class BlogController {
 
     @GetMapping("/scores")
     public Result<List<BlogHotReadVo>> getScoreBlogs() {
-        List<BlogHotReadVo> hotList = blogService.getScoreBlogs();
-        return Result.success(hotList);
+        return Result.success(blogService::getScoreBlogs);
     }
 
 }

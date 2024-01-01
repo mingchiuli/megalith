@@ -1,5 +1,6 @@
 package org.chiu.megalith.security.service.impl;
 
+import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.security.service.CodeService;
 import org.chiu.megalith.infra.lang.Const;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class CodeServiceImpl implements CodeService {
 
     private final JavaMailSender javaMailSender;
 
+    private final UserService userService;
+
     private final StringRedisTemplate redisTemplate;
 
     @Value("${spring.mail.properties.from}")
@@ -34,6 +37,7 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public void createEmailCode(String loginEmail) {
+        userService.findByEmail(loginEmail);
         String key = Const.EMAIL_KEY.getInfo() + loginEmail;
         boolean res = Boolean.FALSE.equals(redisTemplate.hasKey(key));
         if (res) {

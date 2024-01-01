@@ -5,6 +5,7 @@ import org.chiu.megalith.manage.service.MenuService;
 import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,10 +26,12 @@ public class MenuController {
 
     private final MenuService menuService;
 
+    private final RoleMenuService roleMenuService;
+
     @GetMapping("/nav")
     public Result<List<MenuVo>> nav() {
         Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> menuService.getCurrentUserNav(userId));
+        return Result.success(() -> roleMenuService.getCurrentUserNav(userId));
     }
 
     @GetMapping("/info/{id}")
@@ -40,7 +43,7 @@ public class MenuController {
     @GetMapping("/list")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<List<MenuVo>> list() {
-        return Result.success(menuService::tree);
+        return Result.success(roleMenuService::tree);
     }
 
     @PostMapping("/save")
