@@ -17,4 +17,6 @@ public class BlogEditPushActionReq {
     private Integer indexStart;
 
     private Integer indexEnd;
+
+    private String field;
 }

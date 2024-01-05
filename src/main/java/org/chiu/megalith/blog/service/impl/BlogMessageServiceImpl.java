@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
+import org.chiu.megalith.blog.lang.FieldEnum;
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
 import org.chiu.megalith.blog.req.BlogEditPushAllReq;
@@ -39,6 +40,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         Integer indexStart = req.getIndexStart();
         Integer indexEnd = req.getIndexEnd();
         String contentChange = req.getContentChange();
+        String field = req.getField();
+        FieldEnum fieldEnum = FieldEnum.getInstance(field);
 
         String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
 
@@ -53,6 +56,17 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
         String blogString = entries.get("blog");
         BlogEditPushAllReq blog = jsonUtils.readValue(blogString, BlogEditPushAllReq.class);
+
+
+        switch (fieldEnum) {
+            case DESCRIPTION -> dealDescription(id, blog, contentChange, indexStart, indexEnd, pushActionEnum, redisKey, version);
+            case TITLE -> dealTitle(id, blog, contentChange, indexStart, indexEnd, pushActionEnum, redisKey, version);
+            case LINK -> dealLink(id, blog, contentChange, indexStart, indexEnd, pushActionEnum, redisKey, version);
+            case CONTENT -> dealContent(id, blog, contentChange, indexStart, indexEnd, pushActionEnum, redisKey, version);
+        }
+    }
+
+    private void dealContent(Long id, BlogEditPushAllReq blog, String contentChange, Integer indexStart, Integer indexEnd, PushActionEnum pushActionEnum, String redisKey, Integer version) {
         String blogContent = blog.getContent();
 
         BlogEntityReqBuilder blogBuilder = BlogEntityReq.builder()
@@ -69,6 +83,77 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             case HEAD_APPEND -> blogBuilder.content(contentChange + blogContent);
             case HEAD_SUBTRACT -> blogBuilder.content(blogContent.substring(indexStart));
             case REPLACE -> blogBuilder.content(blogContent.substring(0, indexStart) + contentChange + blogContent.substring(indexEnd));
+        }
+
+        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
+                "blog", "version", jsonUtils.writeValueAsString(blogBuilder.build()), String.valueOf(version), "604800");
+    }
+
+
+
+    private void dealLink(Long id, BlogEditPushAllReq blog, String contentChange, Integer indexStart, Integer indexEnd, PushActionEnum pushActionEnum, String redisKey, Integer version) {
+        String blogLink = blog.getLink();
+
+        BlogEntityReqBuilder blogBuilder = BlogEntityReq.builder()
+                .id(id)
+                .description(blog.getDescription())
+                .status(blog.getStatus())
+                .content(blog.getContent())
+                .title(blog.getTitle());
+
+        switch (pushActionEnum) {
+            case REMOVE -> blogBuilder.link("");
+            case TAIL_APPEND -> blogBuilder.link(blogLink + contentChange);
+            case TAIL_SUBTRACT -> blogBuilder.link(blogLink.substring(0, indexStart));
+            case HEAD_APPEND -> blogBuilder.link(contentChange + blogLink);
+            case HEAD_SUBTRACT -> blogBuilder.link(blogLink.substring(indexStart));
+            case REPLACE -> blogBuilder.link(blogLink.substring(0, indexStart) + contentChange + blogLink.substring(indexEnd));
+        }
+
+        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
+                "blog", "version", jsonUtils.writeValueAsString(blogBuilder.build()), String.valueOf(version), "604800");
+    }
+
+    private void dealTitle(Long id, BlogEditPushAllReq blog, String contentChange, Integer indexStart, Integer indexEnd, PushActionEnum pushActionEnum, String redisKey, Integer version) {
+        String blogTitle = blog.getTitle();
+
+        BlogEntityReqBuilder blogBuilder = BlogEntityReq.builder()
+                .id(id)
+                .description(blog.getDescription())
+                .status(blog.getStatus())
+                .link(blog.getLink())
+                .content(blog.getContent());
+
+        switch (pushActionEnum) {
+            case REMOVE -> blogBuilder.title("");
+            case TAIL_APPEND -> blogBuilder.title(blogTitle + contentChange);
+            case TAIL_SUBTRACT -> blogBuilder.title(blogTitle.substring(0, indexStart));
+            case HEAD_APPEND -> blogBuilder.title(contentChange + blogTitle);
+            case HEAD_SUBTRACT -> blogBuilder.title(blogTitle.substring(indexStart));
+            case REPLACE -> blogBuilder.title(blogTitle.substring(0, indexStart) + contentChange + blogTitle.substring(indexEnd));
+        }
+
+        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
+                "blog", "version", jsonUtils.writeValueAsString(blogBuilder.build()), String.valueOf(version), "604800");
+    }
+
+    private void dealDescription(Long id, BlogEditPushAllReq blog, String contentChange, Integer indexStart, Integer indexEnd, PushActionEnum pushActionEnum, String redisKey, Integer version) {
+        String blogDescription = blog.getDescription();
+
+        BlogEntityReqBuilder blogBuilder = BlogEntityReq.builder()
+                .id(id)
+                .title(blog.getTitle())
+                .status(blog.getStatus())
+                .link(blog.getLink())
+                .content(blog.getContent());
+
+        switch (pushActionEnum) {
+            case REMOVE -> blogBuilder.description("");
+            case TAIL_APPEND -> blogBuilder.description(blogDescription + contentChange);
+            case TAIL_SUBTRACT -> blogBuilder.description(blogDescription.substring(0, indexStart));
+            case HEAD_APPEND -> blogBuilder.description(contentChange + blogDescription);
+            case HEAD_SUBTRACT -> blogBuilder.description(blogDescription.substring(indexStart));
+            case REPLACE -> blogBuilder.description(blogDescription.substring(0, indexStart) + contentChange + blogDescription.substring(indexEnd));
         }
 
         redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
