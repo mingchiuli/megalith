@@ -1,6 +1,7 @@
 package org.chiu.megalith.infra.config;
 
 import lombok.SneakyThrows;
+import org.chiu.megalith.blog.dto.BLogEntityDto;
 import org.chiu.megalith.infra.listener.CacheMessageListener;
 import org.chiu.megalith.infra.valid.ListValueConstraintValidator;
 import org.chiu.megalith.infra.valid.PhoneConstraintValidator;
@@ -33,6 +34,7 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
 
         hints.serialization().registerType(LoginSuccessVo.class);
         hints.serialization().registerType(UserInfoVo.class);
+        hints.serialization().registerType(BLogEntityDto.class);
 
         // Register resources
         hints.resources().registerPattern("ValidationMessages.properties");

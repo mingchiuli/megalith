@@ -12,6 +12,8 @@ public enum FieldEnum {
 
     TITLE("title", "标题"),
 
+    STATUS("status", "文章状态"),
+
     CONTENT("content", "内容");
 
     private final String field;

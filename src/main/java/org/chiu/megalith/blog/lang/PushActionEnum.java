@@ -4,6 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum PushActionEnum {
+
+    NONE(-1, "非字符串操作"),
+
     TAIL_APPEND(0, "从末尾向后添加"),
 
     TAIL_SUBTRACT(1, "从末尾向前减少"),
