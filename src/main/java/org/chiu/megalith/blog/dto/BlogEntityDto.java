@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class BlogEntityDto implements Serializable {
 
-    private Long id;
+    private String id;
 
     private String title;
 
@@ -22,9 +22,9 @@ public class BlogEntityDto implements Serializable {
 
     private String content;
 
-    private Integer status;
+    private String status;
 
     private String link;
 
-    private Integer version;
+    private String version;
 }

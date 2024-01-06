@@ -439,8 +439,9 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogEditVo findEdit(Long id, Long userId) {
 
-        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId
-                : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+        String redisKey = Objects.isNull(id) ?
+                Const.TEMP_EDIT_BLOG.getInfo() + userId :
+                Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
 
         Map<String, String> entries = redisTemplate.<String, String>opsForHash()
                 .entries(redisKey);
@@ -450,11 +451,13 @@ public class BlogServiceImpl implements BlogService {
         if (!entries.isEmpty()) {
             BlogEntityDto dto = jsonUtils.convertValue(entries, BlogEntityDto.class);
             blog = BlogEntity.builder()
-                    .id(dto.getId())
+                    .id(StringUtils.hasLength(dto.getId()) ?
+                            Long.valueOf(dto.getId()) :
+                            null)
                     .content(dto.getContent())
                     .description(dto.getDescription())
                     .title(dto.getTitle())
-                    .status(dto.getStatus())
+                    .status(Integer.valueOf(dto.getStatus()))
                     .link(dto.getLink())
                     .build();
         } else if (Objects.isNull(id)) {
@@ -473,7 +476,7 @@ public class BlogServiceImpl implements BlogService {
 
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                 "id", "title", "description", "content", "status", "link", "version",
-                blog.getId(), blog.getTitle(), blog.getDescription(), blog.getContent(), blog.getStatus().toString(), blog.getLink(), "-1",
+                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getContent(), blog.getStatus().toString(), blog.getLink(), "-1",
                 "604800");
 
         return BlogEditVo.builder()

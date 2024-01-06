@@ -76,7 +76,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                 "id", "title", "description", "content", "status", "link", "version",
-                blog.getId(), blog.getTitle(), blog.getDescription(), blog.getContent(), blog.getStatus().toString(), blog.getLink(), "-1", "604800");
+                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getContent(), blog.getStatus().toString(), blog.getLink(), "-1", "604800");
     }
 
 }
