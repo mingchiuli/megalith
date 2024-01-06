@@ -1,7 +1,6 @@
 spring:
-  datasource:
-    hikari:
-      maximum-pool-size: 100
+  aot:
+    enabled: true
   threads:
     virtual:
       enabled: true
@@ -10,6 +9,9 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
       enabled: true
+  datasource:
+    hikari:
+      maximum-pool-size: 100
   mail:
     host: smtp.163.com
     port: 465
