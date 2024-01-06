@@ -1,11 +1,18 @@
 package org.chiu.megalith.blog.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+
 @Data
-public class BLogEntityDto implements Serializable {
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
+public class BlogEntityDto implements Serializable {
 
     private Long id;
 
@@ -18,4 +25,6 @@ public class BLogEntityDto implements Serializable {
     private Integer status;
 
     private String link;
+
+    private Integer version;
 }

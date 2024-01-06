@@ -19,6 +19,11 @@ public class JsonUtils {
     }
 
     @SneakyThrows
+    public <T> T convertValue(Object obj, Class<T> clazz) {
+        return objectMapper.convertValue(obj, clazz);
+    }
+
+    @SneakyThrows
     public String writeValueAsString(Object obj) {
         return objectMapper.writeValueAsString(obj);
     }

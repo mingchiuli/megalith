@@ -1,19 +1,15 @@
 package org.chiu.megalith.blog.service.impl;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 
 import lombok.SneakyThrows;
-import org.chiu.megalith.blog.dto.BLogEntityDto;
 import org.chiu.megalith.blog.lang.FieldEnum;
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
 import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.service.BlogMessageService;
 import org.chiu.megalith.infra.lang.Const;
-import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -26,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class BlogMessageServiceImpl implements BlogMessageService {
 
     private final StringRedisTemplate redisTemplate;
-
-    private final JsonUtils jsonUtils;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -45,55 +39,44 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         String fieldName = req.getField();
         FieldEnum fieldEnum = FieldEnum.getInstance(fieldName);
 
-        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
+        String redisKey = Objects.isNull(id) ?
+                Const.TEMP_EDIT_BLOG.getInfo() + userId :
+                Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
 
-        Map<String, String> entries = redisTemplate.<String, String>opsForHash().entries(redisKey);
-
-        String v = entries.get("version");
+        String v = redisTemplate.<String, String>opsForHash().get(redisKey, "version");
         if (version != Integer.parseInt(v) + 1) {
             // 前端向服务端推全量
             simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
             return;
         }
 
-        String blogString = entries.get("blog");
-        BLogEntityDto blog = jsonUtils.readValue(blogString, BLogEntityDto.class);
+        String fieldValue = redisTemplate.<String, String>opsForHash().get(redisKey, fieldEnum.getField());
 
-        BLogEntityDto dto = new BLogEntityDto();
-        for (Field field : blog.getClass().getDeclaredFields()) {
-            Object fieldValue;
-            field.setAccessible(true);
-            String name = field.getName();
-
-            if (fieldEnum.getField().equals("status") && name.equals("status")) {
-                field.set(dto, Integer.valueOf(contentChange));
-            } else if (fieldEnum.getField().equals(name)) {
-                fieldValue = field.get(blog);
-                switch (pushActionEnum) {
-                    case REMOVE -> field.set(dto, "");
-                    case TAIL_APPEND -> field.set(dto, fieldValue.toString() + contentChange);
-                    case TAIL_SUBTRACT -> field.set(dto, fieldValue.toString().substring(0, indexStart));
-                    case HEAD_APPEND -> field.set(dto, contentChange + fieldValue.toString());
-                    case HEAD_SUBTRACT -> field.set(dto, fieldValue.toString().substring(indexStart));
-                    case REPLACE -> field.set(dto, fieldValue.toString().substring(0, indexStart) + contentChange + fieldValue.toString().substring(indexEnd));
-                }
-            } else {
-                fieldValue = field.get(blog);
-                field.set(dto, fieldValue);
-            }
+        switch (pushActionEnum) {
+            case REMOVE -> fieldValue = "";
+            case TAIL_APPEND -> fieldValue = fieldValue + contentChange;
+            case TAIL_SUBTRACT -> fieldValue = fieldValue.substring(0, indexStart);
+            case HEAD_APPEND -> fieldValue = contentChange + fieldValue;
+            case HEAD_SUBTRACT -> fieldValue = fieldValue.substring(indexStart);
+            case REPLACE -> fieldValue = fieldValue.substring(0, indexStart) + contentChange + fieldValue.substring(indexEnd);
+            case NONE -> fieldValue = contentChange;//status变更
         }
 
-        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
-                "blog", "version", jsonUtils.writeValueAsString(dto), String.valueOf(version), "604800");
-
+        redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
+                fieldEnum.getField(), "version",
+                fieldValue, String.valueOf(version),
+                "604800");
     }
 
     @Override
     public void pushAll(BlogEditPushAllReq blog, Long userId) {
         Long id = blog.getId();
-        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;        
-        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
-                "blog", "version", jsonUtils.writeValueAsString(blog), "-1", "604800");
+        String redisKey = Objects.isNull(id) ?
+                Const.TEMP_EDIT_BLOG.getInfo() + userId :
+                Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+        redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+                "id", "title", "description", "content", "status", "link", "version",
+                blog.getId(), blog.getTitle(), blog.getDescription(), blog.getContent(), blog.getStatus().toString(), blog.getLink(), "-1", "604800");
     }
 
 }

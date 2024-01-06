@@ -1,6 +1,7 @@
 package org.chiu.megalith.blog.service.impl;
 
 import lombok.SneakyThrows;
+import org.chiu.megalith.blog.dto.BlogEntityDto;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
@@ -10,7 +11,6 @@ import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import org.chiu.megalith.infra.utils.*;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
-import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.manage.entity.UserEntity;
@@ -438,25 +438,28 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogEditVo findEdit(Long id, Long userId) {
-        String str = redisTemplate.<String, String>opsForHash()
-                .get(Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId
-                        : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id, "blog");
+
+        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId
+                : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+
+        Map<String, String> entries = redisTemplate.<String, String>opsForHash()
+                .entries(redisKey);
+
         // 暂存区
-        BlogEntity blogEntity;
-        BlogEditPushAllReq req;
-        if (StringUtils.hasLength(str)) {
-            req = jsonUtils.readValue(str, BlogEditPushAllReq.class);
-            blogEntity = BlogEntity.builder()
-                    .id(req.getId())
-                    .content(req.getContent())
-                    .description(req.getDescription())
-                    .title(req.getTitle())
-                    .status(req.getStatus())
-                    .link(req.getLink())
+        BlogEntity blog;
+        if (!entries.isEmpty()) {
+            BlogEntityDto dto = jsonUtils.convertValue(entries, BlogEntityDto.class);
+            blog = BlogEntity.builder()
+                    .id(dto.getId())
+                    .content(dto.getContent())
+                    .description(dto.getDescription())
+                    .title(dto.getTitle())
+                    .status(dto.getStatus())
+                    .link(dto.getLink())
                     .build();
         } else if (Objects.isNull(id)) {
             // 新文章
-            blogEntity = BlogEntity.builder()
+            blog = BlogEntity.builder()
                     .status(0)
                     .content("")
                     .description("")
@@ -464,31 +467,22 @@ public class BlogServiceImpl implements BlogService {
                     .title("")
                     .build();
         } else {
-            blogEntity = blogRepository.findByIdAndUserId(id, userId)
+            blog = blogRepository.findByIdAndUserId(id, userId)
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
         }
 
-        // 初始化暂存区
-        String redisKey = Objects.isNull(id) ? Const.TEMP_EDIT_BLOG.getInfo() + userId
-                : Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
-        BlogEditPushAllReq blog = BlogEditPushAllReq.builder()
-                .id(blogEntity.getId())
-                .title(blogEntity.getTitle())
-                .description(blogEntity.getDescription())
-                .content(blogEntity.getContent())
-                .link(blogEntity.getLink())
-                .status(blogEntity.getStatus())
-                .build();
-        redisTemplate.execute(LuaScriptUtils.sendBlogToTempLua, Collections.singletonList(redisKey),
-                "blog", "version", jsonUtils.writeValueAsString(blog), "-1", "604800");
+        redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+                "id", "title", "description", "content", "status", "link", "version",
+                blog.getId(), blog.getTitle(), blog.getDescription(), blog.getContent(), blog.getStatus().toString(), blog.getLink(), "-1",
+                "604800");
 
         return BlogEditVo.builder()
-                .id(blogEntity.getId())
-                .title(blogEntity.getTitle())
-                .description(blogEntity.getDescription())
-                .content(blogEntity.getContent())
-                .link(blogEntity.getLink())
-                .status(blogEntity.getStatus())
+                .id(blog.getId())
+                .title(blog.getTitle())
+                .description(blog.getDescription())
+                .content(blog.getContent())
+                .link(blog.getLink())
+                .status(blog.getStatus())
                 .build();
     }
 
