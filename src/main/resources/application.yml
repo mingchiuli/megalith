@@ -1,6 +1,4 @@
 spring:
-  aot:
-    enabled: true
   threads:
     virtual:
       enabled: true
