@@ -1,7 +1,6 @@
 package org.chiu.megalith.blog.service.impl;
 
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 import lombok.SneakyThrows;
 import org.chiu.megalith.blog.lang.FieldEnum;
@@ -27,6 +26,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
     @SneakyThrows
     @Override
+    @SuppressWarnings("unchecked")
     public void pushAction(BlogEditPushActionReq req, Long userId) {
 
         Long id = req.getId();
@@ -43,14 +43,18 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 Const.TEMP_EDIT_BLOG.getInfo() + userId :
                 Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
 
-        String v = redisTemplate.<String, String>opsForHash().get(redisKey, "version");
+        List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
+                        Collections.singletonList(redisKey),
+                        "version", fieldEnum.getField())))
+                .orElseGet(ArrayList::new);
+
+        String v = resp.get(0);
+        String fieldValue = resp.get(1);
         if (version != Integer.parseInt(v) + 1) {
             // 前端向服务端推全量
             simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
             return;
         }
-
-        String fieldValue = redisTemplate.<String, String>opsForHash().get(redisKey, fieldEnum.getField());
 
         switch (pushActionEnum) {
             case REMOVE -> fieldValue = "";

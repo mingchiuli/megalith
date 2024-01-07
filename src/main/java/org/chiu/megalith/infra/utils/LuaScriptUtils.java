@@ -61,6 +61,15 @@ public class LuaScriptUtils {
                     "redis.call('hset', KEYS[1], ARGV[2], ARGV[4]);" +
                     "redis.call('expire', KEYS[1], ARGV[5]);");
 
+    public static final RedisScript<List> hGetTwoArgs = RedisScript.of(
+            "local value1 = redis.call('hget', KEYS[1], ARGV[1]);" +
+                    "local value2 = redis.call('hget', KEYS[1], ARGV[2]);" +
+                    "local resp = {};" +
+                    "resp[1] = value1;" +
+                    "resp[2] = value2;" +
+                    "return resp;",
+            List.class);
+
     public static final RedisScript<Void> setBlogDeleteLua = RedisScript.of(
                     "redis.call('rpush', KEYS[1], ARGV[1]);" +
                     "redis.call('expire', KEYS[1], ARGV[2]);");

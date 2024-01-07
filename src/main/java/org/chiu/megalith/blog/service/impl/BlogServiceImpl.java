@@ -397,8 +397,7 @@ public class BlogServiceImpl implements BlogService {
     @SuppressWarnings("unchecked")
     public VisitStatisticsVo getVisitStatistics() {
         List<Long> list = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.getVisitLua,
-                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(),
-                        Const.YEAR_VISIT.getInfo())))
+                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo())))
                 .orElseGet(ArrayList::new);
 
         return VisitStatisticsVo.builder()
