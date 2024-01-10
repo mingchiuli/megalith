@@ -1,7 +1,6 @@
 package org.chiu.megalith.infra.code;
 
 import org.chiu.megalith.infra.exception.CodeException;
-import org.chiu.megalith.infra.lang.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -9,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Random;
+
+import static org.chiu.megalith.infra.lang.Const.EMAIL_CODE;
+import static org.chiu.megalith.infra.lang.Const.SMS_CODE;
 
 /**
  * @author mingchiuli
@@ -33,9 +35,9 @@ public class CodeFactory {
     private final StringRedisTemplate redisTemplate;
 
     public String create(String type) {
-        if (Const.SMS_CODE.getInfo().equals(type)) {
+        if (SMS_CODE.getInfo().equals(type)) {
             return createSMS();
-        } else if (Const.EMAIL_CODE.getInfo().equals(type)) {
+        } else if (EMAIL_CODE.getInfo().equals(type)) {
             return createEmailCode();
         }
         throw new CodeException("code type input error");

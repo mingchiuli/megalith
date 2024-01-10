@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BlogEditPushAllReq {
+
     private Long id;
 
     private String title;

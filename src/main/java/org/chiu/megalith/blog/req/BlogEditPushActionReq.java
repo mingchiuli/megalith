@@ -19,4 +19,8 @@ public class BlogEditPushActionReq {
     private Integer indexEnd;
 
     private String field;
+
+    private Integer paraNo;
+
+    private Integer paraTypeCode;
 }

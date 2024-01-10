@@ -1,6 +1,5 @@
 package org.chiu.megalith.security.component.provider;
 
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.springframework.security.authentication.*;
@@ -11,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 /**
@@ -49,7 +49,7 @@ public abstract sealed class ProviderBase extends DaoAuthenticationProvider perm
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
                 .orElseThrow()
-                .substring(Const.ROLE_PREFIX.getInfo().length());
+                .substring(ROLE_PREFIX.getInfo().length());
 
         Integer status = roleRepository.findByCode(role)
                 .orElseThrow(() -> new BadCredentialsException(ROLE_NOT_EXIST.getMsg()))

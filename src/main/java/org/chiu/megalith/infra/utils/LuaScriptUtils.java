@@ -9,8 +9,13 @@ import java.util.List;
  * @create 2023-03-30 8:42 pm
  */
 public class LuaScriptUtils {
-    
+
     private LuaScriptUtils() {}
+
+    public static final RedisScript<Void> tailSubtractContentLua = RedisScript.of(
+            "redis.call('hdel', KEYS[1], ARGV[1]);" +
+                    "redis.call('hset', KEYS[1], ARGV[2], ARGV[3]);" +
+                    "redis.call('hset', KEYS[1], ARGV[4], ARGV[5]);");
 
     public static final RedisScript<Void> statisticLua = RedisScript.of(
             "redis.call('pfadd', KEYS[1], ARGV[1]);" +
@@ -46,14 +51,17 @@ public class LuaScriptUtils {
 
     public static final RedisScript<Void> pushAllLua = RedisScript.of(
             "redis.call('del', KEYS[1]);" +
-                    "redis.call('hset', KEYS[1], ARGV[1], ARGV[8]);" +
-                    "redis.call('hset', KEYS[1], ARGV[2], ARGV[9]);" +
-                    "redis.call('hset', KEYS[1], ARGV[3], ARGV[10]);" +
-                    "redis.call('hset', KEYS[1], ARGV[4], ARGV[11]);" +
-                    "redis.call('hset', KEYS[1], ARGV[5], ARGV[12]);" +
-                    "redis.call('hset', KEYS[1], ARGV[6], ARGV[13]);" +
-                    "redis.call('hset', KEYS[1], ARGV[7], ARGV[14]);" +
-                    "redis.call('expire', KEYS[1], ARGV[15]);");
+                    "local paragraphList = cjson.decode(ARGV[1]);" +
+                    "for i=1, #paragraphList do " +
+                    "    redis.call('hset', KEYS[1], 'para::' .. i, paragraphList[i]);" +
+                    "end;" +
+                    "redis.call('hset', KEYS[1], ARGV[2], ARGV[8]);" +
+                    "redis.call('hset', KEYS[1], ARGV[3], ARGV[9]);" +
+                    "redis.call('hset', KEYS[1], ARGV[4], ARGV[10]);" +
+                    "redis.call('hset', KEYS[1], ARGV[5], ARGV[11]);" +
+                    "redis.call('hset', KEYS[1], ARGV[6], ARGV[12]);" +
+                    "redis.call('hset', KEYS[1], ARGV[7], ARGV[13]);" +
+                    "redis.call('expire', KEYS[1], ARGV[14]);");
 
 
     public static final RedisScript<Void> pushActionLua = RedisScript.of(

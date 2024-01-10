@@ -9,6 +9,10 @@ import lombok.Getter;
 @Getter
 public enum Const {
 
+    PARAGRAPH_PREFIX("para::"),
+
+    PARAGRAPH_SPLITTER("\n\n"),
+
     TEMP_EDIT_BLOG("temp_edit_blog:"),
 
     GRANT_TYPE_EMAIL("email"),

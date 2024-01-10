@@ -1,11 +1,13 @@
 package org.chiu.megalith.blog.lang;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum PushActionEnum {
 
-    NONE(-1, "非字符串操作"),
+    NONE(-1, "Status操作"),
 
     TAIL_APPEND(0, "从末尾向后添加"),
 
@@ -22,11 +24,6 @@ public enum PushActionEnum {
     private final Integer code;
 
     private final String description;
-
-    PushActionEnum(Integer code, String description) {
-        this.code = code;
-        this.description = description;
-    }
 
     public static PushActionEnum getInstance(Integer code) {
         for (PushActionEnum value : PushActionEnum.values()) {

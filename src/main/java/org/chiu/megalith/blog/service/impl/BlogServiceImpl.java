@@ -1,7 +1,6 @@
 package org.chiu.megalith.blog.service.impl;
 
 import lombok.SneakyThrows;
-import org.chiu.megalith.blog.dto.BlogEntityDto;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
@@ -16,7 +15,6 @@ import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.repository.UserRepository;
 import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -43,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 /**
@@ -96,7 +96,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Boolean checkToken(Long blogId, String token) {
         token = token.trim();
-        String password = redisTemplate.opsForValue().get(Const.READ_TOKEN.getInfo() + blogId);
+        String password = redisTemplate.opsForValue().get(READ_TOKEN.getInfo() + blogId);
         if (StringUtils.hasLength(token) && StringUtils.hasLength(password)) {
             return password.equals(token);
         }
@@ -108,7 +108,7 @@ public class BlogServiceImpl implements BlogService {
         BlogExhibitVo blog;
 
         if (Boolean.FALSE.equals(authentication instanceof AnonymousAuthenticationToken)) {
-            if ((Const.ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+            if ((ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
                 blog = blogWrapper.findById(id, true);
             } else {
                 blog = blogWrapper.findById(id, false);
@@ -132,7 +132,7 @@ public class BlogServiceImpl implements BlogService {
             return StatusEnum.HIDE.getCode();
         }
 
-        if (("ROLE_" + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+        if ((ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
             return StatusEnum.NORMAL.getCode();
         }
 
@@ -141,7 +141,9 @@ public class BlogServiceImpl implements BlogService {
         BlogEntity blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new MissException(NO_FOUND));
         Long id = blog.getUserId();
-        return Objects.equals(id, Long.valueOf(userId)) ? StatusEnum.NORMAL.getCode() : StatusEnum.HIDE.getCode();
+        return Objects.equals(id, Long.valueOf(userId)) ?
+                StatusEnum.NORMAL.getCode() :
+                StatusEnum.HIDE.getCode();
     }
 
     @SneakyThrows
@@ -161,7 +163,7 @@ public class BlogServiceImpl implements BlogService {
         Map<String, String> headers = new HashMap<>();
         String gmtDate = ossSignUtils.getGMTDate();
         headers.put(HttpHeaders.DATE, gmtDate);
-        headers.put(HttpHeaders.AUTHORIZATION, ossSignUtils.getAuthorization(objectName, "PUT", "image/jpg"));
+        headers.put(HttpHeaders.AUTHORIZATION, ossSignUtils.getAuthorization(objectName, HttpMethod.PUT.name(), "image/jpg"));
         headers.put(HttpHeaders.CACHE_CONTROL, CacheControlServerHttpHeadersWriter.PRAGMA_VALUE);
         headers.put(HttpHeaders.CONTENT_TYPE, "image/jpg");
         ossHttpService.putOssObject(objectName, imageBytes, headers);
@@ -175,7 +177,7 @@ public class BlogServiceImpl implements BlogService {
         Map<String, String> headers = new HashMap<>();
         String gmtDate = ossSignUtils.getGMTDate();
         headers.put(HttpHeaders.DATE, gmtDate);
-        headers.put(HttpHeaders.AUTHORIZATION, ossSignUtils.getAuthorization(objectName, "DELETE", ""));
+        headers.put(HttpHeaders.AUTHORIZATION, ossSignUtils.getAuthorization(objectName, HttpMethod.DELETE.name(), ""));
         ossHttpService.deleteOssObject(objectName, headers);
     }
 
@@ -187,7 +189,7 @@ public class BlogServiceImpl implements BlogService {
         if (Objects.equals(userId, dbUserId)) {
             blogRepository.setStatus(blogId, StatusEnum.HIDE.getCode());
             String token = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(Const.READ_TOKEN.getInfo() + blogId, token, 24, TimeUnit.HOURS);
+            redisTemplate.opsForValue().set(READ_TOKEN.getInfo() + blogId, token, 24, TimeUnit.HOURS);
             return token;
         }
         throw new BadCredentialsException(USER_MISS.getMsg());
@@ -212,7 +214,7 @@ public class BlogServiceImpl implements BlogService {
     public List<Integer> searchYears() {
         Long count = Optional
                 .ofNullable(
-                        redisTemplate.execute(LuaScriptUtils.countYears, List.of(Const.BLOOM_FILTER_YEARS.getInfo())))
+                        redisTemplate.execute(LuaScriptUtils.countYears, List.of(BLOOM_FILTER_YEARS.getInfo())))
                 .orElse(0L);
         int start = 2021;
         int end = Math.max(start + count.intValue() - 1, start);
@@ -284,7 +286,7 @@ public class BlogServiceImpl implements BlogService {
                         .description(blogEntity.getDescription())
                         .readCount(blogEntity.getReadCount())
                         .recentReadCount(
-                                Optional.ofNullable(redisTemplate.opsForZSet().score(Const.HOT_READ.getInfo(),
+                                Optional.ofNullable(redisTemplate.opsForZSet().score(HOT_READ.getInfo(),
                                         blogEntity.getId().toString()))
                                         .orElse(0.0))
                         .status(blogEntity.getStatus())
@@ -312,7 +314,7 @@ public class BlogServiceImpl implements BlogService {
     public PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId) {
 
         List<BlogEntity> deletedBlogs = Optional
-                .ofNullable(redisTemplate.opsForList().range(Const.QUERY_DELETED.getInfo() + userId, 0, -1))
+                .ofNullable(redisTemplate.opsForList().range(QUERY_DELETED.getInfo() + userId, 0, -1))
                 .orElseGet(ArrayList::new).stream()
                 .map(blogStr -> jsonUtils.readValue(blogStr, BlogEntity.class))
                 .toList();
@@ -330,7 +332,7 @@ public class BlogServiceImpl implements BlogService {
 
         List resp = Optional.ofNullable(
                 redisTemplate.execute(LuaScriptUtils.listDeletedRedisScript,
-                        Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                        Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                         String.valueOf(l), "-1", String.valueOf(size - 1), String.valueOf(start)))
                 .orElseGet(ArrayList::new);
 
@@ -376,7 +378,7 @@ public class BlogServiceImpl implements BlogService {
 
         String str = Optional.ofNullable(
                 redisTemplate.execute(LuaScriptUtils.recoverDeletedScript,
-                        Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                        Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                         String.valueOf(idx)))
                 .orElse("");
 
@@ -397,7 +399,7 @@ public class BlogServiceImpl implements BlogService {
     @SuppressWarnings("unchecked")
     public VisitStatisticsVo getVisitStatistics() {
         List<Long> list = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.getVisitLua,
-                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo())))
+                List.of(DAY_VISIT.getInfo(), WEEK_VISIT.getInfo(), MONTH_VISIT.getInfo(), YEAR_VISIT.getInfo())))
                 .orElseGet(ArrayList::new);
 
         return VisitStatisticsVo.builder()
@@ -411,7 +413,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public List<BlogHotReadVo> getScoreBlogs() {
         Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet()
-                .reverseRangeWithScores(Const.HOT_READ.getInfo(), 0, 4);
+                .reverseRangeWithScores(HOT_READ.getInfo(), 0, 4);
         List<BlogHotReadVo> items = Optional.ofNullable(set).orElseGet(LinkedHashSet::new).stream()
                 .map(item -> BlogHotReadVo.builder()
                         .id(Long.valueOf(item.getValue()))
@@ -439,26 +441,42 @@ public class BlogServiceImpl implements BlogService {
     public BlogEditVo findEdit(Long id, Long userId) {
 
         String redisKey = Objects.isNull(id) ?
-                Const.TEMP_EDIT_BLOG.getInfo() + userId :
-                Const.TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+                TEMP_EDIT_BLOG.getInfo() + userId :
+                TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
 
         Map<String, String> entries = redisTemplate.<String, String>opsForHash()
                 .entries(redisKey);
 
-        // 暂存区
         BlogEntity blog;
         if (!entries.isEmpty()) {
-            BlogEntityDto dto = jsonUtils.convertValue(entries, BlogEntityDto.class);
+            String idStr = entries.get("id");
             blog = BlogEntity.builder()
-                    .id(StringUtils.hasLength(dto.getId()) ?
-                            Long.valueOf(dto.getId()) :
+                    .id(StringUtils.hasLength(idStr) ?
+                            Long.valueOf(idStr) :
                             null)
-                    .content(dto.getContent())
-                    .description(dto.getDescription())
-                    .title(dto.getTitle())
-                    .status(Integer.valueOf(dto.getStatus()))
-                    .link(dto.getLink())
+                    .description(entries.get("description"))
+                    .title(entries.get("title"))
+                    .status(Integer.valueOf(entries.get("status")))
+                    .link(entries.get("link"))
                     .build();
+
+            entries.remove("id");
+            entries.remove("description");
+            entries.remove("title");
+            entries.remove("status");
+            entries.remove("link");
+            entries.remove("version");
+
+            StringBuilder content = new StringBuilder();
+
+            for (int i = 1; i <= entries.size(); i++) {
+                content.append(entries.get(PARAGRAPH_PREFIX.getInfo() + i));
+                if (i != entries.size()) {
+                    content.append(PARAGRAPH_SPLITTER.getInfo());
+                }
+            }
+
+            blog.setContent(content.toString());
         } else if (Objects.isNull(id)) {
             // 新文章
             blog = BlogEntity.builder()
@@ -473,9 +491,12 @@ public class BlogServiceImpl implements BlogService {
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
         }
 
+        List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
+        String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
+
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                "id", "title", "description", "content", "status", "link", "version",
-                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getContent(), blog.getStatus().toString(), blog.getLink(), "-1",
+                paragraphListString, "id", "title", "description", "status", "link", "version",
+                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
                 "604800");
 
         return BlogEditVo.builder()
@@ -506,7 +527,7 @@ public class BlogServiceImpl implements BlogService {
         blogList.forEach(blogEntity -> {
             Long id = blogEntity.getId();
             redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
-                    Collections.singletonList(Const.QUERY_DELETED.getInfo() + userId),
+                    Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                     jsonUtils.writeValueAsString(blogEntity), "604800");
 
             messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,

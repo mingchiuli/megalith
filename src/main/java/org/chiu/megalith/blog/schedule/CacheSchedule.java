@@ -2,7 +2,6 @@ package org.chiu.megalith.blog.schedule;
 
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
 import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
 import org.chiu.megalith.infra.lang.StatusEnum;
@@ -22,6 +21,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.*;
+
+import static org.chiu.megalith.infra.lang.Const.*;
 
 /**
  * @author mingchiuli
@@ -103,7 +104,7 @@ public class CacheSchedule {
                             countByYear / blogPageSize + 1;
 
                     for (int no = 1; no <= totalPage; no++) {
-                        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
+                        redisTemplate.opsForValue().setBit(BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);
                         blogService.findPage(no, year);
                     }
                 });
@@ -113,7 +114,7 @@ public class CacheSchedule {
 
         // searchYears和getCountByYear
         CompletableFuture.runAsync(() -> years.forEach(year -> {
-            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
+            redisTemplate.opsForValue().setBit(BLOOM_FILTER_YEARS.getInfo(), year, true);
             blogService.getCountByYear(year);
         }), taskExecutor);
 
@@ -144,16 +145,16 @@ public class CacheSchedule {
             int dayOfYear = now.getDayOfYear();
 
             if (hourOfDay == 0) {
-                redisTemplate.delete(Const.DAY_VISIT.getInfo());
+                redisTemplate.delete(DAY_VISIT.getInfo());
                 if (dayOfWeek == 1) {
-                    redisTemplate.delete(Const.WEEK_VISIT.getInfo());
-                    redisTemplate.unlink(Const.HOT_READ.getInfo());
+                    redisTemplate.delete(WEEK_VISIT.getInfo());
+                    redisTemplate.unlink(HOT_READ.getInfo());
                 }
                 if (dayOfMonth == 1) {
-                    redisTemplate.delete(Const.MONTH_VISIT.getInfo());
+                    redisTemplate.delete(MONTH_VISIT.getInfo());
                 }
                 if (dayOfYear == 1) {
-                    redisTemplate.delete(Const.YEAR_VISIT.getInfo());
+                    redisTemplate.delete(YEAR_VISIT.getInfo());
                 }
             }
         }, taskExecutor);

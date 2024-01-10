@@ -1,12 +1,12 @@
 package org.chiu.megalith.security.component.provider;
 
-import org.chiu.megalith.infra.lang.Const;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import java.util.List;
 
+import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.INVALID_LOGIN_OPERATE;
 
 public class CustomProviderManager extends ProviderManager {
@@ -32,11 +32,11 @@ public class CustomProviderManager extends ProviderManager {
 
     private String getAuthGrantType(String username) {
         if (username.contains("@")) {
-            return Const.GRANT_TYPE_EMAIL.getInfo();
+            return GRANT_TYPE_EMAIL.getInfo();
         } else if (username.matches("\\d+")) {
-            return Const.GRANT_TYPE_PHONE.getInfo();
+            return GRANT_TYPE_PHONE.getInfo();
         } else {
-            return Const.GRANT_TYPE_PASSWORD.getInfo();
+            return GRANT_TYPE_PASSWORD.getInfo();
         }
     }
 

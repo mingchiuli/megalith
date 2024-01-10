@@ -1,6 +1,5 @@
 package org.chiu.megalith.security.component;
 
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.infra.jwt.JwtUtils;
 import org.chiu.megalith.infra.lang.Result;
@@ -23,8 +22,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
-import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
-import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
+import static org.chiu.megalith.infra.lang.Const.*;
 
 
 @Component
@@ -51,7 +49,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		ServletOutputStream outputStream = response.getOutputStream();
 		String username = authentication.getName();
-		redisTemplate.delete(Const.PASSWORD_KEY.getInfo() + username);
+		redisTemplate.delete(PASSWORD_KEY.getInfo() + username);
 
 		userService.updateLoginTime(username, LocalDateTime.now());
 		// 生成jwt

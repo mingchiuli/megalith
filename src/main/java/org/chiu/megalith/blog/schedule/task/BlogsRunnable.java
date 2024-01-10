@@ -1,8 +1,9 @@
 package org.chiu.megalith.blog.schedule.task;
 
 import org.chiu.megalith.blog.service.BlogService;
-import org.chiu.megalith.infra.lang.Const;
 import org.springframework.data.redis.core.StringRedisTemplate;
+
+import static org.chiu.megalith.infra.lang.Const.BLOOM_FILTER_PAGE;
 
 /**
  * @author mingchiuli
@@ -15,7 +16,7 @@ public record BlogsRunnable(
 
     @Override
     public void run() {
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), pageNo, true);
+        redisTemplate.opsForValue().setBit(BLOOM_FILTER_PAGE.getInfo(), pageNo, true);
         blogService.findPage(pageNo, Integer.MIN_VALUE);
     }
 }
