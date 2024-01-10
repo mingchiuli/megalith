@@ -30,7 +30,7 @@ public class CodeFactory {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
     };
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     private final StringRedisTemplate redisTemplate;
 
