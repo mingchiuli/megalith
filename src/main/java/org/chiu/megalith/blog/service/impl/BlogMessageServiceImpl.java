@@ -17,8 +17,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import static org.chiu.megalith.infra.lang.Const.PARAGRAPH_PREFIX;
-import static org.chiu.megalith.infra.lang.Const.TEMP_EDIT_BLOG;
+import static org.chiu.megalith.infra.lang.Const.*;
 
 @Service
 @RequiredArgsConstructor
@@ -176,7 +175,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
         String content = blog.getContent();
 
-        List<String> paragraphList = List.of(content.split("\n\n"));
+        List<String> paragraphList = List.of(content.split(PARAGRAPH_SPLITTER.getInfo()));
         String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
