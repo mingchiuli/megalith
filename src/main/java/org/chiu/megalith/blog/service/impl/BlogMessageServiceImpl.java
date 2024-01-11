@@ -91,6 +91,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, value);
                     subMap.put("version", version.toString());
                     redisTemplate.opsForHash().putAll(redisKey, subMap);
+                    return;
                 }
 
                 case TAIL_APPEND -> {
@@ -106,12 +107,13 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     }
                     value = resp.getLast();
                     //去掉最后的\n
-                    value = value.replace("\n", "");
+                    value = value.substring(0, value.length() - 1);
                     Map<String, String> subMap = new LinkedHashMap<>();
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + (paraNo - 1), value);
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, "");
                     subMap.put("version", String.valueOf(version));
                     redisTemplate.opsForHash().putAll(redisKey, subMap);
+                    return;
                 }
 
                 case TAIL_SUBTRACT -> {
@@ -131,38 +133,38 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
                     redisTemplate.execute(LuaScriptUtils.tailSubtractContentLua, Collections.singletonList(redisKey),
                             "para::" + paraNo, "para::" +(paraNo - 1), value, "version", String.valueOf(version));
+                    return;
                 }
             }
-        } else {
-            //其他字段
-            List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
-                            Collections.singletonList(redisKey),
-                            "version", fieldEnum.getField())))
-                    .orElseGet(ArrayList::new);
-            v = resp.getFirst();
-            value = resp.getLast();
-
-            if (version != Integer.parseInt(v) + 1) {
-                // 前端向服务端推全量
-                simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
-                return;
-            }
-
-            switch (pushActionEnum) {
-                case REMOVE -> value = "";
-                case TAIL_APPEND -> value = value + contentChange;
-                case TAIL_SUBTRACT -> value = value.substring(0, indexStart);
-                case HEAD_APPEND -> value = contentChange + value;
-                case HEAD_SUBTRACT -> value = value.substring(indexStart);
-                case REPLACE -> value = value.substring(0, indexStart) + contentChange + value.substring(indexEnd);
-                case NONE -> value = contentChange;
-            }
-
-            redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
-                    fieldEnum.getField(), "version",
-                    value, String.valueOf(version),
-                    "604800");
         }
+        //其他字段
+        List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
+                        Collections.singletonList(redisKey),
+                        "version", fieldEnum.getField())))
+                .orElseGet(ArrayList::new);
+        v = resp.getFirst();
+        value = resp.getLast();
+
+        if (version != Integer.parseInt(v) + 1) {
+            // 前端向服务端推全量
+            simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
+            return;
+        }
+
+        switch (pushActionEnum) {
+            case REMOVE -> value = "";
+            case TAIL_APPEND -> value = value + contentChange;
+            case TAIL_SUBTRACT -> value = value.substring(0, indexStart);
+            case HEAD_APPEND -> value = contentChange + value;
+            case HEAD_SUBTRACT -> value = value.substring(indexStart);
+            case REPLACE -> value = value.substring(0, indexStart) + contentChange + value.substring(indexEnd);
+            case NONE -> value = contentChange;
+        }
+
+        redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
+                fieldEnum.getField(), "version",
+                value, String.valueOf(version),
+                "604800");
     }
 
     @Override
