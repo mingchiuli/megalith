@@ -21,7 +21,7 @@ import java.util.Objects;
 @Entity
 @DynamicUpdate
 @Table(name ="m_user",
-        indexes = {@Index(columnList = "username"), @Index(columnList = "email"), @Index(columnList = "phone")},
+        indexes = {@Index(columnList = "created")},
         uniqueConstraints = {@UniqueConstraint(columnNames = {"username"}), @UniqueConstraint(columnNames = {"email"}), @UniqueConstraint(columnNames = {"phone"})})
 public class UserEntity {
 

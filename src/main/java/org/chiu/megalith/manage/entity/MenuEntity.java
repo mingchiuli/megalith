@@ -19,7 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @DynamicUpdate
-@Table(name ="m_menu")
+@Table(name ="m_menu", indexes = {@Index(columnList = "order_num")})
 public class MenuEntity {
 
     @Id

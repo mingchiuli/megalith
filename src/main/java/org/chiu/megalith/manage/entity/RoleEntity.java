@@ -21,7 +21,7 @@ import java.util.Objects;
 @Entity
 @DynamicUpdate
 @Table(name ="m_role",
-        indexes = {@Index(columnList = "code")},
+        indexes = {@Index(columnList = "created")},
         uniqueConstraints = {@UniqueConstraint(columnNames = "code"), @UniqueConstraint(columnNames = "name")})
 public class RoleEntity {
 
