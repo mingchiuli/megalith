@@ -41,10 +41,11 @@ public class BlogWrapper {
     @Cache(prefix = Const.HOT_BLOG)
     public BlogExhibitVo findById(Long id, Boolean visible) {
         BlogEntity blogEntity = Boolean.FALSE.equals(
-                visible) ? blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
-                .orElseGet(BlogEntity::new)
-                : blogRepository.findById(id)
-                .orElseThrow(() -> new MissException(NO_FOUND));
+                visible) ?
+                blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
+                        .orElseGet(BlogEntity::new) :
+                blogRepository.findById(id)
+                        .orElseThrow(() -> new MissException(NO_FOUND));
 
         if (Objects.isNull(blogEntity.getId())) {
             return BlogExhibitVo.builder().build();
@@ -81,8 +82,9 @@ public class BlogWrapper {
                 blogPageSize,
                 Sort.by("created").descending());
 
-        Page<BlogEntity> page = Objects.equals(year, Integer.MIN_VALUE) ? blogRepository.findPage(pageRequest)
-                : blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1, 0, 0, 0),
+        Page<BlogEntity> page = Objects.equals(year, Integer.MIN_VALUE) ?
+                blogRepository.findPage(pageRequest) :
+                blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1, 0, 0, 0),
                 LocalDateTime.of(year, 12, 31, 23, 59, 59));
 
         return new PageAdapter<>(page.map(blogEntity -> BlogDescriptionVo.builder()
