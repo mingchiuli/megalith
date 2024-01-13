@@ -12,6 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 
 /**
@@ -21,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/sys/role")
 @RequiredArgsConstructor
+@Validated
 public class RoleController {
 
     private final RoleService roleService;
@@ -42,20 +46,20 @@ public class RoleController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> saveOrUpdate(@Validated @RequestBody RoleEntityReq role) {
+    public Result<Void> saveOrUpdate(@RequestBody @Valid RoleEntityReq role) {
         return Result.success(() -> roleService.saveOrUpdate(role));
     }
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> delete(@RequestBody List<Long> ids) {
+    public Result<Void> delete(@RequestBody @NotEmpty List<Long> ids) {
         return Result.success(() -> roleService.delete(ids));
     }
 
     @PostMapping("/perm/{roleId}")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
     public Result<List<Long>> savePerm(@PathVariable("roleId") Long roleId,
-                                       @RequestBody List<Long> menuIds) {
+                                       @RequestBody @NotEmpty List<Long> menuIds) {
         return Result.success(() -> roleService.savePerm(roleId, menuIds));
     }
 

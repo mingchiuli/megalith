@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import static org.chiu.megalith.infra.lang.Const.*;
+import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +67,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 case NONE -> {
                     List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
                                     Collections.singletonList(redisKey),
-                                    "version", PARAGRAPH_PREFIX.getInfo() + paraNo)))
+                                    VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + paraNo)))
                             .orElseGet(ArrayList::new);
 
                     v = resp.get(0);
@@ -88,7 +90,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     }
                     Map<String, String> subMap = new LinkedHashMap<>();
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, value);
-                    subMap.put("version", version.toString());
+                    subMap.put(VERSION.getMsg(), version.toString());
                     redisTemplate.opsForHash().putAll(redisKey, subMap);
                     return;
                 }
@@ -96,7 +98,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 case TAIL_APPEND -> {
                     List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
                                     Collections.singletonList(redisKey),
-                                    "version", PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
+                                    VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
                     if (version != Integer.parseInt(v) + 1) {
@@ -110,7 +112,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     Map<String, String> subMap = new LinkedHashMap<>();
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + (paraNo - 1), value);
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, "");
-                    subMap.put("version", String.valueOf(version));
+                    subMap.put(VERSION.getMsg(), String.valueOf(version));
                     redisTemplate.opsForHash().putAll(redisKey, subMap);
                     return;
                 }
@@ -118,7 +120,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 case TAIL_SUBTRACT -> {
                     List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
                                     Collections.singletonList(redisKey),
-                                    "version", "para::" + (paraNo - 1))))
+                                    VERSION.getMsg(), PARAGRAPH_SPLITTER.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
                     if (version != Integer.parseInt(v) + 1) {
@@ -131,7 +133,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     value = value + '\n';
 
                     redisTemplate.execute(LuaScriptUtils.tailSubtractContentLua, Collections.singletonList(redisKey),
-                            "para::" + paraNo, "para::" +(paraNo - 1), value, "version", String.valueOf(version));
+                    PARAGRAPH_SPLITTER.getInfo() + paraNo, PARAGRAPH_SPLITTER.getInfo() +(paraNo - 1), value, VERSION.getMsg(), String.valueOf(version));
                     return;
                 }
             }
@@ -139,7 +141,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         //其他字段
         List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
                         Collections.singletonList(redisKey),
-                        "version", fieldEnum.getField())))
+                        VERSION.getMsg(), fieldEnum.getField())))
                 .orElseGet(ArrayList::new);
         v = resp.getFirst();
         value = resp.getLast();
@@ -161,7 +163,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         }
 
         redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
-                fieldEnum.getField(), "version",
+                fieldEnum.getField(), VERSION.getMsg(),
                 value, String.valueOf(version),
                 "604800");
     }
@@ -179,7 +181,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                paragraphListString, "id", "title", "description", "status", "link", "version",
+                paragraphListString, ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                 Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
                 "604800");
     }

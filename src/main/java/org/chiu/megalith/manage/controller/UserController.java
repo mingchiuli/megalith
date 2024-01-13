@@ -12,11 +12,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/sys/user")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -25,7 +29,7 @@ public class UserController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> save(@Validated @RequestBody UserEntityReq userEntityReq) {
+    public Result<Void> save(@RequestBody @Valid UserEntityReq userEntityReq) {
         return Result.success(() -> userService.saveOrUpdate(userEntityReq));
     }
 
@@ -38,7 +42,7 @@ public class UserController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> page(@RequestBody List<Long> ids) {
+    public Result<Void> page(@RequestBody @NotEmpty List<Long> ids) {
         return Result.success(() -> userService.deleteUsers(ids));
     }
 

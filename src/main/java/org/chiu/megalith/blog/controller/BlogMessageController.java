@@ -6,25 +6,28 @@ import org.chiu.megalith.blog.service.BlogMessageService;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @MessageMapping("/edit")
 @RequiredArgsConstructor
+@Validated
 public class BlogMessageController {
 
     private final BlogMessageService blogMessageService;
 
     @MessageMapping("/push/action")
-    public void pushAction(@RequestBody BlogEditPushActionReq req) {
+    public void pushAction(@RequestBody @Valid BlogEditPushActionReq req) {
         Long userId = SecurityUtils.getLoginUserId();
         blogMessageService.pushAction(req, userId);
     }
 
     @MessageMapping("/push/all")
-    public void pullSaveBlog(@RequestBody BlogEditPushAllReq blog) {
+    public void pullSaveBlog(@RequestBody @Valid BlogEditPushAllReq blog) {
         Long userId = SecurityUtils.getLoginUserId();
         blogMessageService.pushAll(blog, userId);
     }

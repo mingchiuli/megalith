@@ -15,6 +15,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 
 /**
@@ -24,6 +27,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/sys/blog")
+@Validated
 public class BlogManagerController {
 
     private final BlogService blogService;
@@ -35,13 +39,13 @@ public class BlogManagerController {
     }
 
     @PostMapping("/save")
-    public Result<Void> saveOrUpdate(@RequestBody @Validated BlogEntityReq blog) {
+    public Result<Void> saveOrUpdate(@RequestBody @Valid BlogEntityReq blog) {
         Long userId = SecurityUtils.getLoginUserId();
         return Result.success(() -> blogService.saveOrUpdate(blog, userId));
     }
 
     @PostMapping("/delete")
-    public Result<Void> deleteBlogs(@RequestBody List<Long> ids) {
+    public Result<Void> deleteBlogs(@RequestBody @NotEmpty List<Long> ids) {
         String authority = SecurityUtils.getLoginAuthority();
         Long userId = SecurityUtils.getLoginUserId();
         return Result.success(() -> blogService.deleteBatch(ids, userId, authority));

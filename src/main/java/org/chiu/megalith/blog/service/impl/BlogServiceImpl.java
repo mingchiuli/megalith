@@ -44,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
+import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.*;
+
 
 /**
  * @author mingchiuli
@@ -449,23 +451,23 @@ public class BlogServiceImpl implements BlogService {
 
         BlogEntity blog;
         if (!entries.isEmpty()) {
-            String idStr = entries.get("id");
+            String idStr = entries.get(ID.getMsg());
             blog = BlogEntity.builder()
                     .id(StringUtils.hasLength(idStr) ?
                             Long.valueOf(idStr) :
                             null)
-                    .description(entries.get("description"))
-                    .title(entries.get("title"))
-                    .status(Integer.valueOf(entries.get("status")))
-                    .link(entries.get("link"))
+                    .description(entries.get(DESCRIPTION.getMsg()))
+                    .title(entries.get(TITLE.getMsg()))
+                    .status(Integer.valueOf(entries.get(STATUS.getMsg())))
+                    .link(entries.get(LINK.getMsg()))
                     .build();
 
-            entries.remove("id");
-            entries.remove("description");
-            entries.remove("title");
-            entries.remove("status");
-            entries.remove("link");
-            entries.remove("version");
+            entries.remove(ID.getMsg());
+            entries.remove(DESCRIPTION.getMsg());
+            entries.remove(TITLE.getMsg());
+            entries.remove(STATUS.getMsg());
+            entries.remove(LINK.getMsg());
+            entries.remove(VERSION.getMsg());
 
             StringBuilder content = new StringBuilder();
 
@@ -495,7 +497,7 @@ public class BlogServiceImpl implements BlogService {
         String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                paragraphListString, "id", "title", "description", "status", "link", "version",
+                paragraphListString, ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                 Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
                 "604800");
 

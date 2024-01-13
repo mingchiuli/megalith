@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 
@@ -22,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/sys/menu")
 @RequiredArgsConstructor
+@Validated
 public class MenuController {
 
     private final MenuService menuService;
@@ -48,7 +51,7 @@ public class MenuController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> saveOrUpdate(@Validated @RequestBody MenuEntityReq menu) {
+    public Result<Void> saveOrUpdate(@RequestBody @Valid MenuEntityReq menu) {
         return Result.success(() -> menuService.saveOrUpdate(menu));
     }
 
