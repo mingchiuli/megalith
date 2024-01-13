@@ -482,7 +482,7 @@ public class BlogServiceImpl implements BlogService {
         } else if (Objects.isNull(id)) {
             // 新文章
             blog = BlogEntity.builder()
-                    .status(0)
+                    .status(StatusEnum.NORMAL.getCode())
                     .content("")
                     .description("")
                     .link("")
