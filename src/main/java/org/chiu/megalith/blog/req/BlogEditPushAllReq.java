@@ -1,6 +1,5 @@
 package org.chiu.megalith.blog.req;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,18 +14,18 @@ public class BlogEditPushAllReq {
 
     private Long id;
 
-    @NotBlank
+    @NotNull
     private String title;
 
-    @NotBlank
+    @NotNull
     private String description;
- 
-    @NotBlank
+
+    @NotNull
     private String content;
 
     @NotNull
     private Integer status;
 
-    @NotBlank
+    @NotNull
     private String link;
 }
