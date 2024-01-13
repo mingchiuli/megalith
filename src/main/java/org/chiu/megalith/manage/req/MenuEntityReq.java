@@ -3,20 +3,13 @@ package org.chiu.megalith.manage.req;
 import org.chiu.megalith.infra.valid.ListValue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 
 /**
  * @author mingchiuli
  * @create 2022-12-04 6:23 pm
  */
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class MenuEntityReq {
 
     private Long menuId;

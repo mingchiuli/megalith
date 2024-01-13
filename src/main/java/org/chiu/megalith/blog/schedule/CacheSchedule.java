@@ -124,16 +124,15 @@ public class CacheSchedule {
             ids.forEach(id -> {
                 UserEntityVo user = userService.findById(id);
                 user.setStatus(StatusEnum.NORMAL.getCode());
-                UserEntityReq req = UserEntityReq.builder()
-                        .avatar(user.getAvatar())
-                        .email(user.getEmail())
-                        .id(user.getId())
-                        .nickname(user.getNickname())
-                        .status(user.getStatus())
-                        .role(user.getRole())
-                        .phone(user.getPhone())
-                        .username(user.getUsername())
-                        .build();
+                var req = new UserEntityReq();
+                req.setAvatar(user.getAvatar());
+                req.setEmail(user.getEmail());
+                req.setId(user.getId());
+                req.setNickname(user.getNickname());
+                req.setStatus(user.getStatus());
+                req.setRole(user.getRole());
+                req.setPhone(user.getPhone());
+                req.setUsername(user.getUsername());
                 userService.saveOrUpdate(req);
             });
 

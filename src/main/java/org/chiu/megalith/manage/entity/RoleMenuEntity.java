@@ -13,7 +13,6 @@ import java.util.Objects;
  */
 
 @Entity
-@Table(name ="m_role_menu")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +20,8 @@ import java.util.Objects;
 @Setter
 @ToString
 @DynamicUpdate
+@Table(name ="m_role_menu",
+        indexes = {@Index(columnList = "role_id"), @Index(columnList = "menu_id")})
 public class RoleMenuEntity {
 
     @Id

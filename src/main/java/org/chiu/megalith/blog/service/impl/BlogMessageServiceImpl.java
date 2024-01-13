@@ -67,9 +67,9 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + paraNo)))
                             .orElseGet(ArrayList::new);
 
-                    v = resp.get(0);
-                    value = resp.get(1);
-                    value = Objects.isNull(value) ? "" : resp.get(1);
+                    v = resp.getFirst();
+                    value = resp.getLast();
+                    value = Objects.isNull(value) ? "" : value;
 
                     if (version != Integer.parseInt(v) + 1) {
                         // 前端向服务端推全量
