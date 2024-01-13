@@ -12,6 +12,7 @@ public class BlogEditPushActionReq {
     //内容变动的部分
     private String contentChange;
 
+    @NotNull
     private Integer operateTypeCode;
 
     @NotNull

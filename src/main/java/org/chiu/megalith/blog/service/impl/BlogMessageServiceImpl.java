@@ -44,10 +44,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         if (Objects.nonNull(paraTypeCode)) {
             paraOpreateEnum = ParaOpreateEnum.getInstance(paraTypeCode);
         }
-        PushActionEnum pushActionEnum = null;
-        if (Objects.nonNull(operateTypeCode)) {
-            pushActionEnum = PushActionEnum.getInstance(operateTypeCode);
-        }
+        PushActionEnum pushActionEnum = PushActionEnum.getInstance(operateTypeCode);
         Integer version = req.getVersion();
         Integer indexStart = req.getIndexStart();
         Integer indexEnd = req.getIndexEnd();
@@ -87,6 +84,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                         case HEAD_APPEND -> value = contentChange + value;
                         case HEAD_SUBTRACT -> value = value.substring(indexStart);
                         case REPLACE -> value = value.substring(0, indexStart) + contentChange + value.substring(indexEnd);
+                        default -> throw new IllegalArgumentException("Unexpected value: " + pushActionEnum);
                     }
                     Map<String, String> subMap = new LinkedHashMap<>();
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, value);
@@ -160,6 +158,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             case HEAD_SUBTRACT -> value = value.substring(indexStart);
             case REPLACE -> value = value.substring(0, indexStart) + contentChange + value.substring(indexEnd);
             case NONE -> value = contentChange;
+            default -> throw new IllegalArgumentException("Unexpected value: " + pushActionEnum);
         }
 
         redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
