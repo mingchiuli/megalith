@@ -4,7 +4,6 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
@@ -163,7 +162,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         int status = document.getStatus();
         String authority = SecurityUtils.getLoginAuthority();
-        if (status == StatusEnum.HIDE.getCode() && !(Const.ROLE_PREFIX.getInfo() + highestRole).equals(authority)) {
+        if (status == StatusEnum.HIDE.getCode() && !(ROLE_PREFIX.getInfo() + highestRole).equals(authority)) {
             throw new MissException(DOCUMENT_NOT_EXIST);
         }
 

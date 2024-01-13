@@ -4,7 +4,6 @@ import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
@@ -19,6 +18,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.chiu.megalith.infra.lang.Const.*;
+
 
 /**
  * @author mingchiuli
@@ -74,10 +76,10 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         keys.add(findPageByYear);
         keys.add(status);
         if (StatusEnum.NORMAL.getCode().equals(blog.getStatus())) {
-            keys.add(Const.READ_TOKEN.getInfo() + id);
+            keys.add(READ_TOKEN.getInfo() + id);
         }
         //暂存区
-        keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
+        keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
         //内容状态信息
         redisTemplate.delete(keys);
 

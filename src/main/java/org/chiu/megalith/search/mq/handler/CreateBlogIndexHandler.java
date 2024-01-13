@@ -3,7 +3,6 @@ package org.chiu.megalith.search.mq.handler;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
 
@@ -21,6 +20,9 @@ import java.time.ZonedDateTime;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import static org.chiu.megalith.infra.lang.Const.*;
+
 
 @Component
 public final class CreateBlogIndexHandler extends BlogIndexSupport {
@@ -48,10 +50,10 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
     @Override
     protected Set<String> redisProcess(BlogEntity blog) {
         //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom，编辑暂存区数据
-        Set<String> keys = Optional.ofNullable(redisTemplate.keys(Const.HOT_BLOGS_PATTERN.getInfo())).orElseGet(LinkedHashSet::new);
+        Set<String> keys = Optional.ofNullable(redisTemplate.keys(HOT_BLOGS_PATTERN.getInfo())).orElseGet(LinkedHashSet::new);
         int year = blog.getCreated().getYear();
-        keys.add(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
-        keys.add(Const.TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
+        keys.add(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
+        keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
         redisTemplate.delete(keys);
 
         //重新构建该年份的页面bloom
@@ -60,21 +62,21 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         Integer countByPeriod = blogRepository.countByCreatedBetween(start, end);
         int totalPageByPeriod = countByPeriod % blogPageSize == 0 ? countByPeriod / blogPageSize : countByPeriod / blogPageSize + 1;
         for (int i = 1; i <= totalPageByPeriod; i++) {
-            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEAR_PAGE.getInfo() + year, i, true);
+            redisTemplate.opsForValue().setBit(BLOOM_FILTER_YEAR_PAGE.getInfo() + year, i, true);
         }
 
         //listPage的bloom
         long count = blogRepository.count();
         int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
         for (int i = 1; i <= totalPage; i++) {
-            redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_PAGE.getInfo(), i, true);
+            redisTemplate.opsForValue().setBit(BLOOM_FILTER_PAGE.getInfo(), i, true);
         }
 
         //设置getBlogDetail的bloom, getBlogStatus的bloom(其实同一个bloom)和最近阅读数
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true);
+        redisTemplate.opsForValue().setBit(BLOOM_FILTER_BLOG.getInfo(), blog.getId(), true);
 
         //年份过滤bloom更新,getCountByYear的bloom
-        redisTemplate.opsForValue().setBit(Const.BLOOM_FILTER_YEARS.getInfo(), year, true);
+        redisTemplate.opsForValue().setBit(BLOOM_FILTER_YEARS.getInfo(), year, true);
         return keys;
     }
 
