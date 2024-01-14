@@ -26,7 +26,7 @@ public class BlogEntityVo {
 
     private Long readCount;
 
-    private Double recentReadCount;
+    private Integer recentReadCount;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;

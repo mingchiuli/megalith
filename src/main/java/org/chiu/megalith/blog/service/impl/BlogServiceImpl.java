@@ -274,23 +274,34 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
         Page<BlogEntity> page = Objects.equals(authority, highestRole) ? blogRepository.findAll(pageRequest)
                 : blogRepository.findAllByUserId(pageRequest, userId);
 
-        List<BlogEntityVo> entities = page.getContent()
-                .stream()
+        List<BlogEntity> items = page.getContent();
+        List<String> ids = items.stream()
+                .map(item -> String.valueOf(item.getId()))
+                .toList();
+
+        List<String> res = redisTemplate.execute(LuaScriptUtils.getHotBlogsLua, 
+                Collections.singletonList(HOT_READ.getInfo()), 
+                jsonUtils.writeValueAsString(ids));
+
+        Map<Long, Integer> readMap = new HashMap<>();
+        for (int i = 0; i < res.size(); i += 2) {
+            readMap.put(Long.valueOf(res.get(i)), Integer.valueOf(res.get(i + 1)));
+        }
+
+        List<BlogEntityVo> entities = items.stream()
                 .map(blogEntity -> BlogEntityVo.builder()
                         .id(blogEntity.getId())
                         .title(blogEntity.getTitle())
                         .description(blogEntity.getDescription())
                         .readCount(blogEntity.getReadCount())
-                        .recentReadCount(
-                                Optional.ofNullable(redisTemplate.opsForZSet().score(HOT_READ.getInfo(),
-                                        blogEntity.getId().toString()))
-                                        .orElse(0.0))
+                        .recentReadCount(readMap.get(blogEntity.getId()))
                         .status(blogEntity.getStatus())
                         .link(blogEntity.getLink())
                         .created(blogEntity.getCreated())
@@ -332,14 +343,14 @@ public class BlogServiceImpl implements BlogService {
 
         int start = (currentPage - 1) * size;
 
-        List resp = Optional.ofNullable(
+        List<String> resp = Optional.ofNullable(
                 redisTemplate.execute(LuaScriptUtils.listDeletedRedisScript,
                         Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                         String.valueOf(l), "-1", String.valueOf(size - 1), String.valueOf(start)))
                 .orElseGet(ArrayList::new);
 
         List<String> respList = resp.subList(0, resp.size() - 1);
-        Long total = (long) resp.get(resp.size() - 1);
+        Long total = Long.valueOf(resp.get(resp.size() - 1));
         int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
         List<BlogEntity> list = respList.stream()

@@ -44,6 +44,22 @@ public class LuaScriptUtils {
                     "return ttl;",
             Long.class);
 
+    public static final RedisScript<List> getHotBlogsLua = RedisScript.of(
+            "local ids = cjson.decode(ARGV[1]);" +
+                    "local resMap = {};" +
+                    "for i=1, #ids do " +
+                        "local id = ids[i];" +
+                        "local readCount = redis.call('zscore', KEYS[1], id);" +
+                        "if readCount then " + 
+                            "table.insert(resMap, id);" + 
+                            "table.insert(resMap, readCount);" +
+                        "else " + 
+                            "table.insert(resMap, id);" + 
+                            "table.insert(resMap, '0');" +
+                        "end;" + 
+                    "end;" +
+                    "return resMap;", List.class);
+
     public static final RedisScript<Void> passwordLua = RedisScript.of(
             "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
                     "redis.call('rpush', KEYS[1], ARGV[3]);" +
@@ -91,7 +107,7 @@ public class LuaScriptUtils {
                     "local total = redis.call('llen', KEYS[1]);" +
                     "local resp = redis.call('lrange', KEYS[1], ARGV[4], ARGV[3] + ARGV[4]);" +
                     "local len = #resp;" +
-                    "resp[len + 1] = total;" +
+                    "resp[len + 1] = tostring(total);" +
                     "return resp",
             List.class);
 
