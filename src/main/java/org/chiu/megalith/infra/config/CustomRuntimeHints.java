@@ -13,19 +13,21 @@ import org.chiu.megalith.security.vo.UserInfoVo;
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.util.ReflectionUtils;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static org.springframework.util.ReflectionUtils.*;
+
+@SuppressWarnings("all")
 public class CustomRuntimeHints implements RuntimeHintsRegistrar {
     @SneakyThrows
     @Override// Register method for reflection
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
         // Register method for reflection
-        hints.reflection().registerMethod(ReflectionUtils.findMethod(CacheMessageListener.class, "handleMessage", Set.class), ExecutableMode.INVOKE);
-        hints.reflection().registerMethod(ReflectionUtils.findMethod(HighestRoleHolder.class, "getRole"), ExecutableMode.INVOKE);
-        hints.reflection().registerMethod(ReflectionUtils.findMethod(DefaultRoleHolder.class, "getRole"), ExecutableMode.INVOKE);
+        hints.reflection().registerMethod(findMethod(CacheMessageListener.class, "handleMessage", Set.class), ExecutableMode.INVOKE);
+        hints.reflection().registerMethod(findMethod(HighestRoleHolder.class, "getRole"), ExecutableMode.INVOKE);
+        hints.reflection().registerMethod(findMethod(DefaultRoleHolder.class, "getRole"), ExecutableMode.INVOKE);
 
         hints.reflection().registerConstructor(LinkedHashSet.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
         hints.reflection().registerConstructor(ListValueConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
