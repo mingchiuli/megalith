@@ -8,6 +8,7 @@ import java.util.List;
  * @author mingchiuli
  * @create 2023-03-30 8:42 pm
  */
+@SuppressWarnings("rawtypes")
 public class LuaScriptUtils {
 
     private LuaScriptUtils() {}
