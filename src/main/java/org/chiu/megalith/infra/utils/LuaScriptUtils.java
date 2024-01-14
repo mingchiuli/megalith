@@ -58,7 +58,8 @@ public class LuaScriptUtils {
                             "table.insert(resMap, '0');" +
                         "end;" + 
                     "end;" +
-                    "return resMap;", List.class);
+                    "return resMap;",
+            List.class);
 
     public static final RedisScript<Void> passwordLua = RedisScript.of(
             "redis.call('ltrim', KEYS[1], ARGV[1], ARGV[2]);" +
