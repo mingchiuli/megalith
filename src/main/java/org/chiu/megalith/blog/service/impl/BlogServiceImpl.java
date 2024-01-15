@@ -499,18 +499,22 @@ public class BlogServiceImpl implements BlogService {
                     .link("")
                     .title("")
                     .build();
+
+            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+                    "[]", ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+                   "" , "", "", StatusEnum.NORMAL.getCode().toString(), "", "-1",
+                    "604800");
         } else {
             blog = blogRepository.findByIdAndUserId(id, userId)
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
+            List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
+            String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
+
+            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+                    paragraphListString, ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+                    Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
+                    "604800");
         }
-
-        List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
-        String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
-
-        redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                paragraphListString, ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
-                "604800");
 
         return BlogEditVo.builder()
                 .id(blog.getId())

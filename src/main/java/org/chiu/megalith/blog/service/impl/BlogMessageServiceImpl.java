@@ -118,7 +118,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 case TAIL_SUBTRACT -> {
                     List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
                                     Collections.singletonList(redisKey),
-                                    VERSION.getMsg(), PARAGRAPH_SPLITTER.getInfo() + (paraNo - 1))))
+                                    VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
                     if (version != Integer.parseInt(v) + 1) {
@@ -131,7 +131,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     value = value + '\n';
 
                     redisTemplate.execute(LuaScriptUtils.tailSubtractContentLua, Collections.singletonList(redisKey),
-                    PARAGRAPH_SPLITTER.getInfo() + paraNo, PARAGRAPH_SPLITTER.getInfo() +(paraNo - 1), value, VERSION.getMsg(), String.valueOf(version));
+                            PARAGRAPH_PREFIX.getInfo() + paraNo, PARAGRAPH_PREFIX.getInfo() +(paraNo - 1), value, VERSION.getMsg(), String.valueOf(version));
                     return;
                 }
             }
