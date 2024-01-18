@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -18,17 +19,14 @@ public class MessageUtils {
     private final StringRedisTemplate redisTemplate;
 
     public <T> void sendMessageOnce(String exchange, String routingKey, T messageBody, Object... onceKey) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < onceKey.length; i++) {
-            sb.append(onceKey[i].toString());
-            if (i != onceKey.length - 1) {
-                sb.append("_");
-            }
-        }
+        String key = Arrays.stream(onceKey)
+                .reduce((o, n) -> o + "_" + n)
+                .orElse("")
+                .toString();
 
         var correlationData = new CorrelationData();
         redisTemplate.opsForValue().set(Const.CONSUME_MONITOR.getInfo() + correlationData.getId(),
-                sb.toString(),
+                key,
                 30,
                 TimeUnit.MINUTES);
 
