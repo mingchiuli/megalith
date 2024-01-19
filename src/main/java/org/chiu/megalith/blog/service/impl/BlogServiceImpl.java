@@ -278,8 +278,8 @@ public class BlogServiceImpl implements BlogService {
     public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = Objects.equals(authority, highestRole) ? blogRepository.findAll(pageRequest)
-                : blogRepository.findAllByUserId(pageRequest, userId);
+        Page<BlogEntity> page = Objects.equals(authority, highestRole) ? blogRepository.findAll(pageRequest) :
+                blogRepository.findAllByUserId(pageRequest, userId);
 
         List<BlogEntity> items = page.getContent();
         List<String> ids = items.stream()
