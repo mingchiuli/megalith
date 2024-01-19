@@ -70,7 +70,9 @@ public class MenuServiceImpl implements MenuService {
             Long menuId = menu.getMenuId();
             findTargetChildrenMenuId(menuId, menuEntities);
             menuRepository.saveAll(menuEntities);
+            return;
         }
+        menuRepository.save(menuEntity);
     }
 
     private void findTargetChildrenMenuId(Long menuId, List<MenuEntity> menuEntities) {
