@@ -1,6 +1,7 @@
 package org.chiu.megalith.blog.service.impl;
 
 import lombok.SneakyThrows;
+import org.chiu.megalith.blog.convertor.*;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
@@ -274,7 +275,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
@@ -295,31 +296,7 @@ public class BlogServiceImpl implements BlogService {
             readMap.put(Long.valueOf(res.get(i)), Integer.valueOf(res.get(i + 1)));
         }
 
-        List<BlogEntityVo> entities = items.stream()
-                .map(blogEntity -> BlogEntityVo.builder()
-                        .id(blogEntity.getId())
-                        .title(blogEntity.getTitle())
-                        .description(blogEntity.getDescription())
-                        .readCount(blogEntity.getReadCount())
-                        .recentReadCount(readMap.get(blogEntity.getId()))
-                        .status(blogEntity.getStatus())
-                        .link(blogEntity.getLink())
-                        .created(blogEntity.getCreated())
-                        .updated(blogEntity.getUpdated())
-                        .content(blogEntity.getContent())
-                        .build())
-                .toList();
-
-        return PageAdapter.<BlogEntityVo>builder()
-                .content(entities)
-                .last(page.isLast())
-                .first(page.isFirst())
-                .pageNumber(page.getNumber())
-                .totalPages(page.getTotalPages())
-                .pageSize(page.getSize())
-                .totalElements(page.getTotalElements())
-                .empty(page.isEmpty())
-                .build();
+        return BlogEntityVoConvertor.convert(page, readMap);
     }
 
     @Override
@@ -351,39 +328,12 @@ public class BlogServiceImpl implements BlogService {
 
         List<String> respList = resp.subList(0, resp.size() - 1);
         Long total = Long.valueOf(resp.get(resp.size() - 1));
-        int totalPages = (int) (total % size == 0 ? total / size : total / size + 1);
 
         List<BlogEntity> list = respList.stream()
                 .map(str -> jsonUtils.readValue(str, BlogEntity.class))
                 .toList();
 
-        List<BlogDeleteVo> content = new ArrayList<>();
-        for (BlogEntity item : list) {
-            content.add(BlogDeleteVo.builder()
-                    .idx(l++)
-                    .link(item.getLink())
-                    .content(item.getContent())
-                    .readCount(item.getReadCount())
-                    .title(item.getTitle())
-                    .status(item.getStatus())
-                    .created(item.getCreated())
-                    .updated(item.getUpdated())
-                    .id(item.getId())
-                    .userId(item.getUserId())
-                    .description(item.getDescription())
-                    .build());
-        }
-
-        return PageAdapter.<BlogDeleteVo>builder()
-                .content(content)
-                .last(currentPage == totalPages)
-                .first(currentPage == 1)
-                .pageNumber(currentPage)
-                .totalPages(totalPages)
-                .pageSize(size)
-                .totalElements(total)
-                .empty(total == 0)
-                .build();
+        return BlogDeleteVoConvertor.convert(l, list, currentPage, size, total);
     }
 
     @Override
@@ -415,39 +365,21 @@ public class BlogServiceImpl implements BlogService {
                 List.of(DAY_VISIT.getInfo(), WEEK_VISIT.getInfo(), MONTH_VISIT.getInfo(), YEAR_VISIT.getInfo())))
                 .orElseGet(ArrayList::new);
 
-        return VisitStatisticsVo.builder()
-                .dayVisit(list.get(0))
-                .weekVisit(list.get(1))
-                .monthVisit(list.get(2))
-                .yearVisit(list.get(3))
-                .build();
+        return VisitStatisticsVoConvertor.convert(list);
     }
 
     @Override
     public List<BlogHotReadVo> getScoreBlogs() {
         Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet()
                 .reverseRangeWithScores(HOT_READ.getInfo(), 0, 4);
-        List<BlogHotReadVo> items = Optional.ofNullable(set).orElseGet(LinkedHashSet::new).stream()
-                .map(item -> BlogHotReadVo.builder()
-                        .id(Long.valueOf(item.getValue()))
-                        .readCount(item.getScore().longValue())
-                        .build())
+
+        List<Long> ids = Optional.ofNullable(set).orElseGet(LinkedHashSet::new).stream()
+                .map(item -> Long.valueOf(item.getValue()))
                 .toList();
 
-        List<Long> ids = items.stream()
-                .map(BlogHotReadVo::getId)
-                .toList();
         List<BlogEntity> blogs = blogRepository.findAllById(ids);
-        items.forEach(item -> {
-            String title = blogs.stream()
-                    .filter(blog -> blog.getId().equals(item.getId()))
-                    .findAny()
-                    .orElseThrow(() -> new MissException(NO_FOUND))
-                    .getTitle();
-            item.setTitle(title);
-        });
 
-        return items;
+        return BlogHotReadVoConvertor.convert(blogs, set);
     }
 
     @Override
@@ -462,16 +394,7 @@ public class BlogServiceImpl implements BlogService {
 
         BlogEntity blog;
         if (!entries.isEmpty()) {
-            String idStr = entries.get(ID.getMsg());
-            blog = BlogEntity.builder()
-                    .id(StringUtils.hasLength(idStr) ?
-                            Long.valueOf(idStr) :
-                            null)
-                    .description(entries.get(DESCRIPTION.getMsg()))
-                    .title(entries.get(TITLE.getMsg()))
-                    .status(Integer.valueOf(entries.get(STATUS.getMsg())))
-                    .link(entries.get(LINK.getMsg()))
-                    .build();
+            blog = BlogEntityConvertor.convert(entries);
 
             entries.remove(ID.getMsg());
             entries.remove(DESCRIPTION.getMsg());
@@ -516,14 +439,7 @@ public class BlogServiceImpl implements BlogService {
                     "604800");
         }
 
-        return BlogEditVo.builder()
-                .id(blog.getId())
-                .title(blog.getTitle())
-                .description(blog.getDescription())
-                .content(blog.getContent())
-                .link(blog.getLink())
-                .status(blog.getStatus())
-                .build();
+        return BlogEditVoConvertor.convert(blog);
     }
 
     @Override

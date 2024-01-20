@@ -4,6 +4,7 @@ import org.chiu.megalith.infra.jwt.JwtUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.vo.UserEntityVo;
+import org.chiu.megalith.security.convertor.UserInfoVoConvertor;
 import org.chiu.megalith.security.service.TokenService;
 import org.chiu.megalith.security.vo.UserInfoVo;
 
@@ -45,9 +46,6 @@ public class TokenServiceImpl implements TokenService {
         Long userId = SecurityUtils.getLoginUserId();
         UserEntityVo userEntity = userService.findById(userId);
 
-        return UserInfoVo.builder()
-                .avatar(userEntity.getAvatar())
-                .nickname(userEntity.getNickname())
-                .build();
+        return UserInfoVoConvertor.convert(userEntity);
     }
 }

@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.service.impl;
 
+import org.chiu.megalith.manage.convertor.UserEntityVoConvertor;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.repository.UserRepository;
 import org.chiu.megalith.manage.service.UserService;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -79,18 +79,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new MissException(USER_NOT_EXIST));
 
-        return UserEntityVo.builder()
-                .id(userEntity.getId())
-                .username(userEntity.getUsername())
-                .nickname(userEntity.getNickname())
-                .avatar(userEntity.getAvatar())
-                .email(userEntity.getEmail())
-                .phone(userEntity.getPhone())
-                .status(userEntity.getStatus())
-                .created(userEntity.getCreated())
-                .lastLogin(userEntity.getLastLogin())
-                .role(userEntity.getRole())
-                .build();
+        return UserEntityVoConvertor.convert(userEntity);
     }
 
     @Override
@@ -105,33 +94,7 @@ public class UserServiceImpl implements UserService {
                 Sort.by("created").ascending());
         Page<UserEntity> page = userRepository.findAll(pageRequest);
 
-        List<UserEntityVo> content = new ArrayList<>();
-        page.getContent().forEach(user -> {
-            UserEntityVo userEntityVo = UserEntityVo.builder()
-                    .email(user.getEmail())
-                    .phone(user.getPhone())
-                    .role(user.getRole())
-                    .id(user.getId())
-                    .nickname(user.getNickname())
-                    .status(user.getStatus())
-                    .avatar(user.getAvatar())
-                    .created(user.getCreated())
-                    .lastLogin(user.getLastLogin())
-                    .username(user.getUsername())
-                    .build();
-            content.add(userEntityVo);
-        });
-
-        return PageAdapter.<UserEntityVo>builder()
-                .empty(page.isEmpty())
-                .first(page.isFirst())
-                .last(page.isLast())
-                .pageNumber(page.getPageable().getPageNumber())
-                .content(content)
-                .totalPages(page.getTotalPages())
-                .pageSize(page.getSize())
-                .totalElements(page.getTotalElements())
-                .build();
+        return UserEntityVoConvertor.convert(page);
     }
 
     @Override
@@ -149,17 +112,6 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new MissException(EMAIL_NOT_EXIST));
 
-        return UserEntityVo.builder()
-                .id(userEntity.getId())
-                .username(userEntity.getUsername())
-                .nickname(userEntity.getNickname())
-                .avatar(userEntity.getAvatar())
-                .email(userEntity.getEmail())
-                .phone(userEntity.getPhone())
-                .status(userEntity.getStatus())
-                .created(userEntity.getCreated())
-                .lastLogin(userEntity.getLastLogin())
-                .role(userEntity.getRole())
-                .build();
+        return UserEntityVoConvertor.convert(userEntity);
     }
 }

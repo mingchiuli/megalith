@@ -2,6 +2,7 @@ package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.manage.convertor.MenuVoConvertor;
 import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.entity.UserEntity;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_NOT_EXIST;
 
@@ -80,25 +80,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
     private List<MenuVo> buildMenu(List<Long> menuIds, Boolean statusCheck) {
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
-        Stream<MenuEntity> menuStream = menus.stream();
-        if (Boolean.TRUE.equals(statusCheck)) {
-            menuStream = menuStream.filter(menu -> StatusEnum.NORMAL.getCode().equals(menu.getStatus()));
-        }
-
-        List<MenuVo> menuEntities = menuStream
-                .map(menu -> MenuVo.builder()
-                        .menuId(menu.getMenuId())
-                        .parentId(menu.getParentId())
-                        .icon(menu.getIcon())
-                        .url(menu.getUrl())
-                        .title(menu.getTitle())
-                        .name(menu.getName())
-                        .component(menu.getComponent())
-                        .type(menu.getType())
-                        .orderNum(menu.getOrderNum())
-                        .status(menu.getStatus())
-                        .build())
-                .toList();
+        List<MenuVo> menuEntities = MenuVoConvertor.convert(menus, statusCheck);
         // 转树状结构
         return buildTreeMenu(menuEntities);
     }
@@ -130,22 +112,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     @Override
     public List<MenuVo> tree() {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
-        List<MenuVo> menuEntities = menus.stream()
-                .map(menu -> MenuVo.builder()
-                        .menuId(menu.getMenuId())
-                        .parentId(menu.getParentId())
-                        .icon(menu.getIcon())
-                        .url(menu.getUrl())
-                        .title(menu.getTitle())
-                        .name(menu.getName())
-                        .component(menu.getComponent())
-                        .name(menu.getName())
-                        .type(menu.getType())
-                        .orderNum(menu.getOrderNum())
-                        .status(menu.getStatus())
-                        .build())
-                .toList();
-
+        List<MenuVo> menuEntities = MenuVoConvertor.convert(menus);
         return buildTreeMenu(menuEntities);
     }
 

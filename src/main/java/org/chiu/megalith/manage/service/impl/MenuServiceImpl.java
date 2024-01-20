@@ -2,6 +2,8 @@ package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.manage.convertor.MenuEntityConvertor;
+import org.chiu.megalith.manage.convertor.MenuEntityVoConvertor;
 import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.repository.MenuRepository;
 import org.chiu.megalith.manage.service.MenuService;
@@ -34,35 +36,13 @@ public class MenuServiceImpl implements MenuService {
         MenuEntity menuEntity = menuRepository.findById(id)
                 .orElseThrow(() -> new MissException(MENU_NOT_EXIST.getMsg()));
 
-        return MenuEntityVo.builder()
-                .menuId(menuEntity.getMenuId())
-                .url(menuEntity.getUrl())
-                .title(menuEntity.getTitle())
-                .type(menuEntity.getType())
-                .name(menuEntity.getName())
-                .component(menuEntity.getComponent())
-                .orderNum(menuEntity.getOrderNum())
-                .parentId(menuEntity.getParentId())
-                .icon(menuEntity.getIcon())
-                .status(menuEntity.getStatus())
-                .build();
+        return MenuEntityVoConvertor.convert(menuEntity);
     }
 
     @Override
     public void saveOrUpdate(MenuEntityReq menu) {
 
-        var menuEntity = MenuEntity.builder()
-                .menuId(menu.getMenuId())
-                .parentId(menu.getParentId())
-                .icon(menu.getIcon())
-                .url(menu.getUrl())
-                .title(menu.getTitle())
-                .name(menu.getName())
-                .component(menu.getComponent())
-                .type(menu.getType())
-                .orderNum(menu.getOrderNum())
-                .status(menu.getStatus())
-                .build();
+        MenuEntity menuEntity = MenuEntityConvertor.convert(menu);
 
         if (StatusEnum.HIDE.getCode().equals(menu.getStatus())) {
             List<MenuEntity> menuEntities = new ArrayList<>();

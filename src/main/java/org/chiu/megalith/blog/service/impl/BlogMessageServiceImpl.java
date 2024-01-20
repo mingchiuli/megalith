@@ -71,21 +71,9 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     value = resp.getLast();
                     value = Objects.isNull(value) ? "" : value;
 
-                    if (version != Integer.parseInt(v) + 1) {
-                        // 前端向服务端推全量
-                        simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
-                        return;
-                    }
+                    checkPushAll(version, Integer.parseInt(v));
+                    value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd);
 
-                    switch (pushActionEnum) {
-                        case REMOVE -> value = "";
-                        case TAIL_APPEND -> value = value + contentChange;
-                        case TAIL_SUBTRACT -> value = value.substring(0, indexStart);
-                        case HEAD_APPEND -> value = contentChange + value;
-                        case HEAD_SUBTRACT -> value = value.substring(indexStart);
-                        case REPLACE -> value = value.substring(0, indexStart) + contentChange + value.substring(indexEnd);
-                        default -> throw new IllegalArgumentException("Unexpected value: " + pushActionEnum);
-                    }
                     Map<String, String> subMap = new LinkedHashMap<>();
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, value);
                     subMap.put(VERSION.getMsg(), version.toString());
@@ -99,11 +87,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
-                    if (version != Integer.parseInt(v) + 1) {
-                        // 前端向服务端推全量
-                        simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
-                        return;
-                    }
+                    checkPushAll(version, Integer.parseInt(v));
+
                     value = resp.getLast();
                     //去掉最后的\n
                     value = value.substring(0, value.length() - 1);
@@ -121,11 +106,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
-                    if (version != Integer.parseInt(v) + 1) {
-                        // 前端向服务端推全量
-                        simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
-                        return;
-                    }
+
+                    checkPushAll(version, Integer.parseInt(v));
 
                     value = resp.getLast();
                     value = value + '\n';
@@ -144,27 +126,35 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         v = resp.getFirst();
         value = resp.getLast();
 
-        if (version != Integer.parseInt(v) + 1) {
-            // 前端向服务端推全量
-            simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
-            return;
-        }
-
-        switch (pushActionEnum) {
-            case REMOVE -> value = "";
-            case TAIL_APPEND -> value = value + contentChange;
-            case TAIL_SUBTRACT -> value = value.substring(0, indexStart);
-            case HEAD_APPEND -> value = contentChange + value;
-            case HEAD_SUBTRACT -> value = value.substring(indexStart);
-            case REPLACE -> value = value.substring(0, indexStart) + contentChange + value.substring(indexEnd);
-            case NONE -> value = contentChange;
-            default -> throw new IllegalArgumentException("Unexpected value: " + pushActionEnum);
-        }
+        checkPushAll(version, Integer.parseInt(v));
+        value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd);
 
         redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
                 fieldEnum.getField(), VERSION.getMsg(),
                 value, String.valueOf(version),
                 "604800");
+    }
+
+    private void checkPushAll(int newVersion, int rawVersion) {
+        if (newVersion != rawVersion + 1) {
+            // 前端向服务端推全量
+            simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
+        }
+    }
+
+    private String contentDeal(PushActionEnum pushActionEnum, String rawContent, String contentChange, Integer indexStart, Integer indexEnd) {
+        switch (pushActionEnum) {
+            case REMOVE -> rawContent = "";
+            case TAIL_APPEND -> rawContent = rawContent + contentChange;
+            case TAIL_SUBTRACT -> rawContent = rawContent.substring(0, indexStart);
+            case HEAD_APPEND -> rawContent = contentChange + rawContent;
+            case HEAD_SUBTRACT -> rawContent = rawContent.substring(indexStart);
+            case REPLACE -> rawContent = rawContent.substring(0, indexStart) + contentChange + rawContent.substring(indexEnd);
+            case NONE -> rawContent = contentChange;
+            default -> throw new IllegalArgumentException("Unexpected value: " + pushActionEnum);
+        }
+
+        return rawContent;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.chiu.megalith.blog.wrapper;
 
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.blog.convertor.BlogDescriptionVoConvertor;
+import org.chiu.megalith.blog.convertor.BlogExhibitVoConvertor;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.vo.BlogDescriptionVo;
@@ -53,16 +55,7 @@ public class BlogWrapper {
 
         UserEntity user = userRepository.findById(blogEntity.getUserId())
                 .orElseThrow(() -> new MissException(NO_FOUND));
-        return BlogExhibitVo.builder()
-                .title(blogEntity.getTitle())
-                .description(blogEntity.getDescription())
-                .content(blogEntity.getContent())
-                .readCount(blogEntity.getReadCount())
-                .nickname(user.getNickname())
-                .avatar(user.getAvatar())
-                .created(blogEntity.getCreated())
-                .readCount(blogEntity.getReadCount())
-                .build();
+        return BlogExhibitVoConvertor.convert(blogEntity, user);
     }
 
     @Async("commonExecutor")
@@ -87,13 +80,7 @@ public class BlogWrapper {
                 blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1, 0, 0, 0),
                 LocalDateTime.of(year, 12, 31, 23, 59, 59));
 
-        return new PageAdapter<>(page.map(blogEntity -> BlogDescriptionVo.builder()
-                .id(blogEntity.getId())
-                .description(blogEntity.getDescription())
-                .title(blogEntity.getTitle())
-                .created(blogEntity.getCreated())
-                .link(blogEntity.getLink())
-                .build()));
+        return BlogDescriptionVoConvertor.convert(page);
     }
 
     @Cache(prefix = Const.HOT_BLOG)

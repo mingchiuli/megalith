@@ -8,6 +8,7 @@ import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
+import org.chiu.megalith.search.convertor.WebsiteDocumentVoConvertor;
 import org.chiu.megalith.search.document.WebsiteDocument;
 import org.chiu.megalith.search.service.WebsiteSearchService;
 import org.chiu.megalith.search.vo.WebsiteDocumentVo;
@@ -121,36 +122,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
                 .build();
 
         SearchHits<WebsiteDocument> search = elasticsearchTemplate.search(matchQuery, WebsiteDocument.class);
-        long totalHits = search.getTotalHits();
-        long totalPage = totalHits % pageSize == 0 ? totalHits / pageSize : totalHits / pageSize + 1;
-
-        List<WebsiteDocumentVo> vos = search.getSearchHits().stream()
-                .map(hit -> {
-                    WebsiteDocument document = hit.getContent();
-                    return WebsiteDocumentVo.builder()
-                            .id(document.getId())
-                            .title(document.getTitle())
-                            .description(document.getDescription())
-                            .link(document.getLink())
-                            .status(document.getStatus())
-                            .created(document.getCreated())
-                            .updated(document.getUpdated())
-                            .highlight(hit.getHighlightFields())
-                            .score(hit.getScore())
-                            .build();
-                })
-                .toList();
-
-        return PageAdapter.<WebsiteDocumentVo>builder()
-                .first(currentPage == 1)
-                .last(currentPage == totalPage)
-                .pageSize(pageSize)
-                .pageNumber(currentPage)
-                .empty(totalHits == 0)
-                .totalElements(totalHits)
-                .totalPages((int) totalPage)
-                .content(vos)
-                .build();
+        return WebsiteDocumentVoConvertor.convert(search, pageSize, currentPage);
     }
 
     @Override
@@ -166,13 +138,6 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
             throw new MissException(DOCUMENT_NOT_EXIST);
         }
 
-        return WebsiteDocumentVo.builder()
-                .id(document.getId())
-                .title(document.getTitle())
-                .description(document.getDescription())
-                .link(document.getLink())
-                .status(document.getStatus())
-                .created(document.getCreated())
-                .build();
+        return WebsiteDocumentVoConvertor.convert(document);
     }
 }

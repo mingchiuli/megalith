@@ -1,12 +1,14 @@
 package org.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import org.chiu.megalith.blog.convertor.BlogEntityVoConvertor;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.search.convertor.BlogDocumentVoConvertor;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.chiu.megalith.search.service.BlogSearchService;
 import org.chiu.megalith.search.vo.BlogDocumentVo;
@@ -77,36 +79,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
-        long totalHits = search.getTotalHits();
-        long totalPage = totalHits % blogPageSize == 0 ? totalHits / blogPageSize : totalHits / blogPageSize + 1;
 
-        List<BlogDocumentVo> vos = search.getSearchHits().stream()
-                .map(hit -> {
-                    BlogDocument document = hit.getContent();
-                    return BlogDocumentVo.builder()
-                            .id(document.getId())
-                            .userId(document.getUserId())
-                            .status(document.getStatus())
-                            .title(document.getTitle())
-                            .description(document.getDescription())
-                            .content(document.getContent())
-                            .link(document.getLink())
-                            .created(document.getCreated().toLocalDateTime())
-                            .score(hit.getScore())
-                            .highlight(hit.getHighlightFields())
-                            .build();
-                })
-                .toList();
-
-        return PageAdapter.<BlogDocumentVo>builder()
-                .first(currentPage == 1)
-                .last(currentPage == totalPage)
-                .pageSize(blogPageSize).pageNumber(currentPage)
-                .empty(totalHits == 0)
-                .totalElements(totalHits)
-                .totalPages((int) totalPage)
-                .content(vos)
-                .build();
+        return BlogDocumentVoConvertor.convert(search, blogPageSize, currentPage);
     }
 
     @Override
@@ -131,8 +105,6 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
         List<SearchHit<BlogDocument>> hits = search.getSearchHits();
-        long totalHits = search.getTotalHits();
-        long totalPage = totalHits % size == 0 ? totalHits / size : totalHits / size + 1;
 
         List<String> ids = hits.stream()
                 .map(item -> String.valueOf(item.getContent().getId()))
@@ -147,32 +119,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
             readMap.put(Long.valueOf(res.get(i)), Integer.valueOf(res.get(i + 1)));
         }
 
-        List<BlogEntityVo> entities = hits.stream()
-                .map(hit -> {
-                    BlogDocument document = hit.getContent();
-                    return BlogEntityVo.builder()
-                            .id(document.getId())
-                            .title(document.getTitle())
-                            .description(document.getDescription())
-                            .recentReadCount(readMap.get(document.getId()))
-                            .content(document.getContent())
-                            .created(document.getCreated().toLocalDateTime())
-                            .updated(document.getUpdated().toLocalDateTime())
-                            .status(document.getStatus())
-                            .build();
-                })
-                .toList();
-
-        return PageAdapter.<BlogEntityVo>builder()
-                .totalElements(totalHits)
-                .pageNumber(currentPage)
-                .pageSize(size)
-                .empty(totalHits == 0)
-                .first(currentPage == 1)
-                .last(currentPage == totalPage)
-                .totalPages((int) totalPage)
-                .content(entities)
-                .build();
+        return BlogEntityVoConvertor.convert(search, readMap, currentPage, size);
     }
 
 }

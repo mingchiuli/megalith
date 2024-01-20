@@ -1,6 +1,8 @@
 package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.manage.convertor.RoleEntityVoConvertor;
+import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.chiu.megalith.manage.repository.RoleRepository;
@@ -18,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,13 +42,7 @@ public class RoleServiceImpl implements RoleService {
         RoleEntity roleEntity = roleRepository.findById(id)
                 .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
 
-        return RoleEntityVo.builder()
-                .code(roleEntity.getCode())
-                .name(roleEntity.getName())
-                .remark(roleEntity.getRemark())
-                .status(roleEntity.getStatus())
-                .id(roleEntity.getId())
-                .build();
+        return RoleEntityVoConvertor.convert(roleEntity);
     }
 
     @Override
@@ -57,30 +52,7 @@ public class RoleServiceImpl implements RoleService {
                 Sort.by("created").ascending());
         Page<RoleEntity> page = roleRepository.findAll(pageRequest);
 
-        List<RoleEntityVo> content = new ArrayList<>();
-        page.getContent().forEach(role -> {
-            RoleEntityVo roleEntityVo = RoleEntityVo.builder()
-                    .code(role.getCode())
-                    .name(role.getName())
-                    .remark(role.getRemark())
-                    .status(role.getStatus())
-                    .updated(role.getUpdated())
-                    .created(role.getCreated())
-                    .id(role.getId())
-                    .build();
-            content.add(roleEntityVo);
-        });
-
-        return PageAdapter.<RoleEntityVo>builder()
-                .empty(page.isEmpty())
-                .first(page.isFirst())
-                .last(page.isLast())
-                .pageNumber(page.getPageable().getPageNumber())
-                .content(content)
-                .totalPages(page.getTotalPages())
-                .pageSize(page.getSize())
-                .totalElements(page.getTotalElements())
-                .build();
+        return RoleEntityVoConvertor.convert(page);
     }
 
     @Override
@@ -113,12 +85,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Long> savePerm(Long roleId, List<Long> menuIds) {
-        List<RoleMenuEntity> roleMenuEntities = menuIds.stream()
-                .map(menuId -> RoleMenuEntity.builder()
-                        .menuId(menuId)
-                        .roleId(roleId)
-                        .build())
-                .toList();
+        List<RoleMenuEntity> roleMenuEntities = RoleMenuEntityConvertor.convertor(roleId, menuIds);
         roleWrapper.savePerm(roleId, roleMenuEntities);
         return menuIds;
     }
@@ -126,13 +93,6 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<RoleEntityVo> getValidAll() {
         List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
-        List<RoleEntityVo> vos = new ArrayList<>();
-        entities.forEach(item -> vos.add(RoleEntityVo.builder()
-                .code(item.getCode())
-                .id(item.getId())
-                .status(item.getStatus())
-                .name(item.getName())
-                .build()));
-        return vos;
+        return RoleEntityVoConvertor.convert(entities);
     }
 }
