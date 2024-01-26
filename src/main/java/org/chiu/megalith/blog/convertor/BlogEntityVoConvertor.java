@@ -43,7 +43,7 @@ public class BlogEntityVoConvertor {
                 .build();
     }
 
-    public static PageAdapter<BlogEntityVo> convert(SearchHits<BlogDocument> search, Map<Long, Integer> readMap, Integer currentPage ,Integer pageSize) {
+    public static PageAdapter<BlogEntityVo> convert(SearchHits<BlogDocument> search, Integer currentPage ,Integer pageSize) {
         List<SearchHit<BlogDocument>> hits = search.getSearchHits();
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % pageSize == 0 ? totalHits / pageSize : totalHits / pageSize + 1;
@@ -55,7 +55,6 @@ public class BlogEntityVoConvertor {
                             .id(document.getId())
                             .title(document.getTitle())
                             .description(document.getDescription())
-                            .recentReadCount(readMap.get(document.getId()))
                             .content(document.getContent())
                             .created(document.getCreated().toLocalDateTime())
                             .updated(document.getUpdated().toLocalDateTime())
