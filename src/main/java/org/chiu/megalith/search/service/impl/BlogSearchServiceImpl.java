@@ -50,7 +50,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         //做高亮必須在query里搜高亮字段
                                         //不做高亮就不用写
                                         .bool(boolQry -> boolQry
-                                                .must(mustQry -> mustQry
+                                                .should(shouldQry -> shouldQry
                                                         .multiMatch(multiMatchQry -> multiMatchQry
                                                                 .fields(fields)
                                                                 .fuzziness("auto")
@@ -95,6 +95,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withHighlightQuery(Boolean.TRUE.equals(allInfo) ?
                         ESHighlightBuilderUtils.blogHighlightQueryOrigin :
                         ESHighlightBuilderUtils.blogHighlightQuerySimple)
+                .withMinScore(2)
                 .build();
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
 
@@ -108,11 +109,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withQuery(query -> query
                         .functionScore(functionScore -> functionScore
                                 .query(baseQry -> baseQry
-                                        .bool(boolQry -> boolQry
-                                                .must(mustQry -> mustQry
-                                                        .term(termQuery -> termQuery
-                                                                .field("userId")
-                                                                .value(userId)))))
+                                        .term(termQuery -> termQuery
+                                                .field("userId")
+                                                .value(userId)))
                                         .functions(function -> function
                                                 .filter(filterQry -> filterQry
                                                         .matchPhrase(matchPhraseQry -> matchPhraseQry
@@ -139,6 +138,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withSort(sortQuery ->
                         sortQuery.score(score ->
                                 score.order(SortOrder.Desc)))
+                .withMinScore(2)
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
