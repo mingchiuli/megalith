@@ -86,9 +86,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         .weight(2.0))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
-                .withSort(sort ->
-                        sort.score(score ->
-                                score.order(SortOrder.Desc)))
+                .withSort(sort -> sort
+                        .score(score -> score
+                                .order(SortOrder.Desc)))
                 .withPageable(Objects.equals(currentPage, -1) ?
                         PageRequest.of(0, 10) :
                         PageRequest.of(currentPage - 1, blogPageSize))
@@ -135,9 +135,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withPageable(PageRequest.of(currentPage - 1, size))
-                .withSort(sortQuery ->
-                        sortQuery.score(score ->
-                                score.order(SortOrder.Desc)))
+                .withSort(sortQuery -> sortQuery
+                        .score(score -> score
+                                .order(SortOrder.Desc)))
                 .withMinScore(10)
                 .build();
 
