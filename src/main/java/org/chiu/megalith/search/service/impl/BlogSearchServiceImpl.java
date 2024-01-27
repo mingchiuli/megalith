@@ -95,7 +95,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withHighlightQuery(Boolean.TRUE.equals(allInfo) ?
                         ESHighlightBuilderUtils.blogHighlightQueryOrigin :
                         ESHighlightBuilderUtils.blogHighlightQuerySimple)
-                .withMinScore(2)
+                .withMinScore(10)
                 .build();
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
 
@@ -138,7 +138,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withSort(sortQuery ->
                         sortQuery.score(score ->
                                 score.order(SortOrder.Desc)))
-                .withMinScore(2)
+                .withMinScore(10)
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
