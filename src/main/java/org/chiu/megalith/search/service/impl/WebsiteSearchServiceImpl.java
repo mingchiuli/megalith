@@ -2,7 +2,6 @@ package org.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -93,32 +92,31 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         var boolBuilder = new BoolQuery.Builder();
 
         if (Boolean.FALSE.equals(auth)) {
-            boolBuilder.filter(filterQuery ->
-                    filterQuery.term(termQuery ->
-                            termQuery.field("status").value(StatusEnum.NORMAL.getCode())));
+            boolBuilder.filter(filterQuery -> filterQuery
+                    .term(termQuery -> termQuery
+                            .field("status")
+                            .value(StatusEnum.NORMAL.getCode())));
         }
 
         if (StringUtils.hasLength(keyword)) {
-            boolBuilder.must(mustQuery ->
-                    mustQuery.multiMatch(multiQuery ->
-                            multiQuery.fields(fields).query(keyword)));
+            boolBuilder.must(mustQuery -> mustQuery
+                    .multiMatch(multiQuery -> multiQuery
+                            .fields(fields)
+                            .query(keyword)));
             nativeQueryBuilder
-                    .withSort(sort ->
-                            sort.score(score ->
-                                    score.order(SortOrder.Desc)))
+                    .withSort(sort -> sort
+                            .score(score -> score.order(SortOrder.Desc)))
                     .withHighlightQuery(ESHighlightBuilderUtils.websiteHighlightQuery);
         } else {
-            nativeQueryBuilder
-                    .withSort(sortQuery ->
-                            sortQuery.field(fieldQuery ->
-                                    fieldQuery.field("created").order(SortOrder.Desc)));
+            nativeQueryBuilder.withSort(sortQuery -> sortQuery
+                    .field(fieldQuery -> fieldQuery
+                            .field("created")
+                            .order(SortOrder.Desc)));
         }
 
         var matchQuery = nativeQueryBuilder
-                .withQuery(new Query.Builder()
-                        .bool(boolBuilder
-                                .build())
-                        .build())
+                .withQuery(qry -> qry
+                        .bool(boolBuilder.build()))
                 .build();
 
         SearchHits<WebsiteDocument> search = elasticsearchTemplate.search(matchQuery, WebsiteDocument.class);
