@@ -19,4 +19,6 @@ public class BlogEditVo {
     private String content;
 
     private Integer status;
+
+    private Integer version;
 }

@@ -5,13 +5,14 @@ import org.chiu.megalith.blog.vo.BlogEditVo;
 
 public class BlogEditVoConvertor {
 
-    public static BlogEditVo convert(BlogEntity blog) {
+    public static BlogEditVo convert(BlogEntity blog, Integer version) {
         return BlogEditVo.builder()
                 .id(blog.getId())
                 .title(blog.getTitle())
                 .description(blog.getDescription())
                 .content(blog.getContent())
                 .link(blog.getLink())
+                .version(version)
                 .status(blog.getStatus())
                 .build();
     }

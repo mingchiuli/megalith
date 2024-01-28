@@ -393,8 +393,10 @@ public class BlogServiceImpl implements BlogService {
                 .entries(redisKey);
 
         BlogEntity blog;
+        int version;
         if (!entries.isEmpty()) {
             blog = BlogEntityConvertor.convert(entries);
+            version = Integer.parseInt(entries.get(VERSION.getMsg()));
 
             entries.remove(ID.getMsg());
             entries.remove(DESCRIPTION.getMsg());
@@ -422,6 +424,7 @@ public class BlogServiceImpl implements BlogService {
                     .link("")
                     .title("")
                     .build();
+            version = -1;
 
             redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                     "[]", ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
@@ -430,6 +433,7 @@ public class BlogServiceImpl implements BlogService {
         } else {
             blog = blogRepository.findByIdAndUserId(id, userId)
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
+            version = -1;
             List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
             String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
@@ -439,7 +443,7 @@ public class BlogServiceImpl implements BlogService {
                     "604800");
         }
 
-        return BlogEditVoConvertor.convert(blog);
+        return BlogEditVoConvertor.convert(blog, version);
     }
 
     @Override
