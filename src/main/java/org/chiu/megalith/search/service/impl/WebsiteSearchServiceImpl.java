@@ -27,6 +27,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static org.chiu.megalith.blog.lang.FieldEnum.*;
 import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.DOCUMENT_NOT_EXIST;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.WEB_NOT_EXIST;
@@ -44,7 +45,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     @Value("${blog.highest-role}")
     private String highestRole;
 
-    private final List<String> fields = List.of("title", "description^2");
+    private final List<String> fields = List.of(TITLE.getField(), DESCRIPTION.getField() + "^2");
 
     @Override
     public void saveOrUpdate(WebsiteDocumentReq websiteDocumentReq) {
@@ -94,7 +95,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         if (Boolean.FALSE.equals(auth)) {
             boolBuilder.filter(filterQuery -> filterQuery
                     .term(termQuery -> termQuery
-                            .field("status")
+                            .field(STATUS.getField())
                             .value(StatusEnum.NORMAL.getCode())));
         }
 
@@ -110,7 +111,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         } else {
             nativeQueryBuilder.withSort(sortQuery -> sortQuery
                     .field(fieldQuery -> fieldQuery
-                            .field("created")
+                            .field(CREATED.getField())
                             .order(SortOrder.Desc)));
         }
 

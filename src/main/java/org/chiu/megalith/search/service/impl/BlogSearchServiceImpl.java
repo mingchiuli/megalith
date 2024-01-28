@@ -25,6 +25,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Objects;
 
+import static org.chiu.megalith.blog.lang.FieldEnum.*;
+
 /**
  * @author mingchiuli
  * @create 2022-11-30 9:00 pm
@@ -38,7 +40,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
-    private final List<String> fields = List.of("title", "description", "content");
+    private final List<String> fields = List.of(TITLE.getField(), DESCRIPTION.getField(), CONTENT.getField());
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keywords, Boolean allInfo, String year) {
@@ -57,31 +59,31 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                                 .query(keywords)))
                                                 .must(mustQry -> mustQry
                                                         .range(rangeQuery -> rangeQuery
-                                                                .field("created")
+                                                                .field(CREATED.getField())
                                                                 .from(StringUtils.hasLength(year) ? year + "-01-01T00:00:00.000+08:00" : null)
                                                                 .to(StringUtils.hasLength(year) ? year + "-12-31T23:59:59.999+08:00" : null)))
                                                 .must(mustQry -> mustQry
                                                         .term(termQry -> termQry
-                                                                .field("status").value(StatusEnum.NORMAL.getCode())))))
+                                                                .field(STATUS.getField()).value(StatusEnum.NORMAL.getCode())))))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
                                                         .fuzziness("auto")
-                                                        .field("title")
+                                                        .field(TITLE.getField())
                                                         .query(keywords)))
                                         .weight(1.0))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
                                                         .fuzziness("auto")
-                                                        .field("description")
+                                                        .field(DESCRIPTION.getField())
                                                         .query(keywords)))
                                         .weight(1.5))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
                                                         .fuzziness("auto")
-                                                        .field("content")
+                                                        .field(CONTENT.getField())
                                                         .query(keywords)))
                                         .weight(2.0))
                                 .scoreMode(FunctionScoreMode.Sum)
@@ -111,7 +113,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         .bool(boolQry -> boolQry
                                                 .must(mustQry -> mustQry
                                                         .term(termQry -> termQry
-                                                                .field("userId")
+                                                                .field(USERID.getField())
                                                                 .value(userId)))
                                                 .must(mustQry -> mustQry
                                                         .multiMatch(multiMatchQry -> multiMatchQry
@@ -121,20 +123,20 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .matchPhrase(matchPhraseQry -> matchPhraseQry
-                                                        .field("title")
+                                                        .field(TITLE.getField())
                                                         .query(keywords)))
                                         .weight(2.0))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
-                                                        .field("description")
+                                                        .field(DESCRIPTION.getField())
                                                         .query(keywords)
                                                         .fuzziness("auto")))
                                         .weight(1.5))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
-                                                        .field("content")
+                                                        .field(CONTENT.getField())
                                                         .query(keywords)
                                                         .fuzziness("auto")))
                                         .weight(1.0))

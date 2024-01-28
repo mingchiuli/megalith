@@ -14,7 +14,11 @@ public enum FieldEnum {
 
     STATUS("status", "文章状态"),
 
-    CONTENT("content", "内容");
+    CONTENT("content", "内容"),
+
+    CREATED("created", "创建时间"),
+
+    USERID("userId", "用户ID");
 
     private final String field;
 
