@@ -50,7 +50,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         //做高亮必須在query里搜高亮字段
                                         //不做高亮就不用写
                                         .bool(boolQry -> boolQry
-                                                .should(shouldQry -> shouldQry
+                                                .must(mustQry -> mustQry
                                                         .multiMatch(multiMatchQry -> multiMatchQry
                                                                 .fields(fields)
                                                                 .fuzziness("auto")
@@ -69,7 +69,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                         .fuzziness("auto")
                                                         .field("title")
                                                         .query(keywords)))
-                                        .weight(5.0))
+                                        .weight(2.0))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
@@ -83,7 +83,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                         .fuzziness("auto")
                                                         .field("content")
                                                         .query(keywords)))
-                                        .weight(2.0))
+                                        .weight(5.0))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withSort(sort -> sort
