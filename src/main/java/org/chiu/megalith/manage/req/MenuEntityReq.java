@@ -14,27 +14,25 @@ public class MenuEntityReq {
 
     private Long menuId;
 
+    @NotNull
     private Long parentId;
 
     @NotBlank
     private String title;
 
-    @NotBlank
     private String name;
 
-    @NotBlank
     private String url;
 
-    @NotBlank
     private String component;
+
+    private String icon;
+
+    @NotBlank
+    private Integer orderNum;
 
     @NotNull
     private Integer type;
-
-    @NotBlank
-    private String icon;
-
-    private Integer orderNum;
 
     @ListValue(values = {0, 1})
     private Integer status;
