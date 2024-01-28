@@ -83,7 +83,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                         .fuzziness("auto")
                                                         .field("content")
                                                         .query(keywords)))
-                                        .weight(5.0))
+                                        .weight(3.0))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withSort(sort -> sort
@@ -109,29 +109,36 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withQuery(query -> query
                         .functionScore(functionScore -> functionScore
                                 .query(baseQry -> baseQry
-                                        .term(termQuery -> termQuery
-                                                .field("userId")
-                                                .value(userId)))
-                                        .functions(function -> function
-                                                .filter(filterQry -> filterQry
-                                                        .matchPhrase(matchPhraseQry -> matchPhraseQry
-                                                                .field("title")
-                                                                .query(keywords)))
-                                                .weight(3.0))
-                                        .functions(function -> function
-                                                .filter(filterQry -> filterQry
-                                                        .match(matchQry -> matchQry
-                                                                .field("description")
-                                                                .query(keywords)
-                                                                .fuzziness("auto")))
-                                                .weight(2.5))
-                                        .functions(function -> function
-                                                .filter(filterQry -> filterQry
-                                                        .match(matchQry -> matchQry
-                                                                .field("content")
-                                                                .query(keywords)
-                                                                .fuzziness("auto")))
-                                                .weight(2.0))
+                                        .bool(boolQry -> boolQry
+                                                .must(mustQry -> mustQry
+                                                        .term(termQry -> termQry
+                                                                .field("userId")
+                                                                .value(userId)))
+                                                .must(mustQry -> mustQry
+                                                        .multiMatch(multiMatchQry -> multiMatchQry
+                                                                .fuzziness("auto")
+                                                                .fields(fields)
+                                                                .query(keywords)))))
+                                .functions(function -> function
+                                        .filter(filterQry -> filterQry
+                                                .matchPhrase(matchPhraseQry -> matchPhraseQry
+                                                        .field("title")
+                                                        .query(keywords)))
+                                        .weight(3.0))
+                                .functions(function -> function
+                                        .filter(filterQry -> filterQry
+                                                .match(matchQry -> matchQry
+                                                        .field("description")
+                                                        .query(keywords)
+                                                        .fuzziness("auto")))
+                                        .weight(2.5))
+                                .functions(function -> function
+                                        .filter(filterQry -> filterQry
+                                                .match(matchQry -> matchQry
+                                                        .field("content")
+                                                        .query(keywords)
+                                                        .fuzziness("auto")))
+                                        .weight(2.0))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withPageable(PageRequest.of(currentPage - 1, size))
