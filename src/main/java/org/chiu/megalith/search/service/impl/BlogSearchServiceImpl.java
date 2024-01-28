@@ -69,21 +69,21 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                         .fuzziness("auto")
                                                         .field("title")
                                                         .query(keywords)))
-                                        .weight(2.0))
+                                        .weight(1.0))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
                                                         .fuzziness("auto")
                                                         .field("description")
                                                         .query(keywords)))
-                                        .weight(2.5))
+                                        .weight(1.5))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
                                                         .fuzziness("auto")
                                                         .field("content")
                                                         .query(keywords)))
-                                        .weight(3.0))
+                                        .weight(2.0))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withSort(sort -> sort
@@ -95,7 +95,6 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .withHighlightQuery(Boolean.TRUE.equals(allInfo) ?
                         ESHighlightBuilderUtils.blogHighlightQueryOrigin :
                         ESHighlightBuilderUtils.blogHighlightQuerySimple)
-                .withMinScore(10)
                 .build();
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(matchQuery, BlogDocument.class);
 
@@ -124,28 +123,27 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                                 .matchPhrase(matchPhraseQry -> matchPhraseQry
                                                         .field("title")
                                                         .query(keywords)))
-                                        .weight(3.0))
+                                        .weight(2.0))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
                                                         .field("description")
                                                         .query(keywords)
                                                         .fuzziness("auto")))
-                                        .weight(2.5))
+                                        .weight(1.5))
                                 .functions(function -> function
                                         .filter(filterQry -> filterQry
                                                 .match(matchQry -> matchQry
                                                         .field("content")
                                                         .query(keywords)
                                                         .fuzziness("auto")))
-                                        .weight(2.0))
+                                        .weight(1.0))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withPageable(PageRequest.of(currentPage - 1, size))
                 .withSort(sortQuery -> sortQuery
                         .score(score -> score
                                 .order(SortOrder.Desc)))
-                .withMinScore(10)
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
