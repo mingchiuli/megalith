@@ -25,10 +25,4 @@ public class BlogMessageController {
         Long userId = SecurityUtils.getLoginUserId();
         blogMessageService.pushAction(req, userId);
     }
-
-    @MessageMapping("/push/all")
-    public void pullSaveBlog(@RequestBody @Valid BlogEditPushAllReq blog) {
-        Long userId = SecurityUtils.getLoginUserId();
-        blogMessageService.pushAll(blog, userId);
-    }
 }

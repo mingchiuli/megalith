@@ -7,5 +7,4 @@ public interface BlogMessageService {
 
     void pushAction(BlogEditPushActionReq req, Long userId);
 
-    void pushAll(BlogEditPushAllReq blog, Long userId);
 }

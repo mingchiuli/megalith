@@ -7,7 +7,6 @@ import org.chiu.megalith.blog.lang.FieldEnum;
 import org.chiu.megalith.blog.lang.ParaOpreateEnum;
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
-import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.service.BlogMessageService;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
@@ -159,24 +158,6 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             throw e;
         }
         return rawContent;
-    }
-
-    @Override
-    public void pushAll(BlogEditPushAllReq blog, Long userId) {
-        Long id = blog.getId();
-        String redisKey = Objects.isNull(id) ?
-                TEMP_EDIT_BLOG.getInfo() + userId :
-                TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
-
-        String content = blog.getContent();
-
-        List<String> paragraphList = List.of(content.split(PARAGRAPH_SPLITTER.getInfo()));
-        String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
-
-        redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                paragraphListString, ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
-                "604800");
     }
 
 }

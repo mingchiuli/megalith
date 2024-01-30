@@ -1,5 +1,6 @@
 package org.chiu.megalith.blog.service;
 
+import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -57,4 +58,6 @@ public interface BlogService {
     BlogExhibitVo getBlogDetail(Authentication authentication, Long id);
 
     Integer getBlogStatus(Authentication authentication, Long blogId);
+
+    void pushAll(BlogEditPushAllReq blog, Long userId);
 }
