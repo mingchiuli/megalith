@@ -50,7 +50,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                         .functionScore(functionScore -> functionScore
                                 .query(baseQuery -> baseQuery
                                         //做高亮必須在query里搜高亮字段
-                                        //不做高亮就不用写
+                                        //不做高亮可以不写，但是也基于评分策略
                                         .bool(boolQry -> boolQry
                                                 .must(mustQry -> mustQry
                                                         .multiMatch(multiMatchQry -> multiMatchQry
