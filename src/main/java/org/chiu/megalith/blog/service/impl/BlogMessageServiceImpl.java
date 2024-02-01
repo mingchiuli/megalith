@@ -8,7 +8,6 @@ import org.chiu.megalith.blog.lang.ParaOpreateEnum;
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
 import org.chiu.megalith.blog.service.BlogMessageService;
-import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -27,8 +26,6 @@ public class BlogMessageServiceImpl implements BlogMessageService {
     private final StringRedisTemplate redisTemplate;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
-
-    private final JsonUtils jsonUtils;
 
     @SneakyThrows
     @Override
@@ -70,7 +67,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     value = resp.getLast();
                     value = Objects.isNull(value) ? "" : value;
 
-                    checkPushAll(version, Integer.parseInt(v));
+                    checkVersion(version, Integer.parseInt(v));
                     value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd);
 
                     Map<String, String> subMap = new LinkedHashMap<>();
@@ -86,7 +83,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
-                    checkPushAll(version, Integer.parseInt(v));
+                    checkVersion(version, Integer.parseInt(v));
 
                     value = resp.getLast();
                     //去掉最后的\n
@@ -105,8 +102,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
-
-                    checkPushAll(version, Integer.parseInt(v));
+                    checkVersion(version, Integer.parseInt(v));
 
                     value = resp.getLast();
                     value = value + '\n';
@@ -124,8 +120,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .orElseGet(ArrayList::new);
         v = resp.getFirst();
         value = resp.getLast();
+        checkVersion(version, Integer.parseInt(v));
 
-        checkPushAll(version, Integer.parseInt(v));
         value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd);
 
         redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
@@ -134,7 +130,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 "604800");
     }
 
-    private void checkPushAll(int newVersion, int rawVersion) {
+    private void checkVersion(int newVersion, int rawVersion) {
         if (newVersion != rawVersion + 1) {
             // 前端向服务端推全量
             simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
