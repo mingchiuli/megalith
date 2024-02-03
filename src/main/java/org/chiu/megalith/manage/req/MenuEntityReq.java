@@ -28,7 +28,7 @@ public class MenuEntityReq {
 
     private String icon;
 
-    @NotBlank
+    @NotNull
     private Integer orderNum;
 
     @NotNull
