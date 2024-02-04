@@ -18,6 +18,9 @@ public enum FieldEnum {
 
     CREATED("created", "创建时间"),
 
+    UPDATED("updated", "更新时间"),
+
+
     USERID("userId", "用户ID");
 
     private final String field;

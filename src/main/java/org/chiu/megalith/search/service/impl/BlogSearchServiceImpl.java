@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScoreMode;
 
+import co.elastic.clients.json.JsonData;
 import org.chiu.megalith.blog.convertor.BlogEntityVoConvertor;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
@@ -22,7 +23,6 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.Objects;
 
 import static org.chiu.megalith.blog.lang.FieldEnum.*;
@@ -40,8 +40,6 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
-    private final List<String> fields = List.of(TITLE.getField(), DESCRIPTION.getField(), CONTENT.getField());
-
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keywords, Boolean allInfo, String year) {
 
@@ -52,40 +50,87 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                         //做高亮必須在query里搜高亮字段
                                         //不做高亮可以不写，但是也基于评分策略
                                         .bool(boolQry -> boolQry
-                                                .must(mustQry -> mustQry
-                                                        .multiMatch(multiMatchQry -> multiMatchQry
-                                                                .fields(fields)
+                                                .should(should -> should
+                                                        .match(match -> match
+                                                                .field(TITLE.getField())
                                                                 .fuzziness("auto")
                                                                 .query(keywords)))
-                                                .must(mustQry -> mustQry
-                                                        .range(rangeQuery -> rangeQuery
+                                                .should(should -> should
+                                                        .matchPhrase(matchPhrase -> matchPhrase
+                                                                .field(TITLE.getField())
+                                                                .query(keywords)))
+                                                .should(should -> should
+                                                        .match(match -> match
+                                                                .field(DESCRIPTION.getField())
+                                                                .fuzziness("auto")
+                                                                .query(keywords)))
+                                                .should(should -> should
+                                                        .matchPhrase(matchPhrase -> matchPhrase
+                                                                .field(DESCRIPTION.getField())
+                                                                .query(keywords)))
+                                                .should(should -> should
+                                                        .match(match -> match
+                                                                .field(CONTENT.getField())
+                                                                .fuzziness("auto")
+                                                                .query(keywords))).
+                                                should(should -> should
+                                                        .matchPhrase(matchPhrase -> matchPhrase
+                                                                .field(CONTENT.getField())
+                                                                .query(keywords)))
+                                                .minimumShouldMatch("1")
+                                                .filter(filter -> filter
+                                                        .range(range -> range
                                                                 .field(CREATED.getField())
                                                                 .from(StringUtils.hasLength(year) ? year + "-01-01T00:00:00.000+08:00" : null)
                                                                 .to(StringUtils.hasLength(year) ? year + "-12-31T23:59:59.999+08:00" : null)))
-                                                .must(mustQry -> mustQry
+                                                .filter(filter -> filter
                                                         .term(termQry -> termQry
-                                                                .field(STATUS.getField()).value(StatusEnum.NORMAL.getCode())))))
+                                                                .field(STATUS.getField())
+                                                                .value(StatusEnum.NORMAL.getCode())))))
                                 .functions(function -> function
-                                        .filter(filterQry -> filterQry
-                                                .match(matchQry -> matchQry
-                                                        .fuzziness("auto")
+                                        .filter(filter -> filter
+                                                .match(match -> match
                                                         .field(TITLE.getField())
                                                         .query(keywords)))
                                         .weight(1.0))
                                 .functions(function -> function
-                                        .filter(filterQry -> filterQry
-                                                .match(matchQry -> matchQry
-                                                        .fuzziness("auto")
+                                        .filter(filter -> filter
+                                                .match(match -> match
                                                         .field(DESCRIPTION.getField())
+                                                        .query(keywords)))
+                                        .weight(1.25))
+                                .functions(function -> function
+                                        .filter(filter -> filter
+                                                .match(match -> match
+                                                        .field(CONTENT.getField())
                                                         .query(keywords)))
                                         .weight(1.5))
                                 .functions(function -> function
-                                        .filter(filterQry -> filterQry
-                                                .match(matchQry -> matchQry
-                                                        .fuzziness("auto")
+                                        .filter(filter -> filter
+                                                .matchPhrase(matchPhrase -> matchPhrase
+                                                        .field(TITLE.getField())
+                                                        .query(keywords)))
+                                        .weight(1.5))
+                                .functions(function -> function
+                                        .filter(filter -> filter
+                                                .matchPhrase(matchPhrase -> matchPhrase
+                                                        .field(DESCRIPTION.getField())
+                                                        .query(keywords)))
+                                        .weight(1.75))
+                                .functions(function -> function
+                                        .filter(filter -> filter
+                                                .matchPhrase(matchPhrase -> matchPhrase
                                                         .field(CONTENT.getField())
                                                         .query(keywords)))
                                         .weight(2.0))
+                                .functions(function -> function
+                                        .gauss(gauss -> gauss
+                                                .field(UPDATED.getField())
+                                                .placement(placement -> placement
+                                                        .origin(JsonData.of("now/d"))
+                                                        .scale(JsonData.of("1095d"))
+                                                        .offset(JsonData.of("90d"))
+                                                        .decay(0.5))))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withSort(sort -> sort
@@ -111,39 +156,78 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                         .functionScore(functionScore -> functionScore
                                 .query(baseQry -> baseQry
                                         .bool(boolQry -> boolQry
-                                                .must(mustQry -> mustQry
-                                                        .term(termQry -> termQry
+                                                .filter(filter -> filter
+                                                        .term(term -> term
                                                                 .field(USERID.getField())
                                                                 .value(userId)))
-                                                .must(mustQry -> mustQry
-                                                        .multiMatch(multiMatchQry -> multiMatchQry
+                                                .should(should -> should
+                                                        .match(match -> match
+                                                                .field(TITLE.getField())
                                                                 .fuzziness("auto")
-                                                                .fields(fields)
-                                                                .query(keywords)))))
+                                                                .query(keywords)))
+                                                .should(should -> should
+                                                        .matchPhrase(matchPhrase -> matchPhrase
+                                                                .field(TITLE.getField())
+                                                                .query(keywords)))
+                                                .should(should -> should
+                                                        .match(match -> match
+                                                                .field(DESCRIPTION.getField())
+                                                                .fuzziness("auto")
+                                                                .query(keywords)))
+                                                .should(should -> should
+                                                        .matchPhrase(matchPhrase -> matchPhrase
+                                                                .field(DESCRIPTION.getField())
+                                                                .query(keywords)))
+                                                .should(should -> should
+                                                        .match(match -> match
+                                                                .field(CONTENT.getField())
+                                                                .fuzziness("auto")
+                                                                .query(keywords))).
+                                                should(should -> should
+                                                        .matchPhrase(matchPhrase -> matchPhrase
+                                                                .field(CONTENT.getField())
+                                                                .query(keywords)))
+                                                .minimumShouldMatch("1")))
                                 .functions(function -> function
-                                        .filter(filterQry -> filterQry
-                                                .matchPhrase(matchPhraseQry -> matchPhraseQry
+                                        .filter(filter -> filter
+                                                .matchPhrase(matchPhrase -> matchPhrase
                                                         .field(TITLE.getField())
                                                         .query(keywords)))
                                         .weight(2.0))
                                 .functions(function -> function
-                                        .filter(filterQry -> filterQry
-                                                .match(matchQry -> matchQry
+                                        .filter(filter -> filter
+                                                .matchPhrase(matchPhrase -> matchPhrase
                                                         .field(DESCRIPTION.getField())
-                                                        .query(keywords)
-                                                        .fuzziness("auto")))
+                                                        .query(keywords)))
+                                        .weight(1.75))
+                                .functions(function -> function
+                                        .filter(filter -> filter
+                                                .matchPhrase(matchPhrase -> matchPhrase
+                                                        .field(CONTENT.getField())
+                                                        .query(keywords)))
                                         .weight(1.5))
                                 .functions(function -> function
-                                        .filter(filterQry -> filterQry
-                                                .match(matchQry -> matchQry
+                                        .filter(filter -> filter
+                                                .match(match -> match
+                                                        .field(TITLE.getField())
+                                                        .query(keywords)))
+                                        .weight(1.5))
+                                .functions(function -> function
+                                        .filter(filter -> filter
+                                                .match(match -> match
+                                                        .field(DESCRIPTION.getField())
+                                                        .query(keywords)))
+                                        .weight(1.25))
+                                .functions(function -> function
+                                        .filter(filter -> filter
+                                                .match(match -> match
                                                         .field(CONTENT.getField())
-                                                        .query(keywords)
-                                                        .fuzziness("auto")))
+                                                        .query(keywords)))
                                         .weight(1.0))
                                 .scoreMode(FunctionScoreMode.Sum)
                                 .boostMode(FunctionBoostMode.Multiply)))
                 .withPageable(PageRequest.of(currentPage - 1, size))
-                .withSort(sortQuery -> sortQuery
+                .withSort(sort -> sort
                         .score(score -> score
                                 .order(SortOrder.Desc)))
                 .build();
