@@ -2,7 +2,6 @@ package org.chiu.megalith.blog.schedule.task;
 
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
-import org.chiu.megalith.infra.lang.StatusEnum;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -27,12 +26,8 @@ public record BlogRunnable (
         Optional.ofNullable(idList).ifPresent(ids ->
                 ids.forEach(id -> {
                     redisTemplate.opsForValue().setBit(BLOOM_FILTER_BLOG.getInfo(), id, true);
-                    Integer status = blogWrapper.findStatusById(id);
-                    if (StatusEnum.NORMAL.getCode().equals(status)) {
-                        blogWrapper.findById(id, false);
-                    } else if (StatusEnum.HIDE.getCode().equals(status)){
-                        blogWrapper.findById(id, true);
-                    }
+                    blogWrapper.findStatusById(id);
+                    blogWrapper.findById(id);
                 })
         );
     }

@@ -2,6 +2,8 @@ package org.chiu.megalith.blog.service.impl;
 
 import lombok.SneakyThrows;
 import org.chiu.megalith.blog.convertor.*;
+import org.chiu.megalith.blog.dto.BlogExhibitDto;
+import org.chiu.megalith.blog.event.BlogOperateEvent;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.vo.*;
@@ -20,9 +22,9 @@ import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 
-import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -65,13 +67,13 @@ public class BlogServiceImpl implements BlogService {
 
     private final UserRepository userRepository;
 
-    private final MessageUtils messageUtils;
-
     private final OssHttpService ossHttpService;
 
     private final OssSignUtils ossSignUtils;
 
     private final BlogWrapper blogWrapper;
+
+    private final ApplicationContext applicationContext;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
@@ -109,19 +111,28 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogExhibitVo getBlogDetail(Authentication authentication, Long id) {
-        BlogExhibitVo blog;
 
-        if (Boolean.FALSE.equals(authentication instanceof AnonymousAuthenticationToken)) {
-            if ((ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
-                blog = blogWrapper.findById(id, true);
-            } else {
-                blog = blogWrapper.findById(id, false);
-            }
-        } else {
-            blog = blogWrapper.findById(id, false);
+        BlogExhibitDto blogExhibitDto = blogWrapper.findById(id);
+        Integer status = blogWrapper.findStatusById(id);
+
+        if (StatusEnum.NORMAL.getCode().equals(status) ||
+                (ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+            blogWrapper.setReadCount(id);
+            return BlogExhibitVoConvertor.convert(blogExhibitDto);
         }
-        blogWrapper.setReadCount(id);
-        return blog;
+
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            throw new BadCredentialsException(AUTH_EXCEPTION.getMsg());
+        }
+
+        Long userId = Long.valueOf(authentication.getName());
+
+        if (userId.equals(blogExhibitDto.getUserId())) {
+            blogWrapper.setReadCount(id);
+            return BlogExhibitVoConvertor.convert(blogExhibitDto);
+        }
+
+        throw new BadCredentialsException(AUTH_EXCEPTION.getMsg());
     }
 
     @Override
@@ -227,7 +238,8 @@ public class BlogServiceImpl implements BlogService {
         boolean valid = checkToken(blogId, token);
         if (valid) {
             blogWrapper.setReadCount(blogId);
-            return blogWrapper.findById(blogId, true);
+            BlogExhibitDto blogExhibitDto = blogWrapper.findById(blogId);
+            return BlogExhibitVoConvertor.convert(blogExhibitDto);
         }
         throw new BadCredentialsException(TOKEN_INVALID.getMsg());
     }
@@ -287,10 +299,8 @@ public class BlogServiceImpl implements BlogService {
             blogId = saved.getId();
         }
 
-        messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
-                ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(blogId, type, blogEntity.getCreated().getYear()),
-                type.name(), blogId);
+        var blogSearchIndexMessage = new BlogSearchIndexMessage(blogId, type, blogEntity.getCreated().getYear());
+        applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
     }
 
     @Override
@@ -356,7 +366,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void recoverDeletedBlog(Long id, Integer idx, Long userId) {
+    public void recoverDeletedBlog(Integer idx, Long userId) {
 
         String str = Optional.ofNullable(
                 redisTemplate.execute(LuaScriptUtils.recoverDeletedScript,
@@ -371,10 +381,8 @@ public class BlogServiceImpl implements BlogService {
         BlogEntity tempBlog = jsonUtils.readValue(str, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
 
-        messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
-                ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear()),
-                BlogIndexEnum.CREATE.name(), id);
+        var blogSearchIndexMessage = new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear());
+        applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
     }
 
     @Override
@@ -486,10 +494,8 @@ public class BlogServiceImpl implements BlogService {
                     Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                     jsonUtils.writeValueAsString(blogEntity), "604800");
 
-            messageUtils.sendMessageOnce(ElasticSearchRabbitConfig.ES_EXCHANGE,
-                    ElasticSearchRabbitConfig.ES_BINDING_KEY,
-                    new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear()),
-                    BlogIndexEnum.REMOVE.name(), id);
+            var blogSearchIndexMessage = new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear());
+            applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
         });
 
     }

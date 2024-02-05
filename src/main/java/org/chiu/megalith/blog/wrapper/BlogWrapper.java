@@ -2,15 +2,14 @@ package org.chiu.megalith.blog.wrapper;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.blog.convertor.BlogDescriptionVoConvertor;
-import org.chiu.megalith.blog.convertor.BlogExhibitVoConvertor;
+import org.chiu.megalith.blog.convertor.BlogExhibitDtoConvertor;
+import org.chiu.megalith.blog.dto.BlogExhibitDto;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.vo.BlogDescriptionVo;
-import org.chiu.megalith.blog.vo.BlogExhibitVo;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
-import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.manage.entity.UserEntity;
 import org.chiu.megalith.manage.repository.UserRepository;
@@ -41,21 +40,13 @@ public class BlogWrapper {
     private int blogPageSize;
 
     @Cache(prefix = Const.HOT_BLOG)
-    public BlogExhibitVo findById(Long id, Boolean visible) {
-        BlogEntity blogEntity = Boolean.FALSE.equals(
-                visible) ?
-                blogRepository.findByIdAndStatus(id, StatusEnum.NORMAL.getCode())
-                        .orElseGet(BlogEntity::new) :
-                blogRepository.findById(id)
-                        .orElseThrow(() -> new MissException(NO_FOUND));
-
-        if (Objects.isNull(blogEntity.getId())) {
-            return BlogExhibitVo.builder().build();
-        }
+    public BlogExhibitDto findById(Long id) {
+        BlogEntity blogEntity = blogRepository.findById(id)
+                .orElseThrow(() -> new MissException(NO_FOUND));
 
         UserEntity user = userRepository.findById(blogEntity.getUserId())
                 .orElseThrow(() -> new MissException(NO_FOUND));
-        return BlogExhibitVoConvertor.convert(blogEntity, user);
+        return BlogExhibitDtoConvertor.convert(blogEntity, user);
     }
 
     @Async("commonExecutor")

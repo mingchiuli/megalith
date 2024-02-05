@@ -1,21 +1,20 @@
 package org.chiu.megalith.blog.convertor;
 
-import org.chiu.megalith.blog.entity.BlogEntity;
+import org.chiu.megalith.blog.dto.BlogExhibitDto;
 import org.chiu.megalith.blog.vo.BlogExhibitVo;
-import org.chiu.megalith.manage.entity.UserEntity;
 
 public class BlogExhibitVoConvertor {
 
-    public static BlogExhibitVo convert(BlogEntity blogEntity, UserEntity user) {
+    public static BlogExhibitVo convert(BlogExhibitDto dto) {
         return BlogExhibitVo.builder()
-                .title(blogEntity.getTitle())
-                .description(blogEntity.getDescription())
-                .content(blogEntity.getContent())
-                .readCount(blogEntity.getReadCount())
-                .nickname(user.getNickname())
-                .avatar(user.getAvatar())
-                .created(blogEntity.getCreated())
-                .readCount(blogEntity.getReadCount())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .content(dto.getContent())
+                .readCount(dto.getReadCount())
+                .nickname(dto.getNickname())
+                .avatar(dto.getAvatar())
+                .created(dto.getCreated())
+                .readCount(dto.getReadCount())
                 .build();
     }
 }

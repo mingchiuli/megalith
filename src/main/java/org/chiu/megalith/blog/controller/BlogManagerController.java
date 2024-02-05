@@ -72,11 +72,10 @@ public class BlogManagerController {
         return Result.success(() -> blogService.findDeletedBlogs(currentPage, size, userId));
     }
 
-    @GetMapping("/recover/{id}/{idx}")
-    public Result<Void> recoverDeletedBlog(@PathVariable(value = "id") Long id,
-                                           @PathVariable(value = "idx") Integer idx) {
+    @GetMapping("/recover/{idx}")
+    public Result<Void> recoverDeletedBlog(@PathVariable(value = "idx") Integer idx) {
         Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> blogService.recoverDeletedBlog(id, idx, userId));
+        return Result.success(() -> blogService.recoverDeletedBlog(idx, userId));
     }
 
     @PostMapping("/oss/upload")

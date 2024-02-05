@@ -30,7 +30,7 @@ public interface BlogService {
 
     PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority);
 
-    void recoverDeletedBlog(Long id, Integer idx, Long userId);
+    void recoverDeletedBlog(Integer idx, Long userId);
 
     PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId);
 
