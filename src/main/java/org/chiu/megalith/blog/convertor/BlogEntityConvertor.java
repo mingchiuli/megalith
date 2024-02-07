@@ -15,6 +15,7 @@ public class BlogEntityConvertor {
                 .id(StringUtils.hasLength(idStr) ?
                         Long.valueOf(idStr) :
                         null)
+                .userId(Long.valueOf(entries.get(USER_ID.getMsg())))
                 .description(entries.get(DESCRIPTION.getMsg()))
                 .title(entries.get(TITLE.getMsg()))
                 .status(Integer.valueOf(entries.get(STATUS.getMsg())))

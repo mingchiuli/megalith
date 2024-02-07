@@ -7,6 +7,7 @@ public class BlogEditVoConvertor {
 
     public static BlogEditVo convert(BlogEntity blog, Integer version) {
         return BlogEditVo.builder()
+                .userId(blog.getUserId())
                 .id(blog.getId())
                 .title(blog.getTitle())
                 .description(blog.getDescription())

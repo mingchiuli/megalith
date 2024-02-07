@@ -9,6 +9,8 @@ public enum MessageActionFieldEnum {
 
     DESCRIPTION("description"),
 
+    USER_ID("userId"),
+
     CONTENT("content"),
 
     LINK("link"),

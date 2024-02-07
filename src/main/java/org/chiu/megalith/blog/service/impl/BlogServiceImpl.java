@@ -8,6 +8,7 @@ import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
+import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
@@ -174,8 +175,8 @@ public class BlogServiceImpl implements BlogService {
         String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                paragraphListString, ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
+                paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
                 "604800");
     }
 
@@ -412,10 +413,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogEditVo findEdit(Long id, Long userId) {
 
-        String redisKey = Objects.isNull(id) ?
-                TEMP_EDIT_BLOG.getInfo() + userId :
-                TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
-
+        String redisKey = KeyFactory.createBlogEditRedisKey(userId, id);
         Map<String, String> entries = redisTemplate.<String, String>opsForHash()
                 .entries(redisKey);
 
@@ -426,6 +424,7 @@ public class BlogServiceImpl implements BlogService {
             version = Integer.parseInt(entries.get(VERSION.getMsg()));
 
             entries.remove(ID.getMsg());
+            entries.remove(USER_ID.getMsg());
             entries.remove(DESCRIPTION.getMsg());
             entries.remove(TITLE.getMsg());
             entries.remove(STATUS.getMsg());
@@ -446,6 +445,7 @@ public class BlogServiceImpl implements BlogService {
             // 新文章
             blog = BlogEntity.builder()
                     .status(StatusEnum.NORMAL.getCode())
+                    .userId(userId)
                     .content("")
                     .description("")
                     .link("")
@@ -454,8 +454,8 @@ public class BlogServiceImpl implements BlogService {
             version = -1;
 
             redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                    "[]", ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                   "" , "", "", StatusEnum.NORMAL.getCode().toString(), "", "-1",
+                    "[]", ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+                   "" , userId.toString(), "", "", StatusEnum.NORMAL.getCode().toString(), "", "-1",
                     "604800");
         } else {
             blog = blogRepository.findByIdAndUserId(id, userId)
@@ -465,8 +465,8 @@ public class BlogServiceImpl implements BlogService {
             String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
             redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                    paragraphListString, ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                    Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
+                    paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+                    Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
                     "604800");
         }
 

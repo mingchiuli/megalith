@@ -9,6 +9,9 @@ public class BlogEditPushAllReq {
     private Long id;
 
     @NotNull
+    private Long userId;
+
+    @NotNull
     private String title;
 
     @NotNull

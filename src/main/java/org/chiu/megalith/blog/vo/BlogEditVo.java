@@ -10,6 +10,8 @@ public class BlogEditVo {
 
     private Long id;
 
+    private Long userId;
+
     private String title;
 
     private String description;

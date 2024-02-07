@@ -8,6 +8,7 @@ import org.chiu.megalith.blog.lang.ParaOpreateEnum;
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
 import org.chiu.megalith.blog.service.BlogMessageService;
+import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -48,9 +49,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         String fieldName = req.getField();
         FieldEnum fieldEnum = FieldEnum.getInstance(fieldName);
 
-        String redisKey = Objects.isNull(id) ?
-                TEMP_EDIT_BLOG.getInfo() + userId :
-                TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+        String redisKey = KeyFactory.createBlogEditRedisKey(userId, id);
 
         String v;
         String value;
@@ -67,8 +66,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     value = resp.getLast();
                     value = Objects.isNull(value) ? "" : value;
 
-                    checkVersion(version, Integer.parseInt(v));
-                    value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd);
+                    checkVersion(version, Integer.parseInt(v), userId, id);
+                    value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd, userId, id);
 
                     Map<String, String> subMap = new LinkedHashMap<>();
                     subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, value);
@@ -83,7 +82,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
-                    checkVersion(version, Integer.parseInt(v));
+                    checkVersion(version, Integer.parseInt(v), userId, id);
 
                     value = resp.getLast();
                     //去掉最后的\n
@@ -102,7 +101,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
                             .orElseGet(ArrayList::new);
                     v = resp.getFirst();
-                    checkVersion(version, Integer.parseInt(v));
+                    checkVersion(version, Integer.parseInt(v), userId, id);
 
                     value = resp.getLast();
                     value = value + '\n';
@@ -120,9 +119,9 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .orElseGet(ArrayList::new);
         v = resp.getFirst();
         value = resp.getLast();
-        checkVersion(version, Integer.parseInt(v));
+        checkVersion(version, Integer.parseInt(v), userId, id);
 
-        value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd);
+        value = contentDeal(pushActionEnum, value, contentChange, indexStart, indexEnd, userId, id);
 
         redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
                 fieldEnum.getField(), VERSION.getMsg(),
@@ -130,14 +129,15 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 "604800");
     }
 
-    private void checkVersion(int newVersion, int rawVersion) {
+    private void checkVersion(int newVersion, int rawVersion, Long userId, Long blogId) {
+        String key = KeyFactory.createPushContentIdentityKey(userId, blogId);
         if (newVersion != rawVersion + 1) {
             // 前端向服务端推全量
-            simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
+            simpMessagingTemplate.convertAndSend("/edits/push/all/" + key, "ALL");
         }
     }
 
-    private String contentDeal(PushActionEnum pushActionEnum, String rawContent, String contentChange, Integer indexStart, Integer indexEnd) {
+    private String contentDeal(PushActionEnum pushActionEnum, String rawContent, String contentChange, Integer indexStart, Integer indexEnd, Long userId, Long blogId) {
         try {
             switch (pushActionEnum) {
                 case REMOVE -> rawContent = "";
@@ -150,7 +150,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 default -> throw new IllegalArgumentException("Unexpected value: " + pushActionEnum);
             }
         } catch (IndexOutOfBoundsException e) {
-            simpMessagingTemplate.convertAndSend("/edits/push/all", "ALL");
+            String key = KeyFactory.createPushContentIdentityKey(userId, blogId);
+            simpMessagingTemplate.convertAndSend("/edits/push/all/" + key, "ALL");
             throw e;
         }
         return rawContent;
