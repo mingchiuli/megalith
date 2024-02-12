@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ParaOpreateEnum {
 
-    NONE(0, "段内操作"),
+    INNER(0, "段内操作"),
 
     TAIL_APPEND(1, "从末尾增加一段"),
 

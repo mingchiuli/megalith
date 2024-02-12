@@ -56,7 +56,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         if (Objects.nonNull(paraOpreateEnum)) {
             //content字段
             switch (paraOpreateEnum) {
-                case NONE -> {
+                case INNER -> {
                     List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
                                     Collections.singletonList(redisKey),
                                     VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + paraNo)))
