@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.jwt;
+package org.chiu.megalith.infra.token;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @Component
 @ConfigurationProperties(prefix = "blog.jwt")
-public class JwtUtils {
+public class JwtUtils implements TokenUtils<DecodedJWT> {
 
     private String secret;
 
@@ -51,7 +51,7 @@ public class JwtUtils {
                 .sign(algorithm);
     }
 
-    public DecodedJWT getJWTVerifierByToken(String token) {
+    public DecodedJWT getVerifierByToken(String token) {
         return verifier.verify(token);
     }
 }

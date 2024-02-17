@@ -1,7 +1,8 @@
 package org.chiu.megalith.security.component;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.chiu.megalith.infra.token.TokenUtils;
 import org.chiu.megalith.manage.service.UserService;
-import org.chiu.megalith.infra.jwt.JwtUtils;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.security.user.LoginUser;
 import org.chiu.megalith.security.vo.LoginSuccessVo;
@@ -31,7 +32,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final ObjectMapper objectMapper;
 
-	private final JwtUtils jwtUtils;
+	private final TokenUtils<DecodedJWT> tokenUtils;
 
 	private final UserService userService;
 
@@ -55,14 +56,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		// 生成jwt
 		LoginUser user = (LoginUser) authentication.getPrincipal();
 		Long userId = user.getUserId();
-		String accessToken = jwtUtils.generateToken(userId.toString(),
+		String accessToken = tokenUtils.generateToken(userId.toString(),
 				authentication.getAuthorities().stream()
 						.findFirst()
 						.map(GrantedAuthority::getAuthority)
 						.orElseThrow(),
 				accessExpire);
 
-		String refreshToken = jwtUtils.generateToken(userId.toString(),
+		String refreshToken = tokenUtils.generateToken(userId.toString(),
 				ROLE_PREFIX.getInfo() + "REFRESH_TOKEN",
 				refreshExpire);
 

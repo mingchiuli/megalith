@@ -2,11 +2,11 @@ package org.chiu.megalith.infra.config.interceptor;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.chiu.megalith.infra.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 import org.apache.http.HttpHeaders;
+import org.chiu.megalith.infra.token.TokenUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -32,7 +32,7 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 @RequiredArgsConstructor
 public class MessageInterceptor implements ChannelInterceptor {
 
-    private final JwtUtils jwtUtils;
+    private final TokenUtils<DecodedJWT> tokenUtils;
 
     @Override
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
@@ -48,7 +48,7 @@ public class MessageInterceptor implements ChannelInterceptor {
                     throw new JWTVerificationException(TOKEN_INVALID.getMsg());
                 }
 
-                DecodedJWT decodedJWT = jwtUtils.getJWTVerifierByToken(jwt);
+                DecodedJWT decodedJWT = tokenUtils.getVerifierByToken(jwt);
                 String userId = decodedJWT.getSubject();
                 String role = decodedJWT.getClaim("role").asString();
 

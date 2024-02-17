@@ -1,6 +1,7 @@
 package org.chiu.megalith.security.service.impl;
 
-import org.chiu.megalith.infra.jwt.JwtUtils;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.chiu.megalith.infra.token.TokenUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.vo.UserEntityVo;
@@ -26,7 +27,7 @@ import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
-    private final JwtUtils jwtUtils;
+    private final TokenUtils<DecodedJWT> tokenUtils;
 
     private final UserService userService;
 
@@ -37,7 +38,7 @@ public class TokenServiceImpl implements TokenService {
     public Map<String, String> refreshToken() {
         Long userId = SecurityUtils.getLoginUserId();
         UserEntityVo user = userService.findById(userId);
-        String accessToken = jwtUtils.generateToken(userId.toString(), ROLE_PREFIX.getInfo() + user.getRole(), expire);
+        String accessToken = tokenUtils.generateToken(userId.toString(), ROLE_PREFIX.getInfo() + user.getRole(), expire);
         return Collections.singletonMap("accessToken", TOKEN_PREFIX.getInfo() + accessToken);
     }
 

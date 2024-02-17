@@ -2,7 +2,7 @@ package org.chiu.megalith.security.component;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.chiu.megalith.infra.jwt.JwtUtils;
+import org.chiu.megalith.infra.token.TokenUtils;
 import org.chiu.megalith.infra.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -31,13 +31,14 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
 
-    private final JwtUtils jwtUtils;
+    private final TokenUtils<DecodedJWT> tokenUtils;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper,
-            JwtUtils jwtUtils) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
+                                   ObjectMapper objectMapper,
+                                   TokenUtils<DecodedJWT> tokenUtils) {
         super(authenticationManager);
         this.objectMapper = objectMapper;
-        this.jwtUtils = jwtUtils;
+        this.tokenUtils = tokenUtils;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             throw new JWTVerificationException(TOKEN_INVALID.getMsg());
         }
 
-        DecodedJWT decodedJWT = jwtUtils.getJWTVerifierByToken(jwt);
+        DecodedJWT decodedJWT = tokenUtils.getVerifierByToken(jwt);
         String userId = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
         return new PreAuthenticatedAuthenticationToken(userId,
