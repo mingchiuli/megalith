@@ -7,9 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PushActionEnum {
 
-    PARAGRAPH(-2, "段落操作"),
-
-    NONE(-1, "Status操作"),
+    STATUS(-1, "Status操作"),
 
     TAIL_APPEND(0, "从末尾向后添加"),
 

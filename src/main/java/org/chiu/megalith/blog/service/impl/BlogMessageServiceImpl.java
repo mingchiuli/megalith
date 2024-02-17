@@ -146,7 +146,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 case HEAD_APPEND -> rawContent = contentChange + rawContent;
                 case HEAD_SUBTRACT -> rawContent = rawContent.substring(indexStart);
                 case REPLACE -> rawContent = rawContent.substring(0, indexStart) + contentChange + rawContent.substring(indexEnd);
-                case NONE -> rawContent = contentChange;
+                case STATUS -> rawContent = contentChange;
                 default -> throw new IllegalArgumentException("Unexpected value: " + pushActionEnum);
             }
         } catch (IndexOutOfBoundsException e) {
