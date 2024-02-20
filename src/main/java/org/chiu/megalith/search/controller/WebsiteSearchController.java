@@ -1,5 +1,6 @@
 package org.chiu.megalith.search.controller;
 
+import jakarta.validation.Valid;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.search.service.WebsiteSearchService;
@@ -17,13 +18,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/search/website")
 @RequiredArgsConstructor
+@Validated
 public class WebsiteSearchController {
 
     private final WebsiteSearchService websiteSearchService;
 
     @PostMapping("/save")
     @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> save(@Validated @RequestBody WebsiteDocumentReq websiteDocumentReq) {
+    public Result<Void> save(@RequestBody @Valid WebsiteDocumentReq websiteDocumentReq) {
         return Result.success(() -> websiteSearchService.saveOrUpdate(websiteDocumentReq));
     }
 
