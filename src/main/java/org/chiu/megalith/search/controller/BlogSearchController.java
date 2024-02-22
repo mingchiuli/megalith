@@ -9,7 +9,6 @@ import org.chiu.megalith.search.vo.BlogDocumentVo;
 
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

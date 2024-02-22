@@ -7,7 +7,6 @@ import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
 import org.chiu.megalith.manage.entity.RoleAuthorityEntity;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.entity.RoleMenuEntity;
-import org.chiu.megalith.manage.repository.RoleAuthorityRepository;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
