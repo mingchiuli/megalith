@@ -23,12 +23,13 @@ public class TokenController {
     private final TokenService tokenService;
 
     @GetMapping("/refresh")
-    @PreAuthorize("hasRole('REFRESH_TOKEN')")
+    @PreAuthorize("hasAuthority('token:refresh')")
     public Result<Map<String, String>> refreshToken() {
         return Result.success(tokenService::refreshToken);
     }
 
     @GetMapping("/userinfo")
+    @PreAuthorize("hasAuthority('token:userinfo')")
     public Result<UserInfoVo> userinfo() {
         return Result.success(tokenService::userinfo);
     }

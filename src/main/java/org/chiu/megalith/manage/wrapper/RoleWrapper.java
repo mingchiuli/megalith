@@ -18,7 +18,7 @@ public class RoleWrapper {
     private final RoleRepository roleRepository;
 
     @Transactional
-    public void savePerm(Long roleId, List<RoleMenuEntity> roleMenuEntities) {
+    public void saveMenu(Long roleId, List<RoleMenuEntity> roleMenuEntities) {
         roleMenuRepository.deleteByRoleId(roleId);
         roleMenuRepository.saveAll(roleMenuEntities);
     }

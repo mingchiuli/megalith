@@ -1,17 +1,12 @@
 package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.convertor.MenuVoConvertor;
-import org.chiu.megalith.manage.entity.MenuEntity;
-import org.chiu.megalith.manage.entity.RoleEntity;
-import org.chiu.megalith.manage.entity.UserEntity;
-import org.chiu.megalith.manage.repository.MenuRepository;
-import org.chiu.megalith.manage.repository.RoleMenuRepository;
-import org.chiu.megalith.manage.repository.RoleRepository;
-import org.chiu.megalith.manage.repository.UserRepository;
+import org.chiu.megalith.manage.entity.*;
+import org.chiu.megalith.manage.repository.*;
 import org.chiu.megalith.manage.service.RoleMenuService;
-import org.chiu.megalith.manage.vo.MenuRoleVo;
+import org.chiu.megalith.manage.vo.RoleAuthorityVo;
+import org.chiu.megalith.manage.vo.RoleMenuVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +17,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_NOT_EXIST;
+import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 /**
  * @author mingchiuli
@@ -40,10 +37,13 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
     private final RoleMenuRepository roleMenuRepository;
 
+    private final AuthorityRepository authorityRepository;
 
-    private List<MenuRoleVo> setCheckMenusInfo(List<MenuVo> menusInfo, List<Long> menuIdsByRole, MenuRoleVo.MenuRoleVoBuilder parent, List<MenuRoleVo> parentChildren) {
+    private final RoleAuthorityRepository roleAuthorityRepository;
+
+    private List<RoleMenuVo> setCheckMenusInfo(List<MenuVo> menusInfo, List<Long> menuIdsByRole, RoleMenuVo.RoleMenuVoBuilder parent, List<RoleMenuVo> parentChildren) {
         menusInfo.forEach(item -> {
-            MenuRoleVo.MenuRoleVoBuilder builder = MenuRoleVo.builder()
+            RoleMenuVo.RoleMenuVoBuilder builder = RoleMenuVo.builder()
                     .title(item.getTitle())
                     .menuId(item.getMenuId());
 
@@ -52,7 +52,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
             }
 
             if (Boolean.FALSE.equals(item.getChildren().isEmpty())) {
-                List<MenuRoleVo> children = new ArrayList<>();
+                List<RoleMenuVo> children = new ArrayList<>();
                 builder.children(children);
                 setCheckMenusInfo(item.getChildren(), menuIdsByRole, builder, children);
             }
@@ -64,7 +64,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
     @Override
     public List<Long> getNavMenuIdsByRoleId(String role) {
-        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(role, StatusEnum.NORMAL.getCode())
+        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(role, NORMAL.getCode())
                 .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
         Long id = roleEntity.getId();
         return roleMenuRepository.findMenuIdsByRoleId(id);
@@ -72,7 +72,8 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
     @Override
     public List<MenuVo> getCurrentUserNav(Long userId) {
-        UserEntity userEntity = userRepository.findById(userId).orElseThrow();
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new MissException(NO_FOUND));
         String role = userEntity.getRole();
         List<Long> menuIds = getNavMenuIdsByRoleId(role);
         return buildMenu(menuIds, true);
@@ -103,7 +104,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
                 .toList();
     }
 
-    public List<MenuRoleVo> getMenusInfo(Long roleId) {
+    public List<RoleMenuVo> getMenusInfo(Long roleId) {
         List<MenuVo> menusInfo = getNormalMenusInfo();
         List<Long> menuIdsByRole = roleMenuRepository.findMenuIdsByRoleId(roleId);
         return setCheckMenusInfo(menusInfo, menuIdsByRole, null, new ArrayList<>());
@@ -114,6 +115,25 @@ public class RoleMenuServiceImpl implements RoleMenuService {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
         List<MenuVo> menuEntities = MenuVoConvertor.convert(menus);
         return buildTreeMenu(menuEntities);
+    }
+
+    @Override
+    public List<RoleAuthorityVo> getAuthoritiesInfo(Long roleId) {
+        List<AuthorityEntity> allAuthorityEntities = authorityRepository.findByStatus(NORMAL.getCode());
+        List<RoleAuthorityEntity> authorityEntities = roleAuthorityRepository.findByRoleId(roleId);
+
+        List<Long> ids = authorityEntities.stream()
+                .map(RoleAuthorityEntity::getAuthorityId)
+                .toList();
+        List<RoleAuthorityVo> roleAuthorityVos = new ArrayList<>();
+
+        allAuthorityEntities.forEach(item -> roleAuthorityVos
+                .add(RoleAuthorityVo.builder()
+                        .authorityId(item.getId())
+                        .code(item.getCode())
+                        .check(ids.contains(item.getId()))
+                        .build()));
+        return roleAuthorityVos;
     }
 
     public List<MenuVo> getNormalMenusInfo() {

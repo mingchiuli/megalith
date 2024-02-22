@@ -22,18 +22,16 @@ public class RoleEntityVoConvertor {
 
     public static PageAdapter<RoleEntityVo> convert(Page<RoleEntity> page) {
         List<RoleEntityVo> content = new ArrayList<>();
-        page.getContent().forEach(role -> {
-            RoleEntityVo roleEntityVo = RoleEntityVo.builder()
-                    .code(role.getCode())
-                    .name(role.getName())
-                    .remark(role.getRemark())
-                    .status(role.getStatus())
-                    .updated(role.getUpdated())
-                    .created(role.getCreated())
-                    .id(role.getId())
-                    .build();
-            content.add(roleEntityVo);
-        });
+        page.getContent().forEach(role -> content
+                .add(RoleEntityVo.builder()
+                        .code(role.getCode())
+                        .name(role.getName())
+                        .remark(role.getRemark())
+                        .status(role.getStatus())
+                        .updated(role.getUpdated())
+                        .created(role.getCreated())
+                        .id(role.getId())
+                        .build()));
 
         return PageAdapter.<RoleEntityVo>builder()
                 .empty(page.isEmpty())
@@ -49,12 +47,14 @@ public class RoleEntityVoConvertor {
 
     public static List<RoleEntityVo> convert(List<RoleEntity> entities) {
         List<RoleEntityVo> vos = new ArrayList<>();
-        entities.forEach(item -> vos.add(RoleEntityVo.builder()
-                .code(item.getCode())
-                .id(item.getId())
-                .status(item.getStatus())
-                .name(item.getName())
-                .build()));
+        entities.forEach(item -> vos
+                .add(RoleEntityVo.builder()
+                        .code(item.getCode())
+                        .id(item.getId())
+                        .status(item.getStatus())
+                        .name(item.getName())
+                        .build()));
         return vos;
+
     }
 }

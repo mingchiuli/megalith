@@ -27,21 +27,19 @@ public class UserEntityVoConvertor {
 
     public static PageAdapter<UserEntityVo> convert(Page<UserEntity> page) {
         List<UserEntityVo> content = new ArrayList<>();
-        page.getContent().forEach(user -> {
-            UserEntityVo userEntityVo = UserEntityVo.builder()
-                    .email(user.getEmail())
-                    .phone(user.getPhone())
-                    .role(user.getRole())
-                    .id(user.getId())
-                    .nickname(user.getNickname())
-                    .status(user.getStatus())
-                    .avatar(user.getAvatar())
-                    .created(user.getCreated())
-                    .lastLogin(user.getLastLogin())
-                    .username(user.getUsername())
-                    .build();
-            content.add(userEntityVo);
-        });
+        page.getContent().forEach(user -> content
+                .add(UserEntityVo.builder()
+                        .email(user.getEmail())
+                        .phone(user.getPhone())
+                        .role(user.getRole())
+                        .id(user.getId())
+                        .nickname(user.getNickname())
+                        .status(user.getStatus())
+                        .avatar(user.getAvatar())
+                        .created(user.getCreated())
+                        .lastLogin(user.getLastLogin())
+                        .username(user.getUsername())
+                        .build()));
 
         return PageAdapter.<UserEntityVo>builder()
                 .empty(page.isEmpty())

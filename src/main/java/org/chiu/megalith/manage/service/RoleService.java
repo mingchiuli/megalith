@@ -21,8 +21,9 @@ public interface RoleService {
 
     void delete(List<Long> ids);
 
-    List<Long> savePerm(Long roleId, List<Long> menuIds);
+    void saveMenu(Long roleId, List<Long> menuIds);
 
     List<RoleEntityVo> getValidAll();
 
+    void saveAuthority(Long roleId, List<Long> authorityIds);
 }

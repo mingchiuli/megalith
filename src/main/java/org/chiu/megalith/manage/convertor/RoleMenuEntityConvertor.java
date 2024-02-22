@@ -6,7 +6,7 @@ import java.util.List;
 
 public class RoleMenuEntityConvertor {
 
-    public static List<RoleMenuEntity> convertor(Long roleId, List<Long> menuIds) {
+    public static List<RoleMenuEntity> convert(Long roleId, List<Long> menuIds) {
         return  menuIds.stream()
                 .map(menuId -> RoleMenuEntity.builder()
                         .menuId(menuId)

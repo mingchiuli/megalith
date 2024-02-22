@@ -56,7 +56,6 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             handler.handle(dto);
         } catch (IndexOutOfBoundsException e) {
             simpMessagingTemplate.convertAndSend("/edits/push/all/" + userKey, "ALL");
-            throw e;
         }
     }
 

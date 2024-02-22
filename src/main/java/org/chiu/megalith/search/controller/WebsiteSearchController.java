@@ -24,18 +24,19 @@ public class WebsiteSearchController {
     private final WebsiteSearchService websiteSearchService;
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:search:website:save')")
     public Result<Void> save(@RequestBody @Valid WebsiteDocumentReq websiteDocumentReq) {
         return Result.success(() -> websiteSearchService.saveOrUpdate(websiteDocumentReq));
     }
 
     @GetMapping("/delete/{id}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:search:website:delete')")
     public Result<Void> delete(@PathVariable(value = "id") String id) {
         return Result.success(() -> websiteSearchService.delete(id));
     }
 
     @GetMapping("/{currentPage}")
+    @PreAuthorize("hasAuthority('sys:search:website:list')")
     public Result<PageAdapter<WebsiteDocumentVo>> search(@PathVariable Integer currentPage,
                                                          @RequestParam(required = false) String keyword,
                                                          @RequestParam(required = false, defaultValue = "9") Integer pageSize) {
@@ -43,6 +44,7 @@ public class WebsiteSearchController {
     }
 
     @GetMapping("/info/{id}")
+    @PreAuthorize("hasAuthority('sys:search:website:info')")
     public Result<WebsiteDocumentVo> searchById(@PathVariable String id) {
         return Result.success(() -> websiteSearchService.searchById(id));
     }

@@ -32,31 +32,32 @@ public class MenuController {
     private final RoleMenuService roleMenuService;
 
     @GetMapping("/nav")
+    @PreAuthorize("hasAuthority('sys:menu:nav')")
     public Result<List<MenuVo>> nav() {
         Long userId = SecurityUtils.getLoginUserId();
         return Result.success(() -> roleMenuService.getCurrentUserNav(userId));
     }
 
     @GetMapping("/info/{id}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:menu:info')")
     public Result<MenuEntityVo> info(@PathVariable(name = "id") Long id) {
         return Result.success(() -> menuService.findById(id));
     }
 
     @GetMapping("/list")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:menu:list')")
     public Result<List<MenuVo>> list() {
         return Result.success(roleMenuService::tree);
     }
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:menu:save')")
     public Result<Void> saveOrUpdate(@RequestBody @Valid MenuEntityReq menu) {
         return Result.success(() -> menuService.saveOrUpdate(menu));
     }
 
     @PostMapping("/delete/{id}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:menu:delete')")
     public Result<Void> delete(@PathVariable("id") Long id) {
         return Result.success(() -> menuService.delete(id));
     }

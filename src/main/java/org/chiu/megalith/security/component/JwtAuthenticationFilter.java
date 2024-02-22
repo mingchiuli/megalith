@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.chiu.megalith.manage.service.RoleAuthorityService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.List;
 
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 
@@ -33,12 +36,16 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final TokenUtils<DecodedJWT> tokenUtils;
 
+    private final RoleAuthorityService roleAuthorityService;
+
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
                                    ObjectMapper objectMapper,
-                                   TokenUtils<DecodedJWT> tokenUtils) {
+                                   TokenUtils<DecodedJWT> tokenUtils,
+                                   RoleAuthorityService roleAuthorityService) {
         super(authenticationManager);
         this.objectMapper = objectMapper;
         this.tokenUtils = tokenUtils;
+        this.roleAuthorityService = roleAuthorityService;
     }
 
     @Override
@@ -80,8 +87,11 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         DecodedJWT decodedJWT = tokenUtils.getVerifierByToken(jwt);
         String userId = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
+
+        List<String> authorities = roleAuthorityService.getAuthoritiesByRoleCode(role.substring(ROLE_PREFIX.getInfo().length()));
+
         return new PreAuthenticatedAuthenticationToken(userId,
                 null,
-                AuthorityUtils.createAuthorityList(role));
+                AuthorityUtils.createAuthorityList(authorities));
     }
 }

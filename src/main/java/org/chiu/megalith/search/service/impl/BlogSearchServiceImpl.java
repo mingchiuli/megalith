@@ -1,8 +1,7 @@
 package org.chiu.megalith.search.service.impl;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScoreMode;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
 
 import co.elastic.clients.json.JsonData;
 import org.chiu.megalith.blog.convertor.BlogEntityVoConvertor;
@@ -10,6 +9,7 @@ import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.search.convertor.BlogDocumentVoConvertor;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.chiu.megalith.search.service.BlogSearchService;
@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 
 import static org.chiu.megalith.blog.lang.FieldEnum.*;
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 
 /**
  * @author mingchiuli
@@ -39,6 +40,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
+
+    @Value("${blog.highest-role}")
+    private String highestRole;
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keywords, Boolean allInfo, String year) {
@@ -151,43 +155,49 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Override
     public PageAdapter<BlogEntityVo> searchAllBlogs(String keywords, Integer currentPage, Integer size, Long userId) {
 
+        var boolQuery = BoolQuery.of(boolQry -> boolQry
+                .should(should -> should
+                        .match(match -> match
+                                .field(TITLE.getField())
+                                .fuzziness("auto")
+                                .query(keywords)))
+                .should(should -> should
+                        .matchPhrase(matchPhrase -> matchPhrase
+                                .field(TITLE.getField())
+                                .query(keywords)))
+                .should(should -> should
+                        .match(match -> match
+                                .field(DESCRIPTION.getField())
+                                .fuzziness("auto")
+                                .query(keywords)))
+                .should(should -> should
+                        .matchPhrase(matchPhrase -> matchPhrase
+                                .field(DESCRIPTION.getField())
+                                .query(keywords)))
+                .should(should -> should
+                        .match(match -> match
+                                .field(CONTENT.getField())
+                                .fuzziness("auto")
+                                .query(keywords)))
+                .should(should -> should
+                        .matchPhrase(matchPhrase -> matchPhrase
+                                .field(CONTENT.getField())
+                                .query(keywords)))
+                .minimumShouldMatch("1"));
+
+        if (!(ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+            var filterQry = Query.of(filter -> filter
+                    .term(term -> term
+                            .field(USERID.getField())
+                            .value(userId)));
+            boolQuery.filter().add(filterQry);
+        }
+
         var nativeQuery = NativeQuery.builder()
                 .withQuery(query -> query
                         .functionScore(functionScore -> functionScore
                                 .query(baseQry -> baseQry
-                                        .bool(boolQry -> boolQry
-                                                .filter(filter -> filter
-                                                        .term(term -> term
-                                                                .field(USERID.getField())
-                                                                .value(userId)))
-                                                .should(should -> should
-                                                        .match(match -> match
-                                                                .field(TITLE.getField())
-                                                                .fuzziness("auto")
-                                                                .query(keywords)))
-                                                .should(should -> should
-                                                        .matchPhrase(matchPhrase -> matchPhrase
-                                                                .field(TITLE.getField())
-                                                                .query(keywords)))
-                                                .should(should -> should
-                                                        .match(match -> match
-                                                                .field(DESCRIPTION.getField())
-                                                                .fuzziness("auto")
-                                                                .query(keywords)))
-                                                .should(should -> should
-                                                        .matchPhrase(matchPhrase -> matchPhrase
-                                                                .field(DESCRIPTION.getField())
-                                                                .query(keywords)))
-                                                .should(should -> should
-                                                        .match(match -> match
-                                                                .field(CONTENT.getField())
-                                                                .fuzziness("auto")
-                                                                .query(keywords))).
-                                                should(should -> should
-                                                        .matchPhrase(matchPhrase -> matchPhrase
-                                                                .field(CONTENT.getField())
-                                                                .query(keywords)))
-                                                .minimumShouldMatch("1")))
+                                        .bool(boolQuery))
                                 .functions(function -> function
                                         .filter(filter -> filter
                                                 .matchPhrase(matchPhrase -> matchPhrase

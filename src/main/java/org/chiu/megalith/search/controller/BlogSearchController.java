@@ -9,6 +9,7 @@ import org.chiu.megalith.search.vo.BlogDocumentVo;
 
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class BlogSearchController {
     }
 
     @GetMapping("/sys/blogs")
+//    @PreAuthorize("hasAuthority('sys:search:blogs')")
     public Result<PageAdapter<BlogEntityVo>> searchAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                             @RequestParam(defaultValue = "5") Integer size,
                                                             @RequestParam(value = "keywords")  @Size(min = 1, max = 20) String keywords) {

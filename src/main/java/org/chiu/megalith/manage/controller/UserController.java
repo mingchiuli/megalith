@@ -28,32 +28,32 @@ public class UserController {
     private final RoleService roleService;
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:user:save')")
     public Result<Void> save(@RequestBody @Valid UserEntityReq userEntityReq) {
         return Result.success(() -> userService.saveOrUpdate(userEntityReq));
     }
 
     @GetMapping("/page/{currentPage}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:user:page')")
     public Result<PageAdapter<UserEntityVo>> page(@PathVariable(value = "currentPage") Integer currentPage,
                                                   @RequestParam(value = "size", defaultValue = "5") Integer size) {
         return Result.success(() -> userService.listPage(currentPage, size));
     }
 
     @PostMapping("/delete")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<Void> page(@RequestBody @NotEmpty List<Long> ids) {
+    @PreAuthorize("hasAuthority('sys:user:delete')")
+    public Result<Void> delete(@RequestBody @NotEmpty List<Long> ids) {
         return Result.success(() -> userService.deleteUsers(ids));
     }
 
     @GetMapping("/info/{id}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:user:info')")
     public Result<UserEntityVo> info(@PathVariable(value = "id") Long id) {
         return Result.success(() -> userService.findById(id));
     }
 
     @GetMapping("/role/valid/all")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:user:role:valid:all')")
     public Result<List<RoleEntityVo>> getValidAll() {
         return Result.success(roleService::getValidAll);
     }

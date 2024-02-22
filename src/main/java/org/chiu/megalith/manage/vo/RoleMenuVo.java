@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class MenuRoleVo {
+public class RoleMenuVo {
 
     private Long menuId;
 
@@ -18,5 +18,5 @@ public class MenuRoleVo {
     private Boolean check;
 
     @Builder.Default
-    private List<MenuRoleVo> children = new ArrayList<>();
+    private List<RoleMenuVo> children = new ArrayList<>();
 }

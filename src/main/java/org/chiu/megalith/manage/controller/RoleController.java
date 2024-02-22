@@ -1,12 +1,14 @@
 package org.chiu.megalith.manage.controller;
 
+import org.chiu.megalith.manage.service.RoleAuthorityService;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.manage.vo.MenuRoleVo;
+import org.chiu.megalith.manage.vo.RoleAuthorityVo;
+import org.chiu.megalith.manage.vo.RoleMenuVo;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -31,41 +33,56 @@ public class RoleController {
 
     private final RoleMenuService roleMenuService;
 
+    private final RoleAuthorityService roleAuthorityService;
+
     @GetMapping("/info/{id}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:role:info')")
     public Result<RoleEntityVo> info(@PathVariable("id") Long id) {
         return Result.success(() -> roleService.info(id));
     }
 
     @GetMapping("/roles")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:role:roles')")
     public Result<PageAdapter<RoleEntityVo>> getPage(@RequestParam(defaultValue = "1") Integer currentPage,
                                                      @RequestParam(defaultValue = "5") Integer size) {
         return Result.success(() -> roleService.getPage(currentPage, size));
     }
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:role:save')")
     public Result<Void> saveOrUpdate(@RequestBody @Valid RoleEntityReq role) {
         return Result.success(() -> roleService.saveOrUpdate(role));
     }
 
     @PostMapping("/delete")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
+    @PreAuthorize("hasAuthority('sys:role:delete')")
     public Result<Void> delete(@RequestBody @NotEmpty List<Long> ids) {
         return Result.success(() -> roleService.delete(ids));
     }
 
-    @PostMapping("/perm/{roleId}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<List<Long>> savePerm(@PathVariable("roleId") Long roleId,
+    @PostMapping("/menu/{roleId}")
+    @PreAuthorize("hasAuthority('sys:role:menu:save')")
+    public Result<Void> saveMenu(@PathVariable("roleId") Long roleId,
                                        @RequestBody @NotEmpty List<Long> menuIds) {
-        return Result.success(() -> roleService.savePerm(roleId, menuIds));
+        return Result.success(() -> roleService.saveMenu(roleId, menuIds));
     }
 
-    @GetMapping("/perm/{roleId}")
-    @PreAuthorize("hasRole(@highestRoleHolder.getRole())")
-    public Result<List<MenuRoleVo>> getMenusInfo(@PathVariable Long roleId) {
+    @GetMapping("/menu/{roleId}")
+    @PreAuthorize("hasAuthority('sys:role:menu:get')")
+    public Result<List<RoleMenuVo>> getMenusInfo(@PathVariable Long roleId) {
         return Result.success(() -> roleMenuService.getMenusInfo(roleId));
+    }
+
+    @PostMapping("/authority/{roleId}")
+    @PreAuthorize("hasAuthority('sys:role:authority:save')")
+    public Result<Void> saveAuthority(@PathVariable("roleId") Long roleId,
+                                      @RequestBody @NotEmpty List<Long> authorityIds) {
+        return Result.success(() -> roleService.saveAuthority(roleId, authorityIds));
+    }
+
+    @GetMapping("/authority/{roleId}")
+    @PreAuthorize("hasAuthority('sys:role:authority:get')")
+    public Result<List<RoleAuthorityVo>> getAuthoritiesInfo(@PathVariable Long roleId) {
+        return Result.success(() -> roleMenuService.getAuthoritiesInfo(roleId));
     }
 }

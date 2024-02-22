@@ -45,7 +45,6 @@ server:
 
 blog:
   highest-role: admin
-  default-role: user
   email-try-count: 3
   blog-page-size: 5
   password-error-intervalTime: 900000

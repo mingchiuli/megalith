@@ -1,10 +1,13 @@
 package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.manage.convertor.RoleAuthorityEntityConvertor;
 import org.chiu.megalith.manage.convertor.RoleEntityVoConvertor;
 import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
+import org.chiu.megalith.manage.entity.RoleAuthorityEntity;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.entity.RoleMenuEntity;
+import org.chiu.megalith.manage.repository.RoleAuthorityRepository;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
@@ -12,6 +15,7 @@ import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
+import org.chiu.megalith.manage.wrapper.RoleAuthorityWrapper;
 import org.chiu.megalith.manage.wrapper.RoleWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -37,6 +41,8 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleWrapper roleWrapper;
 
+    private final RoleAuthorityWrapper roleAuthorityWrapper;
+
     @Override
     public RoleEntityVo info(Long id) {
         RoleEntity roleEntity = roleRepository.findById(id)
@@ -56,9 +62,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void saveOrUpdate(RoleEntityReq roleVo) {
+    public void saveOrUpdate(RoleEntityReq roleReq) {
 
-        Long id = roleVo.getId();
+        Long id = roleReq.getId();
         RoleEntity roleEntity;
         var now = LocalDateTime.now();
 
@@ -73,7 +79,7 @@ public class RoleServiceImpl implements RoleService {
                     .build();
         }
 
-        BeanUtils.copyProperties(roleVo, roleEntity);
+        BeanUtils.copyProperties(roleReq, roleEntity);
         roleRepository.save(roleEntity);
     }
 
@@ -84,15 +90,20 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public List<Long> savePerm(Long roleId, List<Long> menuIds) {
-        List<RoleMenuEntity> roleMenuEntities = RoleMenuEntityConvertor.convertor(roleId, menuIds);
-        roleWrapper.savePerm(roleId, roleMenuEntities);
-        return menuIds;
+    public void saveMenu(Long roleId, List<Long> menuIds) {
+        List<RoleMenuEntity> roleMenuEntities = RoleMenuEntityConvertor.convert(roleId, menuIds);
+        roleWrapper.saveMenu(roleId, roleMenuEntities);
     }
 
     @Override
     public List<RoleEntityVo> getValidAll() {
         List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
         return RoleEntityVoConvertor.convert(entities);
+    }
+
+    @Override
+    public void saveAuthority(Long roleId, List<Long> authorityIds) {
+        List<RoleAuthorityEntity> roleAuthorityEntities = RoleAuthorityEntityConvertor.convert(roleId, authorityIds);
+        roleAuthorityWrapper.saveAuthority(roleId, roleAuthorityEntities);
     }
 }
