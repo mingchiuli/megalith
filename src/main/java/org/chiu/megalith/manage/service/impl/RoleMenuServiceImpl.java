@@ -1,7 +1,10 @@
 package org.chiu.megalith.manage.service.impl;
 
+import org.chiu.megalith.infra.cache.CacheEvict;
 import org.chiu.megalith.infra.exception.MissException;
+import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.convertor.MenuVoConvertor;
+import org.chiu.megalith.manage.convertor.RoleAuthorityEntityConvertor;
 import org.chiu.megalith.manage.entity.*;
 import org.chiu.megalith.manage.repository.*;
 import org.chiu.megalith.manage.service.RoleMenuService;
@@ -10,6 +13,7 @@ import org.chiu.megalith.manage.vo.RoleMenuVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.wrapper.RoleAuthorityWrapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -40,6 +44,8 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     private final AuthorityRepository authorityRepository;
 
     private final RoleAuthorityRepository roleAuthorityRepository;
+
+    private final RoleAuthorityWrapper roleAuthorityWrapper;
 
     private List<RoleMenuVo> setCheckMenusInfo(List<MenuVo> menusInfo, List<Long> menuIdsByRole, RoleMenuVo.RoleMenuVoBuilder parent, List<RoleMenuVo> parentChildren) {
         menusInfo.forEach(item -> {
@@ -134,6 +140,17 @@ public class RoleMenuServiceImpl implements RoleMenuService {
                         .check(ids.contains(item.getId()))
                         .build()));
         return roleAuthorityVos;
+    }
+
+    /**
+     * 找不到方法的问题，只能用ArrayList
+     * @param roleId
+     * @param authorityIds
+     */
+    @CacheEvict(prefix = {Const.HOT_AUTHORITIES})
+    public void saveAuthority(Long roleId, ArrayList<Long> authorityIds) {
+        List<RoleAuthorityEntity> roleAuthorityEntities = RoleAuthorityEntityConvertor.convert(roleId, authorityIds);
+        roleAuthorityWrapper.saveAuthority(roleId, roleAuthorityEntities);
     }
 
     public List<MenuVo> getNormalMenusInfo() {

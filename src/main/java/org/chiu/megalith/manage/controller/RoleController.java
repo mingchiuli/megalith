@@ -1,6 +1,5 @@
 package org.chiu.megalith.manage.controller;
 
-import org.chiu.megalith.manage.service.RoleAuthorityService;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,8 +32,6 @@ public class RoleController {
     private final RoleService roleService;
 
     private final RoleMenuService roleMenuService;
-
-    private final RoleAuthorityService roleAuthorityService;
 
     @GetMapping("/info/{id}")
     @PreAuthorize("hasAuthority('sys:role:info')")
@@ -76,8 +74,8 @@ public class RoleController {
     @PostMapping("/authority/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:authority:save')")
     public Result<Void> saveAuthority(@PathVariable("roleId") Long roleId,
-                                      @RequestBody @NotEmpty List<Long> authorityIds) {
-        return Result.success(() -> roleService.saveAuthority(roleId, authorityIds));
+                                      @RequestBody @NotEmpty ArrayList<Long> authorityIds) {
+        return Result.success(() -> roleMenuService.saveAuthority(roleId, authorityIds));
     }
 
     @GetMapping("/authority/{roleId}")

@@ -3,10 +3,8 @@ package org.chiu.megalith.manage.service.impl;
 import org.chiu.megalith.infra.cache.CacheEvict;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
-import org.chiu.megalith.manage.convertor.RoleAuthorityEntityConvertor;
 import org.chiu.megalith.manage.convertor.RoleEntityVoConvertor;
 import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
-import org.chiu.megalith.manage.entity.RoleAuthorityEntity;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.chiu.megalith.manage.repository.RoleRepository;
@@ -101,11 +99,5 @@ public class RoleServiceImpl implements RoleService {
     public List<RoleEntityVo> getValidAll() {
         List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
         return RoleEntityVoConvertor.convert(entities);
-    }
-
-    @Override
-    public void saveAuthority(Long roleId, List<Long> authorityIds) {
-        List<RoleAuthorityEntity> roleAuthorityEntities = RoleAuthorityEntityConvertor.convert(roleId, authorityIds);
-        roleAuthorityWrapper.saveAuthority(roleId, roleAuthorityEntities);
     }
 }

@@ -5,6 +5,7 @@ import org.chiu.megalith.manage.vo.RoleAuthorityVo;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,4 +23,6 @@ public interface RoleMenuService {
     List<MenuVo> tree();
 
     List<RoleAuthorityVo> getAuthoritiesInfo(Long roleId);
+
+    void saveAuthority(Long roleId, ArrayList<Long> authorityIds);
 }

@@ -25,5 +25,4 @@ public interface RoleService {
 
     List<RoleEntityVo> getValidAll();
 
-    void saveAuthority(Long roleId, List<Long> authorityIds);
 }
