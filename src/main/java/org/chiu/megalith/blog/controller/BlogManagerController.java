@@ -51,9 +51,9 @@ public class BlogManagerController {
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('sys:blog:delete')")
     public Result<Void> deleteBlogs(@RequestBody @NotEmpty List<Long> ids) {
-        String authority = SecurityUtils.getLoginAuthority();
+        String role = SecurityUtils.getLoginRole();
         Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> blogService.deleteBatch(ids, userId, authority));
+        return Result.success(() -> blogService.deleteBatch(ids, userId, role));
     }
 
     @GetMapping("/lock/{blogId}")
@@ -66,9 +66,9 @@ public class BlogManagerController {
     @PreAuthorize("hasAuthority('sys:blog:blogs')")
     public Result<PageAdapter<BlogEntityVo>> getAllBlogs(@RequestParam(defaultValue = "1") Integer currentPage,
                                                          @RequestParam(defaultValue = "5") Integer size) {
-        String authority = SecurityUtils.getLoginAuthority();
+        String role = SecurityUtils.getLoginRole();
         Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> blogService.findAllABlogs(currentPage, size, userId, authority));
+        return Result.success(() -> blogService.findAllABlogs(currentPage, size, userId, role));
     }
 
     @GetMapping("/deleted")

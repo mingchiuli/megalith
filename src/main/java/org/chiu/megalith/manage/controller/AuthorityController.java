@@ -28,9 +28,9 @@ public class AuthorityController {
     }
 
 
-    @GetMapping("/get/{id}")
-    @PreAuthorize("hasAuthority('sys:authority:get')")
-    public Result<AuthorityVo> get(@PathVariable(value = "id") Long id) {
+    @GetMapping("/info/{id}")
+    @PreAuthorize("hasAuthority('sys:authority:info')")
+    public Result<AuthorityVo> info(@PathVariable(value = "id") Long id) {
         return Result.success(() -> authorityService.findById(id));
     }
 

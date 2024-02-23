@@ -88,10 +88,10 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         String userId = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
 
-        List<String> authorities = roleAuthorityService.getAuthoritiesByRoleCode(role.substring(ROLE_PREFIX.getInfo().length()));
-
-        return new PreAuthenticatedAuthenticationToken(userId,
-                null,
-                AuthorityUtils.createAuthorityList(authorities));
+        String rawRole = role.substring(ROLE_PREFIX.getInfo().length());
+        List<String> authorities = roleAuthorityService.getAuthoritiesByRoleCode(rawRole);
+        PreAuthenticatedAuthenticationToken authenticationToken = new PreAuthenticatedAuthenticationToken(userId, null, AuthorityUtils.createAuthorityList(authorities));
+        authenticationToken.setDetails(role);
+        return authenticationToken;
     }
 }

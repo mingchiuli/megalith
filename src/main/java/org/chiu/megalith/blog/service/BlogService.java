@@ -28,7 +28,7 @@ public interface BlogService {
 
     void saveOrUpdate(BlogEntityReq blog, Long userId);
 
-    PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority);
+    PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String role);
 
     void recoverDeletedBlog(Integer idx, Long userId);
 
@@ -41,7 +41,7 @@ public interface BlogService {
     BlogEditVo findEdit(Long id, Long userId);
 
 
-    void deleteBatch(List<Long> ids, Long userId, String authority);
+    void deleteBatch(List<Long> ids, Long userId, String role);
 
     String uploadOss(MultipartFile image, Long userId);
 

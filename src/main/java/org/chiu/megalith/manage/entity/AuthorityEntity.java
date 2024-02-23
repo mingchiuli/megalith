@@ -20,7 +20,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @DynamicUpdate
-@Table(name ="m_authority")
+@Table(name ="m_authority",
+        uniqueConstraints = {@UniqueConstraint(columnNames = "code"), @UniqueConstraint(columnNames = "name")})
 public class AuthorityEntity {
 
     @Id

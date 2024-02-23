@@ -81,8 +81,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         boolean auth = false;
 
         if (Objects.nonNull(authentication)) {
-            String authority = SecurityUtils.getLoginAuthority();
-            if ((ROLE_PREFIX.getInfo() + highestRole).equals(authority)) {
+            String role = SecurityUtils.getLoginRole();
+            if ((ROLE_PREFIX.getInfo() + highestRole).equals(role)) {
                 auth = true;
             }
         }
@@ -132,8 +132,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         }
 
         int status = document.getStatus();
-        String authority = SecurityUtils.getLoginAuthority();
-        if (status == StatusEnum.HIDE.getCode() && !(ROLE_PREFIX.getInfo() + highestRole).equals(authority)) {
+        String role = SecurityUtils.getLoginRole();
+        if (status == StatusEnum.HIDE.getCode() && !(ROLE_PREFIX.getInfo() + highestRole).equals(role)) {
             throw new MissException(DOCUMENT_NOT_EXIST);
         }
 

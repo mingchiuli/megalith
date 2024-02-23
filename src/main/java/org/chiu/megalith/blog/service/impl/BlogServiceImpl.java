@@ -117,7 +117,7 @@ public class BlogServiceImpl implements BlogService {
         Integer status = blogWrapper.findStatusById(id);
 
         if (StatusEnum.NORMAL.getCode().equals(status) ||
-                (ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+                (ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginRole())) {
             blogWrapper.setReadCount(id);
             return BlogExhibitVoConvertor.convert(blogExhibitDto);
         }
@@ -148,7 +148,7 @@ public class BlogServiceImpl implements BlogService {
             return StatusEnum.HIDE.getCode();
         }
 
-        if ((ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginAuthority())) {
+        if ((ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginRole())) {
             return StatusEnum.NORMAL.getCode();
         }
 
@@ -306,10 +306,10 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @SuppressWarnings("all")
-    public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String authority) {
+    public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String role) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = Objects.equals(authority, highestRole) ? blogRepository.findAll(pageRequest) :
+        Page<BlogEntity> page = Objects.equals(role, ROLE_PREFIX.getInfo() + highestRole) ? blogRepository.findAll(pageRequest) :
                 blogRepository.findAllByUserId(pageRequest, userId);
 
         List<BlogEntity> items = page.getContent();
@@ -474,13 +474,13 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void deleteBatch(List<Long> ids, Long userId, String authority) {
+    public void deleteBatch(List<Long> ids, Long userId, String role) {
         List<BlogEntity> blogList = new ArrayList<>();
         ids.forEach(id -> {
             BlogEntity blogEntity = blogRepository.findById(id)
                     .orElseThrow(() -> new MissException(NO_FOUND));
             if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId))
-                    && Boolean.FALSE.equals(Objects.equals(authority, highestRole))) {
+                    && Boolean.FALSE.equals(Objects.equals(role, ROLE_PREFIX.getInfo() + highestRole))) {
                 throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
             }
             blogList.add(blogEntity);
