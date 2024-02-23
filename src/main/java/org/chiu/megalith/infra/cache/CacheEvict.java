@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface CacheEvict {
 
-    Const prefix();
+    Const[] prefix();
 }

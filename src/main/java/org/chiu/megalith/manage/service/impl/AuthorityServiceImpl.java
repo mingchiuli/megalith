@@ -39,7 +39,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
-    @CacheEvict(prefix = Const.HOT_AUTHORITIES)
+    @CacheEvict(prefix = {Const.HOT_AUTHORITIES})
     public void saveOrUpdate(AuthorityEntityReq req) {
 
         Long id = req.getId();

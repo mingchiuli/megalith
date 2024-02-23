@@ -63,7 +63,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @CacheEvict(prefix = Const.HOT_AUTHORITIES)
+    @CacheEvict(prefix = {Const.HOT_AUTHORITIES})
     public void saveOrUpdate(RoleEntityReq roleReq) {
 
         Long id = roleReq.getId();

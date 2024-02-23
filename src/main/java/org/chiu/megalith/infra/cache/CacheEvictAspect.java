@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.chiu.megalith.infra.config.CacheRabbitConfig;
+import org.chiu.megalith.infra.lang.Const;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -48,12 +49,14 @@ public class CacheEvictAspect {
 
         Method method = declaringType.getMethod(methodName, parameterTypes);
         var annotation = method.getAnnotation(CacheEvict.class);
-        String prefix = annotation.prefix().getInfo();
+        Const[] prefix = annotation.prefix();
 
-        Set<String> keys = Optional.ofNullable(redisTemplate.keys(prefix + "*"))
-                .orElseGet(LinkedHashSet::new);
+        for (Const key : prefix) {
+            Set<String> keys = Optional.ofNullable(redisTemplate.keys(key.getInfo() + "*"))
+                    .orElseGet(LinkedHashSet::new);
 
-        redisTemplate.delete(keys);
-        rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
+            redisTemplate.delete(keys);
+            rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
+        }
     }
 }
