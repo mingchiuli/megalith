@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -36,6 +37,7 @@ public class StatisticsAspect {
 
     @SneakyThrows
     @Before("pt()")
+    @Async("commonExecutor")
     public void before() {
         HttpServletRequest request;
         try {
