@@ -1,5 +1,7 @@
 package org.chiu.megalith.manage.service.impl;
 
+import org.chiu.megalith.infra.cache.CacheEvict;
+import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.convertor.RoleAuthorityEntityConvertor;
 import org.chiu.megalith.manage.convertor.RoleEntityVoConvertor;
@@ -61,6 +63,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @CacheEvict(prefix = Const.HOT_AUTHORITIES)
     public void saveOrUpdate(RoleEntityReq roleReq) {
 
         Long id = roleReq.getId();

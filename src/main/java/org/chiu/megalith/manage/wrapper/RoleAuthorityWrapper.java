@@ -10,6 +10,7 @@ import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.repository.AuthorityRepository;
 import org.chiu.megalith.manage.repository.RoleAuthorityRepository;
 import org.chiu.megalith.manage.repository.RoleRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_AUTH;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
+import static org.chiu.megalith.infra.lang.StatusEnum.HIDE;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 @Component
@@ -40,6 +43,11 @@ public class RoleAuthorityWrapper {
 
         RoleEntity roleEntity = roleRepository.findByCodeAndStatus(roleCode, NORMAL.getCode())
                 .orElseThrow(() -> new MissException(NO_FOUND));
+
+        Integer status = roleEntity.getStatus();
+        if (HIDE.getCode().equals(status)) {
+            throw new BadCredentialsException(NO_AUTH.getMsg());
+        }
 
         List<RoleAuthorityEntity> authorityEntities = roleAuthorityRepository.findByRoleId(roleEntity.getId());
         Set<Long> authorityIds = authorityEntities.stream()
