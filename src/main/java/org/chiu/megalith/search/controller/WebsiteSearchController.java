@@ -25,7 +25,7 @@ public class WebsiteSearchController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:search:website:save')")
-    public Result<Void> save(@RequestBody @Valid WebsiteDocumentReq websiteDocumentReq) {
+    public Result<Void> saveOrUpdate(@RequestBody @Valid WebsiteDocumentReq websiteDocumentReq) {
         return Result.success(() -> websiteSearchService.saveOrUpdate(websiteDocumentReq));
     }
 
@@ -45,7 +45,7 @@ public class WebsiteSearchController {
 
     @GetMapping("/info/{id}")
     @PreAuthorize("hasAuthority('sys:search:website:info')")
-    public Result<WebsiteDocumentVo> searchById(@PathVariable String id) {
+    public Result<WebsiteDocumentVo> info(@PathVariable String id) {
         return Result.success(() -> websiteSearchService.searchById(id));
     }
 }

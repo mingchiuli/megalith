@@ -29,7 +29,7 @@ public class UserController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:user:save')")
-    public Result<Void> save(@RequestBody @Valid UserEntityReq userEntityReq) {
+    public Result<Void> saveOrUpdate(@RequestBody @Valid UserEntityReq userEntityReq) {
         return Result.success(() -> userService.saveOrUpdate(userEntityReq));
     }
 
