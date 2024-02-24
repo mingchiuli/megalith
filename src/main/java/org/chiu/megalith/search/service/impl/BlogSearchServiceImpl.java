@@ -243,7 +243,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                 .build();
 
         SearchHits<BlogDocument> search = elasticsearchTemplate.search(nativeQuery, BlogDocument.class);
-        return BlogEntityVoConvertor.convert(search, currentPage, size);
+        return BlogEntityVoConvertor.convert(search, currentPage, size, userId);
     }
 
 }

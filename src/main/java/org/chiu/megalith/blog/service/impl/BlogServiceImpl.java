@@ -326,7 +326,7 @@ public class BlogServiceImpl implements BlogService {
             readMap.put(Long.valueOf(res.get(i)), Integer.valueOf(res.get(i + 1)));
         }
 
-        return BlogEntityVoConvertor.convert(page, readMap);
+        return BlogEntityVoConvertor.convert(page, readMap, userId);
     }
 
     @Override

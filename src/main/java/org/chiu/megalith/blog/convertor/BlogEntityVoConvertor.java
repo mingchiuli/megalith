@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class BlogEntityVoConvertor {
 
-    public static PageAdapter<BlogEntityVo> convert(Page<BlogEntity> page, Map<Long, Integer> readMap) {
+    public static PageAdapter<BlogEntityVo> convert(Page<BlogEntity> page, Map<Long, Integer> readMap, Long operateUserId) {
         List<BlogEntity> items = page.getContent();
 
         List<BlogEntityVo> entities = items.stream()
@@ -28,6 +28,7 @@ public class BlogEntityVoConvertor {
                         .created(blogEntity.getCreated())
                         .updated(blogEntity.getUpdated())
                         .content(blogEntity.getContent())
+                        .owner(blogEntity.getUserId().equals(operateUserId))
                         .build())
                 .toList();
 
@@ -43,7 +44,7 @@ public class BlogEntityVoConvertor {
                 .build();
     }
 
-    public static PageAdapter<BlogEntityVo> convert(SearchHits<BlogDocument> search, Integer currentPage ,Integer pageSize) {
+    public static PageAdapter<BlogEntityVo> convert(SearchHits<BlogDocument> search, Integer currentPage ,Integer pageSize, Long operateUserId) {
         List<SearchHit<BlogDocument>> hits = search.getSearchHits();
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % pageSize == 0 ? totalHits / pageSize : totalHits / pageSize + 1;
@@ -59,6 +60,7 @@ public class BlogEntityVoConvertor {
                             .created(document.getCreated().toLocalDateTime())
                             .updated(document.getUpdated().toLocalDateTime())
                             .status(document.getStatus())
+                            .owner(document.getUserId().equals(operateUserId))
                             .build();
                 })
                 .toList();

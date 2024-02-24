@@ -18,6 +18,8 @@ public class BlogEntityVo {
 
     private String title;
 
+    private Boolean owner;
+
     private String description;
 
     private String content;
