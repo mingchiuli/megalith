@@ -54,9 +54,10 @@ public class CacheEvictAspect {
         for (Const key : prefix) {
             Set<String> keys = Optional.ofNullable(redisTemplate.keys(key.getInfo() + "*"))
                     .orElseGet(LinkedHashSet::new);
-
-            redisTemplate.delete(keys);
-            rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
+            if (!keys.isEmpty()) {
+                redisTemplate.delete(keys);
+                rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
+            }
         }
     }
 }

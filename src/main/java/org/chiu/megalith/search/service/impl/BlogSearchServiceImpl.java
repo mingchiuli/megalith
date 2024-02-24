@@ -155,8 +155,9 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     @Override
     public PageAdapter<BlogEntityVo> searchAllBlogs(String keywords, Integer currentPage, Integer size, Long userId) {
 
-        var boolQuery = BoolQuery.of(boolQry -> boolQry
-                .should(should -> should
+        var boolQryBuilder = new BoolQuery.Builder();
+        var builder = boolQryBuilder.
+                should(should -> should
                         .match(match -> match
                                 .field(TITLE.getField())
                                 .fuzziness("auto")
@@ -183,15 +184,17 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                         .matchPhrase(matchPhrase -> matchPhrase
                                 .field(CONTENT.getField())
                                 .query(keywords)))
-                .minimumShouldMatch("1"));
+                .minimumShouldMatch("1");
 
         if (!(ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginRole())) {
             var filterQry = Query.of(filter -> filter
                     .term(term -> term
                             .field(USERID.getField())
                             .value(userId)));
-            boolQuery.filter().add(filterQry);
+            builder.filter(filterQry);
         }
+
+        BoolQuery boolQuery = builder.build();
 
         var nativeQuery = NativeQuery.builder()
                 .withQuery(query -> query
