@@ -33,7 +33,6 @@ public class SecurityConfig {
     private static final String[] URL_WHITELIST = {
             "/code/**",
             "/public/blog/**",
-            "/search/website/query/*",
             "/search/public/**",
             "/edit/**",
             "/actuator/**"
