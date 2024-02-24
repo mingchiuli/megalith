@@ -32,7 +32,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final TokenUtils<DecodedJWT> tokenUtils;
 
-
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
