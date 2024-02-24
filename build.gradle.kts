@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.2.2"
+	id("org.springframework.boot") version "3.2.3"
 	id("io.spring.dependency-management") version "1.1.4"
 	id("org.graalvm.buildtools.native") version "0.9.28"
 }
@@ -33,7 +33,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.security:spring-security-messaging")
 	implementation("com.auth0:java-jwt:4.4.0")
-	implementation("org.redisson:redisson-spring-boot-starter:3.25.2")
+	implementation("org.redisson:redisson-spring-boot-starter:3.27.0")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	compileOnly("org.projectlombok:lombok")
