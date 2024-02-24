@@ -37,7 +37,7 @@ public class RoleAuthorityWrapper {
     @Cache(prefix = Const.HOT_AUTHORITIES)
     public List<String> getAuthoritiesByRoleCode(String roleCode) {
 
-        if ("REFRESH".equals(roleCode)) {
+        if ("REFRESH_TOKEN".equals(roleCode)) {
             return Collections.singletonList("token:refresh");
         }
 
