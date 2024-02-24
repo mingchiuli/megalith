@@ -33,19 +33,16 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final TokenUtils<DecodedJWT> tokenUtils;
 
-    private final RoleAuthorityService roleAuthorityService;
 
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
                                    ObjectMapper objectMapper,
                                    TokenUtils<DecodedJWT> tokenUtils,
-                                   RoleAuthorityService roleAuthorityService,
                                    SecurityAuthenticationUtils securityAuthenticationUtils) {
         super(authenticationManager);
         this.objectMapper = objectMapper;
         this.tokenUtils = tokenUtils;
-        this.roleAuthorityService = roleAuthorityService;
         this.securityAuthenticationUtils = securityAuthenticationUtils;
     }
 
