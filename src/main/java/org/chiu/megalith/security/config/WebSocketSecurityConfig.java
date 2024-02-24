@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.config;
+package org.chiu.megalith.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

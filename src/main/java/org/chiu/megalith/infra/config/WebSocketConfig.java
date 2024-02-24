@@ -2,8 +2,8 @@ package org.chiu.megalith.infra.config;
 
 import lombok.RequiredArgsConstructor;
 
-import org.chiu.megalith.infra.config.interceptor.CSRFChannelInterceptor;
-import org.chiu.megalith.infra.config.interceptor.MessageInterceptor;
+import org.chiu.megalith.security.config.interceptor.CSRFChannelInterceptor;
+import org.chiu.megalith.security.config.interceptor.MessageInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

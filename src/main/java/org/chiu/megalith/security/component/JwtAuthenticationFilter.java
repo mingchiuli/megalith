@@ -10,22 +10,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.service.RoleAuthorityService;
+import org.chiu.megalith.security.utils.SecurityAuthenticationUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.List;
 
-import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 
@@ -38,14 +35,18 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final RoleAuthorityService roleAuthorityService;
 
+    private final SecurityAuthenticationUtils securityAuthenticationUtils;
+
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
                                    ObjectMapper objectMapper,
                                    TokenUtils<DecodedJWT> tokenUtils,
-                                   RoleAuthorityService roleAuthorityService) {
+                                   RoleAuthorityService roleAuthorityService,
+                                   SecurityAuthenticationUtils securityAuthenticationUtils) {
         super(authenticationManager);
         this.objectMapper = objectMapper;
         this.tokenUtils = tokenUtils;
         this.roleAuthorityService = roleAuthorityService;
+        this.securityAuthenticationUtils = securityAuthenticationUtils;
     }
 
     @Override
@@ -88,10 +89,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         String userId = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
 
-        String rawRole = role.substring(ROLE_PREFIX.getInfo().length());
-        List<String> authorities = roleAuthorityService.getAuthoritiesByRoleCode(rawRole);
-        PreAuthenticatedAuthenticationToken authenticationToken = new PreAuthenticatedAuthenticationToken(userId, null, AuthorityUtils.createAuthorityList(authorities));
-        authenticationToken.setDetails(role);
-        return authenticationToken;
+        return securityAuthenticationUtils.getAuthentication(role, userId);
     }
 }

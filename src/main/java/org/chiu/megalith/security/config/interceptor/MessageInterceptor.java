@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.config.interceptor;
+package org.chiu.megalith.security.config.interceptor;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Objects;
 import org.apache.http.HttpHeaders;
 import org.chiu.megalith.infra.token.TokenUtils;
+import org.chiu.megalith.security.utils.SecurityAuthenticationUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -14,8 +15,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -33,6 +33,8 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 public class MessageInterceptor implements ChannelInterceptor {
 
     private final TokenUtils<DecodedJWT> tokenUtils;
+
+    private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
     @Override
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
@@ -52,8 +54,8 @@ public class MessageInterceptor implements ChannelInterceptor {
                 String userId = decodedJWT.getSubject();
                 String role = decodedJWT.getClaim("role").asString();
 
-                accessor.setUser(new PreAuthenticatedAuthenticationToken(userId, null,
-                        AuthorityUtils.createAuthorityList(role)));
+                Authentication authentication = securityAuthenticationUtils.getAuthentication(role, userId);
+                accessor.setUser(authentication);
             }
 
         }
