@@ -1,6 +1,5 @@
 package org.chiu.megalith.blog.service.handler;
 
-import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
@@ -15,12 +14,17 @@ import static org.chiu.megalith.blog.lang.PushActionEnum.PARA_HEAD_SUBTRACT;
 import static org.chiu.megalith.infra.lang.Const.PARAGRAPH_PREFIX;
 
 @Component
-@RequiredArgsConstructor
 public class ParaHeadSubtractHandler extends PushActionAbstractHandler {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    public ParaHeadSubtractHandler(SimpMessagingTemplate simpMessagingTemplate,
+                                   StringRedisTemplate redisTemplate,
+                                   SimpMessagingTemplate simpMessagingTemplate1) {
+        super(simpMessagingTemplate);
+        this.redisTemplate = redisTemplate;
+        this.simpMessagingTemplate = simpMessagingTemplate1;
+    }
 
     @Override
     public boolean match(PushActionEnum pushActionEnum) {
@@ -48,11 +52,8 @@ public class ParaHeadSubtractHandler extends PushActionAbstractHandler {
         int rawVersion = Integer.parseInt(v);
         int newVersion = dto.getVersion();
 
-        if (newVersion != rawVersion + 1) {
-            // 前端向服务端推全量
-            simpMessagingTemplate.convertAndSend("/edits/push/all/" + userKey, "ALL");
-            return;
-        }
+        checkVersion(rawVersion, newVersion, userKey);
+
         value = value.substring(indexStart);
 
         Map<String, String> subMap = new LinkedHashMap<>();

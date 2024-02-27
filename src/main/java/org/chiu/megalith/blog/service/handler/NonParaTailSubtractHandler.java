@@ -1,6 +1,5 @@
 package org.chiu.megalith.blog.service.handler;
 
-import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
 import org.chiu.megalith.blog.lang.FieldEnum;
 import org.chiu.megalith.blog.lang.PushActionEnum;
@@ -18,12 +17,15 @@ import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.VERSION;
 import static org.chiu.megalith.blog.lang.PushActionEnum.NON_PARA_TAIL_SUBTRACT;
 
 @Component
-@RequiredArgsConstructor
 public class NonParaTailSubtractHandler extends PushActionAbstractHandler {
 
     private final StringRedisTemplate redisTemplate;
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    public NonParaTailSubtractHandler(SimpMessagingTemplate simpMessagingTemplate,
+                                      StringRedisTemplate redisTemplate) {
+        super(simpMessagingTemplate);
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public boolean match(PushActionEnum pushActionEnum) {
@@ -48,11 +50,8 @@ public class NonParaTailSubtractHandler extends PushActionAbstractHandler {
         int rawVersion = Integer.parseInt(v);
         int newVersion = dto.getVersion();
 
-        if (newVersion != rawVersion + 1) {
-            // 前端向服务端推全量
-            simpMessagingTemplate.convertAndSend("/edits/push/all/" + userKey, "ALL");
-            return;
-        }
+        checkVersion(rawVersion, newVersion, userKey);
+
         value = value.substring(0, indexStart);
 
         redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
