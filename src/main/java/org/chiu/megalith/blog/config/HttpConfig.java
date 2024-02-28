@@ -5,11 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-import java.time.Duration;
 
 @Configuration(proxyBeanMethods = false)
 public class HttpConfig {
@@ -26,15 +25,14 @@ public class HttpConfig {
     @Bean
     OssHttpService ossHttpService() {
 
-        WebClient client = WebClient.builder()
+        RestClient client = RestClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.HOST, bucketName + "." + ep)
                 .build();
 
-        WebClientAdapter webClientAdapter = WebClientAdapter.create(client);
-        webClientAdapter.setBlockTimeout(Duration.ofSeconds(10));
+        RestClientAdapter restClientAdapter = RestClientAdapter.create(client);
 
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(webClientAdapter)
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(restClientAdapter)
                 .build();
         return factory.createClient(OssHttpService.class);
     }
