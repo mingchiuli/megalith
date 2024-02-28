@@ -62,8 +62,10 @@ public final class EmailAuthenticationProvider extends ProviderBase {
             }
 
             redisTemplate.delete(prefix);
-        } else {
-            throw new BadCredentialsException(CODE_NOT_EXIST.getMsg());
+            return;
         }
+
+        throw new BadCredentialsException(CODE_NOT_EXIST.getMsg());
+
     }
 }

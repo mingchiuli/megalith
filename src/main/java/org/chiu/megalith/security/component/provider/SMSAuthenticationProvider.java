@@ -62,8 +62,9 @@ public final class SMSAuthenticationProvider extends ProviderBase {
             }
 
             redisTemplate.delete(prefix);
-        } else {
-            throw new BadCredentialsException(SMS_NOT_EXIST.getMsg());
+            return;
         }
+
+        throw new BadCredentialsException(SMS_NOT_EXIST.getMsg());
     }
 }
