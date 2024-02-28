@@ -1,4 +1,4 @@
-package org.chiu.megalith.security.config.interceptor;
+package org.chiu.megalith.infra.config.interceptor;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
