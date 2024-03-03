@@ -21,7 +21,7 @@ public class ParaSplitSubtractHandler extends PushActionAbstractHandler {
     public ParaSplitSubtractHandler(SimpMessagingTemplate simpMessagingTemplate,
                                     StringRedisTemplate redisTemplate,
                                     SimpMessagingTemplate simpMessagingTemplate1) {
-        super(simpMessagingTemplate);
+        super(simpMessagingTemplate, redisTemplate);
         this.redisTemplate = redisTemplate;
         this.simpMessagingTemplate = simpMessagingTemplate1;
     }
@@ -32,26 +32,19 @@ public class ParaSplitSubtractHandler extends PushActionAbstractHandler {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void handle(BlogEditPushActionDto dto) {
-        String redisKey = dto.getRedisKey();
-        String userKey = dto.getUserKey();
-        Integer version = dto.getVersion();
+    protected String getValue(String contentChange, String value, Integer indexStart, Integer indexEnd) {
+        return value + '\n';
+    }
+
+    @Override
+    protected String getRedisValue(BlogEditPushActionDto dto) {
+        return dto.getParaNo().toString();
+    }
+
+    @Override
+    protected void setContent(BlogEditPushActionDto dto, String value, Integer version) {
         Integer paraNo = dto.getParaNo();
-
-        List<String> resp =  Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
-                        Collections.singletonList(redisKey),
-                        VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + (paraNo - 1))))
-                .orElseGet(ArrayList::new);
-        String v = resp.getFirst();
-        String value = resp.getLast();
-        value = value + '\n';
-
-        int rawVersion = Integer.parseInt(v);
-        int newVersion = dto.getVersion();
-
-        checkVersion(rawVersion, newVersion, userKey);
-
+        String redisKey = dto.getRedisKey();
         redisTemplate.execute(LuaScriptUtils.tailSubtractContentLua, Collections.singletonList(redisKey),
                 PARAGRAPH_PREFIX.getInfo() + paraNo, PARAGRAPH_PREFIX.getInfo() + (paraNo - 1), value, VERSION.getMsg(), String.valueOf(version));
     }
