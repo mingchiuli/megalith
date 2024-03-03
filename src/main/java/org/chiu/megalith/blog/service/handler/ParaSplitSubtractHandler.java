@@ -38,7 +38,7 @@ public class ParaSplitSubtractHandler extends PushActionAbstractHandler {
 
     @Override
     protected String getRedisValue(BlogEditPushActionDto dto) {
-        return dto.getParaNo().toString();
+        return PARAGRAPH_PREFIX.getInfo() + (dto.getParaNo() - 1);
     }
 
     @Override

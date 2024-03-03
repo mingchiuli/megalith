@@ -37,7 +37,7 @@ public class ParaHeadSubtractHandler extends PushActionAbstractHandler {
 
     @Override
     protected String getRedisValue(BlogEditPushActionDto dto) {
-        return dto.getParaNo().toString();
+        return PARAGRAPH_PREFIX.getInfo() + dto.getParaNo();
     }
 
     @Override

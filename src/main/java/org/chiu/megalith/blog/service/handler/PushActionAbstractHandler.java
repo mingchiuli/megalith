@@ -6,10 +6,7 @@ import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.VERSION;
 import static org.chiu.megalith.infra.lang.Const.PARAGRAPH_PREFIX;
@@ -40,11 +37,11 @@ public abstract class PushActionAbstractHandler {
 
         List<String> rawContent = Optional.ofNullable((redisTemplate.execute(LuaScriptUtils.hGetTwoArgs,
                         Collections.singletonList(redisKey),
-                        VERSION.getMsg(), PARAGRAPH_PREFIX.getInfo() + redisValue)))
+                        VERSION.getMsg(), redisValue)))
                 .orElseGet(ArrayList::new);
 
         String v = rawContent.getFirst();
-        String value = rawContent.getLast();
+        String value = Objects.isNull(rawContent.getLast()) ? "" : rawContent.getLast();
         int rawVersion = Integer.parseInt(v);
         int newVersion = dto.getVersion();
 
