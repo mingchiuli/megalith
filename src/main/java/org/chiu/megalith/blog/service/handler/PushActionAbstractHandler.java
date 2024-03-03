@@ -9,7 +9,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.*;
 
 import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.VERSION;
-import static org.chiu.megalith.infra.lang.Const.PARAGRAPH_PREFIX;
 
 public abstract class PushActionAbstractHandler {
 
