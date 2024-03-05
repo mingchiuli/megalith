@@ -1,7 +1,6 @@
 package org.chiu.megalith.infra.statistic;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -11,7 +10,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,6 +17,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 import java.util.Objects;
+
+import static org.chiu.megalith.infra.lang.Const.*;
 
 /**
  * @author mingchiuli
@@ -35,9 +35,9 @@ public class StatisticsAspect {
     @Pointcut(value ="execution(* org.chiu.megalith.blog.controller.*.*(..)) || execution(* org.chiu.megalith.search.controller.*.*(..))")
     public void pt() {}
 
+    //必须同步
     @SneakyThrows
     @Before("pt()")
-    @Async("commonExecutor")
     public void before() {
         HttpServletRequest request;
         try {
@@ -47,7 +47,7 @@ public class StatisticsAspect {
         }
         String ipAddr = getIpAddr(request);
         redisTemplate.execute(LuaScriptUtils.statisticLua,
-                List.of(Const.DAY_VISIT.getInfo(), Const.WEEK_VISIT.getInfo(), Const.MONTH_VISIT.getInfo(), Const.YEAR_VISIT.getInfo()),
+                List.of(DAY_VISIT.getInfo(), WEEK_VISIT.getInfo(), MONTH_VISIT.getInfo(), YEAR_VISIT.getInfo()),
                 ipAddr);
     }
 
