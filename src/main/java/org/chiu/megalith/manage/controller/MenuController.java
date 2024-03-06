@@ -6,6 +6,7 @@ import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.service.RoleMenuService;
+import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,7 +47,7 @@ public class MenuController {
 
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('sys:menu:list')")
-    public Result<List<MenuVo>> list() {
+    public Result<List<MenuDisplayVo>> list() {
         return Result.success(roleMenuService::tree);
     }
 

@@ -12,12 +12,13 @@ import org.chiu.megalith.infra.exception.MissException;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.wrapper.MenuWrapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_INVALID_OPERATE;
-import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_NOT_EXIST;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 /**
  * @author mingchiuli
@@ -41,23 +42,37 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void saveOrUpdate(MenuEntityReq menu) {
+        LocalDateTime now = LocalDateTime.now();
+        Long menuId = menu.getMenuId();
+        MenuEntity menuEntity;
 
-        MenuEntity menuEntity = MenuEntityConvertor.convert(menu);
+        if (Objects.nonNull(menuId)) {
+            menuEntity = menuRepository.findById(menuId)
+                     .orElseThrow(() -> new MissException(NO_FOUND));
+            menuEntity.setUpdated(now);
+        } else {
+            menuEntity = MenuEntityConvertor.convert(menu);
+            menuEntity.setCreated(now);
+            menuEntity.setUpdated(now);
+        }
 
+        BeanUtils.copyProperties(menu, menuEntity);
+        
         if (StatusEnum.HIDE.getCode().equals(menu.getStatus())) {
             List<MenuEntity> menuEntities = new ArrayList<>();
             menuEntities.add(menuEntity);
-            Long menuId = menu.getMenuId();
             findTargetChildrenMenuId(menuId, menuEntities);
             menuRepository.saveAll(menuEntities);
             return;
         }
+
         menuRepository.save(menuEntity);
     }
 
     private void findTargetChildrenMenuId(Long menuId, List<MenuEntity> menuEntities) {
         List<MenuEntity> menus = menuRepository.findByParentId(menuId);
         menus.forEach(menu -> {
+            menu.setUpdated(LocalDateTime.now());
             menu.setStatus(StatusEnum.HIDE.getCode());
             menuEntities.add(menu);
             findTargetChildrenMenuId(menu.getMenuId(), menuEntities);

@@ -3,11 +3,13 @@ package org.chiu.megalith.manage.service.impl;
 import org.chiu.megalith.infra.cache.CacheEvict;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor;
 import org.chiu.megalith.manage.convertor.MenuVoConvertor;
 import org.chiu.megalith.manage.convertor.RoleAuthorityEntityConvertor;
 import org.chiu.megalith.manage.entity.*;
 import org.chiu.megalith.manage.repository.*;
 import org.chiu.megalith.manage.service.RoleMenuService;
+import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.RoleAuthorityVo;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
 import org.chiu.megalith.manage.vo.MenuVo;
@@ -47,7 +49,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
     private final RoleAuthorityWrapper roleAuthorityWrapper;
 
-    private List<RoleMenuVo> setCheckMenusInfo(List<MenuVo> menusInfo, List<Long> menuIdsByRole, RoleMenuVo.RoleMenuVoBuilder parent, List<RoleMenuVo> parentChildren) {
+    private List<RoleMenuVo> setCheckMenusInfo(List<MenuDisplayVo> menusInfo, List<Long> menuIdsByRole, RoleMenuVo.RoleMenuVoBuilder parent, List<RoleMenuVo> parentChildren) {
         menusInfo.forEach(item -> {
             RoleMenuVo.RoleMenuVoBuilder builder = RoleMenuVo.builder()
                     .title(item.getTitle())
@@ -82,17 +84,18 @@ public class RoleMenuServiceImpl implements RoleMenuService {
                 .orElseThrow(() -> new MissException(NO_FOUND));
         String role = userEntity.getRole();
         List<Long> menuIds = getNavMenuIdsByRoleId(role);
-        return buildMenu(menuIds, true);
+        List<MenuDisplayVo> displayVos = buildMenu(menuIds, true);
+        return MenuVoConvertor.convert(displayVos);
     }
 
-    private List<MenuVo> buildMenu(List<Long> menuIds, Boolean statusCheck) {
+    private List<MenuDisplayVo> buildMenu(List<Long> menuIds, Boolean statusCheck) {
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
-        List<MenuVo> menuEntities = MenuVoConvertor.convert(menus, statusCheck);
+        List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, statusCheck);
         // 转树状结构
         return buildTreeMenu(menuEntities);
     }
 
-    private List<MenuVo> buildTreeMenu(List<MenuVo> menus) {
+    private List<MenuDisplayVo> buildTreeMenu(List<MenuDisplayVo> menus) {
         //2.组装父子的树形结构
         //2.1 找到所有一级分类
         return menus.stream()
@@ -102,7 +105,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
                 .toList();
     }
 
-    private List<MenuVo> getChildren(MenuVo root, List<MenuVo> all) {
+    private List<MenuDisplayVo> getChildren(MenuDisplayVo root, List<MenuDisplayVo> all) {
         return all.stream()
                 .filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId()))
                 .peek(menu -> menu.setChildren(getChildren(menu, all)))
@@ -111,15 +114,15 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     }
 
     public List<RoleMenuVo> getMenusInfo(Long roleId) {
-        List<MenuVo> menusInfo = getNormalMenusInfo();
+        List<MenuDisplayVo> menusInfo = getNormalMenusInfo();
         List<Long> menuIdsByRole = roleMenuRepository.findMenuIdsByRoleId(roleId);
         return setCheckMenusInfo(menusInfo, menuIdsByRole, null, new ArrayList<>());
     }
 
     @Override
-    public List<MenuVo> tree() {
+    public List<MenuDisplayVo> tree() {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
-        List<MenuVo> menuEntities = MenuVoConvertor.convert(menus);
+        List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, false);
         return buildTreeMenu(menuEntities);
     }
 
@@ -153,7 +156,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
         roleAuthorityWrapper.saveAuthority(roleId, roleAuthorityEntities);
     }
 
-    public List<MenuVo> getNormalMenusInfo() {
+    public List<MenuDisplayVo> getNormalMenusInfo() {
         List<Long> menuIds = menuRepository.findAllIds();
         return buildMenu(menuIds, true);
     }

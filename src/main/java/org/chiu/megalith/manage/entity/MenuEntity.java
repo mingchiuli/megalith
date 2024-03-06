@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -55,6 +56,12 @@ public class MenuEntity {
     @Column(name = "status")
     private Integer status;
 
+    @Column(name = "created")
+    private LocalDateTime created;
+
+    @Column(name = "updated")
+    private LocalDateTime updated;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,6 +76,8 @@ public class MenuEntity {
         if (!Objects.equals(url, that.url)) return false;
         if (!Objects.equals(component, that.component)) return false;
         if (!Objects.equals(type, that.type)) return false;
+        if (!Objects.equals(created, that.created)) return false;
+        if (!Objects.equals(updated, that.updated)) return false;
         if (!Objects.equals(icon, that.icon)) return false;
         if (!Objects.equals(orderNum, that.orderNum)) return false;
         return Objects.equals(status, that.status);
