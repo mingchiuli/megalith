@@ -1,31 +1,29 @@
 package org.chiu.megalith.manage.service.impl;
 
-import org.chiu.megalith.infra.cache.CacheEvict;
-import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor;
-import org.chiu.megalith.manage.convertor.MenuVoConvertor;
 import org.chiu.megalith.manage.convertor.RoleAuthorityEntityConvertor;
+import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
 import org.chiu.megalith.manage.entity.*;
 import org.chiu.megalith.manage.repository.*;
 import org.chiu.megalith.manage.service.RoleMenuService;
+import org.chiu.megalith.manage.utils.MenuUtils;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.RoleAuthorityVo;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.wrapper.MenuWrapper;
 import org.chiu.megalith.manage.wrapper.RoleAuthorityWrapper;
+import org.chiu.megalith.manage.wrapper.RoleMenuWrapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
-import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
-import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_NOT_EXIST;
+import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
+import static org.chiu.megalith.manage.utils.MenuUtils.buildTreeMenu;
 
 /**
  * @author mingchiuli
@@ -34,10 +32,6 @@ import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 @Service
 @RequiredArgsConstructor
 public class RoleMenuServiceImpl implements RoleMenuService {
-
-    private final RoleRepository roleRepository;
-
-    private final UserRepository userRepository;
 
     private final MenuRepository menuRepository;
 
@@ -48,6 +42,10 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     private final RoleAuthorityRepository roleAuthorityRepository;
 
     private final RoleAuthorityWrapper roleAuthorityWrapper;
+
+    private final MenuWrapper menuWrapper;
+
+    private final RoleMenuWrapper roleMenuWrapper;
 
     private List<RoleMenuVo> setCheckMenusInfo(List<MenuDisplayVo> menusInfo, List<Long> menuIdsByRole, RoleMenuVo.RoleMenuVoBuilder parent, List<RoleMenuVo> parentChildren) {
         menusInfo.forEach(item -> {
@@ -71,46 +69,9 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     }
 
     @Override
-    public List<Long> getNavMenuIdsByRoleId(String role) {
-        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(role, NORMAL.getCode())
-                .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
-        Long id = roleEntity.getId();
-        return roleMenuRepository.findMenuIdsByRoleId(id);
-    }
-
-    @Override
-    public List<MenuVo> getCurrentUserNav(Long userId) {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new MissException(NO_FOUND));
-        String role = userEntity.getRole();
-        List<Long> menuIds = getNavMenuIdsByRoleId(role);
-        List<MenuDisplayVo> displayVos = buildMenu(menuIds, true);
-        return MenuVoConvertor.convert(displayVos);
-    }
-
-    private List<MenuDisplayVo> buildMenu(List<Long> menuIds, Boolean statusCheck) {
-        List<MenuEntity> menus = menuRepository.findAllById(menuIds);
-        List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, statusCheck);
-        // 转树状结构
-        return buildTreeMenu(menuEntities);
-    }
-
-    private List<MenuDisplayVo> buildTreeMenu(List<MenuDisplayVo> menus) {
-        //2.组装父子的树形结构
-        //2.1 找到所有一级分类
-        return menus.stream()
-                .filter(menu -> menu.getParentId() == 0)
-                .peek(menu-> menu.setChildren(getChildren(menu, menus)))
-                .sorted(Comparator.comparingInt(menu -> Objects.isNull(menu.getOrderNum()) ? 0 : menu.getOrderNum()))
-                .toList();
-    }
-
-    private List<MenuDisplayVo> getChildren(MenuDisplayVo root, List<MenuDisplayVo> all) {
-        return all.stream()
-                .filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId()))
-                .peek(menu -> menu.setChildren(getChildren(menu, all)))
-                .sorted(Comparator.comparingInt(menu -> Objects.isNull(menu.getOrderNum()) ? 0 : menu.getOrderNum()))
-                .toList();
+    public List<MenuVo> getCurrentUserNav(String role) {
+        role = role.substring(ROLE_PREFIX.getInfo().length());
+        return menuWrapper.getCurrentRoleNav(role);
     }
 
     public List<RoleMenuVo> getMenusInfo(Long roleId) {
@@ -150,14 +111,26 @@ public class RoleMenuServiceImpl implements RoleMenuService {
      * @param roleId
      * @param authorityIds
      */
-    @CacheEvict(prefix = {Const.HOT_AUTHORITIES})
     public void saveAuthority(Long roleId, ArrayList<Long> authorityIds) {
         List<RoleAuthorityEntity> roleAuthorityEntities = RoleAuthorityEntityConvertor.convert(roleId, authorityIds);
-        roleAuthorityWrapper.saveAuthority(roleId, roleAuthorityEntities);
+        roleAuthorityWrapper.saveAuthority(roleId, new ArrayList<>(roleAuthorityEntities));
+    }
+
+    @Override
+    public void saveMenu(Long roleId, ArrayList<Long> menuIds) {
+        List<RoleMenuEntity> roleMenuEntities = RoleMenuEntityConvertor.convert(roleId, menuIds);
+        roleMenuWrapper.saveMenu(roleId, new ArrayList<>(roleMenuEntities));
     }
 
     public List<MenuDisplayVo> getNormalMenusInfo() {
         List<Long> menuIds = menuRepository.findAllIds();
         return buildMenu(menuIds, true);
+    }
+
+    private List<MenuDisplayVo> buildMenu(List<Long> menuIds, Boolean statusCheck) {
+        List<MenuEntity> menus = menuRepository.findAllById(menuIds);
+        List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, statusCheck);
+        // 转树状结构
+        return MenuUtils.buildTreeMenu(menuEntities);
     }
 }

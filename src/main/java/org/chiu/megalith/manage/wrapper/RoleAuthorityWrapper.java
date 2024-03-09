@@ -2,6 +2,7 @@ package org.chiu.megalith.manage.wrapper;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.cache.Cache;
+import org.chiu.megalith.infra.cache.CacheEvict;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.entity.AuthorityEntity;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -62,7 +64,8 @@ public class RoleAuthorityWrapper {
     }
 
     @Transactional
-    public void saveAuthority(Long roleId, List<RoleAuthorityEntity> roleAuthorityEntities) {
+    @CacheEvict(prefix = {Const.HOT_AUTHORITIES})
+    public void saveAuthority(Long roleId, ArrayList<RoleAuthorityEntity> roleAuthorityEntities) {
         roleAuthorityRepository.deleteByRoleId(roleId);
         roleAuthorityRepository.saveAll(roleAuthorityEntities);
     }

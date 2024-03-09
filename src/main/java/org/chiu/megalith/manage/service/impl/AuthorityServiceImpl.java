@@ -1,14 +1,13 @@
 package org.chiu.megalith.manage.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.cache.CacheEvict;
 import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.entity.AuthorityEntity;
 import org.chiu.megalith.manage.repository.AuthorityRepository;
 import org.chiu.megalith.manage.req.AuthorityEntityReq;
 import org.chiu.megalith.manage.service.AuthorityService;
 import org.chiu.megalith.manage.vo.AuthorityVo;
+import org.chiu.megalith.manage.wrapper.AuthorityWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.chiu.megalith.manage.convertor.AuthorityVoConvertor;
@@ -25,6 +24,8 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     private final AuthorityRepository authorityRepository;
 
+    private final AuthorityWrapper authorityWrapper;
+
     @Override
     public List<AuthorityVo> findAll() {
         List<AuthorityEntity> authorityEntities = authorityRepository.findAll();
@@ -39,7 +40,6 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
-    @CacheEvict(prefix = {Const.HOT_AUTHORITIES})
     public void saveOrUpdate(AuthorityEntityReq req) {
 
         Long id = req.getId();
@@ -58,11 +58,11 @@ public class AuthorityServiceImpl implements AuthorityService {
         }
 
         BeanUtils.copyProperties(req, authorityEntity);
-        authorityRepository.save(authorityEntity);
+        authorityWrapper.save(authorityEntity);
     }
 
     @Override
     public void deleteAuthorities(List<Long> ids) {
-        authorityRepository.deleteAllById(ids);
+        authorityWrapper.deleteAllById(ids);
     }
 }

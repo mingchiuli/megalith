@@ -83,7 +83,10 @@ public enum Const {
 
     HOT_ROLE_MENU("hot_role_menu:"),
 
-    HOT_AUTHORITIES("hot_authorities:");
+    HOT_AUTHORITIES("hot_authorities:"),
+
+    HOT_MENUS("hot_menus:");
+
 
     private final String info;
 

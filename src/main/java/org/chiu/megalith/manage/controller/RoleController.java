@@ -61,8 +61,8 @@ public class RoleController {
     @PostMapping("/menu/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:menu:save')")
     public Result<Void> saveMenu(@PathVariable("roleId") Long roleId,
-                                 @RequestBody @NotEmpty List<Long> menuIds) {
-        return Result.success(() -> roleService.saveMenu(roleId, menuIds));
+                                 @RequestBody @NotEmpty ArrayList<Long> menuIds) {
+        return Result.success(() -> roleMenuService.saveMenu(roleId, menuIds));
     }
 
     @GetMapping("/menu/{roleId}")

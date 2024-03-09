@@ -15,9 +15,7 @@ import java.util.List;
  */
 public interface RoleMenuService {
 
-    List<Long> getNavMenuIdsByRoleId(String role);
-
-    List<MenuVo> getCurrentUserNav(Long userId);
+    List<MenuVo> getCurrentUserNav(String role);
 
     List<RoleMenuVo> getMenusInfo(Long roleId);
 
@@ -26,4 +24,7 @@ public interface RoleMenuService {
     List<RoleAuthorityVo> getAuthoritiesInfo(Long roleId);
 
     void saveAuthority(Long roleId, ArrayList<Long> authorityIds);
+
+    void saveMenu(Long roleId, ArrayList<Long> menuIds);
+
 }

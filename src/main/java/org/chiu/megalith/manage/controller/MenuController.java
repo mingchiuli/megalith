@@ -35,8 +35,8 @@ public class MenuController {
     @GetMapping("/nav")
     @PreAuthorize("hasAuthority('sys:menu:nav')")
     public Result<List<MenuVo>> nav() {
-        Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> roleMenuService.getCurrentUserNav(userId));
+        String role = SecurityUtils.getLoginRole();
+        return Result.success(() -> roleMenuService.getCurrentUserNav(role));
     }
 
     @GetMapping("/info/{id}")

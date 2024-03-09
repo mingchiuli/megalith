@@ -66,7 +66,7 @@ public class MenuServiceImpl implements MenuService {
             return;
         }
 
-        menuRepository.save(menuEntity);
+        menuWrapper.save(menuEntity);
     }
 
     private void findTargetChildrenMenuId(Long menuId, List<MenuEntity> menuEntities) {

@@ -4,9 +4,7 @@ import org.chiu.megalith.infra.cache.CacheEvict;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.convertor.RoleEntityVoConvertor;
-import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
 import org.chiu.megalith.manage.entity.RoleEntity;
-import org.chiu.megalith.manage.entity.RoleMenuEntity;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
@@ -15,7 +13,7 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
 import org.chiu.megalith.manage.wrapper.RoleAuthorityWrapper;
-import org.chiu.megalith.manage.wrapper.RoleWrapper;
+import org.chiu.megalith.manage.wrapper.RoleMenuWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +36,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
 
-    private final RoleWrapper roleWrapper;
+    private final RoleMenuWrapper roleMenuWrapper;
 
     private final RoleAuthorityWrapper roleAuthorityWrapper;
 
@@ -85,14 +83,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void delete(List<Long> ids) {
-        roleWrapper.delete(ids);
-    }
-
-
-    @Override
-    public void saveMenu(Long roleId, List<Long> menuIds) {
-        List<RoleMenuEntity> roleMenuEntities = RoleMenuEntityConvertor.convert(roleId, menuIds);
-        roleWrapper.saveMenu(roleId, roleMenuEntities);
+        roleMenuWrapper.delete(ids);
     }
 
     @Override
