@@ -32,7 +32,7 @@ public class ParaHeadSubtractHandler extends PushActionAbstractHandler {
 
     @Override
     protected String getValue(String contentChange, String value, Integer indexStart, Integer indexEnd) {
-        return Objects.isNull(value) ? "" : value;
+        return value.substring(indexStart);
     }
 
     @Override
