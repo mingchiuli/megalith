@@ -64,7 +64,7 @@ public class RoleController {
     @PostMapping("/menu/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:menu:save')")
     public Result<Void> saveMenu(@PathVariable("roleId") Long roleId,
-                                 @RequestBody @NotEmpty ArrayList<Long> menuIds) {
+                                 @RequestBody ArrayList<Long> menuIds) {
         return Result.success(() -> roleMenuService.saveMenu(roleId, menuIds));
     }
 
@@ -77,7 +77,7 @@ public class RoleController {
     @PostMapping("/authority/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:authority:save')")
     public Result<Void> saveAuthority(@PathVariable("roleId") Long roleId,
-                                      @RequestBody @NotEmpty ArrayList<Long> authorityIds) {
+                                      @RequestBody ArrayList<Long> authorityIds) {
         return Result.success(() -> roleAuthorityService.saveAuthority(roleId, authorityIds));
     }
 
