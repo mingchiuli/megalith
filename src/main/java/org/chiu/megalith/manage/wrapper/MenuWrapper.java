@@ -12,7 +12,6 @@ import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.repository.MenuRepository;
 import org.chiu.megalith.manage.repository.RoleMenuRepository;
 import org.chiu.megalith.manage.repository.RoleRepository;
-import org.chiu.megalith.manage.utils.MenuUtils;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 import org.springframework.stereotype.Component;
@@ -22,6 +21,7 @@ import java.util.List;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_NOT_EXIST;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
+import static org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor.buildTreeMenu;
 
 @Component
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class MenuWrapper {
         List<Long> menuIds = roleMenuRepository.findMenuIdsByRoleId(id);
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
         List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, true);
-        List<MenuDisplayVo> displayVos = MenuUtils.buildTreeMenu(menuEntities);
+        List<MenuDisplayVo> displayVos = buildTreeMenu(menuEntities);
         return MenuVoConvertor.convert(displayVos);
     }
 

@@ -6,7 +6,6 @@ import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
 import org.chiu.megalith.manage.entity.*;
 import org.chiu.megalith.manage.repository.*;
 import org.chiu.megalith.manage.service.RoleMenuService;
-import org.chiu.megalith.manage.utils.MenuUtils;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.RoleAuthorityVo;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
@@ -23,7 +22,7 @@ import java.util.List;
 
 import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
-import static org.chiu.megalith.manage.utils.MenuUtils.buildTreeMenu;
+import static org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor.buildTreeMenu;
 
 /**
  * @author mingchiuli
@@ -131,6 +130,6 @@ public class RoleMenuServiceImpl implements RoleMenuService {
         List<MenuEntity> menus = menuRepository.findAllById(menuIds);
         List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, statusCheck);
         // 转树状结构
-        return MenuUtils.buildTreeMenu(menuEntities);
+        return buildTreeMenu(menuEntities);
     }
 }
