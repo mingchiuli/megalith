@@ -48,7 +48,7 @@ public class MenuController {
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('sys:menu:list')")
     public Result<List<MenuDisplayVo>> list() {
-        return Result.success(roleMenuService::tree);
+        return Result.success(menuService::tree);
     }
 
     @PostMapping("/save")

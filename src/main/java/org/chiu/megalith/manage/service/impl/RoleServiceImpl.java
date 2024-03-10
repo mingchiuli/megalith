@@ -1,7 +1,5 @@
 package org.chiu.megalith.manage.service.impl;
 
-import org.chiu.megalith.infra.cache.CacheEvict;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.convertor.RoleEntityVoConvertor;
 import org.chiu.megalith.manage.entity.RoleEntity;
@@ -12,8 +10,7 @@ import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
-import org.chiu.megalith.manage.wrapper.RoleAuthorityWrapper;
-import org.chiu.megalith.manage.wrapper.RoleMenuWrapper;
+import org.chiu.megalith.manage.wrapper.RoleWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,9 +33,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
 
-    private final RoleMenuWrapper roleMenuWrapper;
-
-    private final RoleAuthorityWrapper roleAuthorityWrapper;
+    private final RoleWrapper roleWrapper;
 
     @Override
     public RoleEntityVo info(Long id) {
@@ -59,7 +54,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @CacheEvict(prefix = {Const.HOT_AUTHORITIES})
     public void saveOrUpdate(RoleEntityReq roleReq) {
 
         Long id = roleReq.getId();
@@ -78,12 +72,12 @@ public class RoleServiceImpl implements RoleService {
         }
 
         BeanUtils.copyProperties(roleReq, roleEntity);
-        roleRepository.save(roleEntity);
+        roleWrapper.save(roleEntity);
     }
 
     @Override
     public void delete(List<Long> ids) {
-        roleMenuWrapper.delete(ids);
+        roleWrapper.delete(ids);
     }
 
     @Override

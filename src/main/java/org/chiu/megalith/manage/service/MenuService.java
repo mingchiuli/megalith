@@ -2,7 +2,10 @@ package org.chiu.megalith.manage.service;
 
 
 import org.chiu.megalith.manage.req.MenuEntityReq;
+import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
+
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -15,4 +18,6 @@ public interface MenuService {
     void saveOrUpdate(MenuEntityReq menu);
 
     void delete(Long id);
+
+    List<MenuDisplayVo> tree();
 }

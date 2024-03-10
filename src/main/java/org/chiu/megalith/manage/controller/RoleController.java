@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import org.chiu.megalith.manage.service.RoleAuthorityService;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.req.RoleEntityReq;
@@ -32,6 +33,8 @@ public class RoleController {
     private final RoleService roleService;
 
     private final RoleMenuService roleMenuService;
+
+    private final RoleAuthorityService roleAuthorityService;
 
     @GetMapping("/info/{id}")
     @PreAuthorize("hasAuthority('sys:role:info')")
@@ -75,12 +78,12 @@ public class RoleController {
     @PreAuthorize("hasAuthority('sys:role:authority:save')")
     public Result<Void> saveAuthority(@PathVariable("roleId") Long roleId,
                                       @RequestBody @NotEmpty ArrayList<Long> authorityIds) {
-        return Result.success(() -> roleMenuService.saveAuthority(roleId, authorityIds));
+        return Result.success(() -> roleAuthorityService.saveAuthority(roleId, authorityIds));
     }
 
     @GetMapping("/authority/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:authority:get')")
     public Result<List<RoleAuthorityVo>> getAuthoritiesInfo(@PathVariable Long roleId) {
-        return Result.success(() -> roleMenuService.getAuthoritiesInfo(roleId));
+        return Result.success(() -> roleAuthorityService.getAuthoritiesInfo(roleId));
     }
 }

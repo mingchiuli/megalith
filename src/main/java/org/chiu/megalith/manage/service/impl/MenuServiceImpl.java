@@ -2,6 +2,7 @@ package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor;
 import org.chiu.megalith.manage.convertor.MenuEntityConvertor;
 import org.chiu.megalith.manage.convertor.MenuEntityVoConvertor;
 import org.chiu.megalith.manage.entity.MenuEntity;
@@ -10,6 +11,7 @@ import org.chiu.megalith.manage.service.MenuService;
 import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.infra.exception.MissException;
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.wrapper.MenuWrapper;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
+import static org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor.buildTreeMenu;
 
 /**
  * @author mingchiuli
@@ -67,6 +70,13 @@ public class MenuServiceImpl implements MenuService {
         }
 
         menuWrapper.save(menuEntity);
+    }
+
+    @Override
+    public List<MenuDisplayVo> tree() {
+        List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
+        List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, false);
+        return buildTreeMenu(menuEntities);
     }
 
     private void findTargetChildrenMenuId(Long menuId, List<MenuEntity> menuEntities) {

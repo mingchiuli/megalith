@@ -1,8 +1,6 @@
 package org.chiu.megalith.manage.service;
 
 
-import org.chiu.megalith.manage.vo.MenuDisplayVo;
-import org.chiu.megalith.manage.vo.RoleAuthorityVo;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
 import org.chiu.megalith.manage.vo.MenuVo;
 
@@ -18,12 +16,6 @@ public interface RoleMenuService {
     List<MenuVo> getCurrentUserNav(String role);
 
     List<RoleMenuVo> getMenusInfo(Long roleId);
-
-    List<MenuDisplayVo> tree();
-
-    List<RoleAuthorityVo> getAuthoritiesInfo(Long roleId);
-
-    void saveAuthority(Long roleId, ArrayList<Long> authorityIds);
 
     void saveMenu(Long roleId, ArrayList<Long> menuIds);
 
