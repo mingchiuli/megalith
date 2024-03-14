@@ -12,6 +12,7 @@ import java.util.Collections;
 
 import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.VERSION;
 import static org.chiu.megalith.blog.lang.PushActionEnum.NON_PARA_REPLACE;
+import static org.chiu.megalith.infra.lang.Const.A_WEEK;
 
 @Component
 public class NonParaReplaceHandler extends PushActionAbstractHandler {
@@ -48,6 +49,6 @@ public class NonParaReplaceHandler extends PushActionAbstractHandler {
         redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
                 fieldEnum.getField(), VERSION.getMsg(),
                 value, String.valueOf(version),
-                "604800");
+                A_WEEK.getInfo());
     }
 }

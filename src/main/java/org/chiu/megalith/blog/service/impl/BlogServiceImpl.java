@@ -177,7 +177,7 @@ public class BlogServiceImpl implements BlogService {
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                 paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                 Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
-                "604800");
+                A_WEEK.getInfo());
     }
 
     @SneakyThrows
@@ -456,7 +456,7 @@ public class BlogServiceImpl implements BlogService {
             redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                     "[]", ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                    "" , userId.toString(), "", "", StatusEnum.NORMAL.getCode().toString(), "", "-1",
-                    "604800");
+                    A_WEEK.getInfo());
         } else {
             blog = blogRepository.findByIdAndUserId(id, userId)
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
@@ -467,7 +467,7 @@ public class BlogServiceImpl implements BlogService {
             redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                     paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                     Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
-                    "604800");
+                    A_WEEK.getInfo());
         }
 
         return BlogEditVoConvertor.convert(blog, version);
@@ -492,7 +492,7 @@ public class BlogServiceImpl implements BlogService {
             Long id = blogEntity.getId();
             redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
                     Collections.singletonList(QUERY_DELETED.getInfo() + userId),
-                    jsonUtils.writeValueAsString(blogEntity), "604800");
+                    jsonUtils.writeValueAsString(blogEntity), A_WEEK.getInfo());
 
             var blogSearchIndexMessage = new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear());
             applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
