@@ -2,7 +2,6 @@ package org.chiu.megalith.blog.service.impl;
 
 
 import jakarta.annotation.PostConstruct;
-import lombok.SneakyThrows;
 import org.chiu.megalith.blog.convertor.BlogEditPushActionDtoConvertor;
 import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
 import org.chiu.megalith.blog.lang.PushActionEnum;
@@ -41,7 +40,6 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         }
     }
 
-    @SneakyThrows
     @Override
     public void pushAction(BlogEditPushActionReq req, Long userId) {
         Long blogId = req.getId();

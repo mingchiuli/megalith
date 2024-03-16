@@ -85,7 +85,9 @@ public enum Const {
 
     HOT_AUTHORITIES("hot_authorities:"),
 
-    HOT_MENUS("hot_menus:");
+    HOT_MENUS("hot_menus:"),
+    
+    A_WEEK("604899");
 
 
     private final String info;
