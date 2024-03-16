@@ -1,26 +1,25 @@
-package org.chiu.megalith.blog.service.handler;
+package org.chiu.megalith.blog.handler;
 
 import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
-import org.chiu.megalith.blog.lang.FieldEnum;
 import org.chiu.megalith.blog.lang.PushActionEnum;
-import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.*;
 
 import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.VERSION;
-import static org.chiu.megalith.blog.lang.PushActionEnum.STATUS;
+import static org.chiu.megalith.blog.lang.PushActionEnum.PARA_REMOVE;
+import static org.chiu.megalith.infra.lang.Const.PARAGRAPH_PREFIX;
 
 @Component
-public class StatusHandler extends PushActionAbstractHandler {
+public class ParaRemoveHandler extends PushActionAbstractHandler {
 
     private final StringRedisTemplate redisTemplate;
 
-    public StatusHandler(SimpMessagingTemplate simpMessagingTemplate,
-                         StringRedisTemplate redisTemplate,
-                         SimpMessagingTemplate simpMessagingTemplate1) {
+    public ParaRemoveHandler(SimpMessagingTemplate simpMessagingTemplate,
+                             StringRedisTemplate redisTemplate,
+                             SimpMessagingTemplate simpMessagingTemplate1) {
         super(simpMessagingTemplate, redisTemplate);
         this.redisTemplate = redisTemplate;
         this.simpMessagingTemplate = simpMessagingTemplate1;
@@ -28,27 +27,26 @@ public class StatusHandler extends PushActionAbstractHandler {
 
     @Override
     public boolean match(PushActionEnum pushActionEnum) {
-        return STATUS.equals(pushActionEnum);
+        return PARA_REMOVE.equals(pushActionEnum);
     }
 
     @Override
     protected String getValue(String contentChange, String value, Integer indexStart, Integer indexEnd) {
-        return contentChange;
+        return "";
     }
 
     @Override
     protected String getRedisValue(BlogEditPushActionDto dto) {
-        return dto.getFieldEnum().getField();
+        return PARAGRAPH_PREFIX.getInfo() + dto.getParaNo();
     }
 
     @Override
     protected void setContent(BlogEditPushActionDto dto, String value, Integer version) {
-        FieldEnum fieldEnum = dto.getFieldEnum();
+        Integer paraNo = dto.getParaNo();
         String redisKey = dto.getRedisKey();
-
-        redisTemplate.execute(LuaScriptUtils.pushActionLua, Collections.singletonList(redisKey),
-                fieldEnum.getField(), VERSION.getMsg(),
-                value, String.valueOf(version),
-                "604800");
+        Map<String, String> subMap = new LinkedHashMap<>();
+        subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, value);
+        subMap.put(VERSION.getMsg(), version.toString());
+        redisTemplate.opsForHash().putAll(redisKey, subMap);
     }
 }

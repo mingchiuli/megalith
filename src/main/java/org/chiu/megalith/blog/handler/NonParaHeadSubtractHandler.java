@@ -1,4 +1,4 @@
-package org.chiu.megalith.blog.service.handler;
+package org.chiu.megalith.blog.handler;
 
 import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
 import org.chiu.megalith.blog.lang.FieldEnum;
@@ -11,27 +11,29 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 
 import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.VERSION;
-import static org.chiu.megalith.blog.lang.PushActionEnum.NON_PARA_TAIL_SUBTRACT;
+import static org.chiu.megalith.blog.lang.PushActionEnum.NON_PARA_HEAD_SUBTRACT;
 
 @Component
-public class NonParaTailSubtractHandler extends PushActionAbstractHandler {
+public class NonParaHeadSubtractHandler extends PushActionAbstractHandler {
 
     private final StringRedisTemplate redisTemplate;
 
-    public NonParaTailSubtractHandler(SimpMessagingTemplate simpMessagingTemplate,
-                                      StringRedisTemplate redisTemplate) {
+    public NonParaHeadSubtractHandler(SimpMessagingTemplate simpMessagingTemplate,
+                                      StringRedisTemplate redisTemplate,
+                                      SimpMessagingTemplate simpMessagingTemplate1) {
         super(simpMessagingTemplate, redisTemplate);
         this.redisTemplate = redisTemplate;
+        this.simpMessagingTemplate = simpMessagingTemplate1;
     }
 
     @Override
     public boolean match(PushActionEnum pushActionEnum) {
-        return NON_PARA_TAIL_SUBTRACT.equals(pushActionEnum);
+        return NON_PARA_HEAD_SUBTRACT.equals(pushActionEnum);
     }
 
     @Override
     protected String getValue(String contentChange, String value, Integer indexStart, Integer indexEnd) {
-        return value.substring(0, indexStart);
+        return value.substring(indexStart);
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
 import org.chiu.megalith.blog.lang.PushActionEnum;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
 import org.chiu.megalith.blog.service.BlogMessageService;
-import org.chiu.megalith.blog.service.handler.PushActionAbstractHandler;
+import org.chiu.megalith.blog.handler.PushActionAbstractHandler;
 import org.chiu.megalith.infra.key.KeyFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

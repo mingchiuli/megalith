@@ -1,4 +1,4 @@
-package org.chiu.megalith.blog.service.handler;
+package org.chiu.megalith.blog.handler;
 
 import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
 import org.chiu.megalith.blog.lang.PushActionEnum;
@@ -9,15 +9,15 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 import static org.chiu.megalith.blog.lang.MessageActionFieldEnum.VERSION;
-import static org.chiu.megalith.blog.lang.PushActionEnum.PARA_HEAD_SUBTRACT;
+import static org.chiu.megalith.blog.lang.PushActionEnum.PARA_TAIL_SUBTRACT;
 import static org.chiu.megalith.infra.lang.Const.PARAGRAPH_PREFIX;
 
 @Component
-public class ParaHeadSubtractHandler extends PushActionAbstractHandler {
+public class ParaTailSubtractHandler extends PushActionAbstractHandler {
 
     private final StringRedisTemplate redisTemplate;
 
-    public ParaHeadSubtractHandler(SimpMessagingTemplate simpMessagingTemplate,
+    public ParaTailSubtractHandler(SimpMessagingTemplate simpMessagingTemplate,
                                    StringRedisTemplate redisTemplate,
                                    SimpMessagingTemplate simpMessagingTemplate1) {
         super(simpMessagingTemplate, redisTemplate);
@@ -27,12 +27,12 @@ public class ParaHeadSubtractHandler extends PushActionAbstractHandler {
 
     @Override
     public boolean match(PushActionEnum pushActionEnum) {
-        return PARA_HEAD_SUBTRACT.equals(pushActionEnum);
+        return PARA_TAIL_SUBTRACT.equals(pushActionEnum);
     }
 
     @Override
     protected String getValue(String contentChange, String value, Integer indexStart, Integer indexEnd) {
-        return value.substring(indexStart);
+        return value.substring(0, indexStart);
     }
 
     @Override
@@ -42,9 +42,9 @@ public class ParaHeadSubtractHandler extends PushActionAbstractHandler {
 
     @Override
     protected void setContent(BlogEditPushActionDto dto, String value, Integer version) {
+        Map<String, String> subMap = new LinkedHashMap<>();
         Integer paraNo = dto.getParaNo();
         String redisKey = dto.getRedisKey();
-        Map<String, String> subMap = new LinkedHashMap<>();
         subMap.put(PARAGRAPH_PREFIX.getInfo() + paraNo, value);
         subMap.put(VERSION.getMsg(), version.toString());
         redisTemplate.opsForHash().putAll(redisKey, subMap);

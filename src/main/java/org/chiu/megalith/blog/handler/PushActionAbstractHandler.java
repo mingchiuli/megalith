@@ -1,4 +1,4 @@
-package org.chiu.megalith.blog.service.handler;
+package org.chiu.megalith.blog.handler;
 
 import org.chiu.megalith.blog.dto.BlogEditPushActionDto;
 import org.chiu.megalith.blog.lang.PushActionEnum;
