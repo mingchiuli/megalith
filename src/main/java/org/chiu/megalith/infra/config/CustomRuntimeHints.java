@@ -34,5 +34,7 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
 
         // Register resources
         hints.resources().registerPattern("ValidationMessages.properties");
+        hints.resources().registerPattern("script/push-action.lua");
+
     }
 }
