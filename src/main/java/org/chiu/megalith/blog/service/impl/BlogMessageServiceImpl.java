@@ -1,6 +1,7 @@
 package org.chiu.megalith.blog.service.impl;
 
 import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
 import org.chiu.megalith.blog.req.BlogEditPushActionReq;
 import org.chiu.megalith.blog.service.BlogMessageService;
 import org.chiu.megalith.infra.key.KeyFactory;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.ResourceUtils;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -32,10 +33,10 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
 
     @PostConstruct
-    private void init() throws IOException {
+    @SneakyThrows
+    private void init() {
         Resource resource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/push-action.lua");
-        byte[] contentAsByteArray = resource.getContentAsByteArray();
-        script = new String(contentAsByteArray);
+        script = resource.getContentAsString(StandardCharsets.UTF_8);
     }
 
     @Override
