@@ -71,7 +71,9 @@ public enum ExceptionMessage {
 
     INVALID_LOGIN_OPERATE(33, "非法登录"),
 
-    ACCOUNT_LOCKED(34, "账户被锁");
+    ACCOUNT_LOCKED(34, "账户被锁"),
+
+    BLOCKED(35, "已被封禁");
 
 
     private final String msg;

@@ -87,7 +87,11 @@ public enum Const {
 
     HOT_MENUS("hot_menus:"),
     
-    A_WEEK("604899");
+    A_WEEK("604899"),
+
+    BLOCK("block"),
+
+    BLOCK_USER("block_user");
 
 
     private final String info;

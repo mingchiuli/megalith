@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.security.utils.SecurityAuthenticationUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,8 +22,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Optional;
 
+import static org.chiu.megalith.infra.lang.Const.BLOCK_USER;
 import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.BLOCKED;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 
 @Component
@@ -34,14 +38,18 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
+    private final StringRedisTemplate redisTemplate;
+
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
                                    ObjectMapper objectMapper,
                                    TokenUtils<DecodedJWT> tokenUtils,
-                                   SecurityAuthenticationUtils securityAuthenticationUtils) {
+                                   SecurityAuthenticationUtils securityAuthenticationUtils,
+                                   StringRedisTemplate redisTemplate) {
         super(authenticationManager);
         this.objectMapper = objectMapper;
         this.tokenUtils = tokenUtils;
         this.securityAuthenticationUtils = securityAuthenticationUtils;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -83,6 +91,13 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         DecodedJWT decodedJWT = tokenUtils.getVerifierByToken(jwt);
         String userId = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
+
+        Boolean block = Optional.ofNullable(redisTemplate.opsForSet().isMember(BLOCK_USER.getInfo(), userId))
+                .orElse(Boolean.FALSE);
+
+        if (block) {
+            throw new JWTVerificationException(BLOCKED.getMsg());
+        }
 
         return securityAuthenticationUtils.getAuthentication(role, userId);
     }

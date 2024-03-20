@@ -2,8 +2,10 @@ package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.infra.cache.CacheEvict;
 import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.infra.user.UserIndexMessage;
 import org.chiu.megalith.manage.convertor.UserEntityVoConvertor;
 import org.chiu.megalith.manage.entity.UserEntity;
+import org.chiu.megalith.manage.event.UserOperateEvent;
 import org.chiu.megalith.manage.repository.UserRepository;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.req.UserEntityReq;
@@ -13,6 +15,7 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.vo.UserEntityVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -38,6 +41,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
+
+    private final ApplicationContext applicationContext;
+
 
     @Override
     public void updateLoginTime(String username, LocalDateTime time) {
@@ -75,6 +81,9 @@ public class UserServiceImpl implements UserService {
 
         BeanUtils.copyProperties(userEntityReq, userEntity);
         userRepository.save(userEntity);
+
+        var userIndexMessage = new UserIndexMessage(userEntity.getId(), userEntity.getRole());
+        applicationContext.publishEvent(new UserOperateEvent(this, userIndexMessage));
     }
 
     @Override
