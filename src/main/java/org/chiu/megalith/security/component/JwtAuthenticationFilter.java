@@ -24,8 +24,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.chiu.megalith.infra.lang.Const.BLOCK_USER;
-import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
+import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.BLOCKED;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 
@@ -95,7 +94,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         Boolean block = Optional.ofNullable(redisTemplate.hasKey(BLOCK_USER.getInfo() + userId))
                 .orElse(Boolean.FALSE);
 
-        if (block) {
+        if (block && BLOCK.getInfo().equals(role)) {
             throw new JWTVerificationException(BLOCKED.getMsg());
         }
 
