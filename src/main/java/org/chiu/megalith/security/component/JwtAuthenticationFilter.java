@@ -94,7 +94,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         Boolean block = Optional.ofNullable(redisTemplate.hasKey(BLOCK_USER.getInfo() + userId))
                 .orElse(Boolean.FALSE);
 
-        if (block && BLOCK.getInfo().equals(role)) {
+        if (block && !BLOCK.getInfo().equals(role)) {
             throw new JWTVerificationException(BLOCKED.getMsg());
         }
 
