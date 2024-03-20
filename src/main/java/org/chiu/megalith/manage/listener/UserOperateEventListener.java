@@ -25,6 +25,8 @@ public class UserOperateEventListener {
 
         if (BLOCK.getInfo().equals(role)) {
             redisTemplate.opsForSet().add(BLOCK_USER.getInfo(), userId.toString());
+        } else {
+            redisTemplate.opsForSet().remove(BLOCK_USER.getInfo(), userId.toString());
         }
     }
 }
