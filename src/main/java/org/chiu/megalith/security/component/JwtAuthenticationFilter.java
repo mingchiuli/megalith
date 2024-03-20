@@ -92,7 +92,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         String userId = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
 
-        Boolean block = Optional.ofNullable(redisTemplate.opsForSet().isMember(BLOCK_USER.getInfo(), userId))
+        Boolean block = Optional.ofNullable(redisTemplate.hasKey(BLOCK_USER.getInfo() + userId))
                 .orElse(Boolean.FALSE);
 
         if (block) {

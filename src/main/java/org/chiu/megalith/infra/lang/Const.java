@@ -91,7 +91,7 @@ public enum Const {
 
     BLOCK("block"),
 
-    BLOCK_USER("block_user");
+    BLOCK_USER("block_user:");
 
 
     private final String info;
