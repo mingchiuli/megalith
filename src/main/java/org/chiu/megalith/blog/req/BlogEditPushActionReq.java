@@ -26,4 +26,6 @@ public class BlogEditPushActionReq {
     private String field;
 
     private Integer paraNo;
+
+    private Boolean reconnected;
 }

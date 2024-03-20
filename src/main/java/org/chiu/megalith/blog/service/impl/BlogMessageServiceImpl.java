@@ -49,9 +49,16 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         Integer indexEnd = req.getIndexEnd();
         String field = req.getField();
         Integer paraNo = req.getParaNo();
+        Boolean reconnected = req.getReconnected();
+
+        String userKey = KeyFactory.createPushContentIdentityKey(userId, blogId);
+
+        if (Boolean.TRUE.equals(reconnected)) {
+            simpMessagingTemplate.convertAndSend("/edits/push/all/" + userKey, "ALL");
+            return;
+        }
 
         String redisKey = KeyFactory.createBlogEditRedisKey(userId, blogId);
-        String userKey = KeyFactory.createPushContentIdentityKey(userId, blogId);
 
         Long execute = redisTemplate.execute(RedisScript.of(script, Long.class), Collections.singletonList(redisKey),
                 contentChange,
