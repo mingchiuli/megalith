@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.chiu.megalith.infra.lang.Const.*;
@@ -91,10 +92,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         String userId = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
 
-        Boolean block = Optional.ofNullable(redisTemplate.hasKey(BLOCK_USER.getInfo() + userId))
-                .orElse(Boolean.FALSE);
+        String roleLast = redisTemplate.opsForValue().get(BLOCK_USER.getInfo() + userId);
 
-        if (block && !BLOCK.getInfo().equals(role)) {
+        if (StringUtils.hasLength(roleLast) && Objects.equals(role, roleLast)) {
             throw new JWTVerificationException(BLOCKED.getMsg());
         }
 

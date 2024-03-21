@@ -10,4 +10,6 @@ public class UserIndexMessage {
     private Long userId;
 
     private String role;
+
+    private String roleLast;
 }

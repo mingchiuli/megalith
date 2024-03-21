@@ -56,11 +56,13 @@ public class UserServiceImpl implements UserService {
         Long id = userEntityReq.getId();
         UserEntity userEntity;
         var now = LocalDateTime.now();
+        String roleLast = null;
 
         if (Objects.nonNull(id)) {
             userEntity = userRepository.findById(id)
                     .orElseThrow(() -> new MissException(USER_NOT_EXIST));
 
+            roleLast = userEntity.getRole();
             String password = userEntityReq.getPassword();
             if (StringUtils.hasLength(password)) {
                 userEntityReq.setPassword(passwordEncoder.encode(password));
@@ -82,7 +84,7 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(userEntityReq, userEntity);
         userRepository.save(userEntity);
 
-        var userIndexMessage = new UserIndexMessage(userEntity.getId(), userEntity.getRole());
+        var userIndexMessage = new UserIndexMessage(userEntity.getId(), userEntity.getRole(), roleLast);
         applicationContext.publishEvent(new UserOperateEvent(this, userIndexMessage));
     }
 

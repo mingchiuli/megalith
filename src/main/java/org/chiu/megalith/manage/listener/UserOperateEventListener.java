@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static org.chiu.megalith.infra.lang.Const.BLOCK;
 import static org.chiu.megalith.infra.lang.Const.BLOCK_USER;
 
 
@@ -28,9 +29,10 @@ public class UserOperateEventListener {
         UserIndexMessage userIndexMessage = event.getUserIndexMessage();
         String role = userIndexMessage.getRole();
         Long userId = userIndexMessage.getUserId();
+        String roleLast = userIndexMessage.getRoleLast();
 
-        if (BLOCK.getInfo().equals(role)) {
-            redisTemplate.opsForValue().set(BLOCK_USER.getInfo() + userId, "", accessExpire, TimeUnit.SECONDS);
+        if (StringUtils.hasLength(roleLast) && !Objects.equals(roleLast, role)) {
+            redisTemplate.opsForValue().set(BLOCK_USER.getInfo() + userId, roleLast, accessExpire, TimeUnit.SECONDS);
         } else {
             redisTemplate.delete(BLOCK_USER.getInfo() + userId);
         }
