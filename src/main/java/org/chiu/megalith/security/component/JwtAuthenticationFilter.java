@@ -93,7 +93,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         String roleLast = redisTemplate.opsForValue().get(BLOCK_USER.getInfo() + userId);
 
-        if (StringUtils.hasLength(roleLast) && Objects.equals(role, roleLast)) {
+        if (StringUtils.hasLength(roleLast) && Objects.equals(role, ROLE_PREFIX.getInfo() + roleLast)) {
             throw new JWTVerificationException(BLOCKED.getMsg());
         }
 
