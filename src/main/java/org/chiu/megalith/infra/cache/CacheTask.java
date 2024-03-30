@@ -1,7 +1,6 @@
 package org.chiu.megalith.infra.cache;
 
 import java.lang.reflect.Method;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
@@ -73,8 +72,7 @@ public class CacheTask implements Function<String, Object> {
             Object proceed = pjp.proceed();
 
             Cache annotation = method.getAnnotation(Cache.class);
-            int expire = new Random().nextInt(annotation.expire()) + 1;
-            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(proceed), expire, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(proceed), annotation.expire(), TimeUnit.MINUTES);
             return proceed;
         } finally {
             rLock.unlock();

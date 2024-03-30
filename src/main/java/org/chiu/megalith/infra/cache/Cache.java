@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface Cache {
 
-    int expire() default 60;
+    int expire() default 30;
 
     Const prefix();
 
