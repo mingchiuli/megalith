@@ -55,6 +55,8 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         keys.add(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
         keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
         redisTemplate.delete(keys);
+        keys.remove(TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
+        keys.remove(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
 
         //重新构建该年份的页面bloom
         var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);

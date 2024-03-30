@@ -15,7 +15,7 @@ public class LocalCacheConfig {
         return Caffeine.newBuilder()
                 .initialCapacity(128)// 初始大小
                 .maximumSize(1024)// 最大数量
-                .expireAfterWrite(60, TimeUnit.MINUTES)// 过期时间
+                .expireAfterWrite(30, TimeUnit.MINUTES)// 过期时间
                 .build();
     }
 }
