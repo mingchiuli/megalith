@@ -11,7 +11,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 public class LocalCacheConfig {
     
     @Bean
-    Cache<String, Object> caffeineCache() {
+    Cache<String, String> caffeineCache() {
         return Caffeine.newBuilder()
                 .initialCapacity(128)// 初始大小
                 .maximumSize(1024)// 最大数量

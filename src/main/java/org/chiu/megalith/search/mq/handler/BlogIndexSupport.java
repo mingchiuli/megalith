@@ -4,7 +4,7 @@ package org.chiu.megalith.search.mq.handler;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.config.CacheRabbitConfig;
+import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
@@ -63,15 +63,15 @@ public abstract sealed class BlogIndexSupport permits
                                 .build());
 
                 Set<String> keys = redisProcess(blogEntity);
-                rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
+                rabbitTemplate.convertAndSend(CacheEvictRabbitConfig.CACHE_EVICT_FANOUT_EXCHANGE, "", keys);
                 elasticSearchProcess(blogEntity);
                 //手动签收消息
                 //false代表不是批量签收模式
                 channel.basicAck(deliveryTag, false);
                 redisTemplate.delete(Const.CONSUME_MONITOR.getInfo() + createUUID);
             } catch (Exception e) {
-                channel.basicNack(deliveryTag, false, true);
                 log.error("consume failure", e);
+                channel.basicNack(deliveryTag, false, true);
             }
         } else {
             channel.basicNack(deliveryTag, false, false);

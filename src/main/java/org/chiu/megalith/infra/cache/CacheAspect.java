@@ -9,7 +9,10 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.chiu.megalith.infra.config.CacheRabbitConfig;
 import org.redisson.api.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -17,9 +20,15 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import com.github.benmanes.caffeine.cache.Cache;
+import org.springframework.util.StringUtils;
+
+import static org.chiu.megalith.infra.lang.ExceptionMessage.GET_LOCK_TIMEOUT;
 
 /**
  * 统一缓存处理
@@ -32,7 +41,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 @Component
 @Order(2)
 @RequiredArgsConstructor
-public class MultiLevelCacheAspect {
+public class CacheAspect {
 
     private final StringRedisTemplate redisTemplate;
 
@@ -42,7 +51,12 @@ public class MultiLevelCacheAspect {
 
     private final RedissonClient redisson;
 
-    private final Cache<String, Object> localCache;
+    private final RabbitTemplate rabbitTemplate;
+
+    private final com.github.benmanes.caffeine.cache.Cache<String, String> localCache;
+
+    private static final String LOCK = "blogLock:";
+
 
     @Pointcut("@annotation(org.chiu.megalith.infra.cache.Cache)")
     public void pt() {
@@ -75,12 +89,58 @@ public class MultiLevelCacheAspect {
 
         String cacheKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
 
-        Object cacheValue = localCache.getIfPresent(cacheKey);
+        String cacheValue = localCache.getIfPresent(cacheKey);
         if (Objects.nonNull(cacheValue)) {
-            return cacheValue;
+            return objectMapper.readValue(cacheValue, javaType);
         }
 
-        return localCache.get(cacheKey, new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method));
+        String o;
+        // 防止redis挂了以后db也访问不了
+        try {
+            o = redisTemplate.opsForValue().get(cacheKey);
+        } catch (NestedRuntimeException e) {
+            return pjp.proceed();
+        }
+
+        if (StringUtils.hasLength(o)) {
+            return objectMapper.readValue(o, javaType);
+        }
+
+        String lock = LOCK + cacheKey;
+        // 已经线程安全
+        RLock rLock = redisson.getLock(lock);
+
+        if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
+            throw new TimeoutException(GET_LOCK_TIMEOUT.getMsg());
+        }
+
+        Object proceed;
+
+        try {
+            // 双重检查
+            String r = redisTemplate.opsForValue().get(cacheKey);
+
+            if (StringUtils.hasLength(r)) {
+                return objectMapper.readValue(r, javaType);
+            }
+            // 执行目标方法
+            proceed = pjp.proceed();
+
+            Cache annotation = method.getAnnotation(Cache.class);
+
+            //要比本地缓存长一点
+            int expireTime = annotation.expire() + new Random().nextInt(10);
+
+            redisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(proceed), expireTime, TimeUnit.MINUTES);
+        } finally {
+            rLock.unlock();
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(cacheKey, proceed);
+        rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", map);
+        return proceed;
+
     }
 
     private JavaType getTypesReference(ParameterizedType parameterizedType) {

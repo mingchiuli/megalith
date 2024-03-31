@@ -1,7 +1,8 @@
 package org.chiu.megalith.infra.config;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.listener.CacheMessageListener;
+
+import org.chiu.megalith.infra.listener.CacheEvictMessageListener;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -16,50 +17,51 @@ import java.util.UUID;
 
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
-public class CacheRabbitConfig {
+public class CacheEvictRabbitConfig {
 
-    public String nodeMark;
+    public String evictNodeMark;
 
-    public static String CACHE_QUEUE = "cache.queue.";
+    public static String CACHE_EVICT_QUEUE = "cache.evict.queue.";
 
-    public static final String CACHE_FANOUT_EXCHANGE = "cache.fanout.exchange";
+    public static final String CACHE_EVICT_FANOUT_EXCHANGE = "cache.evict.fanout.exchange";
 
     private final Jackson2JsonMessageConverter jsonMessageConverter;
 
     @Qualifier("mqExecutor")
     private final TaskExecutor executor;
 
-    @Bean("CACHE_QUEUE")
-    Queue queue() {
-        nodeMark = UUID.randomUUID().toString();
-        CACHE_QUEUE += nodeMark;
-        return new Queue(CACHE_QUEUE, false, true, true);
+    @Bean("CACHE_EVICT_QUEUE")
+    Queue evictQueue() {
+        evictNodeMark = UUID.randomUUID().toString();
+        CACHE_EVICT_QUEUE += evictNodeMark;
+        return new Queue(CACHE_EVICT_QUEUE, false, true, true);
     }
 
-    @Bean("CACHE_FANOUT_EXCHANGE")
-    FanoutExchange exchange() {
-        return new FanoutExchange(CACHE_FANOUT_EXCHANGE, true, false);
+    @Bean("CACHE_EVICT_FANOUT_EXCHANGE")
+    FanoutExchange evictExchange() {
+        return new FanoutExchange(CACHE_EVICT_FANOUT_EXCHANGE, true, false);
     }
 
-    @Bean("CACHE_BINDING")
-    Binding binding(@Qualifier("CACHE_QUEUE") Queue cacheQueue,
-                    @Qualifier("CACHE_FANOUT_EXCHANGE") FanoutExchange cacheExchange) {
+    @Bean("CACHE_EVICT_BINDING")
+    Binding evictBinding(@Qualifier("CACHE_EVICT_QUEUE") Queue cacheQueue,
+                         @Qualifier("CACHE_EVICT_FANOUT_EXCHANGE") FanoutExchange cacheExchange) {
         return BindingBuilder
                 .bind(cacheQueue)
                 .to(cacheExchange);
     }
 
-    @Bean("cacheMessageListenerAdapter")
-    MessageListenerAdapter coopMessageListener(CacheMessageListener cacheMessageListener) {
+    @Bean("cacheEvictMessageListenerAdapter")
+    MessageListenerAdapter coopMessageListener(CacheEvictMessageListener cacheEvictMessageListener) {
         //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
-        return new MessageListenerAdapter(cacheMessageListener);
+        return new MessageListenerAdapter(cacheEvictMessageListener);
     }
 
-    @Bean("cacheMessageListenerContainer")
-    SimpleMessageListenerContainer cacheMessageListenerContainer(ConnectionFactory connectionFactory,
-                                                                @Qualifier("cacheMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
-                                                                @Qualifier("CACHE_QUEUE") Queue queue) {
+    @Bean("cacheEvictMessageListenerContainer")
+    SimpleMessageListenerContainer cacheEvictMessageListenerContainer(ConnectionFactory connectionFactory,
+                                                                @Qualifier("cacheEvictMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
+                                                                @Qualifier("CACHE_EVICT_QUEUE") Queue queue) {
         var container = new SimpleMessageListenerContainer();
+        //框架处理了
         listenerAdapter.containerAckMode(AcknowledgeMode.MANUAL);
         listenerAdapter.setMessageConverter(jsonMessageConverter);
         container.setConcurrency("5");

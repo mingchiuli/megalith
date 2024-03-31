@@ -7,7 +7,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.chiu.megalith.infra.config.CacheRabbitConfig;
+import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
@@ -56,7 +56,7 @@ public class CacheEvictAspect {
                     .orElseGet(LinkedHashSet::new);
             if (!keys.isEmpty()) {
                 redisTemplate.delete(keys);
-                rabbitTemplate.convertAndSend(CacheRabbitConfig.CACHE_FANOUT_EXCHANGE, "", keys);
+                rabbitTemplate.convertAndSend(CacheEvictRabbitConfig.CACHE_EVICT_FANOUT_EXCHANGE, "", keys);
             }
         }
     }
