@@ -2,7 +2,6 @@ package org.chiu.megalith.infra.config;
 
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.listener.CacheEvictMessageListener;
-import org.chiu.megalith.infra.listener.CacheMessageListener;
 import org.chiu.megalith.infra.valid.ListValueConstraintValidator;
 import org.chiu.megalith.infra.valid.PhoneConstraintValidator;
 import org.chiu.megalith.infra.valid.UsernameConstraintValidator;
@@ -13,7 +12,6 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static org.springframework.util.ReflectionUtils.*;
@@ -25,8 +23,6 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
         // Register method for reflection
         hints.reflection().registerMethod(findMethod(CacheEvictMessageListener.class, "handleMessage", Set.class), ExecutableMode.INVOKE);
-        hints.reflection().registerMethod(findMethod(CacheMessageListener.class, "handleMessage", Map.class), ExecutableMode.INVOKE);
-
 
         hints.reflection().registerConstructor(LinkedHashSet.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
         hints.reflection().registerConstructor(ListValueConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);

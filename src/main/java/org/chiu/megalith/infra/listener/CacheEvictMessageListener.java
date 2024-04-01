@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Slf4j
 public class CacheEvictMessageListener {
 
-    private final Cache<String, String> localCache;
+    private final Cache<String, Object> localCache;
 
     @SneakyThrows
     public void handleMessage(Set<String> keys) {
