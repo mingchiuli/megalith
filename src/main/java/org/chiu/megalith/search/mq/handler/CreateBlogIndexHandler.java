@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.chiu.megalith.infra.lang.Const.*;
@@ -50,7 +48,10 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
     @Override
     protected Set<String> redisProcess(BlogEntity blog) {
         //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom，编辑暂存区数据
-        Set<String> keys = Optional.ofNullable(redisTemplate.keys(HOT_BLOGS_PATTERN.getInfo())).orElseGet(LinkedHashSet::new);
+        long count = blogRepository.count();
+        long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
+        Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(blog.getCreated(), count, countYear);
+
         int year = blog.getCreated().getYear();
         keys.add(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
         keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
@@ -68,7 +69,6 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         }
 
         //listPage的bloom
-        long count = blogRepository.count();
         int totalPage = (int) (count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1);
         for (int i = 1; i <= totalPage; i++) {
             redisTemplate.opsForValue().setBit(BLOOM_FILTER_PAGE.getInfo(), i, true);

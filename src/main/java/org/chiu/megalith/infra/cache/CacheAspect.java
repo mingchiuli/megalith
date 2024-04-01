@@ -128,9 +128,7 @@ public class CacheAspect {
 
             Cache annotation = method.getAnnotation(Cache.class);
 
-            //要比本地缓存长一点
-            int expireTime = annotation.expire() + new Random().nextInt(10);
-
+            int expireTime = new Random().nextInt(annotation.expire());
             redisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(proceed), expireTime, TimeUnit.MINUTES);
         } finally {
             rLock.unlock();
