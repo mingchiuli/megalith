@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -53,13 +54,15 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         Long id = blog.getId();
         int year = blog.getCreated().getYear();
         //不分年份的页数
+        LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
+        LocalDateTime end = LocalDateTime.of(year, 12, 31, 23, 59, 59);
         long count = blogRepository.countByCreatedAfter(blog.getCreated());
         count++;
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
         String findPage = cacheKeyGenerator.generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageNo, Integer.MIN_VALUE});
 
         //分年份的页数
-        long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
+        long countYear = blogRepository.getPageCountYear(blog.getCreated(), start, end);
         countYear++;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
         String findPageByYear = cacheKeyGenerator.generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});

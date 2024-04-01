@@ -19,8 +19,6 @@ import java.util.Optional;
  */
 public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
-    Optional<BlogEntity> findByIdAndStatus(Long id, Integer status);
-
     Page<BlogEntity> findAllByUserId(Pageable pageRequest, Long userId);
 
     Integer countByCreatedBetween(LocalDateTime start, LocalDateTime end);
@@ -38,8 +36,8 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
     @Query(value = "SELECT blog.id from BlogEntity blog")
     List<Long> findIds(Pageable pageRequest);
 
-    @Query(value = "SELECT count(blog) from BlogEntity blog where blog.created < :created and Year(blog.created) = :year")
-    Long getPageCountYear(@Param("created") LocalDateTime created, @Param("year") int year);
+    @Query(value = "SELECT count(blog) from BlogEntity blog where blog.created between :start and :end and blog.created < :created")
+    Long getPageCountYear(@Param("created") LocalDateTime created, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query(value = "UPDATE BlogEntity blog SET blog.status = :status WHERE blog.id = :id")
     @Modifying

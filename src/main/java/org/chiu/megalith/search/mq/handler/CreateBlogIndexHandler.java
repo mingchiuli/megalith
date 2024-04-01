@@ -47,12 +47,14 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
     @SneakyThrows
     @Override
     protected Set<String> redisProcess(BlogEntity blog) {
-        //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom，编辑暂存区数据
-        long count = blogRepository.count();
-        long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
-        Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(blog.getCreated(), count, countYear);
-
         int year = blog.getCreated().getYear();
+        //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom，编辑暂存区数据
+        var start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
+        var end = LocalDateTime.of(year, 12, 31, 23, 59, 59);
+        long count = blogRepository.count();
+        long countYear = blogRepository.countByCreatedBetween(start, end);
+        Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(year, count, countYear);
+
         keys.add(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
         keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
         redisTemplate.delete(keys);
@@ -60,10 +62,7 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         keys.remove(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
 
         //重新构建该年份的页面bloom
-        var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-        var end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
-        Integer countByPeriod = blogRepository.countByCreatedBetween(start, end);
-        int totalPageByPeriod = countByPeriod % blogPageSize == 0 ? countByPeriod / blogPageSize : countByPeriod / blogPageSize + 1;
+        int totalPageByPeriod = (int) (countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1);
         for (int i = 1; i <= totalPageByPeriod; i++) {
             redisTemplate.opsForValue().setBit(BLOOM_FILTER_YEAR_PAGE.getInfo() + year, i, true);
         }

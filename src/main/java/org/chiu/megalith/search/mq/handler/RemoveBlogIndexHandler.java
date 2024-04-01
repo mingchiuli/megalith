@@ -58,9 +58,11 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         String getCountByYear = cacheKeyGenerator.generateKey(BlogWrapper.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
         String status = cacheKeyGenerator.generateKey(BlogWrapper.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
         //删掉所有摘要缓存
+        var start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
+        var end = LocalDateTime.of(year, 12, 31, 23, 59, 59);
         long count = blogRepository.count();
-        long countYear = blogRepository.getPageCountYear(blog.getCreated(), blog.getCreated().getYear());
-        Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(blog.getCreated(), count, countYear);
+        long countYear = blogRepository.getPageCountYear(blog.getCreated(), start, end);
+        Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(year, count, countYear);
 
         keys.add(READ_TOKEN.getInfo() + id);
         keys.add(findById);
@@ -81,8 +83,6 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         //设置getBlogDetail的bloom
         redisTemplate.opsForValue().setBit(BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);
         //重置该年份的页面bloom
-        var start = LocalDateTime.of(year, 1, 1 , 0, 0, 0);
-        var end = LocalDateTime.of(year, 12, 31 , 23, 59, 59);
         Integer countByPeriod = blogRepository.countByCreatedBetween(start, end);
         int totalPageByPeriod = countByPeriod % blogPageSize == 0 ? countByPeriod / blogPageSize : countByPeriod / blogPageSize + 1;
         for (int i = 1; i <= totalPageByPeriod; i++) {

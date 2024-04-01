@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -58,7 +57,7 @@ public class CacheKeyGenerator {
                 className + "::" + methodName + params;
     }
 
-    public Set<String> generateHotBlogsKeys(LocalDateTime create, Long count, Long countYear) {
+    public Set<String> generateHotBlogsKeys(Integer year, Long count, Long countYear) {
         Set<String> keys = new HashSet<>();
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
@@ -69,7 +68,7 @@ public class CacheKeyGenerator {
         }
 
         for (int i = 1; i <= pageYearNo; i++) {
-            String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, create.getYear()});
+            String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, year});
             keys.add(key);
         }
         return keys;
