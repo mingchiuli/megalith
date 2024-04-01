@@ -11,12 +11,19 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
+import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 public class BlogHotReadVoConvertor {
 
     public static List<BlogHotReadVo> convert(List<BlogEntity> blogs, Set<ZSetOperations.TypedTuple<String>> set) {
 
+        List<Long> ids = blogs.stream()
+                .filter(item -> NORMAL.getCode().equals(item.getStatus()))
+                .map(BlogEntity::getId)
+                .toList();
+
         List<BlogHotReadVo> items = Optional.ofNullable(set).orElseGet(LinkedHashSet::new).stream()
+                .filter(item -> ids.contains(Long.valueOf(item.getValue())))
                 .map(item -> BlogHotReadVo.builder()
                         .id(Long.valueOf(item.getValue()))
                         .readCount(item.getScore().longValue())

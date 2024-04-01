@@ -14,11 +14,11 @@ public class LocalCacheExpiry implements Expiry<String, Object> {
 
     @Override
     public long expireAfterUpdate(String key, Object value, long currentTime, @NonNegative long currentDuration) {
-        return 0;
+        return currentDuration;
     }
 
     @Override
     public long expireAfterRead(String key, Object value, long currentTime, @NonNegative long currentDuration) {
-        return -1;
+        return currentDuration;
     }
 }
