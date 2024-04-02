@@ -61,7 +61,7 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         var start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
         var end = LocalDateTime.of(year, 12, 31, 23, 59, 59);
         long count = blogRepository.count();
-        long countYear = blogRepository.getPageCountYear(blog.getCreated(), start, end);
+        long countYear = blogRepository.countByCreatedBetween(start, end);
         Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(year, count, countYear);
 
         keys.add(READ_TOKEN.getInfo() + id);
