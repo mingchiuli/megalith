@@ -55,13 +55,10 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         //不分年份的页数
         LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year, 12, 31, 23, 59, 59);
-        long count = blogRepository.count();
-        long countBefore = blogRepository.countByCreatedBefore(blog.getCreated());
 
-        //分年份的页数
+        long countAfter = blogRepository.countByCreatedGreaterThanEqual(blog.getCreated());
         long countYearAfter = blogRepository.getPageCountYear(blog.getCreated(), start, end);
-        Long countYear = blogRepository.countByCreatedBetween(start, end);
-        Set<String> keys = cacheKeyGenerator.generateBlogKey(count, countBefore, countYear, countYearAfter, year);
+        Set<String> keys = cacheKeyGenerator.generateBlogKey(countAfter, countYearAfter, year);
 
         //博客对象本身缓存
         String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class}, new Object[]{id});
@@ -76,6 +73,7 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
         //内容状态信息
         redisTemplate.delete(keys);
+        keys.remove(TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
 
         return keys;
     }

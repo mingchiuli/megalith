@@ -74,20 +74,17 @@ public class CacheKeyGenerator {
         return keys;
     }
 
-    public Set<String> generateBlogKey(long count, long countBefore, long countYear, long countYearBefore, Integer year) {
+    public Set<String> generateBlogKey(long countAfter, long countYearAfter, Integer year) {
         Set<String> keys = new HashSet<>();
-        long totalPageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
-        long pageBeforeNo = countBefore % blogPageSize == 0 ? countBefore / blogPageSize + 1 : countBefore / blogPageSize;
+        long pageBeforeNo = countAfter / blogPageSize + 1;
+        long pageYearBeforeNo = countYearAfter / blogPageSize + 1;
 
-        long totalYearPageNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
-        long pageYearBeforeNo = countYearBefore % blogPageSize == 0 ? countYearBefore / blogPageSize + 1 : countYearBefore / blogPageSize;
-
-        for (long i = pageBeforeNo; i <= totalPageNo; i++) {
+        for (long i = 1; i <= pageBeforeNo; i++) {
             String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, Integer.MIN_VALUE});
             keys.add(key);
         }
 
-        for (long i = pageYearBeforeNo; i <= totalYearPageNo; i++) {
+        for (long i = 1; i <= pageYearBeforeNo; i++) {
             String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, year});
             keys.add(key);
         }

@@ -23,7 +23,7 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     Long countByCreatedBetween(LocalDateTime start, LocalDateTime end);
 
-    Long countByCreatedBefore(LocalDateTime created);
+    Long countByCreatedGreaterThanEqual(LocalDateTime created);
 
     Optional<BlogEntity> findByIdAndUserId(Long id, Long userId);
 
@@ -36,7 +36,7 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
     @Query(value = "SELECT blog.id from BlogEntity blog")
     List<Long> findIds(Pageable pageRequest);
 
-    @Query(value = "SELECT count(blog) from BlogEntity blog where blog.created between :start and :end and blog.created < :created")
+    @Query(value = "SELECT count(blog) from BlogEntity blog where blog.created between :start and :end and blog.created >= :created")
     Long getPageCountYear(@Param("created") LocalDateTime created, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query(value = "UPDATE BlogEntity blog SET blog.status = :status WHERE blog.id = :id")
