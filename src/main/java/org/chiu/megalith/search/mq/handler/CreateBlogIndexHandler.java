@@ -55,11 +55,7 @@ public final class CreateBlogIndexHandler extends BlogIndexSupport {
         long countYear = blogRepository.countByCreatedBetween(start, end);
         Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(year, count, countYear);
 
-        keys.add(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
-        keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
         redisTemplate.delete(keys);
-        keys.remove(TEMP_EDIT_BLOG.getInfo() + blog.getUserId());
-        keys.remove(BLOOM_FILTER_YEAR_PAGE.getInfo() + year);
 
         //重新构建该年份的页面bloom
         int totalPageByPeriod = (int) (countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1);

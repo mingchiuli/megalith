@@ -5,6 +5,7 @@ import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
+import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -68,17 +69,21 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         keys.add(findById);
         keys.add(getCountByYear);
         keys.add(status);
+
+        String blogEditKey = KeyFactory.createBlogEditRedisKey(blog.getUserId(), id);
         //删除该年份的页面bloom，listPage的bloom，getCountByYear的bloom，后面逻辑重建
         keys.add(BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         keys.add(BLOOM_FILTER_PAGE.getInfo());
         keys.add(BLOOM_FILTER_YEARS.getInfo());
         //暂存区
-        keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
+        keys.add(TEMP_EDIT_BLOG.getInfo() + blogEditKey);
         //内容状态信息
         redisTemplate.delete(keys);
         keys.remove(BLOOM_FILTER_YEAR_PAGE.getInfo() + blog.getCreated().getYear());
         keys.remove(BLOOM_FILTER_PAGE.getInfo());
         keys.remove(BLOOM_FILTER_YEARS.getInfo());
+        keys.remove(TEMP_EDIT_BLOG.getInfo() + blogEditKey);
+        keys.remove(READ_TOKEN.getInfo() + id);
 
         //设置getBlogDetail的bloom
         redisTemplate.opsForValue().setBit(BLOOM_FILTER_BLOG.getInfo(), blog.getId(), false);

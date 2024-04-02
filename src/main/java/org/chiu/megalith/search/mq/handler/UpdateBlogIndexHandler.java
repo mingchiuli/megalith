@@ -4,7 +4,7 @@ import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 import static org.chiu.megalith.infra.lang.Const.*;
+import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 
 /**
@@ -66,14 +67,19 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
 
         keys.add(findByIdAndVisible);
         keys.add(status);
-        if (StatusEnum.NORMAL.getCode().equals(blog.getStatus())) {
+        if (NORMAL.getCode().equals(blog.getStatus())) {
             keys.add(READ_TOKEN.getInfo() + id);
         }
+
+        String blogEditKey = KeyFactory.createBlogEditRedisKey(blog.getUserId(), id);
         //暂存区
-        keys.add(TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
+        keys.add(TEMP_EDIT_BLOG.getInfo() + blogEditKey);
         //内容状态信息
         redisTemplate.delete(keys);
-        keys.remove(TEMP_EDIT_BLOG.getInfo() + blog.getUserId() + ":" + id);
+        if (NORMAL.getCode().equals(blog.getStatus())) {
+            keys.remove(READ_TOKEN.getInfo() + id);
+        }
+        keys.remove(TEMP_EDIT_BLOG.getInfo() + blogEditKey);
 
         return keys;
     }
