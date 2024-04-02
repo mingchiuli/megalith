@@ -73,13 +73,13 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
 
         String blogEditKey = KeyFactory.createBlogEditRedisKey(blog.getUserId(), id);
         //暂存区
-        keys.add(TEMP_EDIT_BLOG.getInfo() + blogEditKey);
+        keys.add(blogEditKey);
         //内容状态信息
         redisTemplate.delete(keys);
         if (NORMAL.getCode().equals(blog.getStatus())) {
             keys.remove(READ_TOKEN.getInfo() + id);
         }
-        keys.remove(TEMP_EDIT_BLOG.getInfo() + blogEditKey);
+        keys.remove(blogEditKey);
 
         return keys;
     }
