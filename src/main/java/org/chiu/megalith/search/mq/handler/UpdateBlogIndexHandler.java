@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.chiu.megalith.infra.lang.Const.*;
@@ -56,25 +55,19 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         //不分年份的页数
         LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year, 12, 31, 23, 59, 59);
-        long count = blogRepository.countByCreatedAfter(blog.getCreated());
-        count++;
-        long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
-        String findPage = cacheKeyGenerator.generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageNo, Integer.MIN_VALUE});
+        long count = blogRepository.count();
+        long countBefore = blogRepository.countByCreatedBefore(blog.getCreated());
 
         //分年份的页数
-        long countYear = blogRepository.getPageCountYear(blog.getCreated(), start, end);
-        countYear++;
-        long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
-        String findPageByYear = cacheKeyGenerator.generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{pageYearNo, year});
+        long countYearAfter = blogRepository.getPageCountYear(blog.getCreated(), start, end);
+        Long countYear = blogRepository.countByCreatedBetween(start, end);
+        Set<String> keys = cacheKeyGenerator.generateBlogKey(count, countBefore, countYear, countYearAfter, year);
 
         //博客对象本身缓存
         String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class}, new Object[]{id});
         String status = cacheKeyGenerator.generateKey(BlogWrapper.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
 
-        Set<String> keys = new HashSet<>();
         keys.add(findByIdAndVisible);
-        keys.add(findPage);
-        keys.add(findPageByYear);
         keys.add(status);
         if (StatusEnum.NORMAL.getCode().equals(blog.getStatus())) {
             keys.add(READ_TOKEN.getInfo() + id);

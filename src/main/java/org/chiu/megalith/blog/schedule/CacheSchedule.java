@@ -98,10 +98,10 @@ public class CacheSchedule {
             for (Integer year : years) {
                 // 当前年份的总页数
                 taskExecutor.execute(() -> {
-                    int countByYear = blogService.getCountByYear(year);
-                    int totalPage = countByYear % blogPageSize == 0 ? 
-                            countByYear / blogPageSize : 
-                            countByYear / blogPageSize + 1;
+                    long countByYear = blogService.getCountByYear(year);
+                    int totalPage = (int) (countByYear % blogPageSize == 0 ?
+                                                countByYear / blogPageSize :
+                                                countByYear / blogPageSize + 1);
 
                     for (int no = 1; no <= totalPage; no++) {
                         redisTemplate.opsForValue().setBit(BLOOM_FILTER_YEAR_PAGE.getInfo() + year, no, true);

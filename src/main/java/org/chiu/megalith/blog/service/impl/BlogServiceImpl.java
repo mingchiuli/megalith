@@ -96,7 +96,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Integer getCountByYear(Integer year) {
+    public Long getCountByYear(Integer year) {
         return blogWrapper.getCountByYear(year);
     }
 

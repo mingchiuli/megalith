@@ -20,7 +20,7 @@ public interface BlogService {
 
     PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year);
 
-    Integer getCountByYear(Integer year);
+    Long getCountByYear(Integer year);
 
     List<Integer> searchYears();
 

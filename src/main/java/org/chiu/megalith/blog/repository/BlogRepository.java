@@ -21,9 +21,9 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     Page<BlogEntity> findAllByUserId(Pageable pageRequest, Long userId);
 
-    Integer countByCreatedBetween(LocalDateTime start, LocalDateTime end);
+    Long countByCreatedBetween(LocalDateTime start, LocalDateTime end);
 
-    Long countByCreatedAfter(LocalDateTime created);
+    Long countByCreatedBefore(LocalDateTime created);
 
     Optional<BlogEntity> findByIdAndUserId(Long id, Long userId);
 
