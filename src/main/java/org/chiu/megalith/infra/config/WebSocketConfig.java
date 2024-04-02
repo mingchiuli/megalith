@@ -40,7 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app")
                 .enableSimpleBroker( "/edits")
                 .setTaskScheduler(taskScheduler)
-                .setHeartbeatValue(new long[] {5000, 5000});
+                .setHeartbeatValue(new long[] {1000, 1000});
     }
 
     @Override
