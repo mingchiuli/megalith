@@ -28,7 +28,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/edit")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOriginPatterns(
+                        "http://localhost:1919",
+                        "http://127.0.0.1:1919",
+                        "https://www.chiu.wiki",
+                        "https://chiu.wiki");
     }
 
     @Override
@@ -40,7 +44,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app")
                 .enableSimpleBroker( "/edits")
                 .setTaskScheduler(taskScheduler)
-                .setHeartbeatValue(new long[] {1000, 1000});
+                .setHeartbeatValue(new long[] {2000, 2000});
     }
 
     @Override
