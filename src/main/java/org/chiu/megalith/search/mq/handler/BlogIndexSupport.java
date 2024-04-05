@@ -3,8 +3,6 @@ package org.chiu.megalith.search.mq.handler;
 
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
-import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
@@ -15,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import java.time.LocalDateTime;
-import java.util.Set;
 
 @Slf4j
 public abstract sealed class BlogIndexSupport permits
@@ -30,22 +25,13 @@ public abstract sealed class BlogIndexSupport permits
 
     protected final BlogRepository blogRepository;
 
-    protected final CacheKeyGenerator cacheKeyGenerator;
-
-    protected final RabbitTemplate rabbitTemplate;
-
     protected BlogIndexSupport(StringRedisTemplate redisTemplate,
-                               BlogRepository blogRepository,
-                               CacheKeyGenerator cacheKeyGenerator,
-                               RabbitTemplate rabbitTemplate) {
+                               BlogRepository blogRepository) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
-        this.cacheKeyGenerator = cacheKeyGenerator;
-        this.rabbitTemplate = rabbitTemplate;
     }
 
     public abstract boolean supports(BlogIndexEnum blogIndexEnum);
-    protected abstract Set<String> redisProcess(BlogEntity blog);
     protected abstract void elasticSearchProcess(BlogEntity blog);
 
     @SneakyThrows
@@ -55,15 +41,11 @@ public abstract sealed class BlogIndexSupport permits
         if (Boolean.TRUE.equals(redisTemplate.hasKey(Const.CONSUME_MONITOR.getInfo()  + createUUID))) {
             try {
                 Long blogId = message.getBlogId();
-                Integer year = message.getYear();
                 BlogEntity blogEntity = blogRepository.findById(blogId)
                         .orElseGet(() -> BlogEntity.builder()
                                 .id(blogId)
-                                .created(LocalDateTime.of(year, 1,1,1,1,1, 1))
                                 .build());
 
-                Set<String> keys = redisProcess(blogEntity);
-                rabbitTemplate.convertAndSend(CacheEvictRabbitConfig.CACHE_EVICT_FANOUT_EXCHANGE, "", keys);
                 elasticSearchProcess(blogEntity);
                 //手动签收消息
                 //false代表不是批量签收模式

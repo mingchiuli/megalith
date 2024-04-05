@@ -9,7 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
-import org.chiu.megalith.manage.cache.CacheEvictHandler;
+import org.chiu.megalith.manage.cache.CacheBatchEvictHandler;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -29,7 +29,7 @@ public class CacheEvictAspect {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final List<CacheEvictHandler> cacheEvictHandlers;
+    private final List<CacheBatchEvictHandler> cacheBatchEvictHandlers;
 
     @Pointcut("@annotation(org.chiu.megalith.infra.cache.CacheEvict)")
     public void pt() {}
@@ -55,7 +55,7 @@ public class CacheEvictAspect {
         Set<String> keys = new HashSet<>();
 
         for (Const key : prefix) {
-            for (CacheEvictHandler handler : cacheEvictHandlers) {
+            for (CacheBatchEvictHandler handler : cacheBatchEvictHandlers) {
                 String keyPrefix = key.getInfo();
                 if (handler.match(keyPrefix)) {
                     Set<String> keySet = handler.handle(keyPrefix);

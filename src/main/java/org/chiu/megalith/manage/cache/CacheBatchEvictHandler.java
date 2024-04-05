@@ -2,7 +2,7 @@ package org.chiu.megalith.manage.cache;
 
 import java.util.Set;
 
-public interface CacheEvictHandler {
+public interface CacheBatchEvictHandler {
 
     boolean match(String prefix);
 
