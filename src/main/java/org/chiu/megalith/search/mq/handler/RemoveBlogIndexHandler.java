@@ -1,5 +1,6 @@
 package org.chiu.megalith.search.mq.handler;
 
+import lombok.SneakyThrows;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -50,14 +52,18 @@ public final class RemoveBlogIndexHandler extends BlogIndexSupport {
         return BlogIndexEnum.REMOVE.equals(blogIndexEnum);
     }
 
+    @SneakyThrows
     @Override
     protected Set<String> redisProcess(BlogEntity blog) {
         int year = blog.getCreated().getYear();
         Long id = blog.getId();
         //博客对象本身缓存
-        String findById = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class}, new Object[]{id});
-        String getCountByYear = cacheKeyGenerator.generateKey(BlogWrapper.class, "getCountByYear", new Class[]{Integer.class}, new Object[]{year});
-        String status = cacheKeyGenerator.generateKey(BlogWrapper.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
+        Method findByIdMethod = BlogWrapper.class.getMethod("findById", Long.class);
+        String findById = cacheKeyGenerator.generateKey(findByIdMethod, id);
+        Method getCountByYearMethod = BlogWrapper.class.getMethod("getCountByYear", Integer.class);
+        String getCountByYear = cacheKeyGenerator.generateKey(getCountByYearMethod, year);
+        Method statusMethod = BlogWrapper.class.getMethod("findStatusById", Long.class);
+        String status = cacheKeyGenerator.generateKey(statusMethod, id);
         //删掉所有摘要缓存
         var start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
         var end = LocalDateTime.of(year, 12, 31, 23, 59, 59);

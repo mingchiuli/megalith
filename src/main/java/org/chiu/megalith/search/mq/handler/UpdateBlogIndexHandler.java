@@ -1,5 +1,6 @@
 package org.chiu.megalith.search.mq.handler;
 
+import lombok.SneakyThrows;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -49,6 +51,7 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         return BlogIndexEnum.UPDATE.equals(blogIndexEnum);
     }
 
+    @SneakyThrows
     @Override
     protected Set<String> redisProcess(BlogEntity blog) {
         Long id = blog.getId();
@@ -62,8 +65,10 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
         Set<String> keys = cacheKeyGenerator.generateBlogKey(countAfter, countYearAfter, year);
 
         //博客对象本身缓存
-        String findByIdAndVisible = cacheKeyGenerator.generateKey(BlogWrapper.class, "findById", new Class[]{Long.class}, new Object[]{id});
-        String status = cacheKeyGenerator.generateKey(BlogWrapper.class, "findStatusById", new Class[]{Long.class}, new Object[]{id});
+        Method findByIdAndVisibleMethod = BlogWrapper.class.getMethod("findById", Long.class);
+        String findByIdAndVisible = cacheKeyGenerator.generateKey(findByIdAndVisibleMethod, id);
+        Method statusMethod = BlogWrapper.class.getMethod("findStatusById", Long.class);
+        String status = cacheKeyGenerator.generateKey(statusMethod, id);
 
         keys.add(findByIdAndVisible);
         keys.add(status);

@@ -27,10 +27,10 @@ public class CacheKeyGenerator {
     private int blogPageSize;
 
     @SneakyThrows
-    public String generateKey(Class<?> declaringType,
-                              String methodName,
-                              Class<?>[] parameterTypes,
-                              Object[] args) {
+    public String generateKey(Method method, Object... args) {
+
+        Class<?> declaringType = method.getDeclaringClass();
+        String methodName = method.getName();
 
         var params = new StringBuilder();
         for (Object arg : args) {
@@ -45,7 +45,6 @@ public class CacheKeyGenerator {
         }
 
         String className = declaringType.getSimpleName();
-        Method method = declaringType.getMethod(methodName, parameterTypes);
         var annotation = method.getAnnotation(Cache.class);
         String prefix = null;
         if (Objects.nonNull(annotation)) {
@@ -57,35 +56,41 @@ public class CacheKeyGenerator {
                 className + "::" + methodName + params;
     }
 
+    @SneakyThrows
     public Set<String> generateHotBlogsKeys(Integer year, Long count, Long countYear) {
         Set<String> keys = new HashSet<>();
         long pageNo = count % blogPageSize == 0 ? count / blogPageSize : count / blogPageSize + 1;
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
 
         for (long i = 1; i <= pageNo; i++) {
-            String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, Integer.MIN_VALUE});
+            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            String key = generateKey(method, i, Integer.MIN_VALUE);
             keys.add(key);
         }
 
         for (long i = 1; i <= pageYearNo; i++) {
-            String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, year});
+            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            String key = generateKey(method, i, year);
             keys.add(key);
         }
         return keys;
     }
 
+    @SneakyThrows
     public Set<String> generateBlogKey(long countAfter, long countYearAfter, Integer year) {
         Set<String> keys = new HashSet<>();
         long pageBeforeNo = countAfter / blogPageSize + 1;
         long pageYearBeforeNo = countYearAfter / blogPageSize + 1;
 
         for (long i = 1; i <= pageBeforeNo; i++) {
-            String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, Integer.MIN_VALUE});
+            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            String key = generateKey(method, i, Integer.MIN_VALUE);
             keys.add(key);
         }
 
         for (long i = 1; i <= pageYearBeforeNo; i++) {
-            String key = generateKey(BlogWrapper.class, "findPage", new Class[]{Integer.class, Integer.class}, new Object[]{i, year});
+            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            String key = generateKey(method, i, year);
             keys.add(key);
         }
         return keys;

@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.manage.cache.CacheEvictHandler;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -16,9 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Aspect
 @Component
@@ -29,6 +28,8 @@ public class CacheEvictAspect {
     private final StringRedisTemplate redisTemplate;
 
     private final RabbitTemplate rabbitTemplate;
+
+    private final List<CacheEvictHandler> cacheEvictHandlers;
 
     @Pointcut("@annotation(org.chiu.megalith.infra.cache.CacheEvict)")
     public void pt() {}
@@ -51,13 +52,22 @@ public class CacheEvictAspect {
         var annotation = method.getAnnotation(CacheEvict.class);
         Const[] prefix = annotation.prefix();
 
+        Set<String> keys = new HashSet<>();
+
         for (Const key : prefix) {
-            Set<String> keys = Optional.ofNullable(redisTemplate.keys(key.getInfo() + "*"))
-                    .orElseGet(LinkedHashSet::new);
-            if (!keys.isEmpty()) {
-                redisTemplate.delete(keys);
-                rabbitTemplate.convertAndSend(CacheEvictRabbitConfig.CACHE_EVICT_FANOUT_EXCHANGE, "", keys);
+            for (CacheEvictHandler handler : cacheEvictHandlers) {
+                String keyPrefix = key.getInfo();
+                if (handler.match(keyPrefix)) {
+                    Set<String> keySet = handler.handle(keyPrefix);
+                    keys.addAll(keySet);
+                    break;
+                }
             }
+        }
+
+        if (!keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            rabbitTemplate.convertAndSend(CacheEvictRabbitConfig.CACHE_EVICT_FANOUT_EXCHANGE, "", keys);
         }
     }
 }

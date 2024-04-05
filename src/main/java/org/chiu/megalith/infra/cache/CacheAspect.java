@@ -71,7 +71,7 @@ public class CacheAspect {
             javaType = objectMapper.getTypeFactory().constructType(genericReturnType);
         }
 
-        String cacheKey = cacheKeyGenerator.generateKey(declaringType, methodName, parameterTypes, args);
+        String cacheKey = cacheKeyGenerator.generateKey(method, args);
 
         Object cacheValue = localCache.getIfPresent(cacheKey);
         if (Objects.nonNull(cacheValue)) {
