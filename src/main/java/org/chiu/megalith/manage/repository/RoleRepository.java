@@ -2,6 +2,7 @@ package org.chiu.megalith.manage.repository;
 
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,7 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     Optional<RoleEntity> findByCodeAndStatus(String role, Integer status);
 
     List<RoleEntity> findByStatus(Integer status);
+
+    @Query(value = "SELECT role.code from RoleEntity role")
+    List<String> findAllCodes();
 }

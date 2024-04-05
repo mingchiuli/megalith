@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.manage.cache.CacheEvictHandler;
-import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.wrapper.RoleMenuWrapper;
 import org.springframework.stereotype.Component;
@@ -32,10 +31,7 @@ public class MenuCacheEvictHandler implements CacheEvictHandler {
     @SneakyThrows
     @Override
     public Set<String> handle(String prefix) {
-        List<RoleEntity> allRoles = roleRepository.findAll();
-        List<String> roleList = allRoles.stream()
-                .map(RoleEntity::getCode)
-                .toList();
+        List<String> roleList = roleRepository.findAllCodes();
 
         Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", String.class);
         Set<String> set = new HashSet<>();
