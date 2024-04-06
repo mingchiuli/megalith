@@ -32,6 +32,7 @@ public class ESHighlightBuilderUtils {
                             .HighlightParametersBuilder()
                             .withPreTags("<b style='color:red'>")
                             .withPostTags("</b>")
+                            //为0则全部内容都显示
                             .withNumberOfFragments(1)
                             .withFragmentSize(5)
                             .build(),
