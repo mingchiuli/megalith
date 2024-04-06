@@ -156,8 +156,8 @@ public class BlogSearchServiceImpl implements BlogSearchService {
     public PageAdapter<BlogEntityVo> searchAllBlogs(String keywords, Integer currentPage, Integer size, Long userId) {
 
         var boolQryBuilder = new BoolQuery.Builder();
-        var builder = boolQryBuilder.
-                should(should -> should
+        var builder = boolQryBuilder
+                .should(should -> should
                         .match(match -> match
                                 .field(TITLE.getField())
                                 .fuzziness("auto")
