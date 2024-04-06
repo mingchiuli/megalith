@@ -41,15 +41,9 @@ public class DeleteBlogCacheEvictHandler implements BlogCacheEvictHandler {
 
     @SneakyThrows
     @Override
-    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage) {
+    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage, BlogEntity blogEntity) {
         int year = blogSearchIndexMessage.getYear();
         Long id = blogSearchIndexMessage.getBlogId();
-
-        BlogEntity blogEntity = blogRepository.findById(id)
-                .orElseGet(() -> BlogEntity.builder()
-                        .id(id)
-                        .created(LocalDateTime.of(year, 1,1,1,1,1, 1))
-                        .build());
 
         //博客对象本身缓存
         Method findByIdMethod = BlogWrapper.class.getMethod("findById", Long.class);

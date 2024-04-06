@@ -1,8 +1,10 @@
 package org.chiu.megalith.blog.listener;
 
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.event.BlogOperateEvent;
 import org.chiu.megalith.blog.listener.cache.BlogCacheEvictHandler;
+import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
@@ -16,6 +18,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +33,8 @@ public class BlogOperateEventListener {
 
     private final List<BlogCacheEvictHandler> blogCacheEvictHandlers;
 
+    private final BlogRepository blogRepository;
+
     @EventListener
     @Async("commonExecutor")
     public void process(BlogOperateEvent event) {
@@ -37,12 +42,20 @@ public class BlogOperateEventListener {
         BlogIndexEnum typeEnum = messageBody.getTypeEnum();
         String name = typeEnum.name();
         Long blogId = messageBody.getBlogId();
+        Integer year = messageBody.getYear();
         String key = name + "_" + blogId;
 
         Set<String> keys = null;
+
+        BlogEntity blogEntity = blogRepository.findById(blogId)
+                .orElseGet(() -> BlogEntity.builder()
+                        .id(blogId)
+                        .created(LocalDateTime.of(year, 1,1,1,1,1, 1))
+                        .build());
+
         for (BlogCacheEvictHandler handler : blogCacheEvictHandlers) {
             if (handler.match(typeEnum)) {
-                keys = handler.handle(messageBody);
+                keys = handler.handle(messageBody, blogEntity);
                 break;
             }
         }

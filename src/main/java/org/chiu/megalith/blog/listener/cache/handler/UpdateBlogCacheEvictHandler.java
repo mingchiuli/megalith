@@ -37,17 +37,10 @@ public class UpdateBlogCacheEvictHandler implements BlogCacheEvictHandler {
 
     @SneakyThrows
     @Override
-    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage) {
+    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage, BlogEntity blogEntity) {
 
         Long id = blogSearchIndexMessage.getBlogId();
         int year = blogSearchIndexMessage.getYear();
-
-        BlogEntity blogEntity = blogRepository.findById(id)
-                .orElseGet(() -> BlogEntity.builder()
-                        .id(id)
-                        .created(LocalDateTime.of(year, 1,1,1,1,1, 1))
-                        .build());
-
         Integer status = blogEntity.getStatus();
 
         //不分年份的页数

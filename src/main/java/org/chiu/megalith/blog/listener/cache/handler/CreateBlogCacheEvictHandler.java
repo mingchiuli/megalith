@@ -1,9 +1,11 @@
 package org.chiu.megalith.blog.listener.cache.handler;
 
 import lombok.RequiredArgsConstructor;
+import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.listener.cache.BlogCacheEvictHandler;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
+import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +37,7 @@ public class CreateBlogCacheEvictHandler implements BlogCacheEvictHandler {
     }
 
     @Override
-    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage) {
+    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage, BlogEntity blogEntity) {
         int year = blogSearchIndexMessage.getYear();
         long id = blogSearchIndexMessage.getBlogId();
         //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom，编辑暂存区数据
@@ -44,8 +46,10 @@ public class CreateBlogCacheEvictHandler implements BlogCacheEvictHandler {
         long count = blogRepository.count();
         long countYear = blogRepository.countByCreatedBetween(start, end);
         Set<String> keys = cacheKeyGenerator.generateHotBlogsKeys(year, count, countYear);
-
+        String blogEditKey = KeyFactory.createBlogEditRedisKey(blogEntity.getUserId(), null);
+        keys.add(blogEditKey);
         redisTemplate.delete(keys);
+        keys.remove(blogEditKey);
 
         //重新构建该年份的页面bloom
         int totalPageByPeriod = (int) (countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1);

@@ -1,5 +1,6 @@
 package org.chiu.megalith.blog.listener.cache;
 
+import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
 import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
 
@@ -9,5 +10,5 @@ public interface BlogCacheEvictHandler {
 
     boolean match(BlogIndexEnum blogIndexEnum);
 
-    Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage);
+    Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage, BlogEntity blogEntity);
 }
