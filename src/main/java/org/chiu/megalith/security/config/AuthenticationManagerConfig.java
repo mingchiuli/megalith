@@ -1,7 +1,7 @@
 package org.chiu.megalith.security.config;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.security.component.provider.CustomProviderManager;
+import org.chiu.megalith.security.component.manager.CustomProviderManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

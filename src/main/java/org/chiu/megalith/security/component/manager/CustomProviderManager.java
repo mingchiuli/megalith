@@ -1,46 +1,43 @@
-package org.chiu.megalith.security.component.provider;
+package org.chiu.megalith.security.component.manager;
 
+import org.chiu.megalith.security.component.token.EmailAuthenticationToken;
+import org.chiu.megalith.security.component.token.SMSAuthenticationToken;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import java.util.List;
 
-import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.INVALID_LOGIN_OPERATE;
 
 public class CustomProviderManager extends ProviderManager {
 
     public CustomProviderManager(List<AuthenticationProvider> providers) {
-        super(providers, null);
+        super(providers);
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getName();
-        String grantType = getAuthGrantType(username);
+
+        authentication = getAuthGrantTypeToken(authentication);
 
         for (AuthenticationProvider provider : getProviders()) {
-            if (!supports(grantType, (ProviderBase) provider)) {
-                continue;
+            if (provider.supports(authentication.getClass())) {
+                return provider.authenticate(authentication);
             }
-
-            return provider.authenticate(authentication);
         }
         throw new BadCredentialsException(INVALID_LOGIN_OPERATE.getMsg());
     }
 
-    private String getAuthGrantType(String username) {
-        if (username.contains("@")) {
-            return GRANT_TYPE_EMAIL.getInfo();
-        } else if (username.matches("\\d+")) {
-            return GRANT_TYPE_PHONE.getInfo();
-        } else {
-            return GRANT_TYPE_PASSWORD.getInfo();
-        }
-    }
+    private Authentication getAuthGrantTypeToken(Authentication authentication) {
+        String username = authentication.getName();
 
-    private boolean supports(String grantType, ProviderBase provider) {
-        return provider.supports(grantType);
+        if (username.contains("@")) {
+            return new EmailAuthenticationToken(username, authentication.getCredentials());
+        } else if (username.matches("\\d+")) {
+            return new SMSAuthenticationToken(username, authentication.getCredentials());
+        } else {
+            return authentication;
+        }
     }
 }

@@ -21,25 +21,16 @@ public abstract sealed class ProviderBase extends DaoAuthenticationProvider perm
         EmailAuthenticationProvider,
         PasswordAuthenticationProvider,
         SMSAuthenticationProvider {
-
-    protected String grantType;
-
     protected UserDetailsService userDetailsService;
 
     protected RoleRepository roleRepository;
 
-    protected ProviderBase(String grantType,
-                           UserDetailsService userDetailsService,
+    protected ProviderBase(UserDetailsService userDetailsService,
                            RoleRepository roleRepository) {
         setUserDetailsService(userDetailsService);
         setHideUserNotFoundExceptions(false);
-        this.grantType = grantType;
         this.userDetailsService = userDetailsService;
         this.roleRepository = roleRepository;
-    }
-
-    protected boolean supports(String type) {
-        return grantType.equals(type);
     }
 
     protected abstract void authProcess(UserDetails user, UsernamePasswordAuthenticationToken authentication);

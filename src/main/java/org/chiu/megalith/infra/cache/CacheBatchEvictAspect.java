@@ -31,7 +31,7 @@ public class CacheBatchEvictAspect {
 
     private final List<CacheBatchEvictHandler> cacheBatchEvictHandlers;
 
-    @Pointcut("@annotation(org.chiu.megalith.infra.cache.CacheEvict)")
+    @Pointcut("@annotation(org.chiu.megalith.infra.cache.CacheBatchEvict)")
     public void pt() {}
 
     @SneakyThrows

@@ -46,10 +46,15 @@ public final class PasswordAuthenticationProvider extends ProviderBase {
                                           UserService userService,
                                           UserDetailsService userDetailsService,
                                           RoleRepository roleRepository) {
-        super(Const.GRANT_TYPE_PASSWORD.getInfo(), userDetailsService, roleRepository);
+        super(userDetailsService, roleRepository);
         this.passwordEncoder = passwordEncoder;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return UsernamePasswordAuthenticationToken.class.equals(authentication);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.chiu.megalith.security.component.provider;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.manage.repository.RoleRepository;
+import org.chiu.megalith.security.component.token.SMSAuthenticationToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -34,8 +35,13 @@ public final class SMSAuthenticationProvider extends ProviderBase {
     public SMSAuthenticationProvider(UserDetailsService userDetailsService,
                                      StringRedisTemplate redisTemplate,
                                      RoleRepository roleRepository) {
-        super(Const.GRANT_TYPE_PHONE.getInfo(), userDetailsService, roleRepository);
+        super(userDetailsService, roleRepository);
         this.redisTemplate = redisTemplate;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return SMSAuthenticationToken.class.equals(authentication);
     }
 
     @Override

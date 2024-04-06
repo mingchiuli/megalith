@@ -3,6 +3,7 @@ package org.chiu.megalith.security.component.provider;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.security.component.token.EmailAuthenticationToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,8 +33,13 @@ public final class EmailAuthenticationProvider extends ProviderBase {
     public EmailAuthenticationProvider(StringRedisTemplate redisTemplate,
                                        UserDetailsService userDetailsService,
                                        RoleRepository roleRepository) {
-        super(Const.GRANT_TYPE_EMAIL.getInfo(), userDetailsService, roleRepository);
+        super(userDetailsService, roleRepository);
         this.redisTemplate = redisTemplate;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return EmailAuthenticationToken.class.equals(authentication);
     }
 
     @Override
