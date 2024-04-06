@@ -2,7 +2,7 @@ package org.chiu.megalith.manage.wrapper;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.cache.Cache;
-import org.chiu.megalith.infra.cache.CacheEvict;
+import org.chiu.megalith.infra.cache.CacheBatchEvict;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor;
@@ -37,7 +37,7 @@ public class RoleMenuWrapper {
 
 
     @Transactional
-    @CacheEvict(prefix = {Const.HOT_MENUS})
+    @CacheBatchEvict(prefix = {Const.HOT_MENUS})
     public void saveMenu(Long roleId, ArrayList<RoleMenuEntity> roleMenuEntities) {
         roleMenuRepository.deleteByRoleId(roleId);
         roleMenuRepository.saveAll(roleMenuEntities);

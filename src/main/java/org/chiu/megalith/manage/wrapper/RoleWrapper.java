@@ -1,7 +1,7 @@
 package org.chiu.megalith.manage.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.cache.CacheEvict;
+import org.chiu.megalith.infra.cache.CacheBatchEvict;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.entity.RoleEntity;
 import org.chiu.megalith.manage.repository.RoleAuthorityRepository;
@@ -23,14 +23,14 @@ public class RoleWrapper {
     private final RoleMenuRepository roleMenuRepository;
 
 
-    @CacheEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS})
+    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS})
     public void save(RoleEntity roleEntity) {
         roleRepository.save(roleEntity);
     }
 
 
     @Transactional
-    @CacheEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS})
+    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS})
     public void delete(List<Long> ids) {
         roleRepository.deleteAllById(ids);
         roleMenuRepository.deleteAllByRoleId(ids);

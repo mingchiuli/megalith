@@ -23,7 +23,7 @@ import java.util.*;
 @Component
 @Order(3)
 @RequiredArgsConstructor
-public class CacheEvictAspect {
+public class CacheBatchEvictAspect {
 
     private final StringRedisTemplate redisTemplate;
 
@@ -49,7 +49,7 @@ public class CacheEvictAspect {
         }
 
         Method method = declaringType.getMethod(methodName, parameterTypes);
-        var annotation = method.getAnnotation(CacheEvict.class);
+        var annotation = method.getAnnotation(CacheBatchEvict.class);
         Const[] prefix = annotation.prefix();
 
         Set<String> keys = new HashSet<>();

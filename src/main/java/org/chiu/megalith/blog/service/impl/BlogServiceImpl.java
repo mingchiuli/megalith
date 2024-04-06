@@ -76,9 +76,6 @@ public class BlogServiceImpl implements BlogService {
 
     private final ApplicationContext applicationContext;
 
-    @Value("${blog.blog-page-size}")
-    private int blogPageSize;
-
     @Value("${blog.highest-role}")
     private String highestRole;
 
