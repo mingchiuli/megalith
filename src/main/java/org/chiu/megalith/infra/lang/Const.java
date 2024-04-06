@@ -29,14 +29,6 @@ public enum Const {
 
     YEAR_VISIT("{visit_record}_year"),
 
-    LOGIN_USER_CACHE("login:"),
-
-    GRANT_TYPE_PASSWORD("password"),
-
-    GRANT_TYPE_PHONE("phone"),
-
-    CAPTCHA_KEY("captcha:"),
-
     EMAIL_KEY("email_validation:"),
 
     PHONE_KEY("phone_validation:"),
