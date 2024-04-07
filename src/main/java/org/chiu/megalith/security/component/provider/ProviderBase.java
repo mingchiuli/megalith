@@ -33,7 +33,7 @@ public abstract sealed class ProviderBase extends DaoAuthenticationProvider perm
         this.roleRepository = roleRepository;
     }
 
-    protected abstract void authProcess(UserDetails user, UsernamePasswordAuthenticationToken authentication);
+    protected abstract void authProcess(UserDetails user, Authentication authentication);
 
     private void checkRoleStatus(UserDetails user) {
         String role = user.getAuthorities().stream()

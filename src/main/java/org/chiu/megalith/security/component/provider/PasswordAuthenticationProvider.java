@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,7 +59,7 @@ public final class PasswordAuthenticationProvider extends ProviderBase {
     }
 
     @Override
-    public void authProcess(UserDetails user, UsernamePasswordAuthenticationToken authentication) {
+    public void authProcess(UserDetails user, Authentication authentication) {
 
         Optional.ofNullable(authentication.getCredentials()).ifPresentOrElse(credentials -> {
             String presentedPassword = credentials.toString();

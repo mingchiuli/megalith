@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -45,7 +45,7 @@ public final class SMSAuthenticationProvider extends ProviderBase {
     }
 
     @Override
-    protected void authProcess(UserDetails user, UsernamePasswordAuthenticationToken authentication) {
+    protected void authProcess(UserDetails user, Authentication authentication) {
         String prefix = Const.PHONE_KEY.getInfo() + user.getUsername();
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         Map<String, String> entries = hashOperations.entries(prefix);
