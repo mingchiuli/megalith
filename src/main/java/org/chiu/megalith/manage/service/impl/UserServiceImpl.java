@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntityVo findByPhone(String loginSMS) {
         UserEntity userEntity = userRepository.findByPhone(loginSMS)
-                .orElseThrow(() -> new MissException(EMAIL_NOT_EXIST));
+                .orElseThrow(() -> new MissException(SMS_NOT_EXIST));
 
         return UserEntityVoConvertor.convert(userEntity);
     }
