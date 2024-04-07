@@ -51,7 +51,7 @@ public final class SMSAuthenticationProvider extends ProviderBase {
         Map<String, String> entries = hashOperations.entries(prefix);
 
         if (!entries.isEmpty()) {
-            String code = entries.get("sms");
+            String code = entries.get("code");
             String tryCount = entries.get("try_count");
 
             if (Integer.parseInt(tryCount) >= maxTryNum) {

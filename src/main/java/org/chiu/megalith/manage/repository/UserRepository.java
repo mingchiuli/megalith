@@ -33,4 +33,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Modifying
     @Transactional
     void setUserStatusByUsername(String username, Integer status);
+
+    Optional<UserEntity> findByPhone(String loginSMS);
 }

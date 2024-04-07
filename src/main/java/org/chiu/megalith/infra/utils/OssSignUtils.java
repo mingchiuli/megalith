@@ -16,13 +16,13 @@ import java.util.Locale;
 @Component
 public class OssSignUtils {
 
-    @Value("${blog.oss.access-key-id}")
+    @Value("${blog.aliyun.access-key-id}")
     private String accessKeyId;
 
-    @Value("${blog.oss.access-key-secret}")
+    @Value("${blog.aliyun.access-key-secret}")
     private String accessKeySecret;
 
-    @Value("${blog.oss.bucket-name}")
+    @Value("${blog.aliyun.oss.bucket-name}")
     private String bucketName;
 
     private final static String ALGORITHM = "HmacSHA1";

@@ -62,12 +62,12 @@ public class CodeFactory {
         return builder.toString();
     }
 
-    public void save(String code, String prefix) {
+    public void save(Object code, String prefix) {
         String lua = "redis.call('hmset', KEYS[1], ARGV[1], ARGV[2], ARGV[3], ARGV[4]);" +
                 "redis.call('expire', KEYS[1], ARGV[5]);";
 
         RedisScript<Void> script = RedisScript.of(lua);
         redisTemplate.execute(script, Collections.singletonList(prefix),
-                "code", code, "try_count", "0", "120");
+                "code", code.toString(), "try_count", "0", "120");
     }
 }

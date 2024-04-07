@@ -52,5 +52,7 @@ blog:
     access-token-expire: 21600
     refresh-token-expire: 604800
   oss:
-    base-url: https://${blog.oss.bucket-name}.${blog.oss.endpoint}
+    base-url: https://${blog.aliyun.oss.bucket-name}.${blog.oss.endpoint}
     endpoint: oss-cn-hangzhou.aliyuncs.com
+  sms:
+    base-url: https://dysmsapi.aliyuncs.com

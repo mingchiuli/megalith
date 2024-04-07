@@ -1,45 +1,42 @@
-package org.chiu.megalith.blog.config;
+package org.chiu.megalith.security.config;
 
-import org.chiu.megalith.blog.http.OssHttpService;
+import org.chiu.megalith.security.http.SmsHttpService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.time.Duration;
 
 
 @Configuration(proxyBeanMethods = false)
-public class HttpConfig {
+public class SecurityHttpConfig {
 
-    @Value("${blog.oss.bucket-name}")
-    private String bucketName;
-
-    @Value("${blog.oss.endpoint}")
-    private String ep;
-
-    @Value("${blog.oss.base-url}")
+    @Value("${blog.sms.base-url}")
     private String baseUrl;
 
     @Bean
-    OssHttpService ossHttpService() {
+    SmsHttpService smsHttpService() {
 
         JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory();
         requestFactory.setReadTimeout(Duration.ofSeconds(10));
 
+        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(baseUrl);
+        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+
         RestClient client = RestClient.builder()
                 .baseUrl(baseUrl)
+                .uriBuilderFactory(uriBuilderFactory)
                 .requestFactory(requestFactory)
-                .defaultHeader(HttpHeaders.HOST, bucketName + "." + ep)
                 .build();
 
         RestClientAdapter restClientAdapter = RestClientAdapter.create(client);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(restClientAdapter)
                 .build();
-        return factory.createClient(OssHttpService.class);
+        return factory.createClient(SmsHttpService.class);
     }
 }

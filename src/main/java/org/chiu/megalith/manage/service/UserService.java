@@ -29,4 +29,6 @@ public interface UserService {
     List<Long> findIdsByStatus(Integer status);
 
     UserEntityVo findByEmail(String email);
+
+    UserEntityVo findByPhone(String loginSMS);
 }
