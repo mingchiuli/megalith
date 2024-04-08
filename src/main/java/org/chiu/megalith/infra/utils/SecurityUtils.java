@@ -1,12 +1,12 @@
 package org.chiu.megalith.infra.utils;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Objects;
-
 import static org.chiu.megalith.infra.lang.ExceptionMessage.AUTH_EXCEPTION;
+
 
 public class SecurityUtils {
 
@@ -14,10 +14,9 @@ public class SecurityUtils {
 
     public static String getLoginRole() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (Objects.isNull(authentication)) {
+        if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
             throw new BadCredentialsException(AUTH_EXCEPTION.getMsg());
         }
-
         Object role = authentication.getDetails();
         return (String) role;
     }
@@ -28,7 +27,7 @@ public class SecurityUtils {
 
     public static Long getLoginUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (Objects.isNull(authentication)) {
+        if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
             throw new BadCredentialsException(AUTH_EXCEPTION.getMsg());
         }
         return Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());

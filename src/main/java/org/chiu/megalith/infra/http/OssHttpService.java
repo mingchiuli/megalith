@@ -1,4 +1,4 @@
-package org.chiu.megalith.blog.http;
+package org.chiu.megalith.infra.http;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import org.chiu.megalith.blog.convertor.*;
 import org.chiu.megalith.blog.dto.BlogExhibitDto;
 import org.chiu.megalith.blog.event.BlogOperateEvent;
-import org.chiu.megalith.blog.http.OssHttpService;
+import org.chiu.megalith.infra.http.OssHttpService;
 import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;

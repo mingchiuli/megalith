@@ -1,9 +1,11 @@
 package org.chiu.megalith.manage.service;
 
 
+import org.chiu.megalith.manage.req.UserEntityRegisterReq;
 import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.manage.vo.UserEntityVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,4 +33,15 @@ public interface UserService {
     UserEntityVo findByEmail(String email);
 
     UserEntityVo findByPhone(String loginSMS);
+
+    String getRegisterPage();
+
+    void saveRegisterPage(String token, UserEntityRegisterReq userEntityRegisterReq);
+
+    String imageUpload(String token, MultipartFile image);
+
+    void imageDelete(String token, String url);
+
+    Boolean checkRegisterPage(String token);
+
 }

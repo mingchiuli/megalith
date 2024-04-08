@@ -35,7 +35,8 @@ public class SecurityConfig {
             "/public/blog/**",
             "/search/public/**",
             "/edit/**",
-            "/actuator/**"
+            "/actuator/**",
+            "/sys/user/register/**"
     };
 
     @Bean

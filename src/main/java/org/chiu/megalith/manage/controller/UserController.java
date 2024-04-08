@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import org.chiu.megalith.manage.req.UserEntityRegisterReq;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.manage.req.UserEntityReq;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +28,33 @@ public class UserController {
     private final UserService userService;
 
     private final RoleService roleService;
+
+    @GetMapping("/auth/register/page")
+    @PreAuthorize("hasAuthority('sys:user:register:page')")
+    public Result<String> getRegisterPage() {
+        return Result.success(userService::getRegisterPage);
+    }
+
+    @GetMapping("/register/check")
+    public Result<Boolean> checkRegisterPage(String token) {
+        return Result.success(() -> userService.checkRegisterPage(token));
+    }
+
+
+    @PostMapping("/register/save")
+    public Result<Void> saveRegisterPage(@RequestParam String token, @RequestBody @Valid UserEntityRegisterReq userEntityRegisterReq) {
+        return Result.success(() -> userService.saveRegisterPage(token, userEntityRegisterReq));
+    }
+
+    @PostMapping("/register/image/upload")
+    public Result<String> imageUpload(@RequestParam MultipartFile image, @RequestParam String token) {
+        return Result.success(() -> userService.imageUpload(token, image));
+    }
+
+    @GetMapping("/register/image/delete")
+    public Result<Void> imageDelete(@RequestParam String url, @RequestParam String token) {
+        return Result.success(() -> userService.imageDelete(token, url));
+    }
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:user:save')")
