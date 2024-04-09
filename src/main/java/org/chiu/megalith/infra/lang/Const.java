@@ -18,6 +18,8 @@ public enum Const {
     GRANT_TYPE_EMAIL("email"),
 
     EMAIL_CODE("email_code"),
+
+    PHONE_CODE("phone_code"),
     
     SMS_CODE("sms_code"),
 

@@ -22,6 +22,9 @@ public class UserEntityRegisterReq {
     @NotBlank
     private String password;
 
+    @NotBlank
+    private String confirmPassword;
+
     @Email
     private String email;
 

@@ -73,7 +73,9 @@ public enum ExceptionMessage {
 
     ACCOUNT_LOCKED(34, "账户被锁"),
 
-    BLOCKED(35, "已被封禁");
+    BLOCKED(35, "已被封禁"),
+
+    PASSWORD_DIFF(36, "账号密码不一致");
 
 
     private final String msg;

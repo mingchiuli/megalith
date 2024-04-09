@@ -1,6 +1,7 @@
 package org.chiu.megalith.manage.service.impl;
 
 import lombok.SneakyThrows;
+import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.infra.http.OssHttpService;
 import org.chiu.megalith.infra.cache.CacheBatchEvict;
 import org.chiu.megalith.infra.lang.Const;
@@ -62,6 +63,8 @@ public class UserServiceImpl implements UserService {
     private final OssHttpService ossHttpService;
 
     private final OssSignUtils ossSignUtils;
+
+    private final CodeFactory codeFactory;
 
     @Value("${blog.oss.base-url}")
     private String baseUrl;
@@ -174,9 +177,18 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(exist) || !exist) {
             throw new BadCredentialsException(NO_AUTH.getMsg());
         }
-        if (!StringUtils.hasLength(userEntityRegisterReq.getPassword())) {
-            throw new MissException(PASSWORD_REQUIRED.getMsg());
+        String password = userEntityRegisterReq.getPassword();
+        String confirmPassword = userEntityRegisterReq.getConfirmPassword();
+        if (!Objects.equals(confirmPassword, password)) {
+            throw new MissException(PASSWORD_DIFF.getMsg());
         }
+
+        String phone = userEntityRegisterReq.getPhone();
+        if (!StringUtils.hasLength(phone)) {
+            String fakePhone = codeFactory.create(PHONE_CODE.getInfo());
+            userEntityRegisterReq.setPhone(fakePhone);
+        }
+
         UserEntityReq userEntityReq = new UserEntityReq();
         BeanUtils.copyProperties(userEntityRegisterReq, userEntityReq);
         userEntityReq.setRole(USER.getInfo());

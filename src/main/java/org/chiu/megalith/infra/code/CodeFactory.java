@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.Random;
 
-import static org.chiu.megalith.infra.lang.Const.EMAIL_CODE;
-import static org.chiu.megalith.infra.lang.Const.SMS_CODE;
+import static org.chiu.megalith.infra.lang.Const.*;
 
 /**
  * @author mingchiuli
@@ -39,6 +38,8 @@ public class CodeFactory {
             return createSMS();
         } else if (EMAIL_CODE.getInfo().equals(type)) {
             return createEmailCode();
+        } else if (PHONE_CODE.getInfo().equals(type)) {
+            return createPhone();
         }
         throw new CodeException("code type input error");
     }
@@ -56,6 +57,16 @@ public class CodeFactory {
     private String createSMS() {
         var builder = new StringBuilder();
         for (int i = 0; i < 6; i++) {
+            int idx = random.nextInt(sms.length);
+            builder.append(sms[idx]);
+        }
+        return builder.toString();
+    }
+
+    private String createPhone() {
+        var builder = new StringBuilder();
+        builder.append(2);
+        for (int i = 0; i < 10; i++) {
             int idx = random.nextInt(sms.length);
             builder.append(sms[idx]);
         }
