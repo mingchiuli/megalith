@@ -191,6 +191,7 @@ elseif operateTypeCode == 12 then
             content = allPairs[i + 1]
         end
     end
+    redis.call('hset', key, 'para::' .. paraNo, '')
     return redis.call('hset', key, 'para::' .. (paraNo - 1), string.sub(content, 1, string.len(content) - 1), 'version', version)
 elseif operateTypeCode == 13 then
     for i = 1, #allPairs, 2 do
