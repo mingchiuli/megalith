@@ -31,8 +31,8 @@ public class UserController {
 
     @GetMapping("/auth/register/page")
     @PreAuthorize("hasAuthority('sys:user:register:page')")
-    public Result<String> getRegisterPage() {
-        return Result.success(userService::getRegisterPage);
+    public Result<String> getRegisterPage(@RequestParam String username) {
+        return Result.success(() -> userService.getRegisterPage(username));
     }
 
     @GetMapping("/register/check")

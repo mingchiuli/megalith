@@ -34,7 +34,7 @@ public interface UserService {
 
     UserEntityVo findByPhone(String loginSMS);
 
-    String getRegisterPage();
+    String getRegisterPage(String username);
 
     void saveRegisterPage(String token, UserEntityRegisterReq userEntityRegisterReq);
 

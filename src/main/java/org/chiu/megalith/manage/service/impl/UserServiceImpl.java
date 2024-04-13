@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -165,10 +166,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getRegisterPage() {
+    public String getRegisterPage(String username) {
         String token = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(REGISTER_PREFIX.getInfo() + token, "", 1, TimeUnit.HOURS);
-        return pagePrefix + token;
+        redisTemplate.opsForValue().set(REGISTER_PREFIX.getInfo() + token, username, 1, TimeUnit.HOURS);
+        return pagePrefix + token + "?username=" + username;
     }
 
     @Override
@@ -189,7 +190,17 @@ public class UserServiceImpl implements UserService {
             userEntityRegisterReq.setPhone(fakePhone);
         }
 
+        String username = userEntityRegisterReq.getUsername();
+        String usernameCopy = redisTemplate.opsForValue().get(REGISTER_PREFIX.getInfo() + token);
+        if (StringUtils.hasLength(usernameCopy) && !Objects.equals(usernameCopy, username)) {
+            throw new BadCredentialsException(NO_AUTH.getMsg());
+        }
+
         UserEntityReq userEntityReq = new UserEntityReq();
+
+        Optional<UserEntity> userEntity = userRepository.findByUsernameAndStatus(username, NORMAL.getCode());
+        userEntity.ifPresent(entity -> userEntityRegisterReq.setId(entity.getId()));
+
         BeanUtils.copyProperties(userEntityRegisterReq, userEntityReq);
         userEntityReq.setRole(USER.getInfo());
         userEntityReq.setStatus(NORMAL.getCode());
