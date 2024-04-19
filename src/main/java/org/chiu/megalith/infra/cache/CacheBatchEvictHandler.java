@@ -1,4 +1,4 @@
-package org.chiu.megalith.manage.cache;
+package org.chiu.megalith.infra.cache;
 
 import java.util.Set;
 

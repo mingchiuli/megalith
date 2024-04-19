@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.bloom.handler;
+package org.chiu.megalith.infra.bloom;
 
 public abstract class BloomHandler {
 

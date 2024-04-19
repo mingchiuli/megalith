@@ -2,7 +2,7 @@ package org.chiu.megalith.manage.service.impl;
 
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.code.CodeFactory;
-import org.chiu.megalith.infra.http.OssHttpService;
+import org.chiu.megalith.manage.http.OssHttpService;
 import org.chiu.megalith.infra.cache.CacheBatchEvict;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.user.UserIndexMessage;

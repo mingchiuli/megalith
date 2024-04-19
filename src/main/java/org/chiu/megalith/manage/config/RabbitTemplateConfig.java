@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.config;
+package org.chiu.megalith.manage.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

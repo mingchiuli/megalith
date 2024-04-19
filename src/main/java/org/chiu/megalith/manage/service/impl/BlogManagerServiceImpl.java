@@ -3,7 +3,7 @@ package org.chiu.megalith.manage.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.http.OssHttpService;
+import org.chiu.megalith.manage.http.OssHttpService;
 import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;

@@ -1,8 +1,9 @@
-package org.chiu.megalith.infra.config;
+package org.chiu.megalith.manage.config;
 
 import lombok.RequiredArgsConstructor;
 
-import org.chiu.megalith.infra.listener.CacheEvictMessageListener;
+import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.manage.listener.cache.mq.CacheEvictMessageListener;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -23,7 +24,7 @@ public class CacheEvictRabbitConfig {
 
     public static String CACHE_EVICT_QUEUE = "cache.evict.queue.";
 
-    public static final String CACHE_EVICT_FANOUT_EXCHANGE = "cache.evict.fanout.exchange";
+    public static final String CACHE_EVICT_FANOUT_EXCHANGE = Const.CACHE_EVICT_FANOUT_EXCHANGE.getInfo();
 
     private final Jackson2JsonMessageConverter jsonMessageConverter;
 

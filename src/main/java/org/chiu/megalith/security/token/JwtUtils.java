@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.token;
+package org.chiu.megalith.security.token;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

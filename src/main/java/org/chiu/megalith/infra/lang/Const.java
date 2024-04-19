@@ -87,7 +87,9 @@ public enum Const {
 
     REGISTER_PREFIX("register_prefix:"),
 
-    USER("user");
+    USER("user"),
+
+    CACHE_EVICT_FANOUT_EXCHANGE("cache.evict.fanout.exchange");
 
 
 

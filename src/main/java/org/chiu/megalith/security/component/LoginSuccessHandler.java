@@ -1,7 +1,7 @@
 package org.chiu.megalith.security.component;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.chiu.megalith.infra.token.TokenUtils;
+import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.manage.service.UserService;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.security.user.LoginUser;

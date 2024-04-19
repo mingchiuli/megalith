@@ -1,10 +1,10 @@
-package org.chiu.megalith.manage.cache.handler;
+package org.chiu.megalith.manage.cache;
 
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.manage.cache.CacheBatchEvictHandler;
+import org.chiu.megalith.infra.cache.CacheBatchEvictHandler;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.wrapper.RoleAuthorityWrapper;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,5 @@
 package org.chiu.megalith.infra.bloom;
 
-import org.chiu.megalith.infra.bloom.handler.BloomHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

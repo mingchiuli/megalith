@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.token;
+package org.chiu.megalith.security.token;
 
 public interface TokenUtils<T> {
 

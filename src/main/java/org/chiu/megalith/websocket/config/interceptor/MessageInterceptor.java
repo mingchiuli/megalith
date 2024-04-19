@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 import org.apache.http.HttpHeaders;
-import org.chiu.megalith.infra.token.TokenUtils;
+import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.utils.SecurityAuthenticationUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;

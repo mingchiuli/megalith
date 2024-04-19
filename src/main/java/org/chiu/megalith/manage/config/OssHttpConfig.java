@@ -1,6 +1,6 @@
 package org.chiu.megalith.manage.config;
 
-import org.chiu.megalith.infra.http.OssHttpService;
+import org.chiu.megalith.manage.http.OssHttpService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

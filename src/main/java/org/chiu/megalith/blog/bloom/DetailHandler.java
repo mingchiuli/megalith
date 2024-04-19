@@ -1,7 +1,7 @@
-package org.chiu.megalith.infra.bloom.handler.impl;
+package org.chiu.megalith.blog.bloom;
 
 
-import org.chiu.megalith.infra.bloom.handler.BloomHandler;
+import org.chiu.megalith.infra.bloom.BloomHandler;
 import org.chiu.megalith.infra.exception.MissException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;

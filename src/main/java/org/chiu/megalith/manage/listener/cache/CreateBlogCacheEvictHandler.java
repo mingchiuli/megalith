@@ -1,8 +1,7 @@
-package org.chiu.megalith.manage.listener.cache.handler;
+package org.chiu.megalith.manage.listener.cache;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.entity.BlogEntity;
-import org.chiu.megalith.manage.listener.cache.BlogCacheEvictHandler;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
