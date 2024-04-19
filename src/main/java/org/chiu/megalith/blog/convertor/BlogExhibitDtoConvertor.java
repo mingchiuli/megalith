@@ -1,7 +1,7 @@
 package org.chiu.megalith.blog.convertor;
 
 import org.chiu.megalith.blog.dto.BlogExhibitDto;
-import org.chiu.megalith.blog.entity.BlogEntity;
+import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.manage.entity.UserEntity;
 
 public class BlogExhibitDtoConvertor {

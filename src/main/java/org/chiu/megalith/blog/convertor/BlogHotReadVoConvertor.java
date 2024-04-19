@@ -1,6 +1,6 @@
 package org.chiu.megalith.blog.convertor;
 
-import org.chiu.megalith.blog.entity.BlogEntity;
+import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.blog.vo.BlogHotReadVo;
 import org.chiu.megalith.infra.exception.MissException;
 import org.springframework.data.redis.core.ZSetOperations;

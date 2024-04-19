@@ -1,6 +1,6 @@
 package org.chiu.megalith.search.controller;
 
-import org.chiu.megalith.blog.vo.BlogEntityVo;
+import org.chiu.megalith.manage.vo.BlogEntityVo;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.SecurityUtils;

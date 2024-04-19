@@ -27,7 +27,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import static org.chiu.megalith.blog.lang.FieldEnum.*;
+import static org.chiu.megalith.manage.lang.FieldEnum.*;
 import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.DOCUMENT_NOT_EXIST;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.WEB_NOT_EXIST;

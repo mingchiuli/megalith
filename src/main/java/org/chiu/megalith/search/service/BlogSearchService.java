@@ -1,7 +1,7 @@
 package org.chiu.megalith.search.service;
 
 
-import org.chiu.megalith.blog.vo.BlogEntityVo;
+import org.chiu.megalith.manage.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.search.vo.BlogDocumentVo;
 
