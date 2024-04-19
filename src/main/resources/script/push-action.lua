@@ -135,7 +135,7 @@ elseif operateTypeCode == 4 then
             content = allPairs[i + 1]
         end
     end
-    return redis.call('hset', key, field, subStringUTF8(content, 1, indexStart) .. contentChange .. subStringUTF8(content, indexEnd, subStringGetTotalIndex(content)), 'version', version)
+    return redis.call('hset', key, field, subStringUTF8(content, 1, indexStart) .. contentChange .. subStringUTF8(content, indexEnd + 1, subStringGetTotalIndex(content)), 'version', version)
 elseif operateTypeCode == 5 then
     for i = 1, #allPairs, 2 do
         if (allPairs[i] == field) then
