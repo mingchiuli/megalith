@@ -1,8 +1,8 @@
 package org.chiu.megalith.search.mq.handler;
 
 import org.chiu.megalith.manage.entity.BlogEntity;
-import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.infra.search.BlogIndexEnum;
+import org.chiu.megalith.manage.repository.BlogRepository;
 import org.chiu.megalith.search.document.BlogDocument;
 
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;

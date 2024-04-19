@@ -7,12 +7,12 @@ import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.*;
 import org.chiu.megalith.manage.entity.BlogEntity;
-import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 
+import org.chiu.megalith.manage.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
