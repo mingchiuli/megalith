@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.req.BlogEditPushAllReq;
 import org.chiu.megalith.manage.service.BlogManagerService;
 import org.chiu.megalith.manage.vo.BlogDeleteVo;
@@ -105,4 +106,12 @@ public class BlogManagerController {
         Long userId = SecurityUtils.getLoginUserId();
         return Result.success(() -> blogManagerService.pushAll(blog, userId));
     }
+
+    @GetMapping("/download")
+    @PreAuthorize("hasAuthority('sys:blog:download')")
+    public Result<Void> download(HttpServletResponse response) {
+        blogManagerService.download(response);
+        return Result.success();
+    }
+
 }

@@ -1,5 +1,8 @@
 package org.chiu.megalith.manage.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.exception.MissException;
@@ -29,6 +32,7 @@ import org.chiu.megalith.manage.vo.BlogDeleteVo;
 import org.chiu.megalith.manage.vo.BlogEditVo;
 import org.chiu.megalith.manage.vo.BlogEntityVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -37,6 +41,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
@@ -44,8 +49,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static org.chiu.megalith.infra.lang.Const.*;
@@ -73,6 +82,11 @@ public class BlogManagerServiceImpl implements BlogManagerService {
 
     private final StringRedisTemplate redisTemplate;
 
+    private final ObjectMapper objectMapper;
+
+    @Qualifier("commonExecutor")
+    private final ExecutorService taskExecutor;
+
     @Value("${blog.oss.base-url}")
     private String baseUrl;
 
@@ -96,6 +110,46 @@ public class BlogManagerServiceImpl implements BlogManagerService {
                 paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                 Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
                 A_WEEK.getInfo());
+    }
+
+    @SneakyThrows
+    @Override
+    public void download(HttpServletResponse response) {
+        ServletOutputStream outputStream = response.getOutputStream();
+        response.setCharacterEncoding("UTF-8");
+        long total = blogRepository.count();
+        int pageSize = 20;
+        int totalPage = (int) (total % pageSize == 0 ? total / pageSize : total / pageSize + 1);
+
+        for (int i = 1; i <= totalPage; i++) {
+            PageRequest pageRequest = PageRequest.of(i, pageSize);
+            List<Long> ids = blogRepository.findIds(pageRequest);
+            List<BlogEntity> blogs = blogRepository.findAllById(ids);
+
+            if (i == 1) {
+                //[
+                outputStream.write(new byte[]{91});
+            }
+
+            for (int j = 0; j < blogs.size(); j++) {
+                if (i != 1 && j == 0) {
+                    //,
+                    outputStream.write(new byte[]{44});
+                }
+                byte[] bytes = objectMapper.writeValueAsBytes(blogs.get(j));
+                outputStream.write(bytes);
+                if (i != totalPage && j != blogs.size() - 1) {
+                    outputStream.write(new byte[]{44});
+                }
+            }
+
+            if (i == totalPage) {
+                //]
+                outputStream.write(new byte[]{93});
+            }
+        }
+        outputStream.flush();
+        outputStream.close();
     }
 
     @SneakyThrows

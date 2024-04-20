@@ -71,11 +71,11 @@ public class CacheSchedule {
 
     private void exec() {
         List<Integer> years = blogService.getYears();
-        Long count = blogService.count();
+        Long total = blogService.count();
         // getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
         CompletableFuture.runAsync(() -> {
             int pageSize = 20;
-            int totalPage = (int) (count % pageSize == 0 ? count / pageSize : count / pageSize + 1);
+            int totalPage = (int) (total % pageSize == 0 ? total / pageSize : total / pageSize + 1);
             for (int i = 1; i <= totalPage; i++) {
                 var runnable = new BlogRunnable(blogService, blogWrapper, redisTemplate, PageRequest.of(i, pageSize));
                 taskExecutor.execute(runnable);
@@ -84,9 +84,9 @@ public class CacheSchedule {
 
         CompletableFuture.runAsync(() -> {
             // listPage接口，分别考虑缓存和bloom
-            int totalPage = (int) (count % blogPageSize == 0 ? 
-                    count / blogPageSize : 
-                    count / blogPageSize + 1);
+            int totalPage = (int) (total % blogPageSize == 0 ?
+                    total / blogPageSize :
+                    total / blogPageSize + 1);
             for (int i = 1; i <= totalPage; i++) {
                 var runnable = new BlogsRunnable(redisTemplate, blogService, i);
                 taskExecutor.execute(runnable);
