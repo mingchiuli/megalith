@@ -168,7 +168,10 @@ public class UserServiceImpl implements UserService {
     public String getRegisterPage(String username) {
         String token = UUID.randomUUID().toString();
         redisTemplate.opsForValue().set(REGISTER_PREFIX.getInfo() + token, username, 1, TimeUnit.HOURS);
-        return pagePrefix + token + "?username=" + username;
+        if (StringUtils.hasLength(username)) {
+            return pagePrefix + token + "?username=" + username;
+        }
+        return pagePrefix + token;
     }
 
     @Override
