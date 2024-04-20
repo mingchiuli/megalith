@@ -77,7 +77,7 @@ public enum Const {
 
     HOT_AUTHORITIES("hot_authorities:"),
 
-    HOT_MENUS("hot_menus:"),
+    HOT_MENUS_AND_BUTTONS("hot_menus_and_buttons:"),
     
     A_WEEK("604899"),
 

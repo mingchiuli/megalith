@@ -6,8 +6,8 @@ import org.chiu.megalith.manage.entity.*;
 import org.chiu.megalith.manage.repository.*;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
+import org.chiu.megalith.manage.vo.MenusAndButtons;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
-import org.chiu.megalith.manage.vo.MenuVo;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.wrapper.RoleMenuWrapper;
@@ -55,7 +55,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     }
 
     @Override
-    public List<MenuVo> getCurrentUserNav(String role) {
+    public MenusAndButtons getCurrentUserNav(String role) {
         role = role.substring(ROLE_PREFIX.getInfo().length());
         return roleMenuWrapper.getCurrentRoleNav(role);
     }

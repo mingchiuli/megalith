@@ -23,14 +23,14 @@ public class RoleWrapper {
     private final RoleMenuRepository roleMenuRepository;
 
 
-    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS})
+    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS_AND_BUTTONS})
     public void save(RoleEntity roleEntity) {
         roleRepository.save(roleEntity);
     }
 
 
     @Transactional
-    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS})
+    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES, Const.HOT_MENUS_AND_BUTTONS})
     public void delete(List<Long> ids) {
         roleRepository.deleteAllById(ids);
         roleMenuRepository.deleteAllByRoleId(ids);

@@ -13,11 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.chiu.megalith.infra.lang.Const.HOT_MENUS;
+import static org.chiu.megalith.infra.lang.Const.HOT_MENUS_AND_BUTTONS;
 
 @RequiredArgsConstructor
 @Component
-public class MenuCacheBatchEvictHandler implements CacheBatchEvictHandler {
+public class MenuAndButtonCacheBatchEvictHandler implements CacheBatchEvictHandler {
 
     private final RoleRepository roleRepository;
 
@@ -25,7 +25,7 @@ public class MenuCacheBatchEvictHandler implements CacheBatchEvictHandler {
 
     @Override
     public boolean match(String prefix) {
-        return HOT_MENUS.getInfo().equals(prefix);
+        return HOT_MENUS_AND_BUTTONS.getInfo().equals(prefix);
     }
 
     @SneakyThrows
