@@ -41,7 +41,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
@@ -49,11 +48,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.PrintWriter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -117,33 +115,41 @@ public class BlogManagerServiceImpl implements BlogManagerService {
     public void download(HttpServletResponse response) {
         ServletOutputStream outputStream = response.getOutputStream();
         response.setCharacterEncoding("UTF-8");
+
+        Set<BlogEntity> items = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
         long total = blogRepository.count();
         int pageSize = 20;
         int totalPage = (int) (total % pageSize == 0 ? total / pageSize : total / pageSize + 1);
 
         for (int i = 1; i <= totalPage; i++) {
             PageRequest pageRequest = PageRequest.of(i, pageSize);
-            List<Long> ids = blogRepository.findIds(pageRequest);
-            List<BlogEntity> blogs = blogRepository.findAllById(ids);
+            CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
+                List<Long> ids = blogRepository.findIds(pageRequest);
+                List<BlogEntity> blogs = blogRepository.findAllById(ids);
+                items.addAll(blogs);
+            }, taskExecutor);
+            completableFutures.add(completableFuture);
+        }
 
-            if (i == 1) {
+        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
+        BlogEntity[] blogs = items.toArray(new BlogEntity[0]);
+        int len = blogs.length;
+
+        for (int i = 0; i < len; i++) {
+            if (i == 0) {
                 //[
                 outputStream.write(new byte[]{91});
             }
 
-            for (int j = 0; j < blogs.size(); j++) {
-                if (i != 1 && j == 0) {
-                    //,
-                    outputStream.write(new byte[]{44});
-                }
-                byte[] bytes = objectMapper.writeValueAsBytes(blogs.get(j));
-                outputStream.write(bytes);
-                if (i != totalPage && j != blogs.size() - 1) {
-                    outputStream.write(new byte[]{44});
-                }
+            byte[] bytes = objectMapper.writeValueAsBytes(blogs[i]);
+            outputStream.write(bytes);
+            if (i != len - 1) {
+                //,
+                outputStream.write(new byte[]{44});
             }
 
-            if (i == totalPage) {
+            if (i == len - 1) {
                 //]
                 outputStream.write(new byte[]{93});
             }
