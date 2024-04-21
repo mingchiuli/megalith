@@ -1,6 +1,5 @@
 package org.chiu.megalith.manage.valid;
 
-import jakarta.annotation.Resource;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.chiu.megalith.infra.exception.MissException;
@@ -9,16 +8,24 @@ import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.lang.TypeEnum;
 import org.chiu.megalith.manage.repository.MenuRepository;
 import org.chiu.megalith.manage.req.MenuEntityReq;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
+@Component
 public class MenuValueConstraintValidator implements ConstraintValidator<MenuValue, MenuEntityReq> {
 
-    @Resource
     private MenuRepository menuRepository;
+
+    public MenuValueConstraintValidator(MenuRepository menuRepository) {
+        this.menuRepository = menuRepository;
+    }
+
+    public MenuValueConstraintValidator() {
+    }
 
     @Override
     public boolean isValid(MenuEntityReq menu, ConstraintValidatorContext context) {
