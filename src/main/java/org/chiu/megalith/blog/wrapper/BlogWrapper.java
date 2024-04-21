@@ -8,6 +8,7 @@ import org.chiu.megalith.blog.vo.BlogDescriptionVo;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.manage.entity.UserEntity;
@@ -45,7 +46,9 @@ public class BlogWrapper {
                 .orElseThrow(() -> new MissException(NO_FOUND));
 
         UserEntity user = userRepository.findById(blogEntity.getUserId())
-                .orElseThrow(() -> new MissException(NO_FOUND));
+                .orElseGet(() -> UserEntity.builder()
+                        .nickname("用户已注销")
+                        .build());
         return BlogExhibitDtoConvertor.convert(blogEntity, user);
     }
 
@@ -57,7 +60,11 @@ public class BlogWrapper {
 
     @Cache(prefix = Const.BLOG_STATUS)
     public Integer findStatusById(Long blogId) {
-        return blogRepository.findStatusById(blogId);
+        Integer status = blogRepository.findStatusById(blogId);
+        if (Objects.isNull(status)) {
+            status = StatusEnum.NORMAL.getCode();
+        }
+        return status;
     }
 
     @Cache(prefix = Const.HOT_BLOGS)

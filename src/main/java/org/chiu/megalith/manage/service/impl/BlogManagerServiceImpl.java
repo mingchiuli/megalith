@@ -125,9 +125,8 @@ public class BlogManagerServiceImpl implements BlogManagerService {
         for (int i = 1; i <= totalPage; i++) {
             PageRequest pageRequest = PageRequest.of(i, pageSize);
             CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
-                List<Long> ids = blogRepository.findIds(pageRequest);
-                List<BlogEntity> blogs = blogRepository.findAllById(ids);
-                items.addAll(blogs);
+                Page<BlogEntity> page = blogRepository.findAll(pageRequest);
+                items.addAll(page.getContent());
             }, taskExecutor);
             completableFutures.add(completableFuture);
         }
