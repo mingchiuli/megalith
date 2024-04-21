@@ -2,7 +2,6 @@ package org.chiu.megalith.manage.valid;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.entity.MenuEntity;
