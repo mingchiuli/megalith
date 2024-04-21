@@ -15,11 +15,16 @@ import java.util.Objects;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
-@RequiredArgsConstructor
 public class MenuValueConstraintValidator implements ConstraintValidator<MenuValue, MenuEntityReq> {
 
-    private final MenuRepository menuRepository;
+    private MenuRepository menuRepository;
 
+    public MenuValueConstraintValidator(MenuRepository menuRepository) {
+        this.menuRepository = menuRepository;
+    }
+
+    public MenuValueConstraintValidator() {
+    }
 
     @Override
     public boolean isValid(MenuEntityReq menu, ConstraintValidatorContext context) {
