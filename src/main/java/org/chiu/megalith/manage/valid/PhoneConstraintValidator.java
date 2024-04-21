@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.valid;
+package org.chiu.megalith.manage.valid;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.valid;
+package org.chiu.megalith.manage.valid;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -11,17 +11,14 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * @author mingchiuli
- * @create 2023-03-08 1:08 am
- */
 @Documented
-@Constraint(validatedBy = {UsernameConstraintValidator.class})
+@Constraint(validatedBy = {MenuValueConstraintValidator.class})
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
-public @interface Username {
+public @interface MenuValue {
 
-    String message() default "{org.chiu.megalith.infra.valid.username.message}";
+    String message() default "{org.chiu.megalith.manage.valid.MenuValue.message}";
+
 
     Class<?>[] groups() default { };
 

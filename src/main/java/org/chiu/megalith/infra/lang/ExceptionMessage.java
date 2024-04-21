@@ -75,7 +75,15 @@ public enum ExceptionMessage {
 
     BLOCKED(35, "已被封禁"),
 
-    PASSWORD_DIFF(36, "账号密码不一致");
+    PASSWORD_DIFF(36, "账号密码不一致"),
+
+    BUTTON_MUST_NOT_PARENT(37, "按钮不能有子元素"),
+
+    MENU_CHILDREN_MUST_BE_BUTTON(38, "菜单子元素只能为按钮"),
+
+    CATALOGUE_CHILD_MUST_NOT_BUTTON(39, "分类的子元素不能是按钮"),
+
+    CATALOGUE_PARENT_MUST_PARENT(40, "分类的父元素只能是分类");
 
 
     private final String msg;

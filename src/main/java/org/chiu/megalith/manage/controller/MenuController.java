@@ -7,14 +7,13 @@ import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.service.RoleMenuService;
+import org.chiu.megalith.manage.valid.MenuValue;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
 import org.chiu.megalith.manage.vo.MenusAndButtons;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class MenuController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:menu:save')")
-    public Result<Void> saveOrUpdate(@RequestBody @Valid MenuEntityReq menu) {
+    public Result<Void> saveOrUpdate(@RequestBody @MenuValue MenuEntityReq menu) {
         return Result.success(() -> menuService.saveOrUpdate(menu));
     }
 

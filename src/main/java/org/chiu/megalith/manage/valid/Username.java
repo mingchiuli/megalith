@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.valid;
+package org.chiu.megalith.manage.valid;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -8,18 +8,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * @author mingchiuli
+ * @create 2023-03-08 1:08 am
+ */
 @Documented
-@Constraint(validatedBy = {ListValueConstraintValidator.class})
+@Constraint(validatedBy = {UsernameConstraintValidator.class})
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
-public @interface ListValue {
-    String message() default "{org.chiu.megalith.infra.valid.ListValue.message}";
+public @interface Username {
+
+    String message() default "{org.chiu.megalith.infra.valid.username.message}";
 
     Class<?>[] groups() default { };
 
     Class<? extends Payload>[] payload() default { };
-
-    int[] values() default {};
 }

@@ -3,8 +3,8 @@ package org.chiu.megalith.manage.req;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.chiu.megalith.infra.valid.Phone;
-import org.chiu.megalith.infra.valid.Username;
+import org.chiu.megalith.manage.valid.Phone;
+import org.chiu.megalith.manage.valid.Username;
 
 @Data
 public class UserEntityRegisterReq {
