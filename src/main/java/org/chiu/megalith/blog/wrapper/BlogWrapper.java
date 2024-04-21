@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static org.chiu.megalith.infra.lang.Const.USER_DISABLED;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
 
 @Component
@@ -47,7 +48,7 @@ public class BlogWrapper {
 
         UserEntity user = userRepository.findById(blogEntity.getUserId())
                 .orElseGet(() -> UserEntity.builder()
-                        .nickname("用户已注销")
+                        .nickname(USER_DISABLED.getInfo())
                         .build());
         return BlogExhibitDtoConvertor.convert(blogEntity, user);
     }

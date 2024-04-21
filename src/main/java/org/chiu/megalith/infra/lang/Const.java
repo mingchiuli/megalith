@@ -89,7 +89,9 @@ public enum Const {
 
     USER("user"),
 
-    CACHE_EVICT_FANOUT_EXCHANGE("cache.evict.fanout.exchange");
+    CACHE_EVICT_FANOUT_EXCHANGE("cache.evict.fanout.exchange"),
+
+    USER_DISABLED("用户已注销");
 
 
 
