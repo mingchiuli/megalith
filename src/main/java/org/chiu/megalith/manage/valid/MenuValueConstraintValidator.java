@@ -20,9 +20,6 @@ public class MenuValueConstraintValidator implements ConstraintValidator<MenuVal
     @Resource
     private MenuRepository menuRepository;
 
-    public MenuValueConstraintValidator() {
-    }
-
     @Override
     public boolean isValid(MenuEntityReq menu, ConstraintValidatorContext context) {
         if (Objects.isNull(menu.getParentId())) {
