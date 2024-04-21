@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.valid;
 
+import jakarta.annotation.Resource;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.chiu.megalith.infra.exception.MissException;
@@ -16,11 +17,8 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 public class MenuValueConstraintValidator implements ConstraintValidator<MenuValue, MenuEntityReq> {
 
+    @Resource
     private MenuRepository menuRepository;
-
-    public MenuValueConstraintValidator(MenuRepository menuRepository) {
-        this.menuRepository = menuRepository;
-    }
 
     public MenuValueConstraintValidator() {
     }
