@@ -1,6 +1,7 @@
 package org.chiu.megalith.manage.service;
 
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.req.UserEntityRegisterReq;
 import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -44,4 +45,5 @@ public interface UserService {
 
     Boolean checkRegisterPage(String token);
 
+    void download(HttpServletResponse response);
 }

@@ -1,5 +1,8 @@
 package org.chiu.megalith.manage.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.manage.http.OssHttpService;
@@ -65,6 +68,8 @@ public class UserServiceImpl implements UserService {
     private final OssSignUtils ossSignUtils;
 
     private final CodeFactory codeFactory;
+
+    private final ObjectMapper objectMapper;
 
     @Value("${blog.oss.base-url}")
     private String baseUrl;
@@ -254,5 +259,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean checkRegisterPage(String token) {
         return redisTemplate.hasKey(REGISTER_PREFIX.getInfo() + token);
+    }
+
+    @SneakyThrows
+    @Override
+    public void download(HttpServletResponse response) {
+        ServletOutputStream outputStream = response.getOutputStream();
+        response.setCharacterEncoding("UTF-8");
+
+        List<UserEntity> users = userRepository.findAll();
+        byte[] bytes = objectMapper.writeValueAsBytes(users);
+        outputStream.write(bytes);
+        outputStream.flush();
+        outputStream.close();
     }
 }

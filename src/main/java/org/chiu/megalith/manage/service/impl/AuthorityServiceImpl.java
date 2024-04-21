@@ -1,6 +1,10 @@
 package org.chiu.megalith.manage.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.manage.entity.AuthorityEntity;
 import org.chiu.megalith.manage.repository.AuthorityRepository;
@@ -25,6 +29,8 @@ public class AuthorityServiceImpl implements AuthorityService {
     private final AuthorityRepository authorityRepository;
 
     private final AuthorityWrapper authorityWrapper;
+
+    private final ObjectMapper objectMapper;
 
     @Override
     public List<AuthorityVo> findAll() {
@@ -64,5 +70,18 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Override
     public void deleteAuthorities(List<Long> ids) {
         authorityWrapper.deleteAllById(ids);
+    }
+
+    @SneakyThrows
+    @Override
+    public void download(HttpServletResponse response) {
+        ServletOutputStream outputStream = response.getOutputStream();
+        response.setCharacterEncoding("UTF-8");
+
+        List<AuthorityEntity> authorities = authorityRepository.findAll();
+        byte[] bytes = objectMapper.writeValueAsBytes(authorities);
+        outputStream.write(bytes);
+        outputStream.flush();
+        outputStream.close();
     }
 }

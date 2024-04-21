@@ -1,6 +1,7 @@
 package org.chiu.megalith.manage.service;
 
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.req.RoleEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
@@ -23,4 +24,5 @@ public interface RoleService {
 
     List<RoleEntityVo> getValidAll();
 
+    void download(HttpServletResponse response);
 }

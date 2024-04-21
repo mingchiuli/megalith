@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.service.RoleAuthorityService;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.service.RoleService;
@@ -85,5 +86,12 @@ public class RoleController {
     @PreAuthorize("hasAuthority('sys:role:authority:get')")
     public Result<List<RoleAuthorityVo>> getAuthoritiesInfo(@PathVariable Long roleId) {
         return Result.success(() -> roleAuthorityService.getAuthoritiesInfo(roleId));
+    }
+
+    @GetMapping("/download")
+    @PreAuthorize("hasAuthority('sys:role:download')")
+    public Result<Void> download(HttpServletResponse response) {
+        roleService.download(response);
+        return Result.success();
     }
 }

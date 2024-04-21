@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.req.AuthorityEntityReq;
 import org.chiu.megalith.manage.vo.AuthorityVo;
 
@@ -14,4 +15,6 @@ public interface AuthorityService {
     void saveOrUpdate(AuthorityEntityReq req);
 
     void deleteAuthorities(List<Long> ids);
+
+    void download(HttpServletResponse response);
 }

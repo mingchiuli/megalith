@@ -1,5 +1,9 @@
 package org.chiu.megalith.manage.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor;
@@ -34,6 +38,8 @@ public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
 
     private final MenuWrapper menuWrapper;
+
+    private final ObjectMapper objectMapper;
 
     @Override
     public MenuEntityVo findById(Long id) {
@@ -77,6 +83,19 @@ public class MenuServiceImpl implements MenuService {
         List<MenuEntity> menus =  menuRepository.findAllByOrderByOrderNumDesc();
         List<MenuDisplayVo> menuEntities = MenuDisplayVoConvertor.convert(menus, false);
         return buildTreeMenu(menuEntities);
+    }
+
+    @SneakyThrows
+    @Override
+    public void download(HttpServletResponse response) {
+        ServletOutputStream outputStream = response.getOutputStream();
+        response.setCharacterEncoding("UTF-8");
+
+        List<MenuEntity> menus = menuRepository.findAll();
+        byte[] bytes = objectMapper.writeValueAsBytes(menus);
+        outputStream.write(bytes);
+        outputStream.flush();
+        outputStream.close();
     }
 
     private void findTargetChildrenMenuId(Long menuId, List<MenuEntity> menuEntities) {

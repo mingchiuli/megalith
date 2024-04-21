@@ -1,5 +1,9 @@
 package org.chiu.megalith.manage.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.convertor.RoleEntityVoConvertor;
 import org.chiu.megalith.manage.entity.RoleEntity;
@@ -34,6 +38,8 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     private final RoleWrapper roleWrapper;
+
+    private final ObjectMapper objectMapper;
 
     @Override
     public RoleEntityVo info(Long id) {
@@ -84,5 +90,18 @@ public class RoleServiceImpl implements RoleService {
     public List<RoleEntityVo> getValidAll() {
         List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
         return RoleEntityVoConvertor.convert(entities);
+    }
+
+    @SneakyThrows
+    @Override
+    public void download(HttpServletResponse response) {
+        ServletOutputStream outputStream = response.getOutputStream();
+        response.setCharacterEncoding("UTF-8");
+
+        List<RoleEntity> roles = roleRepository.findAll();
+        byte[] bytes = objectMapper.writeValueAsBytes(roles);
+        outputStream.write(bytes);
+        outputStream.flush();
+        outputStream.close();
     }
 }

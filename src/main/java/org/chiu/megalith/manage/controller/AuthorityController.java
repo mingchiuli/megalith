@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,10 @@ public class AuthorityController {
         return Result.success(() -> authorityService.deleteAuthorities(ids));
     }
 
-
+    @GetMapping("/download")
+    @PreAuthorize("hasAuthority('sys:authority:download')")
+    public Result<Void> download(HttpServletResponse response) {
+        authorityService.download(response);
+        return Result.success();
+    }
 }

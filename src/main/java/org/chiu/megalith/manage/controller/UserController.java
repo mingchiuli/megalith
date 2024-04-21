@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.req.UserEntityRegisterReq;
 import org.chiu.megalith.manage.service.RoleService;
 import org.chiu.megalith.manage.service.UserService;
@@ -87,4 +88,10 @@ public class UserController {
         return Result.success(roleService::getValidAll);
     }
 
+    @GetMapping("/download")
+    @PreAuthorize("hasAuthority('sys:user:download')")
+    public Result<Void> download(HttpServletResponse response) {
+        userService.download(response);
+        return Result.success();
+    }
 }

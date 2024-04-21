@@ -1,5 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.manage.service.MenuService;
 import org.chiu.megalith.manage.req.MenuEntityReq;
@@ -61,6 +62,13 @@ public class MenuController {
     @PreAuthorize("hasAuthority('sys:menu:delete')")
     public Result<Void> delete(@PathVariable("id") Long id) {
         return Result.success(() -> menuService.delete(id));
+    }
+
+    @GetMapping("/download")
+    @PreAuthorize("hasAuthority('sys:menu:download')")
+    public Result<Void> download(HttpServletResponse response) {
+        menuService.download(response);
+        return Result.success();
     }
 
 }

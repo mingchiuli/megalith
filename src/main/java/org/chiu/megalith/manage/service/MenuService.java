@@ -1,6 +1,7 @@
 package org.chiu.megalith.manage.service;
 
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.req.MenuEntityReq;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
@@ -20,4 +21,6 @@ public interface MenuService {
     void delete(Long id);
 
     List<MenuDisplayVo> tree();
+
+    void download(HttpServletResponse response);
 }
