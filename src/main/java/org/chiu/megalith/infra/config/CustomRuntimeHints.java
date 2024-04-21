@@ -3,6 +3,7 @@ package org.chiu.megalith.infra.config;
 import lombok.SneakyThrows;
 import org.chiu.megalith.manage.listener.cache.mq.CacheEvictMessageListener;
 import org.chiu.megalith.manage.valid.ListValueConstraintValidator;
+import org.chiu.megalith.manage.valid.MenuValueConstraintValidator;
 import org.chiu.megalith.manage.valid.PhoneConstraintValidator;
 import org.chiu.megalith.manage.valid.UsernameConstraintValidator;
 import org.chiu.megalith.security.vo.LoginSuccessVo;
@@ -28,6 +29,8 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
         hints.reflection().registerConstructor(ListValueConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
         hints.reflection().registerConstructor(PhoneConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
         hints.reflection().registerConstructor(UsernameConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
+        hints.reflection().registerConstructor(MenuValueConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
+
 
         hints.serialization().registerType(LoginSuccessVo.class);
         hints.serialization().registerType(UserInfoVo.class);
