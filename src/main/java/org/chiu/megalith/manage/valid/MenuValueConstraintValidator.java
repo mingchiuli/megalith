@@ -4,28 +4,18 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.StatusEnum;
+import org.chiu.megalith.infra.utils.SpringUtils;
 import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.lang.TypeEnum;
 import org.chiu.megalith.manage.repository.MenuRepository;
 import org.chiu.megalith.manage.req.MenuEntityReq;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
-@Component
 public class MenuValueConstraintValidator implements ConstraintValidator<MenuValue, MenuEntityReq> {
-
-    private MenuRepository menuRepository;
-
-    public MenuValueConstraintValidator(MenuRepository menuRepository) {
-        this.menuRepository = menuRepository;
-    }
-
-    public MenuValueConstraintValidator() {
-    }
 
     @Override
     public boolean isValid(MenuEntityReq menu, ConstraintValidatorContext context) {
@@ -48,6 +38,8 @@ public class MenuValueConstraintValidator implements ConstraintValidator<MenuVal
         if (!StatusEnum.NORMAL.getCode().equals(menu.getStatus()) && !StatusEnum.HIDE.getCode().equals(menu.getStatus())) {
             return false;
         }
+
+        MenuRepository menuRepository = SpringUtils.getBean(MenuRepository.class);
 
         Integer type = menu.getType();
         TypeEnum typeEnum = TypeEnum.getInstance(type);
