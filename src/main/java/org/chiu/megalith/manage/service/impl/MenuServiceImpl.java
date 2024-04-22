@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import org.chiu.megalith.infra.cache.CacheBatchEvict;
 import org.chiu.megalith.infra.exception.CommitException;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor;
 import org.chiu.megalith.manage.convertor.MenuEntityConvertor;
@@ -52,7 +50,6 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    @CacheBatchEvict(prefix = {Const.HOT_MENUS_AND_BUTTONS})
     public void saveOrUpdate(MenuEntityReq menu) {
         LocalDateTime now = LocalDateTime.now();
         Long menuId = menu.getMenuId();
@@ -74,7 +71,7 @@ public class MenuServiceImpl implements MenuService {
             List<MenuEntity> menuEntities = new ArrayList<>();
             menuEntities.add(menuEntity);
             findTargetChildrenMenuId(menuId, menuEntities);
-            menuRepository.saveAll(menuEntities);
+            menuWrapper.saveAll(menuEntities);
             return;
         }
 
