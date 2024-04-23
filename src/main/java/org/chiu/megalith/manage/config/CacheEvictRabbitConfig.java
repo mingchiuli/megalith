@@ -3,7 +3,7 @@ package org.chiu.megalith.manage.config;
 import lombok.RequiredArgsConstructor;
 
 import org.chiu.megalith.infra.lang.Const;
-import org.chiu.megalith.manage.listener.cache.mq.CacheEvictMessageListener;
+import org.chiu.megalith.manage.cache.mq.CacheEvictMessageListener;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;

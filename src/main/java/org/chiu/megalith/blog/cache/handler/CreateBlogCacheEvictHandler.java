@@ -1,11 +1,9 @@
-package org.chiu.megalith.manage.listener.cache;
+package org.chiu.megalith.blog.cache.handler;
 
-import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.key.KeyFactory;
-import org.chiu.megalith.infra.search.BlogIndexEnum;
-import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
+import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.manage.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -17,28 +15,30 @@ import java.util.Set;
 import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.Const.BLOOM_FILTER_YEARS;
 
-@RequiredArgsConstructor
 @Component
-public class CreateBlogCacheEvictHandler implements BlogCacheEvictHandler {
-
-    private final StringRedisTemplate redisTemplate;
-
-    private final BlogRepository blogRepository;
+public final class CreateBlogCacheEvictHandler extends BlogCacheEvictHandler {
 
     private final CacheKeyGenerator cacheKeyGenerator;
 
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
-    @Override
-    public boolean match(BlogIndexEnum blogIndexEnum) {
-        return BlogIndexEnum.CREATE.equals(blogIndexEnum);
+    public CreateBlogCacheEvictHandler(StringRedisTemplate redisTemplate,
+                                          BlogRepository blogRepository,
+                                          CacheKeyGenerator cacheKeyGenerator) {
+        super(redisTemplate, blogRepository);
+        this.cacheKeyGenerator = cacheKeyGenerator;
     }
 
     @Override
-    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage, BlogEntity blogEntity) {
-        int year = blogSearchIndexMessage.getYear();
-        long id = blogSearchIndexMessage.getBlogId();
+    public boolean supports(BlogOperateEnum blogOperateEnum) {
+        return BlogOperateEnum.CREATE.equals(blogOperateEnum);
+    }
+
+    @Override
+    public Set<String> redisProcess(BlogEntity blogEntity) {
+        Long id = blogEntity.getId();
+        int year = blogEntity.getCreated().getYear();
         //删除listPageByYear、listPage、getCountByYear所有缓存，该年份的页面bloom，编辑暂存区数据
         var start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
         var end = LocalDateTime.of(year, 12, 31, 23, 59, 59);

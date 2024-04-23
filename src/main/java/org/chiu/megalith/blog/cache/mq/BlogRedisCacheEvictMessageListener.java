@@ -1,11 +1,11 @@
-package org.chiu.megalith.search.mq;
+package org.chiu.megalith.blog.cache.mq;
 
-import lombok.extern.slf4j.Slf4j;
-import org.chiu.megalith.infra.constant.BlogOperateMessage;
-import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.search.mq.handler.BlogIndexSupport;
+import lombok.extern.slf4j.Slf4j;
+import org.chiu.megalith.blog.cache.handler.BlogCacheEvictHandler;
+import org.chiu.megalith.infra.constant.BlogOperateMessage;
+import org.chiu.megalith.blog.config.EvictCacheRabbitConfig;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -19,16 +19,16 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class BlogMessageListener {
+public class BlogRedisCacheEvictMessageListener {
 
-    private final List<BlogIndexSupport> elasticsearchHandlers;
+    private final List<BlogCacheEvictHandler> blogCacheEvictHandlers;
 
-    @RabbitListener(queues = ElasticSearchRabbitConfig.ES_QUEUE, 
+    @RabbitListener(queues = EvictCacheRabbitConfig.CACHE_BLOG_EVICT_QUEUE,
             concurrency = "10",
             messageConverter = "jsonMessageConverter",
             executor = "mqExecutor")
     public void handler(BlogOperateMessage message, Channel channel, Message msg) {
-        for (BlogIndexSupport handler : elasticsearchHandlers) {
+        for (BlogCacheEvictHandler handler : blogCacheEvictHandlers) {
             if (handler.supports(message.getTypeEnum())) {
                 handler.handle(message, channel, msg);
                 break;

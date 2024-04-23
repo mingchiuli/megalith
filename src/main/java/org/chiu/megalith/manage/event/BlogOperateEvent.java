@@ -2,17 +2,17 @@ package org.chiu.megalith.manage.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
+import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
 @Setter
 public class BlogOperateEvent extends ApplicationEvent {
 
-    private BlogSearchIndexMessage blogSearchIndexMessage;
+    private BlogOperateMessage blogOperateMessage;
 
-    public BlogOperateEvent(Object source, BlogSearchIndexMessage blogSearchIndexMessage) {
+    public BlogOperateEvent(Object source, BlogOperateMessage blogOperateMessage) {
         super(source);
-        this.blogSearchIndexMessage = blogSearchIndexMessage;
+        this.blogOperateMessage = blogOperateMessage;
     }
 }

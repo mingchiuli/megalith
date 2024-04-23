@@ -1,7 +1,7 @@
 package org.chiu.megalith.infra.config;
 
 import lombok.SneakyThrows;
-import org.chiu.megalith.manage.listener.cache.mq.CacheEvictMessageListener;
+import org.chiu.megalith.manage.cache.mq.CacheEvictMessageListener;
 import org.chiu.megalith.manage.valid.ListValueConstraintValidator;
 import org.chiu.megalith.manage.valid.MenuValueConstraintValidator;
 import org.chiu.megalith.manage.valid.PhoneConstraintValidator;

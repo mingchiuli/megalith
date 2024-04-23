@@ -10,8 +10,8 @@ import org.chiu.megalith.manage.http.OssHttpService;
 import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.infra.search.BlogIndexEnum;
-import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
+import org.chiu.megalith.infra.constant.BlogOperateEnum;
+import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.utils.OssSignUtils;
@@ -230,15 +230,15 @@ public class BlogManagerServiceImpl implements BlogManagerService {
 
         // 通知消息给mq,更新并删除缓存
         // 防止重复消费
-        BlogIndexEnum type;
+        BlogOperateEnum type;
         if (Objects.nonNull(blogId)) {
-            type = BlogIndexEnum.UPDATE;
+            type = BlogOperateEnum.UPDATE;
         } else {
-            type = BlogIndexEnum.CREATE;
+            type = BlogOperateEnum.CREATE;
             blogId = saved.getId();
         }
 
-        var blogSearchIndexMessage = new BlogSearchIndexMessage(blogId, type, blogEntity.getCreated().getYear());
+        var blogSearchIndexMessage = new BlogOperateMessage(blogId, type, blogEntity.getCreated().getYear());
         applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
     }
 
@@ -320,7 +320,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
         BlogEntity tempBlog = jsonUtils.readValue(str, BlogEntity.class);
         BlogEntity blog = blogRepository.save(tempBlog);
 
-        var blogSearchIndexMessage = new BlogSearchIndexMessage(blog.getId(), BlogIndexEnum.CREATE, blog.getCreated().getYear());
+        var blogSearchIndexMessage = new BlogOperateMessage(blog.getId(), BlogOperateEnum.CREATE, blog.getCreated().getYear());
         applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
     }
 
@@ -408,7 +408,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
                     Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                     jsonUtils.writeValueAsString(blogEntity), A_WEEK.getInfo());
 
-            var blogSearchIndexMessage = new BlogSearchIndexMessage(id, BlogIndexEnum.REMOVE, blogEntity.getCreated().getYear());
+            var blogSearchIndexMessage = new BlogOperateMessage(id, BlogOperateEnum.REMOVE, blogEntity.getCreated().getYear());
             applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
         });
 

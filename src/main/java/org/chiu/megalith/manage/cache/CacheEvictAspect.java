@@ -1,13 +1,12 @@
-package org.chiu.megalith.infra.cache;
+package org.chiu.megalith.manage.cache;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.chiu.megalith.infra.lang.Const;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,47 +22,48 @@ import static org.chiu.megalith.infra.lang.Const.CACHE_EVICT_FANOUT_EXCHANGE;
 @Component
 @Order(3)
 @RequiredArgsConstructor
-public class CacheBatchEvictAspect {
+public class CacheEvictAspect {
 
     private final StringRedisTemplate redisTemplate;
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final List<CacheBatchEvictHandler> cacheBatchEvictHandlers;
+    private final List<CacheEvictHandler> cacheEvictHandlers;
 
-    @Pointcut("@annotation(org.chiu.megalith.infra.cache.CacheBatchEvict)")
+    @Pointcut("@annotation(org.chiu.megalith.manage.cache.CacheEvict)")
     public void pt() {}
 
     @SneakyThrows
-    @After("pt()")
+    @Around("pt()")
     @Async("commonExecutor")
-    public void around(JoinPoint jp) {
-        Signature signature = jp.getSignature();
+    public void around(ProceedingJoinPoint pjp) {
+        Signature signature = pjp.getSignature();
         String methodName = signature.getName();
         Class<?> declaringType = signature.getDeclaringType();
 
-        var parameterTypes = new Class[jp.getArgs().length];
-        Object[] args = jp.getArgs();
+        var parameterTypes = new Class[pjp.getArgs().length];
+        Object[] args = pjp.getArgs();
         for (int i = 0; i < args.length; i++) {
             parameterTypes[i] = args[i].getClass();
         }
 
         Method method = declaringType.getMethod(methodName, parameterTypes);
-        var annotation = method.getAnnotation(CacheBatchEvict.class);
-        Const[] prefix = annotation.prefix();
+        var annotation = method.getAnnotation(CacheEvict.class);
+        Class<? extends CacheEvictHandler>[] handlers = annotation.handler();
 
         Set<String> keys = new HashSet<>();
 
-        for (Const key : prefix) {
-            for (CacheBatchEvictHandler handler : cacheBatchEvictHandlers) {
-                String keyPrefix = key.getInfo();
-                if (handler.match(keyPrefix)) {
-                    Set<String> keySet = handler.handle(keyPrefix);
+        for (Class<? extends CacheEvictHandler> h : handlers) {
+            for (CacheEvictHandler handler : cacheEvictHandlers) {
+                if (handler.match(h)) {
+                    Set<String> keySet = handler.handle(args);
                     keys.addAll(keySet);
                     break;
                 }
             }
         }
+
+        pjp.proceed();
 
         if (!keys.isEmpty()) {
             redisTemplate.delete(keys);

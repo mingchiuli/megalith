@@ -1,4 +1,4 @@
-package org.chiu.megalith.manage.listener.cache.mq;
+package org.chiu.megalith.manage.cache.mq;
 
 import java.util.Set;
 

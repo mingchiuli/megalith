@@ -2,9 +2,10 @@ package org.chiu.megalith.manage.wrapper;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.cache.Cache;
-import org.chiu.megalith.infra.cache.CacheBatchEvict;
+import org.chiu.megalith.manage.cache.CacheEvict;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.manage.cache.handler.AuthorityCacheEvictHandler;
 import org.chiu.megalith.manage.entity.AuthorityEntity;
 import org.chiu.megalith.manage.entity.RoleAuthorityEntity;
 import org.chiu.megalith.manage.entity.RoleEntity;
@@ -64,7 +65,7 @@ public class RoleAuthorityWrapper {
     }
 
     @Transactional
-    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES})
+    @CacheEvict(handler = { AuthorityCacheEvictHandler.class })
     public void saveAuthority(Long roleId, ArrayList<RoleAuthorityEntity> roleAuthorityEntities) {
         roleAuthorityRepository.deleteByRoleId(roleId);
         roleAuthorityRepository.saveAll(roleAuthorityEntities);

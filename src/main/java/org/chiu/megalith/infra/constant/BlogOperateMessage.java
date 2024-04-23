@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.search;
+package org.chiu.megalith.infra.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,11 +11,11 @@ import java.io.Serializable;
  */
 @Data
 @AllArgsConstructor
-public class BlogSearchIndexMessage implements Serializable {
+public class BlogOperateMessage implements Serializable {
 
     private Long blogId;
 
-    private BlogIndexEnum typeEnum;
+    private BlogOperateEnum typeEnum;
 
     private Integer year;
 
