@@ -11,6 +11,7 @@ import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.chiu.megalith.manage.repository.BlogRepository;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.security.cert.X509Certificate;
@@ -26,10 +27,14 @@ public abstract sealed class BlogCacheEvictHandler permits
 
     protected final BlogRepository blogRepository;
 
+    protected final RabbitTemplate rabbitTemplate;
+
     protected BlogCacheEvictHandler(StringRedisTemplate redisTemplate,
-                               BlogRepository blogRepository) {
+                                    BlogRepository blogRepository,
+                                    RabbitTemplate rabbitTemplate) {
         this.redisTemplate = redisTemplate;
         this.blogRepository = blogRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public abstract boolean supports(BlogOperateEnum blogOperateEnum);

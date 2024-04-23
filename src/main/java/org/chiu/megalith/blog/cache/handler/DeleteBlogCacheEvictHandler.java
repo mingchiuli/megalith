@@ -7,6 +7,7 @@ import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.manage.repository.BlogRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -28,9 +29,10 @@ public final class DeleteBlogCacheEvictHandler extends BlogCacheEvictHandler {
     private int blogPageSize;
 
     public DeleteBlogCacheEvictHandler(StringRedisTemplate redisTemplate,
-                                          BlogRepository blogRepository,
-                                          CacheKeyGenerator cacheKeyGenerator) {
-        super(redisTemplate, blogRepository);
+                                       BlogRepository blogRepository,
+                                       CacheKeyGenerator cacheKeyGenerator,
+                                       RabbitTemplate rabbitTemplate) {
+        super(redisTemplate, blogRepository, rabbitTemplate);
         this.cacheKeyGenerator = cacheKeyGenerator;
     }
 
