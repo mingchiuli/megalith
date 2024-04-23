@@ -50,7 +50,7 @@ public class CacheBatchEvictAspect {
 
         Method method = declaringType.getMethod(methodName, parameterTypes);
         var annotation = method.getAnnotation(CacheBatchEvict.class);
-        Const[] prefix = annotation.prefix();
+        Const[] prefix = annotation.type();
 
         Set<String> keys = new HashSet<>();
 

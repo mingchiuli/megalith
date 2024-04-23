@@ -64,7 +64,7 @@ public class RoleAuthorityWrapper {
     }
 
     @Transactional
-    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES})
+    @CacheBatchEvict(type = {Const.HOT_AUTHORITIES})
     public void saveAuthority(Long roleId, ArrayList<RoleAuthorityEntity> roleAuthorityEntities) {
         roleAuthorityRepository.deleteByRoleId(roleId);
         roleAuthorityRepository.saveAll(roleAuthorityEntities);

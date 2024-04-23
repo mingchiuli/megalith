@@ -41,7 +41,7 @@ public class RoleMenuWrapper {
 
 
     @Transactional
-    @CacheBatchEvict(prefix = {Const.HOT_MENUS_AND_BUTTONS})
+    @CacheBatchEvict(type = {Const.HOT_MENUS_AND_BUTTONS})
     public void saveMenu(Long roleId, ArrayList<RoleMenuEntity> roleMenuEntities) {
         roleMenuRepository.deleteByRoleId(roleId);
         roleMenuRepository.saveAll(roleMenuEntities);

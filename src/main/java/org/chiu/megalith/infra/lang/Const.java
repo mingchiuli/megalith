@@ -75,9 +75,9 @@ public enum Const {
 
     ROLE_PREFIX("ROLE_"),
 
-    HOT_AUTHORITIES("hot_authorities:"),
+    HOT_AUTHORITIES("hot_authorities"),
 
-    HOT_MENUS_AND_BUTTONS("hot_menus_and_buttons:"),
+    HOT_MENUS_AND_BUTTONS("hot_menus_and_buttons"),
     
     A_WEEK("604899"),
 

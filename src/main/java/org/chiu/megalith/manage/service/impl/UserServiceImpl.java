@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES})
+    @CacheBatchEvict(type = {Const.HOT_AUTHORITIES})
     public void saveOrUpdate(UserEntityReq userEntityReq) {
         Long id = userEntityReq.getId();
         UserEntity userEntity;

@@ -21,18 +21,18 @@ public class MenuWrapper {
     private final RoleMenuRepository roleMenuRepository;
 
     @Transactional
-    @CacheBatchEvict(prefix = {Const.HOT_MENUS_AND_BUTTONS})
+    @CacheBatchEvict(type = {Const.HOT_MENUS_AND_BUTTONS})
     public void deleteMenu(Long id) {
         menuRepository.deleteById(id);
         roleMenuRepository.deleteByMenuId(id);
     }
 
-    @CacheBatchEvict(prefix = {Const.HOT_MENUS_AND_BUTTONS})
+    @CacheBatchEvict(type = {Const.HOT_MENUS_AND_BUTTONS})
     public void save(MenuEntity menuEntity) {
         menuRepository.save(menuEntity);
     }
 
-    @CacheBatchEvict(prefix = {Const.HOT_MENUS_AND_BUTTONS})
+    @CacheBatchEvict(type = {Const.HOT_MENUS_AND_BUTTONS})
     public void saveAll(List<MenuEntity> menuEntities) {
         menuRepository.saveAll(menuEntities);
     }

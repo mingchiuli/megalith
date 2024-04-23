@@ -15,12 +15,12 @@ public class AuthorityWrapper {
 
     private final AuthorityRepository authorityRepository;
 
-    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES})
+    @CacheBatchEvict(type = {Const.HOT_AUTHORITIES})
     public void save(AuthorityEntity authorityEntity) {
         authorityRepository.save(authorityEntity);
     }
 
-    @CacheBatchEvict(prefix = {Const.HOT_AUTHORITIES})
+    @CacheBatchEvict(type = {Const.HOT_AUTHORITIES})
     public void deleteAllById(List<Long> ids) {
         authorityRepository.deleteAllById(ids);
     }
