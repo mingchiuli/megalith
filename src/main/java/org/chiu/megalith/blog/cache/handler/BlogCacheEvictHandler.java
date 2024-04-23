@@ -3,18 +3,15 @@ package org.chiu.megalith.blog.cache.handler;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.manage.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.chiu.megalith.manage.repository.BlogRepository;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
