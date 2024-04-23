@@ -1,6 +1,5 @@
 package org.chiu.megalith.blog.bloom;
 
-import org.chiu.megalith.infra.bloom.BloomHandler;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.bloom;
+package org.chiu.megalith.blog.bloom;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,7 +29,7 @@ public class BloomAspect {
 
     private final List<BloomHandler> bloomHandlers;
 
-    @Pointcut("@annotation(org.chiu.megalith.infra.bloom.Bloom)")
+    @Pointcut("@annotation(org.chiu.megalith.blog.bloom.Bloom)")
     public void pt() {}
 
     @SneakyThrows
