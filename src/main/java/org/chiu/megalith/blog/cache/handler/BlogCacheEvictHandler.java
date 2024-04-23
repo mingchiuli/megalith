@@ -15,6 +15,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Slf4j
@@ -47,9 +48,11 @@ public abstract sealed class BlogCacheEvictHandler permits
         long deliveryTag = msg.getMessageProperties().getDeliveryTag();
         try {
             Long blogId = message.getBlogId();
+            Integer year = message.getYear();
             BlogEntity blogEntity = blogRepository.findById(blogId)
                     .orElseGet(() -> BlogEntity.builder()
                             .id(blogId)
+                            .created(LocalDateTime.of(year, 1, 1, 1, 1, 1))
                             .build());
 
             Set<String> keys = redisProcess(blogEntity);
