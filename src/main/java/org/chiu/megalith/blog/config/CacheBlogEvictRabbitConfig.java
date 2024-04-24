@@ -41,7 +41,7 @@ public class CacheBlogEvictRabbitConfig {
         return new FanoutExchange(CACHE_BLOG_EVICT_FANOUT_EXCHANGE, true, false);
     }
 
-    @Bean("CACHE_BLOG_EVICT_BINDING")
+    @Bean("CACHE_BLOG_EVICT_FANOUT_BINDING")
     Binding evictBinding(@Qualifier("CACHE_BLOG_EVICT_FANOUT_QUEUE") Queue cacheQueue,
                          @Qualifier("CACHE_BLOG_EVICT_FANOUT_EXCHANGE") FanoutExchange cacheExchange) {
         return BindingBuilder
