@@ -3,7 +3,7 @@ package org.chiu.megalith.blog.cache.handler;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.chiu.megalith.manage.config.CacheEvictRabbitConfig;
+import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
 import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;

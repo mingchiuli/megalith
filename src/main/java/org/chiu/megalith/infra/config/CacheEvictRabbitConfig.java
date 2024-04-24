@@ -1,4 +1,4 @@
-package org.chiu.megalith.manage.config;
+package org.chiu.megalith.infra.config;
 
 import lombok.RequiredArgsConstructor;
 
