@@ -7,6 +7,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.chiu.megalith.manage.config.CacheEvictRabbitConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static org.chiu.megalith.infra.lang.Const.CACHE_EVICT_FANOUT_EXCHANGE;
 
 @Aspect
 @Component
@@ -67,7 +67,7 @@ public class CacheEvictAspect {
 
         if (!keys.isEmpty()) {
             redisTemplate.delete(keys);
-            rabbitTemplate.convertAndSend(CACHE_EVICT_FANOUT_EXCHANGE.getInfo(), "", keys);
+            rabbitTemplate.convertAndSend(CacheEvictRabbitConfig.CACHE_EVICT_FANOUT_EXCHANGE, "", keys);
         }
     }
 }

@@ -3,7 +3,7 @@ package org.chiu.megalith.blog.cache.handler;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.chiu.megalith.infra.config.CacheEvictRabbitConfig;
+import org.chiu.megalith.blog.config.CacheBlogEvictRabbitConfig;
 import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
@@ -53,7 +53,7 @@ public abstract sealed class BlogCacheEvictHandler permits
                             .build());
 
             Set<String> keys = redisProcess(blogEntity);
-            rabbitTemplate.convertAndSend(CacheEvictRabbitConfig.CACHE_EVICT_FANOUT_EXCHANGE, "", keys);
+            rabbitTemplate.convertAndSend(CacheBlogEvictRabbitConfig.CACHE_BLOG_EVICT_FANOUT_EXCHANGE, "", keys);
 
             //手动签收消息
             //false代表不是批量签收模式
