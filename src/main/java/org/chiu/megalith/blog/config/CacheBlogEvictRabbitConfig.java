@@ -55,8 +55,8 @@ public class CacheBlogEvictRabbitConfig {
         return new MessageListenerAdapter(cacheBlogEvictMessageListener);
     }
 
-    @Bean("cacheEvictMessageListenerContainer")
-    SimpleMessageListenerContainer cacheEvictMessageListenerContainer(ConnectionFactory connectionFactory,
+    @Bean("cacheBlogEvictMessageListenerContainer")
+    SimpleMessageListenerContainer cacheBlogEvictMessageListenerContainer(ConnectionFactory connectionFactory,
                                                                       @Qualifier("cacheBlogEvictMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
                                                                       @Qualifier("CACHE_BLOG_EVICT_FANOUT_QUEUE") Queue queue) {
         var container = new SimpleMessageListenerContainer();
