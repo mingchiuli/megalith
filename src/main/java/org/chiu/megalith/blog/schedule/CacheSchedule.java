@@ -4,7 +4,6 @@ import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
 import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
-import org.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -40,17 +39,17 @@ public class CacheSchedule {
 
     private final RedissonClient redisson;
 
-    private final UserService userService;
-
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
     private static final String CACHE_FINISH_FLAG = "cache_finish_flag";
 
+    private static final String CACHE_KEY = "cacheKey";
+
     @Scheduled(cron = "0 0 0/1 * * ?")
     public void configureTask() {
 
-        RLock rLock = redisson.getLock("cacheKey");
+        RLock rLock = redisson.getLock(CACHE_KEY);
         if (Boolean.FALSE.equals(rLock.tryLock())) {
             return;
         }

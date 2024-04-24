@@ -37,11 +37,12 @@ public class ManagerSchedule {
 
     private static final String CACHE_FINISH_FLAG = "cache_manager_finish_flag";
 
+    private static final String MANAGER_CACHE_KEY = "managerCacheKey";
 
     @Scheduled(cron = "0 0 0/1 * * ?")
     public void configureTask() {
 
-        RLock rLock = redisson.getLock("managerCacheKey");
+        RLock rLock = redisson.getLock(MANAGER_CACHE_KEY);
         if (Boolean.FALSE.equals(rLock.tryLock())) {
             return;
         }
