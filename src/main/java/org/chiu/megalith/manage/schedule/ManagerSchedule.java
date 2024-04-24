@@ -58,7 +58,7 @@ public class ManagerSchedule {
     }
 
     private void exec() {
-        // unlock user & del statistic & del hot read
+        // unlock user
         CompletableFuture.runAsync(() -> {
             List<Long> ids = userService.findIdsByStatus(StatusEnum.HIDE.getCode());
             ids.forEach(id -> {
