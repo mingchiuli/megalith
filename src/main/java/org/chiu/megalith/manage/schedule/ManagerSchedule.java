@@ -41,7 +41,7 @@ public class ManagerSchedule {
     @Scheduled(cron = "0 0 0/1 * * ?")
     public void configureTask() {
 
-        RLock rLock = redisson.getLock("manager_cacheKey");
+        RLock rLock = redisson.getLock("managerCacheKey");
         if (Boolean.FALSE.equals(rLock.tryLock())) {
             return;
         }
