@@ -29,7 +29,7 @@ public class CacheBlogEvictRabbitConfig {
     @Qualifier("mqExecutor")
     private final TaskExecutor executor;
 
-    @Bean("CACHE_BLOG_EVICT_QUEUE")
+    @Bean("CACHE_BLOG_EVICT_FANOUT_QUEUE")
     Queue evictQueue() {
         evictNodeMark = UUID.randomUUID().toString();
         CACHE_BLOG_EVICT_QUEUE += evictNodeMark;
@@ -42,7 +42,7 @@ public class CacheBlogEvictRabbitConfig {
     }
 
     @Bean("CACHE_BLOG_EVICT_BINDING")
-    Binding evictBinding(@Qualifier("CACHE_BLOG_EVICT_QUEUE") Queue cacheQueue,
+    Binding evictBinding(@Qualifier("CACHE_BLOG_EVICT_FANOUT_QUEUE") Queue cacheQueue,
                          @Qualifier("CACHE_BLOG_EVICT_FANOUT_EXCHANGE") FanoutExchange cacheExchange) {
         return BindingBuilder
                 .bind(cacheQueue)
@@ -58,7 +58,7 @@ public class CacheBlogEvictRabbitConfig {
     @Bean("cacheEvictMessageListenerContainer")
     SimpleMessageListenerContainer cacheEvictMessageListenerContainer(ConnectionFactory connectionFactory,
                                                                       @Qualifier("cacheBlogEvictMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
-                                                                      @Qualifier("CACHE_BLOG_EVICT_QUEUE") Queue queue) {
+                                                                      @Qualifier("CACHE_BLOG_EVICT_FANOUT_QUEUE") Queue queue) {
         var container = new SimpleMessageListenerContainer();
         //框架处理了
         listenerAdapter.containerAckMode(AcknowledgeMode.MANUAL);
