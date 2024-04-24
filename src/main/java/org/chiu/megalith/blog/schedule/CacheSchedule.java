@@ -4,11 +4,8 @@ import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.blog.schedule.task.BlogRunnable;
 import org.chiu.megalith.blog.schedule.task.BlogsRunnable;
-import org.chiu.megalith.infra.lang.StatusEnum;
-import org.chiu.megalith.manage.req.UserEntityReq;
 import org.chiu.megalith.manage.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.manage.vo.UserEntityVo;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -118,24 +115,8 @@ public class CacheSchedule {
             blogService.getCountByYear(year);
         }), taskExecutor);
 
-        // unlock user & del statistic & del hot read
+        //del statistic & del hot read
         CompletableFuture.runAsync(() -> {
-            List<Long> ids = userService.findIdsByStatus(StatusEnum.HIDE.getCode());
-            ids.forEach(id -> {
-                UserEntityVo user = userService.findById(id);
-                user.setStatus(StatusEnum.NORMAL.getCode());
-                var req = new UserEntityReq();
-                req.setAvatar(user.getAvatar());
-                req.setEmail(user.getEmail());
-                req.setId(user.getId());
-                req.setNickname(user.getNickname());
-                req.setStatus(user.getStatus());
-                req.setRole(user.getRole());
-                req.setPhone(user.getPhone());
-                req.setUsername(user.getUsername());
-                userService.saveOrUpdate(req);
-            });
-
             var now = LocalDateTime.now();
 
             int hourOfDay = now.getHour();
