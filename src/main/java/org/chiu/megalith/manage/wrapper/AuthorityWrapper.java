@@ -1,8 +1,8 @@
 package org.chiu.megalith.manage.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.cache.CacheBatchEvict;
-import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.manage.cache.CacheEvict;
+import org.chiu.megalith.manage.cache.handler.AllAuthorityCacheEvictHandler;
 import org.chiu.megalith.manage.entity.AuthorityEntity;
 import org.chiu.megalith.manage.repository.AuthorityRepository;
 import org.springframework.stereotype.Component;
@@ -15,12 +15,12 @@ public class AuthorityWrapper {
 
     private final AuthorityRepository authorityRepository;
 
-    @CacheBatchEvict(type = {Const.HOT_AUTHORITIES})
+    @CacheEvict(handler = { AllAuthorityCacheEvictHandler.class })
     public void save(AuthorityEntity authorityEntity) {
         authorityRepository.save(authorityEntity);
     }
 
-    @CacheBatchEvict(type = {Const.HOT_AUTHORITIES})
+    @CacheEvict(handler = { AllAuthorityCacheEvictHandler.class })
     public void deleteAllById(List<Long> ids) {
         authorityRepository.deleteAllById(ids);
     }

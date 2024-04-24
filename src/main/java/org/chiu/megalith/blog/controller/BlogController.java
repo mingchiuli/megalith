@@ -4,7 +4,7 @@ import org.chiu.megalith.blog.bloom.DetailHandler;
 import org.chiu.megalith.blog.bloom.ListPageHandler;
 import org.chiu.megalith.blog.vo.BlogDescriptionVo;
 import org.chiu.megalith.blog.vo.VisitStatisticsVo;
-import org.chiu.megalith.infra.bloom.Bloom;
+import org.chiu.megalith.blog.bloom.Bloom;
 import org.chiu.megalith.blog.service.BlogService;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -12,7 +12,6 @@ import org.chiu.megalith.blog.vo.BlogExhibitVo;
 import org.chiu.megalith.blog.vo.BlogHotReadVo;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +30,6 @@ public class BlogController {
 
     private final BlogService blogService;
 
-    @Value("${blog.highest-role}")
-    private String highestRole;
-
     @GetMapping("/info/{id}")
     @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getBlogDetail(@PathVariable(name = "id") Long id) {
@@ -49,12 +45,14 @@ public class BlogController {
     }
 
     @GetMapping("/secret/{blogId}")
+    @Bloom(handler = DetailHandler.class)
     public Result<BlogExhibitVo> getLockedBlog(@PathVariable Long blogId,
                                                @RequestParam(value = "readToken") String token) {
         return Result.success(blogService.getLockedBlog(blogId, token));
     }
 
     @GetMapping("/token/{blogId}")
+    @Bloom(handler = DetailHandler.class)
     public Result<Boolean> checkReadToken(@PathVariable Long blogId,
                                           @RequestParam(value = "readToken") String token) {
         return Result.success(() -> blogService.checkToken(blogId, token));

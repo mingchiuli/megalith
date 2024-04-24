@@ -1,9 +1,9 @@
-package org.chiu.megalith.manage.cache;
+package org.chiu.megalith.manage.cache.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.cache.CacheBatchEvictHandler;
+import org.chiu.megalith.manage.cache.CacheEvictHandler;
 import org.chiu.megalith.manage.repository.RoleRepository;
 import org.chiu.megalith.manage.wrapper.RoleMenuWrapper;
 import org.springframework.stereotype.Component;
@@ -13,24 +13,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.chiu.megalith.infra.lang.Const.HOT_MENUS_AND_BUTTONS;
 
 @RequiredArgsConstructor
 @Component
-public class MenuAndButtonCacheBatchEvictHandler implements CacheBatchEvictHandler {
+public class AllMenuAndButtonCacheEvictHandler extends CacheEvictHandler {
 
     private final RoleRepository roleRepository;
 
     private final CacheKeyGenerator cacheKeyGenerator;
 
-    @Override
-    public boolean match(String prefix) {
-        return HOT_MENUS_AND_BUTTONS.getInfo().equals(prefix);
-    }
-
     @SneakyThrows
     @Override
-    public Set<String> handle(String prefix) {
+    public Set<String> handle(Object[] args) {
         List<String> roleList = roleRepository.findAllCodes();
 
         Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", String.class);

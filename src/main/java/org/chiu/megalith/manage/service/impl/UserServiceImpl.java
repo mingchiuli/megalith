@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.manage.http.OssHttpService;
-import org.chiu.megalith.infra.cache.CacheBatchEvict;
-import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.user.UserIndexMessage;
 import org.chiu.megalith.infra.utils.OssSignUtils;
 import org.chiu.megalith.manage.convertor.UserEntityVoConvertor;
@@ -83,7 +81,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheBatchEvict(type = {Const.HOT_AUTHORITIES})
     public void saveOrUpdate(UserEntityReq userEntityReq) {
         Long id = userEntityReq.getId();
         UserEntity userEntity;

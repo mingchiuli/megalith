@@ -1,7 +1,7 @@
 package org.chiu.megalith.search.mq.handler;
 
 import org.chiu.megalith.manage.entity.BlogEntity;
-import org.chiu.megalith.infra.search.BlogIndexEnum;
+import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.manage.repository.BlogRepository;
 import org.chiu.megalith.search.document.BlogDocument;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
@@ -31,8 +31,8 @@ public final class UpdateBlogIndexHandler extends BlogIndexSupport {
     }
 
     @Override
-    public boolean supports(BlogIndexEnum blogIndexEnum) {
-        return BlogIndexEnum.UPDATE.equals(blogIndexEnum);
+    public boolean supports(BlogOperateEnum blogOperateEnum) {
+        return BlogOperateEnum.UPDATE.equals(blogOperateEnum);
     }
 
     @Override

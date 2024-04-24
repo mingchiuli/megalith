@@ -1,8 +1,8 @@
 package org.chiu.megalith.manage.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.cache.CacheBatchEvict;
-import org.chiu.megalith.infra.lang.Const;
+import org.chiu.megalith.manage.cache.CacheEvict;
+import org.chiu.megalith.manage.cache.handler.AllMenuAndButtonCacheEvictHandler;
 import org.chiu.megalith.manage.entity.MenuEntity;
 import org.chiu.megalith.manage.repository.MenuRepository;
 import org.chiu.megalith.manage.repository.RoleMenuRepository;
@@ -21,18 +21,18 @@ public class MenuWrapper {
     private final RoleMenuRepository roleMenuRepository;
 
     @Transactional
-    @CacheBatchEvict(type = {Const.HOT_MENUS_AND_BUTTONS})
+    @CacheEvict(handler = { AllMenuAndButtonCacheEvictHandler.class })
     public void deleteMenu(Long id) {
         menuRepository.deleteById(id);
         roleMenuRepository.deleteByMenuId(id);
     }
 
-    @CacheBatchEvict(type = {Const.HOT_MENUS_AND_BUTTONS})
+    @CacheEvict(handler = { AllMenuAndButtonCacheEvictHandler.class })
     public void save(MenuEntity menuEntity) {
         menuRepository.save(menuEntity);
     }
 
-    @CacheBatchEvict(type = {Const.HOT_MENUS_AND_BUTTONS})
+    @CacheEvict(handler = { AllMenuAndButtonCacheEvictHandler.class })
     public void saveAll(List<MenuEntity> menuEntities) {
         menuRepository.saveAll(menuEntities);
     }

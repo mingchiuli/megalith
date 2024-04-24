@@ -3,8 +3,8 @@ package org.chiu.megalith.search.mq.handler;
 
 import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.infra.lang.Const;
-import org.chiu.megalith.infra.search.BlogIndexEnum;
-import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
+import org.chiu.megalith.infra.constant.BlogOperateEnum;
+import org.chiu.megalith.infra.constant.BlogOperateMessage;
 
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
@@ -31,11 +31,11 @@ public abstract sealed class BlogIndexSupport permits
         this.blogRepository = blogRepository;
     }
 
-    public abstract boolean supports(BlogIndexEnum blogIndexEnum);
+    public abstract boolean supports(BlogOperateEnum blogOperateEnum);
     protected abstract void elasticSearchProcess(BlogEntity blog);
 
     @SneakyThrows
-    public void handle(BlogSearchIndexMessage message, Channel channel, Message msg) {
+    public void handle(BlogOperateMessage message, Channel channel, Message msg) {
         String createUUID = msg.getMessageProperties().getHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY);
         long deliveryTag = msg.getMessageProperties().getDeliveryTag();
         if (Boolean.TRUE.equals(redisTemplate.hasKey(Const.CONSUME_MONITOR.getInfo()  + createUUID))) {

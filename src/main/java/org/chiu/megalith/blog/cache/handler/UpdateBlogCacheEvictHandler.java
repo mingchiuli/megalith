@@ -1,14 +1,13 @@
-package org.chiu.megalith.manage.listener.cache;
+package org.chiu.megalith.blog.cache.handler;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.chiu.megalith.manage.entity.BlogEntity;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
 import org.chiu.megalith.infra.key.KeyFactory;
-import org.chiu.megalith.infra.search.BlogIndexEnum;
-import org.chiu.megalith.infra.search.BlogSearchIndexMessage;
+import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.manage.repository.BlogRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -20,26 +19,30 @@ import static org.chiu.megalith.infra.lang.Const.READ_TOKEN;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 @Component
-@RequiredArgsConstructor
-public class UpdateBlogCacheEvictHandler implements BlogCacheEvictHandler {
+public final class UpdateBlogCacheEvictHandler extends BlogCacheEvictHandler {
 
-
-    private final StringRedisTemplate redisTemplate;
-
-    private final BlogRepository blogRepository;
 
     private final CacheKeyGenerator cacheKeyGenerator;
+
+
+    public UpdateBlogCacheEvictHandler(StringRedisTemplate redisTemplate,
+                                       BlogRepository blogRepository,
+                                       CacheKeyGenerator cacheKeyGenerator,
+                                       RabbitTemplate rabbitTemplate) {
+        super(redisTemplate, blogRepository, rabbitTemplate);
+        this.cacheKeyGenerator = cacheKeyGenerator;
+    }
+
     @Override
-    public boolean match(BlogIndexEnum blogIndexEnum) {
-        return BlogIndexEnum.UPDATE.equals(blogIndexEnum);
+    public boolean supports(BlogOperateEnum blogOperateEnum) {
+        return BlogOperateEnum.UPDATE.equals(blogOperateEnum);
     }
 
     @SneakyThrows
     @Override
-    public Set<String> handle(BlogSearchIndexMessage blogSearchIndexMessage, BlogEntity blogEntity) {
-
-        Long id = blogSearchIndexMessage.getBlogId();
-        int year = blogSearchIndexMessage.getYear();
+    public Set<String> redisProcess(BlogEntity blogEntity) {
+        Long id = blogEntity.getId();
+        int year = blogEntity.getCreated().getYear();
         Integer status = blogEntity.getStatus();
 
         //不分年份的页数
