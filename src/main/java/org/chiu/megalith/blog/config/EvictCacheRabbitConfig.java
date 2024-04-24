@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 public class EvictCacheRabbitConfig {
 
-    public static final String CACHE_BLOG_EVICT_QUEUE = "cache.blog.evict.queue.";
+    public static final String CACHE_BLOG_EVICT_QUEUE = "cache.blog.evict.queue";
 
     public static final String CACHE_BLOG_EVICT_EXCHANGE = "cache.blog.direct.exchange";
 
