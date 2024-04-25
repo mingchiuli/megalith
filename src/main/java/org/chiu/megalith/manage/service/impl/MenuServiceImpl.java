@@ -68,7 +68,7 @@ public class MenuServiceImpl implements MenuService {
         BeanUtils.copyProperties(menu, menuEntity);
         
         if (StatusEnum.HIDE.getCode().equals(menu.getStatus())) {
-            List<MenuEntity> menuEntities = new ArrayList<>();
+            ArrayList<MenuEntity> menuEntities = new ArrayList<>();
             menuEntities.add(menuEntity);
             findTargetChildrenMenuId(menuId, menuEntities);
             menuWrapper.saveAll(menuEntities);

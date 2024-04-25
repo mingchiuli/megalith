@@ -44,9 +44,14 @@ public class MenuValueConstraintValidator implements ConstraintValidator<MenuVal
         Integer type = menu.getType();
         TypeEnum typeEnum = TypeEnum.getInstance(type);
         Long parentId = menu.getParentId();
-        MenuEntity parentMenu = menuRepository.findById(parentId)
-                .orElseThrow(() -> new MissException(NO_FOUND.toString()));
-        TypeEnum parentTypeEnum = TypeEnum.getInstance(parentMenu.getType());
+        TypeEnum parentTypeEnum;
+        if (!Long.valueOf(0).equals(parentId)) {
+            MenuEntity parentMenu = menuRepository.findById(parentId)
+                    .orElseThrow(() -> new MissException(NO_FOUND.toString()));
+            parentTypeEnum = TypeEnum.getInstance(parentMenu.getType());
+        } else {
+            parentTypeEnum = TypeEnum.CATALOGUE;
+        }
 
         //按钮不能有子元素
         context.disableDefaultConstraintViolation();

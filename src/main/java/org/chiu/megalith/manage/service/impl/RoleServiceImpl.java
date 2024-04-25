@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,7 +83,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void delete(List<Long> ids) {
+    public void delete(ArrayList<Long> ids) {
         roleWrapper.delete(ids);
     }
 

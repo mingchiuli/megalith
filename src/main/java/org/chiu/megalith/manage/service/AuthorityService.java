@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.manage.req.AuthorityEntityReq;
 import org.chiu.megalith.manage.vo.AuthorityVo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface AuthorityService {
@@ -14,7 +15,7 @@ public interface AuthorityService {
 
     void saveOrUpdate(AuthorityEntityReq req);
 
-    void deleteAuthorities(List<Long> ids);
+    void deleteAuthorities(ArrayList<Long> ids);
 
     void download(HttpServletResponse response);
 }

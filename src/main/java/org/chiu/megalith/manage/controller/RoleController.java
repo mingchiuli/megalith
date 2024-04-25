@@ -58,7 +58,7 @@ public class RoleController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('sys:role:delete')")
-    public Result<Void> delete(@RequestBody @NotEmpty List<Long> ids) {
+    public Result<Void> delete(@RequestBody @NotEmpty ArrayList<Long> ids) {
         return Result.success(() -> roleService.delete(ids));
     }
 

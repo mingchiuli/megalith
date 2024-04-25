@@ -6,6 +6,7 @@ import org.chiu.megalith.manage.req.RoleEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.manage.vo.RoleEntityVo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public interface RoleService {
 
     void saveOrUpdate(RoleEntityReq role);
 
-    void delete(List<Long> ids);
+    void delete(ArrayList<Long> ids);
 
     List<RoleEntityVo> getValidAll();
 

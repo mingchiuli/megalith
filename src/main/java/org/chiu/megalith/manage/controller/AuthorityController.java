@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,7 @@ public class AuthorityController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('sys:authority:delete')")
-    public Result<Void> delete(@RequestBody @NotEmpty List<Long> ids) {
+    public Result<Void> delete(@RequestBody @NotEmpty ArrayList<Long> ids) {
         return Result.success(() -> authorityService.deleteAuthorities(ids));
     }
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.chiu.megalith.manage.convertor.AuthorityVoConvertor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -68,7 +69,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
-    public void deleteAuthorities(List<Long> ids) {
+    public void deleteAuthorities(ArrayList<Long> ids) {
         authorityWrapper.deleteAllById(ids);
     }
 

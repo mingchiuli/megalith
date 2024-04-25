@@ -10,7 +10,7 @@ import org.chiu.megalith.manage.repository.RoleMenuRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class MenuWrapper {
     }
 
     @CacheEvict(handler = { AllMenuAndButtonCacheEvictHandler.class })
-    public void saveAll(List<MenuEntity> menuEntities) {
+    public void saveAll(ArrayList<MenuEntity> menuEntities) {
         menuRepository.saveAll(menuEntities);
     }
 }

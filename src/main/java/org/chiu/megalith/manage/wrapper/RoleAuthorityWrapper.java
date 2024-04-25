@@ -58,6 +58,9 @@ public class RoleAuthorityWrapper {
                 .collect(Collectors.toSet());
 
         List<AuthorityEntity> authorities = authorityRepository.findAllById(authorityIds);
+        authorities = authorities.stream()
+                .filter(item -> NORMAL.getCode().equals(item.getStatus()))
+                .toList();
 
         return authorities.stream()
                 .map(AuthorityEntity::getCode)

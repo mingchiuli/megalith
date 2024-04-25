@@ -8,4 +8,5 @@ import java.util.List;
 public interface AuthorityRepository extends JpaRepository<AuthorityEntity, Long> {
 
     List<AuthorityEntity> findByStatus(Integer status);
+
 }
