@@ -13,7 +13,7 @@ import org.chiu.megalith.manage.repository.RoleRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class RoleWrapper {
 
     @Transactional
     @CacheEvict(handler = { AllAuthorityCacheEvictHandler.class, AllMenuAndButtonCacheEvictHandler.class })
-    public void delete(ArrayList<Long> ids) {
+    public void delete(List<Long> ids) {
         roleRepository.deleteAllById(ids);
         roleMenuRepository.deleteAllByRoleId(ids);
         roleAuthorityRepository.deleteAllByRoleId(ids);

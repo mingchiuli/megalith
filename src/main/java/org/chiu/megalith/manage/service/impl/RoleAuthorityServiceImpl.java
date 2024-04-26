@@ -33,12 +33,11 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     }
 
     /**
-     * 找不到方法的问题，只能用ArrayList
      * @param roleId
      * @param authorityIds
      */
     @Override
-    public void saveAuthority(Long roleId, ArrayList<Long> authorityIds) {
+    public void saveAuthority(Long roleId, List<Long> authorityIds) {
         List<RoleAuthorityEntity> roleAuthorityEntities = RoleAuthorityEntityConvertor.convert(roleId, authorityIds);
         roleAuthorityWrapper.saveAuthority(roleId, new ArrayList<>(roleAuthorityEntities));
     }

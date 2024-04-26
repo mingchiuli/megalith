@@ -9,6 +9,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.chiu.megalith.infra.utils.ClassUtils;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.redisson.api.*;
 import org.springframework.core.annotation.Order;
@@ -55,11 +56,9 @@ public class CacheAspect {
         // 调用的方法名
         String methodName = signature.getName();
         Class<?> declaringType = signature.getDeclaringType();
-        var parameterTypes = new Class[pjp.getArgs().length];
         Object[] args = pjp.getArgs();
-        for (int i = 0; i < args.length; i++) {
-            parameterTypes[i] = args[i].getClass();
-        }
+        Class<?>[] parameterTypes = ClassUtils.findClassArray(args);
+
         // 参数
         Method method = declaringType.getMethod(methodName, parameterTypes);
 

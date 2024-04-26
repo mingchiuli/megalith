@@ -3,7 +3,6 @@ package org.chiu.megalith.manage.service;
 
 import org.chiu.megalith.manage.vo.RoleAuthorityVo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface RoleAuthorityService {
@@ -12,5 +11,5 @@ public interface RoleAuthorityService {
 
     List<RoleAuthorityVo> getAuthoritiesInfo(Long roleId);
 
-    void saveAuthority(Long roleId, ArrayList<Long> authorityIds);
+    void saveAuthority(Long roleId, List<Long> authorityIds);
 }

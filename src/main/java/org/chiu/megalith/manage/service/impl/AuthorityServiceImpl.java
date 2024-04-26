@@ -16,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.chiu.megalith.manage.convertor.AuthorityVoConvertor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,7 +62,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
-    public void deleteAuthorities(ArrayList<Long> ids) {
+    public void deleteAuthorities(List<Long> ids) {
         authorityWrapper.deleteAllById(ids);
     }
 

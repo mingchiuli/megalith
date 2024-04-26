@@ -7,7 +7,7 @@ import org.chiu.megalith.manage.entity.AuthorityEntity;
 import org.chiu.megalith.manage.repository.AuthorityRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class AuthorityWrapper {
     }
 
     @CacheEvict(handler = { AllAuthorityCacheEvictHandler.class })
-    public void deleteAllById(ArrayList<Long> ids) {
+    public void deleteAllById(List<Long> ids) {
         authorityRepository.deleteAllById(ids);
     }
 }

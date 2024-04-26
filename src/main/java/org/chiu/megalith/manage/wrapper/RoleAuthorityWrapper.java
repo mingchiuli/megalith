@@ -16,7 +16,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +68,7 @@ public class RoleAuthorityWrapper {
 
     @Transactional
     @CacheEvict(handler = { AuthorityCacheEvictHandler.class })
-    public void saveAuthority(Long roleId, ArrayList<RoleAuthorityEntity> roleAuthorityEntities) {
+    public void saveAuthority(Long roleId, List<RoleAuthorityEntity> roleAuthorityEntities) {
         roleAuthorityRepository.deleteByRoleId(roleId);
         roleAuthorityRepository.saveAll(roleAuthorityEntities);
     }

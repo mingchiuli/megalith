@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,14 +57,14 @@ public class RoleController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('sys:role:delete')")
-    public Result<Void> delete(@RequestBody @NotEmpty ArrayList<Long> ids) {
+    public Result<Void> delete(@RequestBody @NotEmpty List<Long> ids) {
         return Result.success(() -> roleService.delete(ids));
     }
 
     @PostMapping("/menu/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:menu:save')")
     public Result<Void> saveMenu(@PathVariable("roleId") Long roleId,
-                                 @RequestBody ArrayList<Long> menuIds) {
+                                 @RequestBody List<Long> menuIds) {
         return Result.success(() -> roleMenuService.saveMenu(roleId, menuIds));
     }
 
@@ -78,7 +77,7 @@ public class RoleController {
     @PostMapping("/authority/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:authority:save')")
     public Result<Void> saveAuthority(@PathVariable("roleId") Long roleId,
-                                      @RequestBody ArrayList<Long> authorityIds) {
+                                      @RequestBody List<Long> authorityIds) {
         return Result.success(() -> roleAuthorityService.saveAuthority(roleId, authorityIds));
     }
 

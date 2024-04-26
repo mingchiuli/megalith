@@ -22,7 +22,6 @@ import org.chiu.megalith.manage.vo.MenusAndButtons;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.ROLE_NOT_EXIST;
@@ -43,7 +42,7 @@ public class RoleMenuWrapper {
 
     @Transactional
     @CacheEvict(handler = { MenuAndButtonCacheEvictHandler.class })
-    public void saveMenu(Long roleId, ArrayList<RoleMenuEntity> roleMenuEntities) {
+    public void saveMenu(Long roleId, List<RoleMenuEntity> roleMenuEntities) {
         roleMenuRepository.deleteByRoleId(roleId);
         roleMenuRepository.saveAll(roleMenuEntities);
     }

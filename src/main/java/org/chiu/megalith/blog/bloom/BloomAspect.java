@@ -8,13 +8,13 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.chiu.megalith.infra.utils.ClassUtils;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author mingchiuli
@@ -40,12 +40,7 @@ public class BloomAspect {
         String methodName = signature.getName();
         //参数
         Object[] args = jp.getArgs();
-        var classes = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            if (Objects.nonNull(args[i])) {
-                classes[i] = args[i].getClass();
-            }
-        }
+        Class<?>[] classes = ClassUtils.findClassArray(args);
 
         Class<?> declaringType = signature.getDeclaringType();
         Method method = declaringType.getMethod(methodName, classes);

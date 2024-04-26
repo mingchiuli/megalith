@@ -51,7 +51,6 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void saveOrUpdate(MenuEntityReq menu) {
-        LocalDateTime now = LocalDateTime.now();
         Long menuId = menu.getMenuId();
         MenuEntity menuEntity;
 
@@ -65,7 +64,7 @@ public class MenuServiceImpl implements MenuService {
         BeanUtils.copyProperties(menu, menuEntity);
         
         if (StatusEnum.HIDE.getCode().equals(menu.getStatus())) {
-            ArrayList<MenuEntity> menuEntities = new ArrayList<>();
+            List<MenuEntity> menuEntities = new ArrayList<>();
             menuEntities.add(menuEntity);
             findTargetChildrenMenuId(menuId, menuEntities);
             menuWrapper.saveAll(menuEntities);

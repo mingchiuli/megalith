@@ -21,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,7 +76,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void delete(ArrayList<Long> ids) {
+    public void delete(List<Long> ids) {
         roleWrapper.delete(ids);
     }
 

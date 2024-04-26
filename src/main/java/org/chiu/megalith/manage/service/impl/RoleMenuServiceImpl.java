@@ -67,7 +67,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     }
 
     @Override
-    public void saveMenu(Long roleId, ArrayList<Long> menuIds) {
+    public void saveMenu(Long roleId, List<Long> menuIds) {
         List<RoleMenuEntity> roleMenuEntities = RoleMenuEntityConvertor.convert(roleId, menuIds);
         roleMenuWrapper.saveMenu(roleId, new ArrayList<>(roleMenuEntities));
     }

@@ -7,6 +7,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.chiu.megalith.infra.utils.ClassUtils;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.manage.config.CacheEvictRabbitConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -44,11 +45,8 @@ public class CacheEvictAspect {
         String methodName = signature.getName();
         Class<?> declaringType = signature.getDeclaringType();
 
-        var parameterTypes = new Class[pjp.getArgs().length];
         Object[] args = pjp.getArgs();
-        for (int i = 0; i < args.length; i++) {
-            parameterTypes[i] = args[i].getClass();
-        }
+        Class<?>[] parameterTypes = ClassUtils.findClassArray(args);
 
         Method method = declaringType.getMethod(methodName, parameterTypes);
         var annotation = method.getAnnotation(CacheEvict.class);

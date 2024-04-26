@@ -4,7 +4,6 @@ package org.chiu.megalith.manage.service;
 import org.chiu.megalith.manage.vo.MenusAndButtons;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +16,6 @@ public interface RoleMenuService {
 
     List<RoleMenuVo> getMenusInfo(Long roleId);
 
-    void saveMenu(Long roleId, ArrayList<Long> menuIds);
+    void saveMenu(Long roleId, List<Long> menuIds);
 
 }
