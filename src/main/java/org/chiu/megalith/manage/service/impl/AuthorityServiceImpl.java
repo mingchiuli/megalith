@@ -16,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.chiu.megalith.manage.convertor.AuthorityVoConvertor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,17 +50,12 @@ public class AuthorityServiceImpl implements AuthorityService {
 
         Long id = req.getId();
         AuthorityEntity authorityEntity;
-        var now = LocalDateTime.now();
 
         if (Objects.nonNull(id)) {
             authorityEntity = authorityRepository.findById(id)
                     .orElseThrow(() -> new MissException(NO_FOUND));
-            authorityEntity.setUpdated(now);
         } else {
-            authorityEntity = AuthorityEntity.builder()
-                    .created(now)
-                    .updated(now)
-                    .build();
+            authorityEntity = new AuthorityEntity();
         }
 
         BeanUtils.copyProperties(req, authorityEntity);

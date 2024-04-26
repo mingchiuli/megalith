@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -20,6 +23,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @DynamicUpdate
+@EntityListeners(AuditingEntityListener.class)
 @Table(name ="m_user",
         indexes = {@Index(columnList = "created")},
         uniqueConstraints = {@UniqueConstraint(columnNames = {"username"}), @UniqueConstraint(columnNames = {"email"}), @UniqueConstraint(columnNames = {"phone"})})
@@ -53,7 +57,12 @@ public class UserEntity {
     private Integer status;
 
     @Column(name = "created")
+    @CreatedDate
     private LocalDateTime created;
+
+    @Column(name = "updated")
+    @LastModifiedDate
+    private LocalDateTime updated;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
@@ -78,6 +87,7 @@ public class UserEntity {
         if (!Objects.equals(status, that.status)) return false;
         if (!Objects.equals(created, that.created)) return false;
         if (!Objects.equals(lastLogin, that.lastLogin)) return false;
+        if (!Objects.equals(updated, that.updated)) return false;
         return Objects.equals(role, that.role);
     }
 

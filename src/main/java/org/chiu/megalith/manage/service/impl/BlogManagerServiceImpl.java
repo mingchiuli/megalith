@@ -211,20 +211,17 @@ public class BlogManagerServiceImpl implements BlogManagerService {
         Long blogId = blog.getId();
         BlogEntity blogEntity;
 
-        LocalDateTime now = LocalDateTime.now();
         if (Objects.nonNull(blogId)) {
             blogEntity = blogRepository.findById(blogId)
                     .orElseThrow(() -> new MissException(NO_FOUND));
             Assert.isTrue(Objects.equals(blogEntity.getUserId(), userId), EDIT_NO_AUTH.getMsg());
         } else {
             blogEntity = BlogEntity.builder()
-                    .created(now)
                     .userId(userId)
                     .readCount(0L)
                     .build();
         }
 
-        blogEntity.setUpdated(now);
         BeanUtils.copyProperties(blog, blogEntity);
         BlogEntity saved = blogRepository.save(blogEntity);
 

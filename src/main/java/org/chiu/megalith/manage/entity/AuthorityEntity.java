@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -20,6 +23,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @DynamicUpdate
+@EntityListeners(AuditingEntityListener.class)
 @Table(name ="m_authority",
         uniqueConstraints = {@UniqueConstraint(columnNames = "code"), @UniqueConstraint(columnNames = "name")})
 public class AuthorityEntity {
@@ -39,10 +43,12 @@ public class AuthorityEntity {
     @Column(name = "remark")
     private String remark;
 
-    @Column(name = "created")
+    @Column(name = "created", updatable = false)
+    @CreatedDate
     private LocalDateTime created;
 
     @Column(name = "updated")
+    @LastModifiedDate
     private LocalDateTime updated;
 
     @Column(name = "status")

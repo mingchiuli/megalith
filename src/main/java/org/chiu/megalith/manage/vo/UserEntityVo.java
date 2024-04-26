@@ -28,6 +28,9 @@ public class UserEntityVo {
     private LocalDateTime created;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updated;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastLogin;
 
     private String role;

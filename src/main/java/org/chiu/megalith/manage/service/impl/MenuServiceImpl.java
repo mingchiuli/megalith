@@ -58,11 +58,8 @@ public class MenuServiceImpl implements MenuService {
         if (Objects.nonNull(menuId)) {
             menuEntity = menuRepository.findById(menuId)
                      .orElseThrow(() -> new MissException(NO_FOUND));
-            menuEntity.setUpdated(now);
         } else {
             menuEntity = MenuEntityConvertor.convert(menu);
-            menuEntity.setCreated(now);
-            menuEntity.setUpdated(now);
         }
 
         BeanUtils.copyProperties(menu, menuEntity);

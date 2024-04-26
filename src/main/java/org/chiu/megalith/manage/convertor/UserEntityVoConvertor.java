@@ -31,6 +31,7 @@ public class UserEntityVoConvertor {
                 .add(UserEntityVo.builder()
                         .email(user.getEmail())
                         .phone(user.getPhone())
+                        .updated(user.getUpdated())
                         .role(user.getRole())
                         .id(user.getId())
                         .nickname(user.getNickname())

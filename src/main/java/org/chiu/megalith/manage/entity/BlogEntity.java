@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -20,6 +23,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @DynamicUpdate
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 @Table(name ="m_blog",
         indexes = {@Index(columnList = "created"),
                 @Index(columnList = "id,user_id"),
@@ -45,9 +49,11 @@ public class BlogEntity {
     private String content;
 
     @Column(name = "created")
+    @CreatedDate
     private LocalDateTime created;
 
     @Column(name = "updated")
+    @LastModifiedDate
     private LocalDateTime updated;
 
     @Column(name = "status")

@@ -84,7 +84,6 @@ public class UserServiceImpl implements UserService {
     public void saveOrUpdate(UserEntityReq userEntityReq) {
         Long id = userEntityReq.getId();
         UserEntity userEntity;
-        var now = LocalDateTime.now();
         String roleLast = null;
 
         if (Objects.nonNull(id)) {
@@ -99,10 +98,7 @@ public class UserServiceImpl implements UserService {
                 userEntityReq.setPassword(userEntity.getPassword());
             }
         } else {
-            userEntity = UserEntity.builder()
-                    .created(now)
-                    .lastLogin(now)
-                    .build();
+            userEntity = new UserEntity();
             userEntityReq.setPassword(
                     passwordEncoder.encode(Optional.ofNullable(userEntityReq.getPassword())
                                     .orElseThrow(() -> new CommitException(PASSWORD_REQUIRED))

@@ -21,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -65,17 +64,12 @@ public class RoleServiceImpl implements RoleService {
 
         Long id = roleReq.getId();
         RoleEntity roleEntity;
-        var now = LocalDateTime.now();
 
         if (Objects.nonNull(id)) {
             roleEntity = roleRepository.findById(id)
                     .orElseThrow(() -> new MissException(ROLE_NOT_EXIST));
-            roleEntity.setUpdated(now);
         } else {
-            roleEntity = RoleEntity.builder()
-                    .created(now)
-                    .updated(now)
-                    .build();
+            roleEntity = new RoleEntity();
         }
 
         BeanUtils.copyProperties(roleReq, roleEntity);
