@@ -12,19 +12,13 @@ public class ClassUtils {
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             if (Objects.nonNull(arg)) {
-                if (arg instanceof List) {
-                    classes[i] = List.class;
-                    continue;
+                switch (arg) {
+                    case List<?> ignored -> classes[i] = List.class;
+                    case Map<?, ?> ignored -> classes[i] = Map.class;
+                    case Set<?> ignored -> classes[i] = Set.class;
+                    default -> classes[i] = arg.getClass();
                 }
-                if (arg instanceof Map) {
-                    classes[i] = Map.class;
-                    continue;
-                }
-                if (arg instanceof Set) {
-                    classes[i] = Set.class;
-                    continue;
-                }
-                classes[i] = arg.getClass();
+
             }
         }
         return classes;
