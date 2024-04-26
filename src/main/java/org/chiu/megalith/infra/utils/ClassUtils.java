@@ -14,13 +14,17 @@ public class ClassUtils {
             if (Objects.nonNull(arg)) {
                 if (arg instanceof List) {
                     classes[i] = List.class;
+                    continue;
                 }
                 if (arg instanceof Map) {
                     classes[i] = Map.class;
+                    continue;
                 }
                 if (arg instanceof Set) {
                     classes[i] = Set.class;
+                    continue;
                 }
+                classes[i] = arg.getClass();
             }
         }
         return classes;
