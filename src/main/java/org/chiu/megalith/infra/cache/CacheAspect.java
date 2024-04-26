@@ -9,14 +9,13 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.chiu.megalith.infra.utils.JsonUtils;
 import org.redisson.api.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
@@ -40,6 +39,8 @@ public class CacheAspect {
 
     private final RedissonClient redisson;
 
+    private final JsonUtils jsonUtils;
+
     private final com.github.benmanes.caffeine.cache.Cache<String, Object> localCache;
 
     @Pointcut("@annotation(org.chiu.megalith.infra.cache.Cache)")
@@ -62,15 +63,7 @@ public class CacheAspect {
         // 参数
         Method method = declaringType.getMethod(methodName, parameterTypes);
 
-        Type genericReturnType = method.getGenericReturnType();
-        JavaType javaType;
-        
-        if (genericReturnType instanceof ParameterizedType parameterizedType) {
-            javaType = getTypesReference(parameterizedType);
-        } else {
-            javaType = objectMapper.getTypeFactory().constructType(genericReturnType);
-        }
-
+        JavaType javaType = jsonUtils.getTypesReference(method);
         String cacheKey = cacheKeyGenerator.generateKey(method, args);
 
         Object cacheValue = localCache.getIfPresent(cacheKey);
@@ -79,21 +72,6 @@ public class CacheAspect {
         }
 
         return localCache.get(cacheKey, new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method));
-    }
-
-    private JavaType getTypesReference(ParameterizedType parameterizedType) {
-        Class<?> rawType = (Class<?>) parameterizedType.getRawType();
-        Type[] arguments = parameterizedType.getActualTypeArguments();
-        var javaTypes = new JavaType[arguments.length];
-        for (int i = 0; i < javaTypes.length; i++) {
-            if (arguments[i] instanceof ParameterizedType parameterizedTyp) {
-                JavaType type = getTypesReference(parameterizedTyp);
-                javaTypes[i] = type;
-            } else {
-                javaTypes[i] = objectMapper.getTypeFactory().constructType(arguments[i]);
-            }
-        }
-        return objectMapper.getTypeFactory().constructParametricType(rawType, javaTypes);
     }
 
 }
