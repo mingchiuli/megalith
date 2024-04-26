@@ -198,7 +198,6 @@ public class BlogManagerServiceImpl implements BlogManagerService {
         Long userId = SecurityUtils.getLoginUserId();
 
         if (Objects.equals(userId, dbUserId)) {
-            blogRepository.setStatus(blogId, StatusEnum.HIDE.getCode());
             String token = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(READ_TOKEN.getInfo() + blogId, token, 24, TimeUnit.HOURS);
             return token;

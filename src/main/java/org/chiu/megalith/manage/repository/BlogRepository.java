@@ -55,10 +55,4 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
 
     @Query(value = "SELECT blog.userId from BlogEntity blog where blog.id = ?1")
     Long findUserIdById(Long id);
-
-
-    @Query(value = "UPDATE BlogEntity blog SET blog.status = :status WHERE blog.id = :id")
-    @Modifying
-    @Transactional
-    void setStatus(@Param("id") Long id, @Param("status") Integer status);
 }
