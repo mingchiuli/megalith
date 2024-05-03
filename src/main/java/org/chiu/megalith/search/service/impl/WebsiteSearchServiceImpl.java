@@ -14,7 +14,6 @@ import org.chiu.megalith.search.vo.WebsiteDocumentVo;
 import org.chiu.megalith.search.req.WebsiteDocumentReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.chiu.megalith.manage.lang.FieldEnum.*;
-import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.DOCUMENT_NOT_EXIST;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.WEB_NOT_EXIST;
 
@@ -42,8 +40,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
-    @Value("${blog.highest-role}")
-    private String highestRole;
+    private final SecurityUtils securityUtils;
 
     private final List<String> fields = List.of(TITLE.getField(), DESCRIPTION.getField() + "^2");
 
@@ -82,7 +79,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         if (Objects.nonNull(authentication)) {
             String role = SecurityUtils.getLoginRole();
-            if ((ROLE_PREFIX.getInfo() + highestRole).equals(role)) {
+            if (securityUtils.isAdmin(role)) {
                 auth = true;
             }
         }
@@ -133,7 +130,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         int status = document.getStatus();
         String role = SecurityUtils.getLoginRole();
-        if (status == StatusEnum.HIDE.getCode() && !(ROLE_PREFIX.getInfo() + highestRole).equals(role)) {
+        if (status == StatusEnum.HIDE.getCode() && !securityUtils.isAdmin(role)) {
             throw new MissException(DOCUMENT_NOT_EXIST);
         }
 

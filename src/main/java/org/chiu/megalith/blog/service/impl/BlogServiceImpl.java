@@ -13,7 +13,6 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 
 import org.chiu.megalith.manage.repository.BlogRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -43,8 +42,7 @@ public class BlogServiceImpl implements BlogService {
 
     private final BlogWrapper blogWrapper;
 
-    @Value("${blog.highest-role}")
-    private String highestRole;
+    private final SecurityUtils securityUtils;
 
     @Override
     public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year) {
@@ -73,7 +71,7 @@ public class BlogServiceImpl implements BlogService {
             return StatusEnum.HIDE.getCode();
         }
 
-        if ((ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginRole())) {
+        if (securityUtils.isAdmin(SecurityUtils.getLoginRole())) {
             return StatusEnum.NORMAL.getCode();
         }
 
@@ -146,8 +144,7 @@ public class BlogServiceImpl implements BlogService {
         BlogExhibitDto blogExhibitDto = blogWrapper.findById(id);
         Integer status = blogWrapper.findStatusById(id);
 
-        if (StatusEnum.NORMAL.getCode().equals(status) ||
-                (ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginRole())) {
+        if (StatusEnum.NORMAL.getCode().equals(status) || securityUtils.isAdmin(SecurityUtils.getLoginRole())) {
             blogWrapper.setReadCount(id);
             return BlogExhibitVoConvertor.convert(blogExhibitDto);
         }

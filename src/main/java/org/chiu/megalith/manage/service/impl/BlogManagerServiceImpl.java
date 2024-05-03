@@ -82,14 +82,13 @@ public class BlogManagerServiceImpl implements BlogManagerService {
 
     private final ObjectMapper objectMapper;
 
+    private final SecurityUtils securityUtils;
+
     @Qualifier("commonExecutor")
     private final ExecutorService taskExecutor;
 
     @Value("${blog.oss.base-url}")
     private String baseUrl;
-
-    @Value("${blog.highest-role}")
-    private String highestRole;
 
 
     @Override
@@ -243,7 +242,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
     public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String role) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = Objects.equals(role, ROLE_PREFIX.getInfo() + highestRole) ? blogRepository.findAll(pageRequest) :
+        Page<BlogEntity> page = securityUtils.isAdmin(role) ? blogRepository.findAll(pageRequest) :
                 blogRepository.findAllByUserId(pageRequest, userId);
 
         List<BlogEntity> items = page.getContent();
@@ -389,8 +388,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
         ids.forEach(id -> {
             BlogEntity blogEntity = blogRepository.findById(id)
                     .orElseThrow(() -> new MissException(NO_FOUND));
-            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId))
-                    && Boolean.FALSE.equals(Objects.equals(role, ROLE_PREFIX.getInfo() + highestRole))) {
+            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && !securityUtils.isAdmin(role)) {
                 throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
             }
             blogList.add(blogEntity);

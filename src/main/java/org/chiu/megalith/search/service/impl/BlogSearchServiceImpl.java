@@ -26,7 +26,6 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 
 import static org.chiu.megalith.manage.lang.FieldEnum.*;
-import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 
 /**
  * @author mingchiuli
@@ -38,11 +37,10 @@ public class BlogSearchServiceImpl implements BlogSearchService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
+    private final SecurityUtils securityUtils;
+
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
-
-    @Value("${blog.highest-role}")
-    private String highestRole;
 
     @Override
     public PageAdapter<BlogDocumentVo> selectBlogsByES(Integer currentPage, String keywords, Boolean allInfo, String year) {
@@ -186,7 +184,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 .query(keywords)))
                 .minimumShouldMatch("1");
 
-        if (!(ROLE_PREFIX.getInfo() + highestRole).equals(SecurityUtils.getLoginRole())) {
+        if (!securityUtils.isAdmin(SecurityUtils.getLoginRole())) {
             var filterQry = Query.of(filter -> filter
                     .term(term -> term
                             .field(USERID.getField())
