@@ -14,16 +14,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/edit")
 @Validated
 public class BlogMessageController {
 
     private final BlogMessageService blogMessageService;
 
-    @MessageMapping("/edit/push/action")
+    @MessageMapping("/push/action")
     @PreAuthorize("hasAuthority('sys:edit:push:action')")
     public void pushAction(@RequestBody @Valid BlogEditPushActionReq req) {
         Long userId = SecurityUtils.getLoginUserId();
