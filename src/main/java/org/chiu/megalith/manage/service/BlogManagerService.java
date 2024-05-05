@@ -2,7 +2,6 @@ package org.chiu.megalith.manage.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.manage.req.BlogEditPushAllReq;
 import org.chiu.megalith.manage.req.BlogEntityReq;
 import org.chiu.megalith.manage.vo.BlogDeleteVo;
 import org.chiu.megalith.manage.vo.BlogEditVo;
@@ -30,8 +29,6 @@ public interface BlogManagerService {
     void deleteOss(String url);
 
     String setBlogToken(Long blogId);
-
-    void pushAll(BlogEditPushAllReq blog, Long userId);
 
     void download(HttpServletResponse response);
 }

@@ -1,7 +1,6 @@
 package org.chiu.megalith.manage.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.chiu.megalith.manage.req.BlogEditPushAllReq;
 import org.chiu.megalith.manage.service.BlogManagerService;
 import org.chiu.megalith.manage.vo.BlogDeleteVo;
 import org.chiu.megalith.manage.vo.BlogEditVo;
@@ -98,13 +97,6 @@ public class BlogManagerController {
     @PreAuthorize("hasAuthority('sys:blog:oss:delete')")
     public Result<Void> deleteOss(@RequestParam String url) {
         return Result.success(() -> blogManagerService.deleteOss(url));
-    }
-
-    @PostMapping("/push/all")
-    @PreAuthorize("hasAuthority('sys:blog:push:all')")
-    public Result<Void> pullSaveBlog(@RequestBody @Valid BlogEditPushAllReq blog) {
-        Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> blogManagerService.pushAll(blog, userId));
     }
 
     @GetMapping("/download")
