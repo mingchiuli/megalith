@@ -54,8 +54,8 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 		publish.set(true)
 		publishRegistry {
 			url.set("docker.io")
-			val un = project.findProperty("username").toString()
-			val tn = project.findProperty("token").toString()
+			val un = System.getenv("DOCKER_USERNAME")
+			val tn = System.getenv("DOCKER_PWD")
 			username.set(un)
 			password.set(tn)
 		}
