@@ -16,5 +16,6 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           native-image --version
+          chmod +x ./gradlew
       - name: Example step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
         run: ./gradlew nativeCompile
