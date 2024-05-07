@@ -54,6 +54,7 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 		imageName.set("docker.io/mingchiuli/${project.name}:${version}")
 		publish.set(true)
 		publishRegistry {
+			url.set("docker.io")
 			username.set("${docker.publishRegistry.username}")
 			password.set("${docker.publishRegistry.password}")
 		}
