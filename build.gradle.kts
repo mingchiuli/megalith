@@ -56,8 +56,8 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 			url.set("docker.io")
 			val un = System.getenv("DOCKER_USERNAME")
 			val tn = System.getenv("DOCKER_PWD")
-			username.set(un)
-			password.set(tn)
+		
+		
                         token.set(tn)
 		}
 	}
