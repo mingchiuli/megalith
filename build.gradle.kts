@@ -51,12 +51,14 @@ tasks.withType<Test> {
 
 tasks.named<BootBuildImage>("bootBuildImage") {
 	docker {
-		imageName.set("docker.io/mingchiuli/${project.name}:${version}")
 		publish.set(true)
 		publishRegistry {
 			url.set("docker.io")
-			username.set("${docker.publishRegistry.username}")
-			password.set("${docker.publishRegistry.password}")
+			val un = project.findProperty("username").toString()
+			val pwd = project.findProperty("password").toString()
+			username.set(un)
+			password.set(pwd)
 		}
 	}
 }
+
