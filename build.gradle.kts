@@ -50,7 +50,7 @@ tasks.withType<Test> {
 }
 
 tasks.named<BootBuildImage>("bootBuildImage") {
-	imageName.set("hub.docker.com/library/mingchiuli/megalith")
+	imageName.set("$imageName")
 	publish.set(true)
 	docker {
 		publishRegistry {
