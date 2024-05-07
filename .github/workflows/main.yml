@@ -16,6 +16,5 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           native-image --version
-          chmod +x ./gradlew
       - name: Example step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
-        run: ./gradlew nativeCompile
+        run: ./gradlew bootBuildImage --imageName=hub.docker.com/mingchiuli/megalith:v1 --docker.publishRegistry.username=${{ secrets.DOCKERHUB_USERNAME }} --docker.publishRegistry.password=${{ secrets.DOCKERHUB_PWD }}
