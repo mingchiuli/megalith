@@ -17,4 +17,4 @@ jobs:
           java --version
           native-image --version
       - name: Example step using Gradle plugin
-        run: ./gradlew bootBuildImage -Pusername=${{ secrets.DOCKERHUB_USERNAME }} -Ppassword=${{ secrets.DOCKERHUB_PWD }} -Ptoken=${{ secrets.DOCKERHUB_TOKEN }}
+        run: ./gradlew bootBuildImage -Pusername=${{ secrets.DOCKERHUB_USERNAME }} -Ptoken=${{ secrets.DOCKERHUB_TOKEN }}
