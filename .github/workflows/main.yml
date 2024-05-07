@@ -17,7 +17,7 @@ jobs:
           java --version
           native-image --version
       - name: Example step using Gradle plugin
-        run: ./gradlew bootBuildImage
+        run: ./gradlew bootBuildImage --scan
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_PWD: ${{ secrets.DOCKERHUB_TOKEN }}
