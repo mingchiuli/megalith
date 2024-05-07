@@ -53,12 +53,12 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 	docker {
 		publish.set(true)
 		publishRegistry {
-			url.set("docker.io")
+			imageName.set("docker.io/mingchiuli/${rootProject.name}:${version}")
+			url.set("https://docker.io")
 			val un = System.getenv("DOCKER_USERNAME")
-			val tn = System.getenv("DOCKER_PWD")
-		
-		
-                        token.set(tn)
+			val pwd = System.getenv("DOCKER_PWD")
+			username.set(un)
+			password.set(pwd)
 		}
 	}
 }
