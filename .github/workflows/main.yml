@@ -17,4 +17,4 @@ jobs:
           java --version
           native-image --version
       - name: Example step using Gradle plugin
-        run: ./gradlew bootBuildImage -Ddocker.publishRegistry.username=${{ secrets.DOCKERHUB_USERNAME }} -Ddocker.publishRegistry.password=${{ secrets.DOCKERHUB_PWD }}
+        run: ./gradlew -Ddocker.publishRegistry.username=${{ secrets.DOCKERHUB_USERNAME }} -Ddocker.publishRegistry.password=${{ secrets.DOCKERHUB_PWD }} bootBuildImage
