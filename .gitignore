@@ -47,7 +47,6 @@ src/main/java/com/chiu/.DS_Store
 .VSCodeCounter/*/details.md
 .VSCodeCounter/*/diff-details.md
 .VSCodeCounter/*/diff.csv
-.gitignore
 .VSCodeCounter/*/diff.md
 .VSCodeCounter/*/diff.txt
 .VSCodeCounter/*/results.csv
