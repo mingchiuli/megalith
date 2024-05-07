@@ -5,6 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'      # See 'Options' section below for all supported versions
@@ -17,7 +18,3 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           native-image --version
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-        with:
-		      arguments: nativeCompile
