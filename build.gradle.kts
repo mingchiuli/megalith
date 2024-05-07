@@ -58,6 +58,7 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 			val tn = System.getenv("DOCKER_PWD")
 			username.set(un)
 			password.set(tn)
+                        token.set(tn)
 		}
 	}
 }
