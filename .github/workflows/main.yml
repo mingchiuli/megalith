@@ -22,7 +22,4 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PWD }}
       - name: Example step using Gradle plugin
-        run: ./gradlew bootBuildImage
-      - name: Push Docker Image
-        run: |
-          docker push docker.io/library/megalith:0.0.1
+        run: ./gradlew bootBuildImage --publishImage
