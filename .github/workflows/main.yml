@@ -14,7 +14,8 @@ jobs:
         run: |
           echo "GRAALVM_HOME: $GRAALVM_HOME"
           echo "JAVA_HOME: $JAVA_HOME"
+          echo "username:${{ secrets.DOCKERHUB_USERNAME }}"
           java --version
           native-image --version
-      - name: Example step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
+      - name: Example step using Gradle plugin
         run: ./gradlew bootBuildImage -Ddocker.publishRegistry.username=${{ secrets.DOCKERHUB_USERNAME }} -Ddocker.publishRegistry.password=${{ secrets.DOCKERHUB_PWD }}
