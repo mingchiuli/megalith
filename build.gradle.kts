@@ -54,7 +54,6 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 		builderRegistry {
 			username.set("${docker.publishRegistry.username}")
 			password.set("${docker.publishRegistry.password}")
-			url.set("https://docker.io")
 		}
 	}
 }
