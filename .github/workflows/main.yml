@@ -6,6 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
+      - uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           java-version: '21'      # See 'Options' section below for all supported versions
           distribution: 'graalvm' # See 'Options' section below for all available distributions
@@ -16,7 +17,3 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           native-image --version
-      - name: Build with Gradle
-	uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-	with:
-	  arguments: nativeCompile
