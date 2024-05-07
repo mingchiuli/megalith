@@ -1,3 +1,4 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
 	java
@@ -46,4 +47,14 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.named<BootBuildImage>("bootBuildImage") {
+	docker {
+		builderRegistry {
+			username.set("${docker.publishRegistry.username}")
+			password.set("${docker.publishRegistry.password}")
+			url.set("https://docker.io")
+		}
+	}
 }

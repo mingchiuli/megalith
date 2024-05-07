@@ -22,4 +22,4 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PWD }}
       - name: Example step using Gradle plugin
-        run: ./gradlew bootBuildImage --publishImage
+        run: ./gradlew bootBuildImage --publishImage -Ddocker.publishRegistry.username=${{ secrets.DOCKERHUB_USERNAME }} -Ddocker.publishRegistry.password=${{ secrets.DOCKERHUB_PWD }}
