@@ -46,3 +46,14 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.named<BootBuildImage>("bootBuildImage") {
+	imageName.set("hub.docker.com/library/mingchiuli/megalith")
+	publish.set(true)
+	docker {
+		publishRegistry {
+			username.set("${docker.publishRegistry.username}")
+			password.set("${docker.publishRegistry.password}")
+		}
+	}
+}
