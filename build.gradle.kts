@@ -53,8 +53,8 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 	publish.set(true)
 	docker {
 		publishRegistry {
-			username.set("${docker.publishRegistry.username}")
-			password.set("${docker.publishRegistry.password}")
+			username.set(docker.publishRegistry.username)
+			password.set(docker.publishRegistry.password)
 		}
 	}
 }
