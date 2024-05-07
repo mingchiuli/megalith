@@ -50,7 +50,6 @@ tasks.withType<Test> {
 }
 
 tasks.named<BootBuildImage>("bootBuildImage") {
-	imageName.set("$imageName")
 	publish.set(true)
 	docker {
 		publishRegistry {
