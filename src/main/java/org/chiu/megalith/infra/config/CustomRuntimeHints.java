@@ -1,6 +1,7 @@
 package org.chiu.megalith.infra.config;
 
 import lombok.SneakyThrows;
+import org.chiu.megalith.blog.cache.mq.CacheBlogEvictMessageListener;
 import org.chiu.megalith.blog.dto.BlogExhibitDto;
 import org.chiu.megalith.manage.cache.mq.CacheEvictMessageListener;
 import org.chiu.megalith.manage.valid.ListValueConstraintValidator;
@@ -23,6 +24,7 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
         // Register method for reflection
         hints.reflection().registerMethod(findMethod(CacheEvictMessageListener.class, "handleMessage", Set.class), ExecutableMode.INVOKE);
+        hints.reflection().registerMethod(findMethod(CacheBlogEvictMessageListener.class, "handleMessage", Set.class), ExecutableMode.INVOKE);
 
         hints.reflection().registerConstructor(LinkedHashSet.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
         hints.reflection().registerConstructor(ListValueConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
