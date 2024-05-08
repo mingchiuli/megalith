@@ -1,6 +1,7 @@
 package org.chiu.megalith.infra.config;
 
 import lombok.SneakyThrows;
+import org.chiu.megalith.blog.dto.BlogExhibitDto;
 import org.chiu.megalith.manage.cache.mq.CacheEvictMessageListener;
 import org.chiu.megalith.manage.valid.ListValueConstraintValidator;
 import org.chiu.megalith.manage.valid.MenuValueConstraintValidator;
@@ -8,9 +9,7 @@ import org.chiu.megalith.manage.valid.PhoneConstraintValidator;
 import org.chiu.megalith.manage.valid.UsernameConstraintValidator;
 import org.chiu.megalith.security.vo.LoginSuccessVo;
 import org.chiu.megalith.security.vo.UserInfoVo;
-import org.springframework.aot.hint.ExecutableMode;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.*;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -31,9 +30,13 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
         hints.reflection().registerConstructor(UsernameConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
         hints.reflection().registerConstructor(MenuValueConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
 
-
+        hints.serialization().registerType(BlogExhibitDto.class);
         hints.serialization().registerType(LoginSuccessVo.class);
         hints.serialization().registerType(UserInfoVo.class);
+
+        hints.reflection().registerType(
+                TypeReference.of("com.github.benmanes.caffeine.cache.SSMSA"),
+                MemberCategory.PUBLIC_FIELDS, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS);
 
         // Register resources
         hints.resources().registerPattern("ValidationMessages.properties");

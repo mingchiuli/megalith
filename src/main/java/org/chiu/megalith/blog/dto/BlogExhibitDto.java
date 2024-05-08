@@ -2,13 +2,14 @@ package org.chiu.megalith.blog.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class BlogExhibitDto {
+public class BlogExhibitDto implements Serializable {
 
     private Long userId;
 
