@@ -7,7 +7,7 @@ plugins {
 	id("org.graalvm.buildtools.native") version "0.10.1"
 }
 
-group = "com.chiu"
+group = "org.chiu"
 version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
