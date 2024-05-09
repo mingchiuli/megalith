@@ -15,7 +15,7 @@ import org.springframework.core.task.TaskExecutor;
 
 import java.util.UUID;
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @RequiredArgsConstructor
 public class CacheEvictRabbitConfig {
 

@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @author mingchiuli
  * @create 2022-12-25 4:13 pm
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class ElasticSearchRabbitConfig {
 
     public static final String ES_QUEUE = "es.queue";

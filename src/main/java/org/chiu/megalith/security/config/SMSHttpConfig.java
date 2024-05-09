@@ -13,7 +13,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.time.Duration;
 
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class SMSHttpConfig {
 
     @Value("${blog.sms.base-url}")

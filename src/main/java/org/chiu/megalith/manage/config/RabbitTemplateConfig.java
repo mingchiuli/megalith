@@ -14,7 +14,7 @@ import org.springframework.retry.support.RetryTemplate;
  * @author mingchiuli
  * @create 2022-12-23 12:32 pm
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @RequiredArgsConstructor
 @Slf4j
 public class RabbitTemplateConfig {
