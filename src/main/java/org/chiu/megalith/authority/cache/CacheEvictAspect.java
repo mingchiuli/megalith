@@ -34,7 +34,7 @@ public class CacheEvictAspect {
 
     private final JsonUtils jsonUtils;
 
-    @Pointcut("@annotation(org.chiu.megalith.manage.cache.CacheEvict)")
+    @Pointcut("@annotation(org.chiu.megalith.authority.cache.CacheEvict)")
     public void pt() {}
 
     @SneakyThrows
