@@ -16,7 +16,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * @author mingchiuli
  * @create 2021-12-21 11:11 AM
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {

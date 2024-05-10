@@ -11,7 +11,7 @@ import java.util.concurrent.*;
  * @author mingchiuli
  * @create 2022-04-26 10:06 PM
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class ThreadPoolConfig {
 
     @Bean("commonExecutor")

@@ -13,7 +13,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import java.time.Duration;
 
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class OssHttpConfig {
 
     @Value("${blog.aliyun.oss.bucket-name}")
