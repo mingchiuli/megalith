@@ -29,7 +29,7 @@ public class BloomAspect {
 
     private final List<BloomHandler> bloomHandlers;
 
-    @Pointcut("@annotation(org.chiu.megalith.blog.bloom.Bloom)")
+    @Pointcut("@annotation(org.chiu.megalith.exhibit.bloom.Bloom)")
     public void pt() {}
 
     @SneakyThrows
