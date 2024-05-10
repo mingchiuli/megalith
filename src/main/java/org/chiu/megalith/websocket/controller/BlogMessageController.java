@@ -1,7 +1,7 @@
 package org.chiu.megalith.websocket.controller;
 
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.manage.req.BlogEditPushAllReq;
+import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.websocket.req.BlogEditPushActionReq;
 import org.chiu.megalith.websocket.service.BlogMessageService;
 import org.chiu.megalith.infra.utils.SecurityUtils;

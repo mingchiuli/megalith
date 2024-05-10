@@ -3,7 +3,7 @@ package org.chiu.megalith.infra.cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.chiu.megalith.blog.wrapper.BlogWrapper;
+import org.chiu.megalith.exhibit.wrapper.BlogWrapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

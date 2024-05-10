@@ -2,8 +2,8 @@ package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
-import org.chiu.megalith.manage.repository.RoleRepository;
-import org.chiu.megalith.manage.service.UserService;
+import org.chiu.megalith.authority.repository.RoleRepository;
+import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.infra.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;

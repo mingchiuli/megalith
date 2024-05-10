@@ -1,6 +1,6 @@
 package org.chiu.megalith.websocket.service;
 
-import org.chiu.megalith.manage.req.BlogEditPushAllReq;
+import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.websocket.req.BlogEditPushActionReq;
 
 public interface BlogMessageService {

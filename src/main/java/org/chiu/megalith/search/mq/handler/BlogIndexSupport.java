@@ -1,7 +1,7 @@
 package org.chiu.megalith.search.mq.handler;
 
 
-import org.chiu.megalith.manage.entity.BlogEntity;
+import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
@@ -10,7 +10,7 @@ import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import org.chiu.megalith.manage.repository.BlogRepository;
+import org.chiu.megalith.blog.repository.BlogRepository;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.PublisherCallbackChannel;
 import org.springframework.data.redis.core.StringRedisTemplate;

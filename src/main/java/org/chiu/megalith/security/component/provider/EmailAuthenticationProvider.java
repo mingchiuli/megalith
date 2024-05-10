@@ -1,7 +1,7 @@
 package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
-import org.chiu.megalith.manage.repository.RoleRepository;
+import org.chiu.megalith.authority.repository.RoleRepository;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.security.component.token.EmailAuthenticationToken;
 import org.springframework.beans.factory.annotation.Value;

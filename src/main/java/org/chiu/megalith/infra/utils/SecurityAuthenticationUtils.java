@@ -1,7 +1,7 @@
 package org.chiu.megalith.infra.utils;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.manage.service.RoleAuthorityService;
+import org.chiu.megalith.authority.service.RoleAuthorityService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;

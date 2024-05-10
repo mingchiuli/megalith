@@ -3,7 +3,7 @@ package org.chiu.megalith.security.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.utils.SmsUtils;
-import org.chiu.megalith.manage.service.UserService;
+import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.security.http.SmsHttpService;
 import org.chiu.megalith.security.service.CodeService;
 import org.chiu.megalith.infra.lang.Const;

@@ -1,8 +1,8 @@
 package org.chiu.megalith;
 
 import org.chiu.megalith.infra.utils.JsonUtils;
-import org.chiu.megalith.manage.entity.UserEntity;
-import org.chiu.megalith.manage.repository.UserRepository;
+import org.chiu.megalith.user.entity.UserEntity;
+import org.chiu.megalith.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

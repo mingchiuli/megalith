@@ -1,7 +1,7 @@
 package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.lang.StatusEnum;
-import org.chiu.megalith.manage.repository.RoleRepository;
+import org.chiu.megalith.authority.repository.RoleRepository;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;

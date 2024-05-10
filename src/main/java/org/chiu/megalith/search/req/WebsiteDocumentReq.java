@@ -1,6 +1,6 @@
 package org.chiu.megalith.search.req;
 
-import org.chiu.megalith.manage.valid.ListValue;
+import org.chiu.megalith.infra.vaild.ListValue;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 

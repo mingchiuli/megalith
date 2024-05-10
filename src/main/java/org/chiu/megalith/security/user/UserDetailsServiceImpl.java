@@ -1,7 +1,7 @@
 package org.chiu.megalith.security.user;
 
-import org.chiu.megalith.manage.entity.UserEntity;
-import org.chiu.megalith.manage.repository.UserRepository;
+import org.chiu.megalith.user.entity.UserEntity;
+import org.chiu.megalith.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;

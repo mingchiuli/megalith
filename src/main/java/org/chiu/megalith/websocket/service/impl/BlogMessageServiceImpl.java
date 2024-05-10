@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
-import org.chiu.megalith.manage.req.BlogEditPushAllReq;
+import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.websocket.req.BlogEditPushActionReq;
 import org.chiu.megalith.websocket.service.BlogMessageService;
 import org.chiu.megalith.infra.key.KeyFactory;
@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.chiu.megalith.infra.lang.Const.*;
-import static org.chiu.megalith.manage.lang.MessageActionFieldEnum.*;
+import static org.chiu.megalith.websocket.lang.MessageActionFieldEnum.*;
 
 
 @Service

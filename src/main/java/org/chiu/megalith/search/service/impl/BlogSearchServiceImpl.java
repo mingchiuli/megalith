@@ -4,10 +4,10 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 
 import co.elastic.clients.json.JsonData;
-import org.chiu.megalith.manage.convertor.BlogEntityVoConvertor;
+import org.chiu.megalith.blog.convertor.BlogEntityVoConvertor;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
-import org.chiu.megalith.manage.vo.BlogEntityVo;
+import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.search.convertor.BlogDocumentVoConvertor;
@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
-import static org.chiu.megalith.manage.lang.FieldEnum.*;
+import static org.chiu.megalith.websocket.lang.FieldEnum.*;
 
 /**
  * @author mingchiuli
