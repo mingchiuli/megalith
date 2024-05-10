@@ -132,7 +132,7 @@ public class BlogServiceImpl implements BlogService {
                 .reverseRangeWithScores(HOT_READ.getInfo(), 0, 4);
 
         List<Long> ids = Optional.ofNullable(set).orElseGet(LinkedHashSet::new).stream()
-                .map(item -> Long.valueOf(item.getValue()))
+                .map(item -> Long.valueOf(Optional.ofNullable(item.getValue()).orElse("0")))
                 .toList();
 
         List<BlogEntity> blogs = blogRepository.findAllById(ids);
