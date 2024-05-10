@@ -1,12 +1,14 @@
 package org.chiu.megalith.manage.service.impl;
 
 import org.chiu.megalith.manage.convertor.MenuDisplayVoConvertor;
+import org.chiu.megalith.manage.convertor.MenusAndButtonsVoConvertor;
 import org.chiu.megalith.manage.convertor.RoleMenuEntityConvertor;
+import org.chiu.megalith.manage.dto.MenusAndButtonsDto;
 import org.chiu.megalith.manage.entity.*;
 import org.chiu.megalith.manage.repository.*;
 import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
-import org.chiu.megalith.manage.vo.MenusAndButtons;
+import org.chiu.megalith.manage.vo.MenusAndButtonsVo;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
 
 import lombok.RequiredArgsConstructor;
@@ -55,9 +57,10 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     }
 
     @Override
-    public MenusAndButtons getCurrentUserNav(String role) {
+    public MenusAndButtonsVo getCurrentUserNav(String role) {
         role = role.substring(ROLE_PREFIX.getInfo().length());
-        return roleMenuWrapper.getCurrentRoleNav(role);
+        MenusAndButtonsDto menusAndButtonsDto = roleMenuWrapper.getCurrentRoleNav(role);
+        return MenusAndButtonsVoConvertor.convertor(menusAndButtonsDto);
     }
 
     public List<RoleMenuVo> getMenusInfo(Long roleId) {

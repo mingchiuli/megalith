@@ -1,10 +1,10 @@
 package org.chiu.megalith.blog.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.blog.convertor.BlogDescriptionVoConvertor;
+import org.chiu.megalith.blog.convertor.BlogDescriptionDtoConvertor;
 import org.chiu.megalith.blog.convertor.BlogExhibitDtoConvertor;
+import org.chiu.megalith.blog.dto.BlogDescriptionDto;
 import org.chiu.megalith.blog.dto.BlogExhibitDto;
-import org.chiu.megalith.blog.vo.BlogDescriptionVo;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
@@ -69,7 +69,7 @@ public class BlogWrapper {
     }
 
     @Cache(prefix = Const.HOT_BLOGS)
-    public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year) {
+    public PageAdapter<BlogDescriptionDto> findPage(Integer currentPage, Integer year) {
         var pageRequest = PageRequest.of(currentPage - 1,
                 blogPageSize,
                 Sort.by("created").descending());
@@ -79,7 +79,7 @@ public class BlogWrapper {
                 blogRepository.findPageByCreatedBetween(pageRequest, LocalDateTime.of(year, 1, 1, 0, 0, 0),
                 LocalDateTime.of(year, 12, 31, 23, 59, 59));
 
-        return BlogDescriptionVoConvertor.convert(page);
+        return BlogDescriptionDtoConvertor.convert(page);
     }
 
     @Cache(prefix = Const.HOT_BLOG)

@@ -2,8 +2,12 @@ package org.chiu.megalith.infra.config;
 
 import lombok.SneakyThrows;
 import org.chiu.megalith.blog.cache.mq.CacheBlogEvictMessageListener;
+import org.chiu.megalith.blog.dto.BlogDescriptionDto;
 import org.chiu.megalith.blog.dto.BlogExhibitDto;
 import org.chiu.megalith.manage.cache.mq.CacheEvictMessageListener;
+import org.chiu.megalith.manage.dto.ButtonDto;
+import org.chiu.megalith.manage.dto.MenuDto;
+import org.chiu.megalith.manage.dto.MenusAndButtonsDto;
 import org.chiu.megalith.manage.valid.ListValueConstraintValidator;
 import org.chiu.megalith.manage.valid.MenuValueConstraintValidator;
 import org.chiu.megalith.manage.valid.PhoneConstraintValidator;
@@ -33,8 +37,12 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
         hints.reflection().registerConstructor(MenuValueConstraintValidator.class.getDeclaredConstructor(), ExecutableMode.INVOKE);
 
         hints.serialization().registerType(BlogExhibitDto.class);
+        hints.serialization().registerType(BlogDescriptionDto.class);
         hints.serialization().registerType(LoginSuccessVo.class);
         hints.serialization().registerType(UserInfoVo.class);
+        hints.serialization().registerType(MenusAndButtonsDto.class);
+        hints.serialization().registerType(MenuDto.class);
+        hints.serialization().registerType(ButtonDto.class);
 
         hints.reflection().registerType(
                 TypeReference.of("com.github.benmanes.caffeine.cache.SSMSA"),

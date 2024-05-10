@@ -10,7 +10,7 @@ import org.chiu.megalith.manage.service.RoleMenuService;
 import org.chiu.megalith.manage.valid.MenuValue;
 import org.chiu.megalith.manage.vo.MenuDisplayVo;
 import org.chiu.megalith.manage.vo.MenuEntityVo;
-import org.chiu.megalith.manage.vo.MenusAndButtons;
+import org.chiu.megalith.manage.vo.MenusAndButtonsVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +34,7 @@ public class MenuController {
 
     @GetMapping("/nav")
     @PreAuthorize("hasAuthority('sys:menu:nav')")
-    public Result<MenusAndButtons> nav() {
+    public Result<MenusAndButtonsVo> nav() {
         String role = SecurityUtils.getLoginRole();
         return Result.success(() -> roleMenuService.getCurrentUserNav(role));
     }

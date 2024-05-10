@@ -1,6 +1,7 @@
 package org.chiu.megalith.blog.service.impl;
 
 import org.chiu.megalith.blog.convertor.*;
+import org.chiu.megalith.blog.dto.BlogDescriptionDto;
 import org.chiu.megalith.blog.dto.BlogExhibitDto;
 import org.chiu.megalith.blog.vo.*;
 import org.chiu.megalith.blog.wrapper.BlogWrapper;
@@ -13,6 +14,7 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 
 import org.chiu.megalith.manage.repository.BlogRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -46,7 +48,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year) {
-        return blogWrapper.findPage(currentPage, year);
+        PageAdapter<BlogDescriptionDto> dtoPageAdapter = blogWrapper.findPage(currentPage, year);
+        return BlogDescriptionVoConvertor.convert(dtoPageAdapter);
     }
 
     @Override

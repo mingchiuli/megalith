@@ -11,7 +11,7 @@ import java.util.List;
  **/
 @Data
 @Builder
-public class MenusAndButtons {
+public class MenusAndButtonsVo {
 
     private List<MenuVo> menus;
 

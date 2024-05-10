@@ -1,7 +1,7 @@
 package org.chiu.megalith.manage.service;
 
 
-import org.chiu.megalith.manage.vo.MenusAndButtons;
+import org.chiu.megalith.manage.vo.MenusAndButtonsVo;
 import org.chiu.megalith.manage.vo.RoleMenuVo;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface RoleMenuService {
 
-    MenusAndButtons getCurrentUserNav(String role);
+    MenusAndButtonsVo getCurrentUserNav(String role);
 
     List<RoleMenuVo> getMenusInfo(Long roleId);
 
