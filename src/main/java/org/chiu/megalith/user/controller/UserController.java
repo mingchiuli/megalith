@@ -2,7 +2,6 @@ package org.chiu.megalith.user.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.user.req.UserEntityRegisterReq;
-import org.chiu.megalith.authority.service.RoleService;
 import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.user.req.UserEntityReq;
 import org.chiu.megalith.infra.lang.Result;
@@ -27,8 +26,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
-    private final RoleService roleService;
 
     @GetMapping("/auth/register/page")
     @PreAuthorize("hasAuthority('sys:user:register:page')")
@@ -85,7 +82,7 @@ public class UserController {
     @GetMapping("/role/valid/all")
     @PreAuthorize("hasAuthority('sys:user:role:valid:all')")
     public Result<List<RoleEntityVo>> getValidAll() {
-        return Result.success(roleService::getValidAll);
+        return Result.success(userService::getValidAllRole);
     }
 
     @GetMapping("/download")

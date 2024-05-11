@@ -44,17 +44,4 @@ public class RoleEntityVoConvertor {
                 .totalElements(page.getTotalElements())
                 .build();
     }
-
-    public static List<RoleEntityVo> convert(List<RoleEntity> entities) {
-        List<RoleEntityVo> vos = new ArrayList<>();
-        entities.forEach(item -> vos
-                .add(RoleEntityVo.builder()
-                        .code(item.getCode())
-                        .id(item.getId())
-                        .status(item.getStatus())
-                        .name(item.getName())
-                        .build()));
-        return vos;
-
-    }
 }

@@ -4,10 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import org.chiu.megalith.authority.entity.RoleEntity;
+import org.chiu.megalith.authority.repository.RoleRepository;
+import org.chiu.megalith.authority.vo.RoleEntityVo;
 import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.blog.http.OssHttpService;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.user.UserIndexMessage;
 import org.chiu.megalith.infra.utils.OssSignUtils;
+import org.chiu.megalith.user.convertor.RoleEntityVoConvertor;
 import org.chiu.megalith.user.convertor.UserEntityVoConvertor;
 import org.chiu.megalith.user.entity.UserEntity;
 import org.chiu.megalith.user.event.UserOperateEvent;
@@ -56,6 +61,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
 
     private final ApplicationContext applicationContext;
 
@@ -265,5 +272,11 @@ public class UserServiceImpl implements UserService {
         outputStream.write(bytes);
         outputStream.flush();
         outputStream.close();
+    }
+
+    @Override
+    public List<RoleEntityVo> getValidAllRole() {
+        List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
+        return RoleEntityVoConvertor.convert(entities);
     }
 }

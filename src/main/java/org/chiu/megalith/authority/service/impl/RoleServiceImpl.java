@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.authority.convertor.RoleEntityVoConvertor;
 import org.chiu.megalith.authority.entity.RoleEntity;
 import org.chiu.megalith.authority.repository.RoleRepository;
@@ -78,12 +77,6 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void delete(List<Long> ids) {
         roleWrapper.delete(ids);
-    }
-
-    @Override
-    public List<RoleEntityVo> getValidAll() {
-        List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
-        return RoleEntityVoConvertor.convert(entities);
     }
 
     @SneakyThrows
