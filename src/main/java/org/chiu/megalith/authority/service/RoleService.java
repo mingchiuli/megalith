@@ -23,4 +23,6 @@ public interface RoleService {
     void delete(List<Long> ids);
 
     void download(HttpServletResponse response);
+
+    List<RoleEntityVo> getValidAll();
 }

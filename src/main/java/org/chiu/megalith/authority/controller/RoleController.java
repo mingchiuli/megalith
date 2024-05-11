@@ -93,4 +93,10 @@ public class RoleController {
         roleService.download(response);
         return Result.success();
     }
+
+    @GetMapping("/valid/all")
+    @PreAuthorize("hasAuthority('sys:role:valid:all')")
+    public Result<List<RoleEntityVo>> getValidAll() {
+        return Result.success(roleService::getValidAll);
+    }
 }

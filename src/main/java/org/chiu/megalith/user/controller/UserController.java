@@ -7,7 +7,6 @@ import org.chiu.megalith.user.req.UserEntityReq;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.authority.vo.RoleEntityVo;
 import org.chiu.megalith.user.vo.UserEntityVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -77,12 +76,6 @@ public class UserController {
     @PreAuthorize("hasAuthority('sys:user:info')")
     public Result<UserEntityVo> info(@PathVariable(value = "id") Long id) {
         return Result.success(() -> userService.findById(id));
-    }
-
-    @GetMapping("/role/valid/all")
-    @PreAuthorize("hasAuthority('sys:user:role:valid:all')")
-    public Result<List<RoleEntityVo>> getValidAll() {
-        return Result.success(userService::getValidAllRole);
     }
 
     @GetMapping("/download")

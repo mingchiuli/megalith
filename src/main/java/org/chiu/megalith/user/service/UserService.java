@@ -2,7 +2,6 @@ package org.chiu.megalith.user.service;
 
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.chiu.megalith.authority.vo.RoleEntityVo;
 import org.chiu.megalith.user.req.UserEntityRegisterReq;
 import org.chiu.megalith.user.req.UserEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
@@ -47,6 +46,4 @@ public interface UserService {
     Boolean checkRegisterPage(String token);
 
     void download(HttpServletResponse response);
-
-    List<RoleEntityVo> getValidAllRole();
 }

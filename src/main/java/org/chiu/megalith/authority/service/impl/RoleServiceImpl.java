@@ -10,6 +10,7 @@ import org.chiu.megalith.authority.repository.RoleRepository;
 import org.chiu.megalith.authority.service.RoleService;
 import org.chiu.megalith.authority.req.RoleEntityReq;
 import org.chiu.megalith.infra.exception.MissException;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.authority.vo.RoleEntityVo;
@@ -90,5 +91,11 @@ public class RoleServiceImpl implements RoleService {
         outputStream.write(bytes);
         outputStream.flush();
         outputStream.close();
+    }
+
+    @Override
+    public List<RoleEntityVo> getValidAll() {
+        List<RoleEntity> entities = roleRepository.findByStatus(StatusEnum.NORMAL.getCode());
+        return RoleEntityVoConvertor.convert(entities);
     }
 }
