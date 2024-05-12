@@ -19,7 +19,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class MegalithApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MegalithApplication.class, args);
+			SpringApplication.run(MegalithApplication.class, args);
 	}
 
 }
