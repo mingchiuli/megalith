@@ -2,7 +2,6 @@ package org.chiu.megalith.exhibit.cache.mq;
 
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.chiu.megalith.exhibit.cache.handler.BlogCacheEvictHandler;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.chiu.megalith.exhibit.config.EvictCacheRabbitConfig;
@@ -18,7 +17,6 @@ import java.util.List;
  */
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class BlogRedisCacheEvictMessageListener {
 
     private final List<BlogCacheEvictHandler> blogCacheEvictHandlers;

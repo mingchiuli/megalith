@@ -8,7 +8,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.chiu.megalith.infra.utils.ClassUtils;
-import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.authority.config.CacheEvictRabbitConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.annotation.Order;
@@ -31,8 +30,6 @@ public class CacheEvictAspect {
     private final RabbitTemplate rabbitTemplate;
 
     private final List<CacheEvictHandler> cacheEvictHandlers;
-
-    private final JsonUtils jsonUtils;
 
     @Pointcut("@annotation(org.chiu.megalith.authority.cache.CacheEvict)")
     public void pt() {}

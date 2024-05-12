@@ -1,6 +1,5 @@
 package org.chiu.megalith.search.mq;
 
-import lombok.extern.slf4j.Slf4j;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.chiu.megalith.search.config.ElasticSearchRabbitConfig;
 import com.rabbitmq.client.Channel;
@@ -18,7 +17,6 @@ import java.util.List;
  */
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class BlogMessageListener {
 
     private final List<BlogIndexSupport> elasticsearchHandlers;

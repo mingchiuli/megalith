@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import org.chiu.megalith.authority.repository.RoleRepository;
 import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.infra.user.UserIndexMessage;
@@ -57,8 +56,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
-
-    private final RoleRepository roleRepository;
 
     private final ApplicationContext applicationContext;
 
@@ -178,7 +175,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveRegisterPage(String token, UserEntityRegisterReq userEntityRegisterReq) {
         Boolean exist = redisTemplate.hasKey(REGISTER_PREFIX.getInfo() + token);
-        if (Objects.isNull(exist) || !exist) {
+        if (Objects.isNull(exist) || Boolean.FALSE.equals(exist)) {
             throw new BadCredentialsException(NO_AUTH.getMsg());
         }
         String password = userEntityRegisterReq.getPassword();
@@ -215,7 +212,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String imageUpload(String token, MultipartFile image) {
         Boolean exist = redisTemplate.hasKey(REGISTER_PREFIX.getInfo() + token);
-        if (Objects.isNull(exist) || !exist) {
+        if (Objects.isNull(exist) || Boolean.FALSE.equals(exist)) {
             throw new BadCredentialsException(NO_AUTH.getMsg());
         }
 
@@ -241,7 +238,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void imageDelete(String token, String url) {
         Boolean exist = redisTemplate.hasKey(REGISTER_PREFIX.getInfo() + token);
-        if (Objects.isNull(exist) || !exist) {
+        if (Objects.isNull(exist) || Boolean.FALSE.equals(exist)) {
             throw new BadCredentialsException(NO_AUTH.getMsg());
         }
         String objectName = url.replace(baseUrl + "/", "");
