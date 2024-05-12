@@ -22,7 +22,7 @@ public interface RoleService {
 
     void delete(List<Long> ids);
 
-    List<RoleEntityVo> getValidAll();
-
     void download(HttpServletResponse response);
+
+    List<RoleEntityVo> getValidAll();
 }

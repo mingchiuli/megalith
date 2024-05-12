@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import org.chiu.megalith.authority.repository.RoleRepository;
 import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.infra.user.UserIndexMessage;
@@ -56,6 +57,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
 
     private final ApplicationContext applicationContext;
 

@@ -55,6 +55,5 @@ public class RoleEntityVoConvertor {
                         .name(item.getName())
                         .build()));
         return vos;
-
     }
 }
