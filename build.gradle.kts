@@ -53,6 +53,7 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 	buildpacks = listOf("docker.io/paketobuildpacks/oracle", "urn:cnb:builder:paketo-buildpacks/java-native-image")
 	environment = mapOf("BP_NATIVE_IMAGE_BUILD_ARGUMENTS" to
 			"""
+				--strict-image-heap
 				-march=compatibility
 				--gc=G1
 				-R:MaxHeapSize=128m
