@@ -56,7 +56,7 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 				-march=compatibility
 				--gc=G1
 				-R:MaxHeapSize=128m
-				--pgo
+				-O3
 			""")
 	docker {
 		publish.set(true)
