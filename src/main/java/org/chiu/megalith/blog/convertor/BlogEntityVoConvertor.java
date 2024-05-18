@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class BlogEntityVoConvertor {
 
+    private BlogEntityVoConvertor() {}
+
     public static PageAdapter<BlogEntityVo> convert(Page<BlogEntity> page, Map<Long, Integer> readMap, Long operateUserId) {
         List<BlogEntity> items = page.getContent();
 

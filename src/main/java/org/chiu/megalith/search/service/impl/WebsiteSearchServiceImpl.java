@@ -79,7 +79,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         if (Objects.nonNull(authentication)) {
             String role = SecurityUtils.getLoginRole();
-            if (securityUtils.isAdmin(role)) {
+            if (Boolean.TRUE.equals(securityUtils.isAdmin(role))) {
                 auth = true;
             }
         }
@@ -130,7 +130,7 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
 
         int status = document.getStatus();
         String role = SecurityUtils.getLoginRole();
-        if (status == StatusEnum.HIDE.getCode() && !securityUtils.isAdmin(role)) {
+        if (status == StatusEnum.HIDE.getCode() && Boolean.FALSE.equals(securityUtils.isAdmin(role))) {
             throw new MissException(DOCUMENT_NOT_EXIST);
         }
 

@@ -5,6 +5,8 @@ import org.chiu.megalith.authority.req.MenuEntityReq;
 
 public class MenuEntityConvertor {
 
+    private MenuEntityConvertor() {}
+
     public static MenuEntity convert(MenuEntityReq menu) {
         return MenuEntity.builder()
                 .menuId(menu.getMenuId())

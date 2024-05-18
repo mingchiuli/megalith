@@ -15,6 +15,8 @@ import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 public class BlogHotReadVoConvertor {
 
+    private BlogHotReadVoConvertor() {}
+
     public static List<BlogHotReadVo> convert(List<BlogEntity> blogs, Set<ZSetOperations.TypedTuple<String>> set) {
 
         List<Long> ids = blogs.stream()

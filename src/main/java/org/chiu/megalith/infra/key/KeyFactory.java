@@ -6,6 +6,8 @@ import static org.chiu.megalith.infra.lang.Const.TEMP_EDIT_BLOG;
 
 public class KeyFactory {
 
+    private KeyFactory() {}
+
     public static String createPushContentIdentityKey(Long userId, Long blogId) {
         return Objects.isNull(blogId) ?
                 userId.toString() :

@@ -21,15 +21,15 @@ import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 @RequiredArgsConstructor
 public class RoleAuthorityServiceImpl implements RoleAuthorityService {
 
-   private final RoleAuthorityWrapper roleAuthorityWrapper;
+    private final RoleAuthorityWrapper roleAuthorityWrapper;
 
-   private final AuthorityRepository authorityRepository;
+    private final AuthorityRepository authorityRepository;
 
     private final RoleAuthorityRepository roleAuthorityRepository;
 
     @Override
-    public List<String> getAuthoritiesByRoleCode(String RoleCode) {
-        return roleAuthorityWrapper.getAuthoritiesByRoleCode(RoleCode);
+    public List<String> getAuthoritiesByRoleCode(String roleCode) {
+        return roleAuthorityWrapper.getAuthoritiesByRoleCode(roleCode);
     }
 
     /**

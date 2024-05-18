@@ -6,6 +6,8 @@ import org.chiu.megalith.user.entity.UserEntity;
 
 public class BlogExhibitDtoConvertor {
 
+    private BlogExhibitDtoConvertor() {}
+
     public static BlogExhibitDto convert(BlogEntity blogEntity, UserEntity user) {
         return BlogExhibitDto.builder()
                 .userId(blogEntity.getUserId())

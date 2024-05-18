@@ -184,7 +184,7 @@ public class BlogSearchServiceImpl implements BlogSearchService {
                                 .query(keywords)))
                 .minimumShouldMatch("1");
 
-        if (!securityUtils.isAdmin(SecurityUtils.getLoginRole())) {
+        if (Boolean.FALSE.equals(securityUtils.isAdmin(SecurityUtils.getLoginRole()))) {
             var filterQry = Query.of(filter -> filter
                     .term(term -> term
                             .field(USERID.getField())

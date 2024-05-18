@@ -13,6 +13,9 @@ import java.util.stream.Stream;
  **/
 public class ButtonDtoConvertor {
 
+    private ButtonDtoConvertor() {}
+
+
     public static List<ButtonDto> convert(List<MenuEntity> buttons, Boolean statusCheck) {
         Stream<MenuEntity> buttonStream = buttons.stream();
         if (Boolean.TRUE.equals(statusCheck)) {

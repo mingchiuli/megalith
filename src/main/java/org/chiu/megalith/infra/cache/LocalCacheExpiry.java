@@ -7,9 +7,12 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class LocalCacheExpiry implements Expiry<String, Object> {
+
+    private Random random = new Random();
+
     @Override
     public long expireAfterCreate(String key, Object value, long currentTime) {
-        return TimeUnit.MINUTES.toNanos(new Random().nextInt(30));
+        return TimeUnit.MINUTES.toNanos(random.nextInt(30));
     }
 
     @Override

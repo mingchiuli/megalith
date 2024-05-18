@@ -37,7 +37,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
     private final RoleMenuWrapper roleMenuWrapper;
 
-    private List<RoleMenuVo> setCheckMenusInfo(List<MenuDisplayVo> menusInfo, List<Long> menuIdsByRole, RoleMenuVo.RoleMenuVoBuilder parent, List<RoleMenuVo> parentChildren) {
+    private List<RoleMenuVo> setCheckMenusInfo(List<MenuDisplayVo> menusInfo, List<Long> menuIdsByRole, List<RoleMenuVo> parentChildren) {
         menusInfo.forEach(item -> {
             RoleMenuVo.RoleMenuVoBuilder builder = RoleMenuVo.builder()
                     .title(item.getTitle())
@@ -50,7 +50,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
             if (Boolean.FALSE.equals(item.getChildren().isEmpty())) {
                 List<RoleMenuVo> children = new ArrayList<>();
                 builder.children(children);
-                setCheckMenusInfo(item.getChildren(), menuIdsByRole, builder, children);
+                setCheckMenusInfo(item.getChildren(), menuIdsByRole, children);
             }
             parentChildren.add(builder.build());
         });
@@ -68,7 +68,7 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     public List<RoleMenuVo> getMenusInfo(Long roleId) {
         List<MenuDisplayVo> menusInfo = getNormalMenusInfo();
         List<Long> menuIdsByRole = roleMenuRepository.findMenuIdsByRoleId(roleId);
-        return setCheckMenusInfo(menusInfo, menuIdsByRole, null, new ArrayList<>());
+        return setCheckMenusInfo(menusInfo, menuIdsByRole, new ArrayList<>());
     }
 
     @Override

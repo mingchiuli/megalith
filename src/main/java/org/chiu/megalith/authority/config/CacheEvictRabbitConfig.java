@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CacheEvictRabbitConfig {
 
-    public String evictNodeMark;
+    private String evictNodeMark;
 
-    public static String CACHE_EVICT_QUEUE = "cache.evict.queue.";
+    private String cacheEvictQueue = "cache.evict.queue.";
 
     public static final String CACHE_EVICT_FANOUT_EXCHANGE = "cache.evict.fanout.exchange";
 
@@ -30,21 +30,21 @@ public class CacheEvictRabbitConfig {
     @Qualifier("mqExecutor")
     private final TaskExecutor executor;
 
-    @Bean("CACHE_EVICT_QUEUE")
+    @Bean("cacheEvictQueue")
     Queue evictQueue() {
         evictNodeMark = UUID.randomUUID().toString();
-        CACHE_EVICT_QUEUE += evictNodeMark;
-        return new Queue(CACHE_EVICT_QUEUE, false, true, true);
+        cacheEvictQueue += evictNodeMark;
+        return new Queue(cacheEvictQueue, false, true, true);
     }
 
-    @Bean("CACHE_EVICT_FANOUT_EXCHANGE")
+    @Bean("cacheEvictFanoutExchange")
     FanoutExchange evictExchange() {
         return new FanoutExchange(CACHE_EVICT_FANOUT_EXCHANGE, true, false);
     }
 
-    @Bean("CACHE_EVICT_BINDING")
-    Binding evictBinding(@Qualifier("CACHE_EVICT_QUEUE") Queue cacheQueue,
-                         @Qualifier("CACHE_EVICT_FANOUT_EXCHANGE") FanoutExchange cacheExchange) {
+    @Bean("cacheEvictBinding")
+    Binding evictBinding(@Qualifier("cacheEvictQueue") Queue cacheQueue,
+                         @Qualifier("cacheEvictFanoutExchange") FanoutExchange cacheExchange) {
         return BindingBuilder
                 .bind(cacheQueue)
                 .to(cacheExchange);
@@ -52,14 +52,13 @@ public class CacheEvictRabbitConfig {
 
     @Bean("cacheEvictMessageListenerAdapter")
     MessageListenerAdapter coopMessageListener(CacheEvictMessageListener cacheEvictMessageListener) {
-        //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
         return new MessageListenerAdapter(cacheEvictMessageListener);
     }
 
     @Bean("cacheEvictMessageListenerContainer")
     SimpleMessageListenerContainer cacheEvictMessageListenerContainer(ConnectionFactory connectionFactory,
                                                                 @Qualifier("cacheEvictMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
-                                                                @Qualifier("CACHE_EVICT_QUEUE") Queue queue) {
+                                                                @Qualifier("cacheEvictQueue") Queue queue) {
         var container = new SimpleMessageListenerContainer();
         //框架处理了
         listenerAdapter.containerAckMode(AcknowledgeMode.MANUAL);

@@ -1,5 +1,6 @@
 package org.chiu.megalith.infra.lang;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -7,6 +8,7 @@ import lombok.Getter;
  * @create 2021-12-14 11:58 AM
  */
 @Getter
+@AllArgsConstructor
 public enum Const {
 
     PARAGRAPH_PREFIX("para::"),
@@ -94,10 +96,6 @@ public enum Const {
 
 
     private final String info;
-
-    Const(String info) {
-        this.info = info;
-    }
 
 }
 

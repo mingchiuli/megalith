@@ -8,6 +8,8 @@ import java.util.List;
 
 public class BlogDescriptionVoConvertor {
 
+    private BlogDescriptionVoConvertor() {}
+
     public static PageAdapter<BlogDescriptionVo> convert(PageAdapter<BlogDescriptionDto> page) {
         List<BlogDescriptionDto> dtos = page.getContent();
         List<BlogDescriptionVo> vos = dtos.stream().map(dto -> BlogDescriptionVo.builder()

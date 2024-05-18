@@ -25,7 +25,7 @@ public class OssSignUtils {
     @Value("${blog.aliyun.oss.bucket-name}")
     private String bucketName;
 
-    private final static String ALGORITHM = "HmacSHA1";
+    private static final String ALGORITHM = "HmacSHA1";
 
     @SneakyThrows
     private byte[] hmacSha1(String data, String accessKeySecret) {

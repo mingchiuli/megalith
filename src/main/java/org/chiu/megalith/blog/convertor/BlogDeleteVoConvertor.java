@@ -7,7 +7,9 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlogDeleteVoConvertor {
+public class  BlogDeleteVoConvertor {
+
+    private BlogDeleteVoConvertor() {}
 
     public static PageAdapter<BlogDeleteVo> convert(Integer index, List<BlogEntity> entities, Integer currentPage, Integer size, Long total) {
 

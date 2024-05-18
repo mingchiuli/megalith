@@ -7,6 +7,8 @@ import java.util.Set;
 
 public class ClassUtils {
 
+    private ClassUtils() {}
+
     public static Class<?>[] findClassArray(Object[] args) {
         var classes = new Class[args.length];
         for (int i = 0; i < args.length; i++) {

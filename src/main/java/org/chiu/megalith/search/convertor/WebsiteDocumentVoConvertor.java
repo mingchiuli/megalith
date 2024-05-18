@@ -9,6 +9,8 @@ import java.util.List;
 
 public class WebsiteDocumentVoConvertor {
 
+    private WebsiteDocumentVoConvertor() {}
+
     public static PageAdapter<WebsiteDocumentVo> convert(SearchHits<WebsiteDocument> search, Integer pageSize, Integer currentPage) {
 
         long totalHits = search.getTotalHits();

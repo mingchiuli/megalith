@@ -5,6 +5,8 @@ import org.chiu.megalith.authority.vo.MenuEntityVo;
 
 public class MenuEntityVoConvertor {
 
+    private MenuEntityVoConvertor() {}
+
     public static MenuEntityVo convert(MenuEntity menuEntity) {
         return MenuEntityVo.builder()
                 .menuId(menuEntity.getMenuId())

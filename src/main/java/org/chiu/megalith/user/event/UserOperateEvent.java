@@ -2,6 +2,8 @@ package org.chiu.megalith.user.event;
 
 import lombok.Getter;
 import lombok.Setter;
+
+
 import org.chiu.megalith.infra.user.UserIndexMessage;
 import org.springframework.context.ApplicationEvent;
 

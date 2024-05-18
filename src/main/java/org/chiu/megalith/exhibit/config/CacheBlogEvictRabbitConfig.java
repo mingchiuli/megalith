@@ -18,9 +18,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CacheBlogEvictRabbitConfig {
 
-    public String evictNodeMark;
+    private String evictNodeMark;
 
-    public static String CACHE_BLOG_EVICT_QUEUE = "cache.blog.evict.queue.";
+    private String cacheBlogEvictQueue = "cache.blog.evict.queue.";
 
     public static final String CACHE_BLOG_EVICT_FANOUT_EXCHANGE = "cache.blog.evict.fanout.exchange";
 
@@ -29,21 +29,21 @@ public class CacheBlogEvictRabbitConfig {
     @Qualifier("mqExecutor")
     private final TaskExecutor executor;
 
-    @Bean("CACHE_BLOG_EVICT_FANOUT_QUEUE")
+    @Bean("cacheBlogEvictFanoutQueue")
     Queue evictQueue() {
         evictNodeMark = UUID.randomUUID().toString();
-        CACHE_BLOG_EVICT_QUEUE += evictNodeMark;
-        return new Queue(CACHE_BLOG_EVICT_QUEUE, false, true, true);
+        cacheBlogEvictQueue += evictNodeMark;
+        return new Queue(cacheBlogEvictQueue, false, true, true);
     }
 
-    @Bean("CACHE_BLOG_EVICT_FANOUT_EXCHANGE")
+    @Bean("cacheBlogEvictFanoutExchange")
     FanoutExchange evictExchange() {
         return new FanoutExchange(CACHE_BLOG_EVICT_FANOUT_EXCHANGE, true, false);
     }
 
-    @Bean("CACHE_BLOG_EVICT_FANOUT_BINDING")
-    Binding evictBinding(@Qualifier("CACHE_BLOG_EVICT_FANOUT_QUEUE") Queue cacheQueue,
-                         @Qualifier("CACHE_BLOG_EVICT_FANOUT_EXCHANGE") FanoutExchange cacheExchange) {
+    @Bean("cacheBlogEvictFanoutBinding")
+    Binding evictBinding(@Qualifier("cacheBlogEvictFanoutQueue") Queue cacheQueue,
+                         @Qualifier("cacheBlogEvictFanoutExchange") FanoutExchange cacheExchange) {
         return BindingBuilder
                 .bind(cacheQueue)
                 .to(cacheExchange);
@@ -51,14 +51,13 @@ public class CacheBlogEvictRabbitConfig {
 
     @Bean("cacheBlogEvictMessageListenerAdapter")
     MessageListenerAdapter coopMessageListener(CacheBlogEvictMessageListener cacheBlogEvictMessageListener) {
-        //	public static final String ORIGINAL_DEFAULT_LISTENER_METHOD = "handleMessage";
         return new MessageListenerAdapter(cacheBlogEvictMessageListener);
     }
 
     @Bean("cacheBlogEvictMessageListenerContainer")
     SimpleMessageListenerContainer cacheBlogEvictMessageListenerContainer(ConnectionFactory connectionFactory,
                                                                           @Qualifier("cacheBlogEvictMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
-                                                                          @Qualifier("CACHE_BLOG_EVICT_FANOUT_QUEUE") Queue queue) {
+                                                                          @Qualifier("cacheBlogEvictFanoutQueue") Queue queue) {
         var container = new SimpleMessageListenerContainer();
         //框架处理了
         listenerAdapter.containerAckMode(AcknowledgeMode.MANUAL);

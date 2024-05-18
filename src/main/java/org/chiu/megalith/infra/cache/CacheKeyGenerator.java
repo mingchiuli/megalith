@@ -26,6 +26,8 @@ public class CacheKeyGenerator {
     @Value("${blog.blog-page-size}")
     private int blogPageSize;
 
+    private static final String FIND_PAGE = "findPage";
+
     @SneakyThrows
     public String generateKey(Method method, Object... args) {
 
@@ -63,13 +65,13 @@ public class CacheKeyGenerator {
         long pageYearNo = countYear % blogPageSize == 0 ? countYear / blogPageSize : countYear / blogPageSize + 1;
 
         for (long i = 1; i <= pageNo; i++) {
-            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            Method method = BlogWrapper.class.getMethod(FIND_PAGE, Integer.class, Integer.class);
             String key = generateKey(method, i, Integer.MIN_VALUE);
             keys.add(key);
         }
 
         for (long i = 1; i <= pageYearNo; i++) {
-            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            Method method = BlogWrapper.class.getMethod(FIND_PAGE, Integer.class, Integer.class);
             String key = generateKey(method, i, year);
             keys.add(key);
         }
@@ -83,13 +85,13 @@ public class CacheKeyGenerator {
         long pageYearBeforeNo = countYearAfter / blogPageSize + 1;
 
         for (long i = 1; i <= pageBeforeNo; i++) {
-            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            Method method = BlogWrapper.class.getMethod(FIND_PAGE, Integer.class, Integer.class);
             String key = generateKey(method, i, Integer.MIN_VALUE);
             keys.add(key);
         }
 
         for (long i = 1; i <= pageYearBeforeNo; i++) {
-            Method method = BlogWrapper.class.getMethod("findPage", Integer.class, Integer.class);
+            Method method = BlogWrapper.class.getMethod(FIND_PAGE, Integer.class, Integer.class);
             String key = generateKey(method, i, year);
             keys.add(key);
         }

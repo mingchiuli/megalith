@@ -6,10 +6,11 @@ import org.chiu.megalith.infra.lang.ExceptionMessage;
 @Getter
 public class BaseException extends RuntimeException {
 
-    private Integer code;
+    private final Integer code;
 
     public BaseException(String message) {
         super(message);
+        this.code = null;
     }
 
     public BaseException(ExceptionMessage exceptionMessage) {

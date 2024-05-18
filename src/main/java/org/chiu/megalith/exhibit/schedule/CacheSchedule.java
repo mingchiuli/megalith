@@ -5,6 +5,7 @@ import org.chiu.megalith.exhibit.wrapper.BlogWrapper;
 import org.chiu.megalith.exhibit.schedule.task.BlogRunnable;
 import org.chiu.megalith.exhibit.schedule.task.BlogsRunnable;
 import lombok.RequiredArgsConstructor;
+
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -69,6 +70,23 @@ public class CacheSchedule {
         List<Integer> years = blogService.getYears();
         Long total = blogService.count();
         // getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
+        blogRunnableExec(total);
+
+        // listPage接口，分别考虑缓存和bloom
+        blogsRunnableExec(total);
+
+        // listByYear接口，分别考虑缓存和bloom
+        listExec(years);
+
+        // searchYears和getCountByYear
+        yearExec(years);
+
+        //del statistic & del hot read
+        statisticExec();
+    }
+
+    private void blogRunnableExec(Long total) {
+         // getBlogDetail和getBlogStatus接口，分别考虑缓存和bloom
         CompletableFuture.runAsync(() -> {
             int pageSize = 20;
             int totalPage = (int) (total % pageSize == 0 ? total / pageSize : total / pageSize + 1);
@@ -77,9 +95,10 @@ public class CacheSchedule {
                 taskExecutor.execute(runnable);
             }
         }, taskExecutor);
+    }
 
+    private void blogsRunnableExec(Long total) {
         CompletableFuture.runAsync(() -> {
-            // listPage接口，分别考虑缓存和bloom
             int totalPage = (int) (total % blogPageSize == 0 ?
                     total / blogPageSize :
                     total / blogPageSize + 1);
@@ -88,9 +107,11 @@ public class CacheSchedule {
                 taskExecutor.execute(runnable);
             }
         }, taskExecutor);
+    }
 
+    private void listExec(List<Integer> years) {
         CompletableFuture.runAsync(() -> {
-            // listByYear接口，分别考虑缓存和bloom
+            
             for (Integer year : years) {
                 // 当前年份的总页数
                 taskExecutor.execute(() -> {
@@ -107,14 +128,16 @@ public class CacheSchedule {
             }
 
         }, taskExecutor);
+    }
 
-        // searchYears和getCountByYear
+    private void yearExec(List<Integer> years) {
         CompletableFuture.runAsync(() -> years.forEach(year -> {
             redisTemplate.opsForValue().setBit(BLOOM_FILTER_YEARS.getInfo(), year, true);
             blogService.getCountByYear(year);
         }), taskExecutor);
+    }
 
-        //del statistic & del hot read
+    private void statisticExec() {
         CompletableFuture.runAsync(() -> {
             var now = LocalDateTime.now();
 

@@ -368,7 +368,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
         ids.forEach(id -> {
             BlogEntity blogEntity = blogRepository.findById(id)
                     .orElseThrow(() -> new MissException(NO_FOUND));
-            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && !securityUtils.isAdmin(role)) {
+            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(securityUtils.isAdmin(role))) {
                 throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
             }
             blogList.add(blogEntity);

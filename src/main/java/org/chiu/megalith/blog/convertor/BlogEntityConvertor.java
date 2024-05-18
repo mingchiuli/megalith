@@ -9,6 +9,8 @@ import static org.chiu.megalith.websocket.lang.MessageActionFieldEnum.*;
 
 public class BlogEntityConvertor {
 
+    private BlogEntityConvertor() {}
+
     public static BlogEntity convert(Map<String, String> entries) {
         String idStr = entries.get(ID.getMsg());
         return BlogEntity.builder()

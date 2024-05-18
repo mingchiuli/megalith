@@ -21,9 +21,9 @@ public class SmsUtils {
     @Value("${blog.aliyun.access-key-secret}")
     private String accessKeySecret;
 
-    private final static String ALGORITHM = "HmacSHA1";
+    private static final String ALGORITHM = "HmacSHA1";
 
-    private final static String SIGNATURE_METHOD = "HMAC-SHA1";
+    private static final String SIGNATURE_METHOD = "HMAC-SHA1";
 
 
     @SneakyThrows

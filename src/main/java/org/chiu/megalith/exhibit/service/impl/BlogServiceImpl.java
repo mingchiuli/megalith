@@ -79,7 +79,7 @@ public class BlogServiceImpl implements BlogService {
             return StatusEnum.HIDE.getCode();
         }
 
-        if (securityUtils.isAdmin(SecurityUtils.getLoginRole())) {
+        if (Boolean.TRUE.equals(securityUtils.isAdmin(SecurityUtils.getLoginRole()))) {
             return StatusEnum.NORMAL.getCode();
         }
 
@@ -152,7 +152,7 @@ public class BlogServiceImpl implements BlogService {
         BlogExhibitDto blogExhibitDto = blogWrapper.findById(id);
         Integer status = blogWrapper.findStatusById(id);
 
-        if (StatusEnum.NORMAL.getCode().equals(status) || securityUtils.isAdmin(SecurityUtils.getLoginRole())) {
+        if (StatusEnum.NORMAL.getCode().equals(status) || Boolean.TRUE.equals(securityUtils.isAdmin(SecurityUtils.getLoginRole()))) {
             blogWrapper.setReadCount(id);
             return BlogExhibitVoConvertor.convert(blogExhibitDto);
         }

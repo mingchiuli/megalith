@@ -16,6 +16,8 @@ import java.util.List;
  **/
 public class MenusAndButtonsVoConvertor {
 
+    private MenusAndButtonsVoConvertor() {}
+
     public static MenusAndButtonsVo convertor(MenusAndButtonsDto dto) {
         List<ButtonDto> buttons = dto.getButtons();
         List<MenuDto> menus = dto.getMenus();

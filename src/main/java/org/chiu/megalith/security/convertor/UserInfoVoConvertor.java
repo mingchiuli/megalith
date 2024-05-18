@@ -5,6 +5,8 @@ import org.chiu.megalith.security.vo.UserInfoVo;
 
 public class UserInfoVoConvertor {
 
+    private UserInfoVoConvertor() {}
+
     public static UserInfoVo convert(UserEntityVo userEntity) {
         return UserInfoVo.builder()
                 .avatar(userEntity.getAvatar())

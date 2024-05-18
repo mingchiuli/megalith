@@ -5,6 +5,8 @@ import org.chiu.megalith.blog.vo.BlogEditVo;
 
 public class BlogEditVoConvertor {
 
+    private BlogEditVoConvertor() {}
+
     public static BlogEditVo convert(BlogEntity blog, Integer version) {
         return BlogEditVo.builder()
                 .userId(blog.getUserId())

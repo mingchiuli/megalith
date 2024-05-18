@@ -9,6 +9,8 @@ import java.util.List;
 
 public class BlogDocumentVoConvertor {
 
+    private BlogDocumentVoConvertor() {}
+
     public static PageAdapter<BlogDocumentVo> convert(SearchHits<BlogDocument> search, Integer blogPageSize, Integer currentPage) {
         long totalHits = search.getTotalHits();
         long totalPage = totalHits % blogPageSize == 0 ? totalHits / blogPageSize : totalHits / blogPageSize + 1;

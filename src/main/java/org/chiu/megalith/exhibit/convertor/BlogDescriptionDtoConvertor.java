@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
  **/
 public class BlogDescriptionDtoConvertor {
 
+    private BlogDescriptionDtoConvertor() {}
+
     public static PageAdapter<BlogDescriptionDto> convert(Page<BlogEntity> page) {
         return new PageAdapter<>(page.map(blogEntity -> BlogDescriptionDto.builder()
                 .id(blogEntity.getId())

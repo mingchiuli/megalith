@@ -21,21 +21,21 @@ public class ElasticSearchRabbitConfig {
 
     public static final String ES_BINDING_KEY = "es.binding";
 
-    @Bean("ES_QUEUE")
+    @Bean("esQueue")
     Queue queue() {
         return new Queue(ES_QUEUE, true, false, false);
     }
 
     //ES交换机
-    @Bean("ES_EXCHANGE")
+    @Bean("esExchange")
     DirectExchange exchange() {
         return new DirectExchange(ES_EXCHANGE, true, false);
     }
 
     //绑定ES队列和ES交换机
-    @Bean("ES_BINDING")
-    Binding binding(@Qualifier("ES_QUEUE") Queue esQueue,
-                    @Qualifier("ES_EXCHANGE") DirectExchange esExchange) {
+    @Bean("esBinding")
+    Binding binding(@Qualifier("esQueue") Queue esQueue,
+                    @Qualifier("esExchange") DirectExchange esExchange) {
         return BindingBuilder
                 .bind(esQueue)
                 .to(esExchange)

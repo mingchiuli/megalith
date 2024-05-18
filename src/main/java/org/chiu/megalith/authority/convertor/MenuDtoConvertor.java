@@ -7,6 +7,8 @@ import java.util.List;
 
 public class MenuDtoConvertor {
 
+    private MenuDtoConvertor() {}
+
     public static List<MenuDto> convert(List<MenuDisplayDto> menus) {
         return menus.stream()
                 .map(menu -> MenuDto.builder()

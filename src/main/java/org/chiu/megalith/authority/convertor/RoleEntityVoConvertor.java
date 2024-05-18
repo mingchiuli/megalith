@@ -10,6 +10,8 @@ import java.util.List;
 
 public class RoleEntityVoConvertor {
 
+    private RoleEntityVoConvertor() {}
+
     public static RoleEntityVo convert(RoleEntity roleEntity) {
         return RoleEntityVo.builder()
                 .code(roleEntity.getCode())

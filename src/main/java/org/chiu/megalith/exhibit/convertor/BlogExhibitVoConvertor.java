@@ -5,6 +5,8 @@ import org.chiu.megalith.exhibit.vo.BlogExhibitVo;
 
 public class BlogExhibitVoConvertor {
 
+    private BlogExhibitVoConvertor() {}
+
     public static BlogExhibitVo convert(BlogExhibitDto dto) {
         return BlogExhibitVo.builder()
                 .title(dto.getTitle())

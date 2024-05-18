@@ -6,6 +6,8 @@ import java.util.List;
 
 public class VisitStatisticsVoConvertor {
 
+    private VisitStatisticsVoConvertor() {}
+
     public static VisitStatisticsVo convert(List<Long> items) {
         return VisitStatisticsVo.builder()
                 .dayVisit(items.get(0))

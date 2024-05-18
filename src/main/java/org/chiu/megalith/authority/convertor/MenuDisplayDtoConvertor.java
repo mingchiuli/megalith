@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 public class MenuDisplayDtoConvertor {
 
+    private MenuDisplayDtoConvertor() {}
+
     public static List<MenuDisplayDto> convert(List<MenuEntity> menus, boolean statusCheck) {
         Stream<MenuEntity> menuStream = menus.stream();
         if (Boolean.TRUE.equals(statusCheck)) {
@@ -40,7 +42,10 @@ public class MenuDisplayDtoConvertor {
         //2.1 找到所有一级分类
         return menus.stream()
                 .filter(menu -> menu.getParentId() == 0)
-                .peek(menu-> menu.setChildren(getChildren(menu, menus)))
+                .map(menu-> {
+                    menu.setChildren(getChildren(menu, menus));
+                    return menu;
+                })
                 .sorted(Comparator.comparingInt(menu -> Objects.isNull(menu.getOrderNum()) ? 0 : menu.getOrderNum()))
                 .toList();
     }
@@ -48,7 +53,10 @@ public class MenuDisplayDtoConvertor {
     private static List<MenuDisplayDto> getChildren(MenuDisplayDto root, List<MenuDisplayDto> all) {
         return all.stream()
                 .filter(menu -> Objects.equals(menu.getParentId(), root.getMenuId()))
-                .peek(menu -> menu.setChildren(getChildren(menu, all)))
+                .map(menu -> {
+                    menu.setChildren(getChildren(menu, all));
+                    return menu;
+                })
                 .sorted(Comparator.comparingInt(menu -> Objects.isNull(menu.getOrderNum()) ? 0 : menu.getOrderNum()))
                 .toList();
     }

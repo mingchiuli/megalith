@@ -8,6 +8,8 @@ import java.util.List;
 
 public class AuthorityVoConvertor {
 
+    private AuthorityVoConvertor() {}
+
     public static List<AuthorityVo> convert(List<AuthorityEntity> authorityEntities) {
         List<AuthorityVo> vos = new ArrayList<>();
         authorityEntities.forEach(item -> vos

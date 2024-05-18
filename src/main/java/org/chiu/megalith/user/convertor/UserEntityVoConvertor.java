@@ -10,6 +10,8 @@ import java.util.List;
 
 public class UserEntityVoConvertor {
 
+    private UserEntityVoConvertor() {}
+
     public static UserEntityVo convert(UserEntity userEntity) {
         return UserEntityVo.builder()
                 .id(userEntity.getId())

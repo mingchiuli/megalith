@@ -1,8 +1,10 @@
 package org.chiu.megalith.infra.lang;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum ExceptionMessage {
 
     NO_AUTH(0, "没有权限，请重新登录"),
@@ -85,13 +87,8 @@ public enum ExceptionMessage {
 
     CATALOGUE_PARENT_MUST_PARENT(40, "分类的父元素只能是分类");
 
+    private final Integer code;
 
     private final String msg;
 
-    private final Integer code;
-
-    ExceptionMessage(Integer code, String msg) {
-        this.msg = msg;
-        this.code = code;
-    }
 }
