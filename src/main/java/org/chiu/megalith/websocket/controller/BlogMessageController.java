@@ -39,7 +39,7 @@ public class BlogMessageController {
         return Result.success(() -> blogMessageService.pushAll(blog, userId));
     }
 
-    @GetMapping("/echo")
+    @GetMapping("/edit/pull/echo")
     @PreAuthorize("hasAuthority('sys:blog:echo')")
     public Result<BlogEditVo> getEchoDetail(@RequestParam(value = "blogId", required = false) Long id) {
         Long userId = SecurityUtils.getLoginUserId();
