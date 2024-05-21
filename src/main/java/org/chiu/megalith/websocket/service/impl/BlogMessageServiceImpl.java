@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.util.ResourceUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.websocket.lang.MessageActionFieldEnum.*;
@@ -137,6 +138,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             }
 
             blog.setContent(content.toString());
+            redisTemplate.expire(redisKey, Long.valueOf(A_WEEK.getInfo()), TimeUnit.SECONDS);
         } else if (Objects.isNull(id)) {
             // 新文章
             blog = BlogEntity.builder()
