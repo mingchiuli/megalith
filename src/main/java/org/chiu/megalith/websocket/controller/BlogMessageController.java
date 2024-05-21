@@ -25,7 +25,7 @@ public class BlogMessageController {
 
     private final BlogMessageService blogMessageService;
 
-    @MessageMapping("/edit/push/action")
+    @MessageMapping("/edit/ws/push/action")
     @PreAuthorize("hasAuthority('sys:edit:push:action')")
     public void pushAction(@RequestBody @Valid BlogEditPushActionReq req) {
         Long userId = SecurityUtils.getLoginUserId();

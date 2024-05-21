@@ -34,7 +34,7 @@ public class SecurityConfig {
             "/code/**",
             "/public/blog/**",
             "/search/public/**",
-            "/edit/push/all",
+            "/edit/ws/**",
             "/actuator/**",
             "/sys/user/register/**"
     };

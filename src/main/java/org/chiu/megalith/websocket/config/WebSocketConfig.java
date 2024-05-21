@@ -27,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/edit")
+        registry.addEndpoint("/edit/ws")
                 .setAllowedOriginPatterns(
                         "http://localhost:1919",
                         "http://127.0.0.1:1919",
