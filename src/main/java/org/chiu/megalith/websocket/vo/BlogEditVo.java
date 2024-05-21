@@ -1,4 +1,4 @@
-package org.chiu.megalith.blog.vo;
+package org.chiu.megalith.websocket.vo;
 
 import lombok.Builder;
 import lombok.Data;

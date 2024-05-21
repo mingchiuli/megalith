@@ -73,5 +73,25 @@
     "name": "blog.oss.base-url",
     "type": "java.lang.String",
     "description": "A description for 'blog.oss.base-url'"
+  },
+  {
+    "name": "blog.register.page-prefix",
+    "type": "java.lang.String",
+    "description": "A description for 'blog.register.page-prefix'"
+  },
+  {
+    "name": "blog.aliyun.oss.bucket-name",
+    "type": "java.lang.String",
+    "description": "A description for 'blog.aliyun.oss.bucket-name'"
+  },
+  {
+    "name": "blog.aliyun.access-key-id",
+    "type": "java.lang.String",
+    "description": "A description for 'blog.aliyun.access-key-id'"
+  },
+  {
+    "name": "blog.aliyun.access-key-secret",
+    "type": "java.lang.String",
+    "description": "A description for 'blog.aliyun.access-key-secret'"
   }
 ]}

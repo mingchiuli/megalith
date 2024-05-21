@@ -1,15 +1,18 @@
 package org.chiu.megalith.websocket.controller;
 
 import org.chiu.megalith.infra.lang.Result;
-import org.chiu.megalith.blog.req.BlogEditPushAllReq;
 import org.chiu.megalith.websocket.req.BlogEditPushActionReq;
+import org.chiu.megalith.websocket.req.BlogEditPushAllReq;
 import org.chiu.megalith.websocket.service.BlogMessageService;
+import org.chiu.megalith.websocket.vo.BlogEditVo;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +37,12 @@ public class BlogMessageController {
     public Result<Void> pullSaveBlog(@RequestBody @Valid BlogEditPushAllReq blog) {
         Long userId = SecurityUtils.getLoginUserId();
         return Result.success(() -> blogMessageService.pushAll(blog, userId));
+    }
+
+    @GetMapping("/echo")
+    @PreAuthorize("hasAuthority('sys:blog:echo')")
+    public Result<BlogEditVo> getEchoDetail(@RequestParam(value = "blogId", required = false) Long id) {
+        Long userId = SecurityUtils.getLoginUserId();
+        return Result.success(() -> blogMessageService.findEdit(id, userId));
     }
 }

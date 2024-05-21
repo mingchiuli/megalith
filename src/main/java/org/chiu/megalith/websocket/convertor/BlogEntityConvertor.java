@@ -1,4 +1,4 @@
-package org.chiu.megalith.blog.convertor;
+package org.chiu.megalith.websocket.convertor;
 
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.springframework.util.StringUtils;

@@ -1,4 +1,4 @@
-package org.chiu.megalith.blog.req;
+package org.chiu.megalith.websocket.req;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

@@ -3,7 +3,6 @@ package org.chiu.megalith.blog.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.blog.service.BlogManagerService;
 import org.chiu.megalith.blog.vo.BlogDeleteVo;
-import org.chiu.megalith.blog.vo.BlogEditVo;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.infra.utils.SecurityUtils;
@@ -33,13 +32,6 @@ import java.util.List;
 public class BlogManagerController {
 
     private final BlogManagerService blogManagerService;
-
-    @GetMapping("/echo")
-    @PreAuthorize("hasAuthority('sys:blog:echo')")
-    public Result<BlogEditVo> getEchoDetail(@RequestParam(value = "blogId", required = false) Long id) {
-        Long userId = SecurityUtils.getLoginUserId();
-        return Result.success(() -> blogManagerService.findEdit(id, userId));
-    }
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:blog:save')")

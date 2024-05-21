@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.blog.http.OssHttpService;
-import org.chiu.megalith.infra.key.KeyFactory;
-import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
@@ -17,8 +15,6 @@ import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.utils.OssSignUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.blog.convertor.BlogDeleteVoConvertor;
-import org.chiu.megalith.blog.convertor.BlogEditVoConvertor;
-import org.chiu.megalith.blog.convertor.BlogEntityConvertor;
 import org.chiu.megalith.blog.convertor.BlogEntityVoConvertor;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.user.entity.UserEntity;
@@ -28,7 +24,6 @@ import org.chiu.megalith.user.repository.UserRepository;
 import org.chiu.megalith.blog.req.BlogEntityReq;
 import org.chiu.megalith.blog.service.BlogManagerService;
 import org.chiu.megalith.blog.vo.BlogDeleteVo;
-import org.chiu.megalith.blog.vo.BlogEditVo;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,7 +53,6 @@ import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.Const.A_WEEK;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.DELETE_NO_AUTH;
-import static org.chiu.megalith.websocket.lang.MessageActionFieldEnum.*;
 
 @Service
 @RequiredArgsConstructor
@@ -297,69 +291,6 @@ public class BlogManagerServiceImpl implements BlogManagerService {
 
         var blogSearchIndexMessage = new BlogOperateMessage(blog.getId(), BlogOperateEnum.CREATE, blog.getCreated().getYear());
         applicationContext.publishEvent(new BlogOperateEvent(this, blogSearchIndexMessage));
-    }
-
-    @Override
-    public BlogEditVo findEdit(Long id, Long userId) {
-
-        String redisKey = KeyFactory.createBlogEditRedisKey(userId, id);
-        Map<String, String> entries = redisTemplate.<String, String>opsForHash()
-                .entries(redisKey);
-
-        BlogEntity blog;
-        int version;
-        if (!entries.isEmpty()) {
-            blog = BlogEntityConvertor.convert(entries);
-            version = Integer.parseInt(entries.get(VERSION.getMsg()));
-
-            entries.remove(ID.getMsg());
-            entries.remove(USER_ID.getMsg());
-            entries.remove(DESCRIPTION.getMsg());
-            entries.remove(TITLE.getMsg());
-            entries.remove(STATUS.getMsg());
-            entries.remove(LINK.getMsg());
-            entries.remove(VERSION.getMsg());
-
-            StringBuilder content = new StringBuilder();
-
-            for (int i = 1; i <= entries.size(); i++) {
-                content.append(entries.get(PARAGRAPH_PREFIX.getInfo() + i));
-                if (i != entries.size()) {
-                    content.append(PARAGRAPH_SPLITTER.getInfo());
-                }
-            }
-
-            blog.setContent(content.toString());
-        } else if (Objects.isNull(id)) {
-            // 新文章
-            blog = BlogEntity.builder()
-                    .status(StatusEnum.NORMAL.getCode())
-                    .userId(userId)
-                    .content("")
-                    .description("")
-                    .link("")
-                    .title("")
-                    .build();
-            version = -1;
-
-            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                    "[]", ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                    "" , userId.toString(), "", "", StatusEnum.NORMAL.getCode().toString(), "", "-1",
-                    A_WEEK.getInfo());
-        } else {
-            blog = blogRepository.findByIdAndUserId(id, userId)
-                    .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
-            version = -1;
-            List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
-            String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
-
-            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                    paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                    Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
-                    A_WEEK.getInfo());
-        }
-
-        return BlogEditVoConvertor.convert(blog, version);
     }
 
     @Override

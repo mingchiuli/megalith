@@ -88,7 +88,8 @@ end
 local key = KEYS[1]
 
 local v = redis.call('hget', KEYS[1], 'version')
-if tonumber(v) + 1 ~= version then return -1 end
+if tonumber(v) + 1 < version then return -1 end
+if tonumber(v) + 1 > version then return -2 end
 
 local allPairs = redis.call('hgetall', KEYS[1])
 

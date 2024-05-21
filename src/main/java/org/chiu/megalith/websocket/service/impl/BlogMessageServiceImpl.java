@@ -4,10 +4,17 @@ import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
-import org.chiu.megalith.blog.req.BlogEditPushAllReq;
+import org.chiu.megalith.blog.entity.BlogEntity;
+import org.chiu.megalith.blog.repository.BlogRepository;
+import org.chiu.megalith.websocket.convertor.BlogEditVoConvertor;
+import org.chiu.megalith.websocket.convertor.BlogEntityConvertor;
 import org.chiu.megalith.websocket.req.BlogEditPushActionReq;
+import org.chiu.megalith.websocket.req.BlogEditPushAllReq;
 import org.chiu.megalith.websocket.service.BlogMessageService;
+import org.chiu.megalith.websocket.vo.BlogEditVo;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.key.KeyFactory;
+import org.chiu.megalith.infra.lang.StatusEnum;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -22,7 +29,7 @@ import java.util.*;
 
 import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.websocket.lang.MessageActionFieldEnum.*;
-
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +43,9 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
     private final JsonUtils jsonUtils;
 
-    private String script;
+    private final BlogRepository blogRepository;
 
+    private String script;
 
     @PostConstruct
     @SneakyThrows
@@ -71,16 +79,19 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 Objects.nonNull(paraNo) ? paraNo.toString() : null);
 
         if (Long.valueOf(-1).equals(execute)) {
-            simpMessagingTemplate.convertAndSend("/edits/push/all/" + userKey, "ALL");
+            simpMessagingTemplate.convertAndSend("/edits/push/" + userKey, "");
+        }
+
+        if (Long.valueOf(-2).equals(execute)) {
+            simpMessagingTemplate.convertAndSend("/edits/pull/" + userKey, "");
         }
     }
 
     @Override
     public void pushAll(BlogEditPushAllReq blog, Long userId) {
         Long id = blog.getId();
-        String redisKey = Objects.isNull(id) ?
-                TEMP_EDIT_BLOG.getInfo() + userId :
-                TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
+        String redisKey = Objects.isNull(id) ? TEMP_EDIT_BLOG.getInfo() + userId
+                : TEMP_EDIT_BLOG.getInfo() + userId + ":" + id;
 
         String content = blog.getContent();
 
@@ -88,9 +99,77 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
         redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
-                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(), blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
+                paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
+                STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+                Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
+                blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
                 A_WEEK.getInfo());
+    }
+
+    @Override
+    public BlogEditVo findEdit(Long id, Long userId) {
+
+        String redisKey = KeyFactory.createBlogEditRedisKey(userId, id);
+        Map<String, String> entries = redisTemplate.<String, String>opsForHash()
+                .entries(redisKey);
+
+        BlogEntity blog;
+        int version;
+        if (!entries.isEmpty()) {
+            blog = BlogEntityConvertor.convert(entries);
+            version = Integer.parseInt(entries.get(VERSION.getMsg()));
+
+            entries.remove(ID.getMsg());
+            entries.remove(USER_ID.getMsg());
+            entries.remove(DESCRIPTION.getMsg());
+            entries.remove(TITLE.getMsg());
+            entries.remove(STATUS.getMsg());
+            entries.remove(LINK.getMsg());
+            entries.remove(VERSION.getMsg());
+
+            StringBuilder content = new StringBuilder();
+
+            for (int i = 1; i <= entries.size(); i++) {
+                content.append(entries.get(PARAGRAPH_PREFIX.getInfo() + i));
+                if (i != entries.size()) {
+                    content.append(PARAGRAPH_SPLITTER.getInfo());
+                }
+            }
+
+            blog.setContent(content.toString());
+        } else if (Objects.isNull(id)) {
+            // 新文章
+            blog = BlogEntity.builder()
+                    .status(StatusEnum.NORMAL.getCode())
+                    .userId(userId)
+                    .content("")
+                    .description("")
+                    .link("")
+                    .title("")
+                    .build();
+            version = -1;
+
+            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+                    "[]", ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(),
+                    LINK.getMsg(), VERSION.getMsg(),
+                    "", userId.toString(), "", "", StatusEnum.NORMAL.getCode().toString(), "", "-1",
+                    A_WEEK.getInfo());
+        } else {
+            blog = blogRepository.findByIdAndUserId(id, userId)
+                    .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
+            version = -1;
+            List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
+            String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
+
+            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+                    paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
+                    STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+                    Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
+                    blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
+                    A_WEEK.getInfo());
+        }
+
+        return BlogEditVoConvertor.convert(blog, version);
     }
 
 }
