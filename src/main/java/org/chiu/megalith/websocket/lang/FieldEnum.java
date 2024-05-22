@@ -1,9 +1,10 @@
 package org.chiu.megalith.websocket.lang;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-
+@AllArgsConstructor
 public enum FieldEnum {
 
     DESCRIPTION("description", "描述"),
@@ -26,11 +27,6 @@ public enum FieldEnum {
     private final String field;
 
     private final String description;
-
-    FieldEnum(String field, String description) {
-        this.field = field;
-        this.description = description;
-    }
 
     public static FieldEnum getInstance(String field) {
         for (FieldEnum value : FieldEnum.values()) {

@@ -1,8 +1,10 @@
 package org.chiu.megalith.websocket.lang;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum MessageActionFieldEnum {
 
     TITLE("title"),
@@ -22,8 +24,4 @@ public enum MessageActionFieldEnum {
     VERSION("version");
     
     private final String msg;
-
-    MessageActionFieldEnum(String msg) {
-        this.msg = msg;
-    }
 }
