@@ -24,7 +24,8 @@ public class RoleAuthorityEntity {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "idCustom", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "idCustom")
     private Long id;
 
     @Column(name = "role_id")

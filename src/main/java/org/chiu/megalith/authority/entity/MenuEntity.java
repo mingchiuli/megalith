@@ -28,7 +28,8 @@ public class MenuEntity {
 
     @Id
     @Column(name = "menu_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "idCustom", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "idCustom")
     private Long menuId;
 
     @Column(name = "parent_id")
