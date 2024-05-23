@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.statistic;
+package org.chiu.megalith.security.statistic;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
@@ -32,7 +32,7 @@ public class StatisticsAspect {
 
     private final StringRedisTemplate redisTemplate;
 
-    private static final String UNKONWN = "unknown";
+    private static final String UNKNOWN = "unknown";
 
     @Pointcut(value ="execution(* org.chiu.megalith.blog.controller.*.*(..)) || execution(* org.chiu.megalith.search.controller.*.*(..))")
     public void pt() {}
@@ -56,16 +56,16 @@ public class StatisticsAspect {
     private String getIpAddr(HttpServletRequest request) {
         // nginx代理获取的真实用户ip
         String ip = request.getHeader("X-Real-IP");
-        if (!StringUtils.hasLength(ip) || UNKONWN.equalsIgnoreCase(ip)) {
+        if (!StringUtils.hasLength(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Forwarded-For");
         }
-        if (!StringUtils.hasLength(ip) || UNKONWN.equalsIgnoreCase(ip)) {
+        if (!StringUtils.hasLength(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
         }
-        if (!StringUtils.hasLength(ip) || UNKONWN.equalsIgnoreCase(ip)) {
+        if (!StringUtils.hasLength(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
         }
-        if (!StringUtils.hasLength(ip) || UNKONWN.equalsIgnoreCase(ip)) {
+        if (!StringUtils.hasLength(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
         /*
