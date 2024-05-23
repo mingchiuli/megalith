@@ -24,8 +24,7 @@ public class RoleMenuEntity {
 
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name = "idCustom", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "idCustom")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "role_id")
