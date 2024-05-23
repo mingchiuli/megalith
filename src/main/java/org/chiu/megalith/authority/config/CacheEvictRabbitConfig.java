@@ -19,8 +19,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CacheEvictRabbitConfig {
 
-    private String evictNodeMark;
-
     private String cacheEvictQueue = "cache.evict.queue.";
 
     public static final String CACHE_EVICT_FANOUT_EXCHANGE = "cache.evict.fanout.exchange";
@@ -32,7 +30,7 @@ public class CacheEvictRabbitConfig {
 
     @Bean("cacheEvictQueue")
     Queue evictQueue() {
-        evictNodeMark = UUID.randomUUID().toString();
+        String evictNodeMark = UUID.randomUUID().toString();
         cacheEvictQueue += evictNodeMark;
         return new Queue(cacheEvictQueue, false, true, true);
     }

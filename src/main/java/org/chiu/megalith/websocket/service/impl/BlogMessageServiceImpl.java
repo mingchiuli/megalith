@@ -138,7 +138,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             }
 
             blog.setContent(content.toString());
-            redisTemplate.expire(redisKey, Long.valueOf(A_WEEK.getInfo()), TimeUnit.SECONDS);
+            redisTemplate.expire(redisKey, Long.parseLong(A_WEEK.getInfo()), TimeUnit.SECONDS);
         } else if (Objects.isNull(id)) {
             // 新文章
             blog = BlogEntity.builder()
