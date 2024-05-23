@@ -3,7 +3,6 @@ package org.chiu.megalith.authority.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Objects;
 
@@ -26,7 +25,6 @@ public class RoleAuthorityEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native")
     private Long id;
 
     @Column(name = "role_id")
