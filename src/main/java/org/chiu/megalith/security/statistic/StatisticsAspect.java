@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.statistic;
+package org.chiu.megalith.security.statistic;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
