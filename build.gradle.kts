@@ -4,7 +4,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.0"
 	id("io.spring.dependency-management") version "1.1.4"
-	id("org.graalvm.buildtools.native") version "0.10.1"
+	id("org.graalvm.buildtools.native") version "0.10.2"
 }
 
 group = "org.chiu"
