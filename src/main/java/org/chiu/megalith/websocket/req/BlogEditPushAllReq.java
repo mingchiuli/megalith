@@ -26,5 +26,6 @@ public class BlogEditPushAllReq {
     @NotNull
     private String link;
 
+    @NotNull
     private Integer version;
 }
