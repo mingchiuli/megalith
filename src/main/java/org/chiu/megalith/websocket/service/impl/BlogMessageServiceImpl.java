@@ -103,7 +103,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
                 STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                 Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
-                blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
+                blog.getDescription(), blog.getStatus().toString(), blog.getLink(), blog.getVersion().toString(),
                 A_WEEK.getInfo());
     }
 
