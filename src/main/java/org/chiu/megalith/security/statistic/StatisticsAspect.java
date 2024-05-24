@@ -34,7 +34,7 @@ public class StatisticsAspect {
 
     private static final String UNKNOWN = "unknown";
 
-    @Pointcut(value ="execution(* org.chiu.megalith.blog.controller.*.*(..)) || execution(* org.chiu.megalith.search.controller.*.*(..))")
+    @Pointcut(value ="execution(* org.chiu.megalith.exhibit.controller.*.*(..)) || execution(* org.chiu.megalith.search.controller.*.*(..))")
     public void pt() {}
 
     //必须同步
