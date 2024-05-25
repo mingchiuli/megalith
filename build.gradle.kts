@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "org.chiu"
-version = "1.0.0"
+version = "latest"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 configurations {
