@@ -115,7 +115,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .entries(redisKey);
 
         BlogEntity blog;
-        Integer version;
+        Integer version = -1;
+        String paragraphListString;
         if (!entries.isEmpty()) {
             blog = BlogEntityConvertor.convert(entries);
             version = Integer.parseInt(entries.get(VERSION.getMsg()));
@@ -137,6 +138,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 }
             }
 
+            paragraphListString = content.toString();
             blog.setContent(content.toString());
         } else if (Objects.isNull(id)) {
             // 新文章
@@ -148,27 +150,20 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     .link("")
                     .title("")
                     .build();
-            version = -1;
-
-            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                    "[]", ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(),
-                    LINK.getMsg(), VERSION.getMsg(),
-                    "", userId.toString(), "", "", StatusEnum.NORMAL.getCode().toString(), "", version.toString(),
-                    A_WEEK.getInfo());
+            paragraphListString = "[]";
         } else {
             blog = blogRepository.findByIdAndUserId(id, userId)
                     .orElseThrow(() -> new MissException(EDIT_NO_AUTH));
-            version = -1;
             List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
-            String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
+            paragraphListString = jsonUtils.writeValueAsString(paragraphList);
+        }
 
-            redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+        redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                     paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
                     STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                     Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
                     blog.getDescription(), blog.getStatus().toString(), blog.getLink(), version.toString(),
                     A_WEEK.getInfo());
-        }
 
         return BlogEditVoConvertor.convert(blog, version);
     }
