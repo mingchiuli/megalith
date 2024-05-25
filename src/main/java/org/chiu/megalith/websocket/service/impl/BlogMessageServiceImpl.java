@@ -115,7 +115,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .entries(redisKey);
 
         BlogEntity blog;
-        int version;
+        Integer version;
         if (!entries.isEmpty()) {
             blog = BlogEntityConvertor.convert(entries);
             version = Integer.parseInt(entries.get(VERSION.getMsg()));
@@ -138,7 +138,6 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             }
 
             blog.setContent(content.toString());
-            redisTemplate.expire(redisKey, Long.parseLong(A_WEEK.getInfo()), TimeUnit.SECONDS);
         } else if (Objects.isNull(id)) {
             // 新文章
             blog = BlogEntity.builder()
@@ -154,7 +153,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
                     "[]", ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(), STATUS.getMsg(),
                     LINK.getMsg(), VERSION.getMsg(),
-                    "", userId.toString(), "", "", StatusEnum.NORMAL.getCode().toString(), "", "-1",
+                    "", userId.toString(), "", "", StatusEnum.NORMAL.getCode().toString(), "", version.toString(),
                     A_WEEK.getInfo());
         } else {
             blog = blogRepository.findByIdAndUserId(id, userId)
@@ -167,7 +166,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
                     STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                     Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
-                    blog.getDescription(), blog.getStatus().toString(), blog.getLink(), "-1",
+                    blog.getDescription(), blog.getStatus().toString(), blog.getLink(), version.toString(),
                     A_WEEK.getInfo());
         }
 
