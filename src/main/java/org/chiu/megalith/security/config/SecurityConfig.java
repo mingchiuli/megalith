@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 
 @Configuration
@@ -24,11 +23,9 @@ public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
-
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     private final AuthenticationManager authenticationManager;
+        
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] URL_WHITELIST = {
             "/code/**",
@@ -48,9 +45,7 @@ public class SecurityConfig {
                         formLogin
                                 .successHandler(loginSuccessHandler)
                                 .failureHandler(loginFailureHandler))
-                .logout(logout ->
-                        logout
-                                .logoutSuccessHandler(jwtLogoutSuccessHandler))
+                .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -63,7 +58,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class)
+                .addFilter(jwtAuthenticationFilter)
                 .authenticationManager(authenticationManager)
                 .build();
     }
