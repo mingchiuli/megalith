@@ -16,7 +16,7 @@ public class ESHighlightBuilderUtils {
 
     private static final String TITLE = "title";
 
-    private static final String DESCRIPTION = "title";
+    private static final String DESCRIPTION = "description";
 
     private static final String CONTENT = "content";
 
