@@ -114,7 +114,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 .entries(redisKey);
 
         BlogEntity blog;
-        Integer version = -1;
+        int version = -1;
         String paragraphListString;
         if (!entries.isEmpty()) {
             blog = BlogEntityConvertor.convert(entries);
@@ -136,9 +136,10 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     content.append(PARAGRAPH_SPLITTER.getInfo());
                 }
             }
-
-            paragraphListString = content.toString();
             blog.setContent(content.toString());
+
+            List<String> paragraphList = List.of(blog.getContent().split(PARAGRAPH_SPLITTER.getInfo()));
+            paragraphListString = jsonUtils.writeValueAsString(paragraphList);
         } else if (Objects.isNull(id)) {
             // 新文章
             blog = BlogEntity.builder()
@@ -161,7 +162,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                     paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
                     STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                     Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
-                    blog.getDescription(), blog.getStatus().toString(), blog.getLink(), version.toString(),
+                    blog.getDescription(), blog.getStatus().toString(), blog.getLink(), Integer.toString(version),
                     A_WEEK.getInfo());
 
         return BlogEditVoConvertor.convert(blog, version);
