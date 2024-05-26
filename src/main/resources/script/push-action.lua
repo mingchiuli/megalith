@@ -1,3 +1,16 @@
+local version
+if ARGV[3] then
+    version = tonumber(ARGV[3])
+end
+
+local key = KEYS[1]
+
+local v = redis.call('hget', key, 'version')
+
+if not v then return -2 end
+if tonumber(v) + 1 < version then return -1 end
+if tonumber(v) + 1 > version then return -2 end
+
 local function subStringGetByteCount(str, index)
     local curByte = string.byte(str, index)
     local byteCount = 1
@@ -63,10 +76,6 @@ if ARGV[2] then
     operateTypeCode = tonumber(ARGV[2])
 end
 
-local version
-if ARGV[3] then
-    version = tonumber(ARGV[3])
-end
 
 local indexStart
 if ARGV[4] then
@@ -85,15 +94,7 @@ if ARGV[7] then
     paraNo = tonumber(ARGV[7])
 end
 
-local key = KEYS[1]
-
-local v = redis.call('hget', KEYS[1], 'version')
-
-if not v then return -2 end
-if tonumber(v) + 1 < version then return -1 end
-if tonumber(v) + 1 > version then return -2 end
-
-local allPairs = redis.call('hgetall', KEYS[1])
+local allPairs = redis.call('hgetall', key)
 
 local content = ''
 
