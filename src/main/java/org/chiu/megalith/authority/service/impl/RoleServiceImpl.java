@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,7 +85,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void download(HttpServletResponse response) {
         ServletOutputStream outputStream = response.getOutputStream();
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         List<RoleEntity> roles = roleRepository.findAll();
         byte[] bytes = objectMapper.writeValueAsBytes(roles);

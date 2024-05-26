@@ -1,12 +1,12 @@
 package org.chiu.megalith.security.component;
 
-import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.security.user.LoginUser;
 import org.chiu.megalith.security.vo.LoginSuccessVo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jwt.JWTClaimsSet;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final ObjectMapper objectMapper;
 
-	private final TokenUtils<Claims> tokenUtils;
+	private final TokenUtils<JWTClaimsSet> tokenUtils;
 
 	private final UserService userService;
 

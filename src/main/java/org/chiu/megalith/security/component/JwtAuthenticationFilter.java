@@ -1,10 +1,10 @@
 package org.chiu.megalith.security.component;
 
-import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.source.JWKSetParseException;
+import com.nimbusds.jwt.JWTClaimsSet;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import static org.chiu.megalith.infra.lang.Const.*;
@@ -35,17 +36,17 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
 
-    private final TokenUtils<Claims> tokenUtils;
+    private final TokenUtils<JWTClaimsSet> tokenUtils;
 
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
     private final StringRedisTemplate redisTemplate;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
-                                   ObjectMapper objectMapper,
-                                   TokenUtils<Claims> tokenUtils,
-                                   SecurityAuthenticationUtils securityAuthenticationUtils,
-                                   StringRedisTemplate redisTemplate) {
+            ObjectMapper objectMapper,
+            TokenUtils<JWTClaimsSet> tokenUtils,
+            SecurityAuthenticationUtils securityAuthenticationUtils,
+            StringRedisTemplate redisTemplate) {
         super(authenticationManager);
         this.objectMapper = objectMapper;
         this.tokenUtils = tokenUtils;
@@ -69,6 +70,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             authentication = getAuthentication(jwt);
         } catch (JWKSetParseException e) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(
                     objectMapper.writeValueAsString(
@@ -90,9 +92,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             throw new JWKSetParseException(TOKEN_INVALID.getMsg(), e);
         }
 
-        Claims claims = tokenUtils.getVerifierByToken(jwt);
-        String userId = claims.getSub();
-        String role = claims.getRole();
+        JWTClaimsSet jwtClaimsSet = tokenUtils.getVerifierByToken(jwt);
+        String userId = jwtClaimsSet.getSubject();
+        String role = jwtClaimsSet.getClaim("role").toString();
 
         String roleLast = redisTemplate.opsForValue().get(BLOCK_USER.getInfo() + userId);
 

@@ -12,6 +12,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.jwk.source.JWKSetParseException;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -31,7 +32,7 @@ import java.util.Date;
 @Data
 @Component
 @ConfigurationProperties(prefix = "blog.jwt")
-public class JwtUtils implements TokenUtils<Claims> {
+public class JwtUtils implements TokenUtils<JWTClaimsSet> {
 
     private String secret;
 
@@ -74,12 +75,19 @@ public class JwtUtils implements TokenUtils<Claims> {
     }
 
     @SneakyThrows
-    public Claims getVerifierByToken(String token) {
-        var jwsObject = JWSObject.parse(token);
-        if (!jwsObject.verify(verifier)) {
+    public JWTClaimsSet getVerifierByToken(String token) {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        if (!signedJWT.verify(verifier)) {
+            throw new JWKSetParseException(AUTH_EXCEPTION.getMsg(), null);
+        }
+
+        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+
+        Date expirationTime = jwtClaimsSet.getExpirationTime();
+        if (new Date().after(expirationTime)) {
             throw new JWKSetParseException(TOKEN_INVALID.getMsg(), null);
         }
-        String objStr = jwsObject.getPayload().toString();
-        return jsonUtils.readValue(objStr, Claims.class);
+
+        return jwtClaimsSet;
     }
 }

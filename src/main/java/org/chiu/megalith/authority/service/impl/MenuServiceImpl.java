@@ -21,6 +21,7 @@ import org.chiu.megalith.authority.wrapper.MenuWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -85,7 +86,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public void download(HttpServletResponse response) {
         ServletOutputStream outputStream = response.getOutputStream();
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         List<MenuEntity> menus = menuRepository.findAll();
         byte[] bytes = objectMapper.writeValueAsBytes(menus);

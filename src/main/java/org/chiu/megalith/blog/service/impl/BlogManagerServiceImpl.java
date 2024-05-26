@@ -42,6 +42,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -50,9 +51,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static org.chiu.megalith.infra.lang.Const.*;
-import static org.chiu.megalith.infra.lang.Const.A_WEEK;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
-import static org.chiu.megalith.infra.lang.ExceptionMessage.DELETE_NO_AUTH;
 
 @Service
 @RequiredArgsConstructor
@@ -87,7 +86,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
     @Override
     public void download(HttpServletResponse response) {
         ServletOutputStream outputStream = response.getOutputStream();
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         Set<BlogEntity> items = Collections.newSetFromMap(new ConcurrentHashMap<>());
         List<CompletableFuture<Void>> completableFutures = new ArrayList<>();

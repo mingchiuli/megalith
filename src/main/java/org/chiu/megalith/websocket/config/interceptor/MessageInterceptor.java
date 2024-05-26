@@ -1,13 +1,13 @@
 package org.chiu.megalith.websocket.config.interceptor;
 
 import com.nimbusds.jose.jwk.source.JWKSetParseException;
+import com.nimbusds.jwt.JWTClaimsSet;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.util.Objects;
 import org.apache.http.HttpHeaders;
-import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.utils.SecurityAuthenticationUtils;
 import org.springframework.lang.NonNull;
@@ -34,7 +34,7 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 @RequiredArgsConstructor
 public class MessageInterceptor implements ChannelInterceptor {
 
-    private final TokenUtils<Claims> tokenUtils;
+    private final TokenUtils<JWTClaimsSet> tokenUtils;
 
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
@@ -53,9 +53,9 @@ public class MessageInterceptor implements ChannelInterceptor {
                     throw new JWKSetParseException(TOKEN_INVALID.getMsg(), null);
                 }
 
-                Claims claims = tokenUtils.getVerifierByToken(jwt);
-                String userId = claims.getSub();
-                String role = claims.getRole();
+                JWTClaimsSet jwtClaimsSet = tokenUtils.getVerifierByToken(jwt);
+                String userId = jwtClaimsSet.getSubject();
+                String role = jwtClaimsSet.getClaim("role").toString();
 
                 Authentication authentication = securityAuthenticationUtils.getAuthentication(role, userId);
                 accessor.setUser(authentication);

@@ -1,6 +1,7 @@
 package org.chiu.megalith.authority.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.chiu.megalith.authority.convertor.AuthorityVoConvertor;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -70,7 +72,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Override
     public void download(HttpServletResponse response) {
         ServletOutputStream outputStream = response.getOutputStream();
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         List<AuthorityEntity> authorities = authorityRepository.findAll();
         byte[] bytes = objectMapper.writeValueAsBytes(authorities);

@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -258,7 +259,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void download(HttpServletResponse response) {
         ServletOutputStream outputStream = response.getOutputStream();
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         List<UserEntity> users = userRepository.findAll();
         byte[] bytes = objectMapper.writeValueAsBytes(users);
