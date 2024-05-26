@@ -1,10 +1,10 @@
 package org.chiu.megalith.security.component;
 
+import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.source.JWKSetParseException;
-import com.nimbusds.jwt.JWTClaimsSet;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
 
-    private final TokenUtils<JWTClaimsSet> tokenUtils;
+    private final TokenUtils<Claims> tokenUtils;
 
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
             ObjectMapper objectMapper,
-            TokenUtils<JWTClaimsSet> tokenUtils,
+            TokenUtils<Claims> tokenUtils,
             SecurityAuthenticationUtils securityAuthenticationUtils,
             StringRedisTemplate redisTemplate) {
         super(authenticationManager);
@@ -92,9 +92,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             throw new JWKSetParseException(TOKEN_INVALID.getMsg(), e);
         }
 
-        JWTClaimsSet jwtClaimsSet = tokenUtils.getVerifierByToken(jwt);
-        String userId = jwtClaimsSet.getSubject();
-        String role = jwtClaimsSet.getClaim("role").toString();
+        Claims claims = tokenUtils.getVerifierByToken(jwt);
+        String userId = claims.getUserId();
+        String role = claims.getRole();
 
         String roleLast = redisTemplate.opsForValue().get(BLOCK_USER.getInfo() + userId);
 

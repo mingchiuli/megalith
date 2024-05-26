@@ -32,7 +32,7 @@ import java.util.Date;
 @Data
 @Component
 @ConfigurationProperties(prefix = "blog.jwt")
-public class JwtUtils implements TokenUtils<JWTClaimsSet> {
+public class JwtUtils implements TokenUtils<Claims> {
 
     private String secret;
 
@@ -75,7 +75,7 @@ public class JwtUtils implements TokenUtils<JWTClaimsSet> {
     }
 
     @SneakyThrows
-    public JWTClaimsSet getVerifierByToken(String token) {
+    public Claims getVerifierByToken(String token) {
         SignedJWT signedJWT = SignedJWT.parse(token);
         if (!signedJWT.verify(verifier)) {
             throw new JWKSetParseException(AUTH_EXCEPTION.getMsg(), null);
@@ -88,6 +88,10 @@ public class JwtUtils implements TokenUtils<JWTClaimsSet> {
             throw new JWKSetParseException(TOKEN_INVALID.getMsg(), null);
         }
 
-        return jwtClaimsSet;
+        var claim = new Claims();
+        claim.setRole(jwtClaimsSet.getClaim("role").toString());
+        claim.setUserId(jwtClaimsSet.getSubject());
+
+        return claim;
     }
 }

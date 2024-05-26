@@ -22,20 +22,20 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-	private final ObjectMapper objectMapper;
+		private final ObjectMapper objectMapper;
 
-	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		ServletOutputStream outputStream = response.getOutputStream();
-		Result<String> result = Result.fail(authException.getMessage());
-		outputStream.write(
-				objectMapper.writeValueAsString(result)
-						.getBytes(StandardCharsets.UTF_8)
-		);
+		@Override
+		public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				ServletOutputStream outputStream = response.getOutputStream();
+				Result<String> result = Result.fail(authException.getMessage());
+				outputStream.write(
+						objectMapper.writeValueAsString(result)
+								.getBytes(StandardCharsets.UTF_8)
+				);
 
-		outputStream.flush();
-		outputStream.close();
+				outputStream.flush();
+				outputStream.close();
 	}
 }
