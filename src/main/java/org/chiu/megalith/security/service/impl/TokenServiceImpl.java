@@ -1,6 +1,6 @@
 package org.chiu.megalith.security.service.impl;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.user.service.UserService;
@@ -27,7 +27,7 @@ import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
-    private final TokenUtils<DecodedJWT> tokenUtils;
+    private final TokenUtils<Claims> tokenUtils;
 
     private final UserService userService;
 

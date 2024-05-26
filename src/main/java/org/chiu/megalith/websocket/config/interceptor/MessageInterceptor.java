@@ -1,11 +1,13 @@
 package org.chiu.megalith.websocket.config.interceptor;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.nimbusds.jose.jwk.source.JWKSetParseException;
+
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.util.Objects;
 import org.apache.http.HttpHeaders;
+import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.utils.SecurityAuthenticationUtils;
 import org.springframework.lang.NonNull;
@@ -32,11 +34,12 @@ import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
 @RequiredArgsConstructor
 public class MessageInterceptor implements ChannelInterceptor {
 
-    private final TokenUtils<DecodedJWT> tokenUtils;
+    private final TokenUtils<Claims> tokenUtils;
 
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
     @Override
+    @SneakyThrows
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         Assert.isTrue(Objects.nonNull(accessor), ACCESSOR_NULL.getMsg());
@@ -47,12 +50,12 @@ public class MessageInterceptor implements ChannelInterceptor {
                 try {
                     jwt = token.substring(TOKEN_PREFIX.getInfo().length());
                 } catch (IndexOutOfBoundsException e) {
-                    throw new JWTVerificationException(TOKEN_INVALID.getMsg());
+                    throw new JWKSetParseException(TOKEN_INVALID.getMsg(), null);
                 }
 
-                DecodedJWT decodedJWT = tokenUtils.getVerifierByToken(jwt);
-                String userId = decodedJWT.getSubject();
-                String role = decodedJWT.getClaim("role").asString();
+                Claims claims = tokenUtils.getVerifierByToken(jwt);
+                String userId = claims.getSub();
+                String role = claims.getRole();
 
                 Authentication authentication = securityAuthenticationUtils.getAuthentication(role, userId);
                 accessor.setUser(authentication);

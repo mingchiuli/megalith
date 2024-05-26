@@ -1,14 +1,16 @@
 package org.chiu.megalith.security.component;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.jwk.source.JWKSetParseException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.chiu.megalith.infra.utils.SecurityAuthenticationUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +35,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
 
-    private final TokenUtils<DecodedJWT> tokenUtils;
+    private final TokenUtils<Claims> tokenUtils;
 
     private final SecurityAuthenticationUtils securityAuthenticationUtils;
 
@@ -41,7 +43,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
                                    ObjectMapper objectMapper,
-                                   TokenUtils<DecodedJWT> tokenUtils,
+                                   TokenUtils<Claims> tokenUtils,
                                    SecurityAuthenticationUtils securityAuthenticationUtils,
                                    StringRedisTemplate redisTemplate) {
         super(authenticationManager);
@@ -65,7 +67,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         try {
             authentication = getAuthentication(jwt);
-        } catch (JWTVerificationException e) {
+        } catch (JWKSetParseException e) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(
@@ -79,22 +81,23 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
     }
 
-    private Authentication getAuthentication(String token) {
+    // @SneakyThrows
+    private Authentication getAuthentication(String token) throws JWKSetParseException {
         String jwt;
         try {
             jwt = token.substring(TOKEN_PREFIX.getInfo().length());
         } catch (IndexOutOfBoundsException e) {
-            throw new JWTVerificationException(TOKEN_INVALID.getMsg());
+            throw new JWKSetParseException(TOKEN_INVALID.getMsg(), e);
         }
 
-        DecodedJWT decodedJWT = tokenUtils.getVerifierByToken(jwt);
-        String userId = decodedJWT.getSubject();
-        String role = decodedJWT.getClaim("role").asString();
+        Claims claims = tokenUtils.getVerifierByToken(jwt);
+        String userId = claims.getSub();
+        String role = claims.getRole();
 
         String roleLast = redisTemplate.opsForValue().get(BLOCK_USER.getInfo() + userId);
 
         if (StringUtils.hasLength(roleLast) && Objects.equals(role, ROLE_PREFIX.getInfo() + roleLast)) {
-            throw new JWTVerificationException(BLOCKED.getMsg());
+            throw new JWKSetParseException(BLOCKED.getMsg(), null);
         }
 
         return securityAuthenticationUtils.getAuthentication(role, userId);
