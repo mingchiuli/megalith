@@ -57,7 +57,7 @@ public class MenuServiceImpl implements MenuService {
 
         if (Objects.nonNull(menuId)) {
             menuEntity = menuRepository.findById(menuId)
-                     .orElseThrow(() -> new MissException(NO_FOUND));
+                    .orElseThrow(() -> new MissException(NO_FOUND));
         } else {
             menuEntity = MenuEntityConvertor.convert(menu);
         }
