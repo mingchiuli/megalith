@@ -35,6 +35,6 @@ jobs:
             do
               docker stop $c_id
               docker rm $c_id
-              docker compose --compatibility up -d
-              sleep 10
             done
+            docker compose --compatibility up -d
+
