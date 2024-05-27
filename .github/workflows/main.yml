@@ -30,11 +30,5 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             docker pull mingchiuli/megalith:latest
-            c_ids=$(docker ps | grep megalith | awk '{print $1}')
-            for c_id in "${c_ids[@]}"
-            do
-              docker stop $c_id
-              docker rm $c_id
-            done
             docker compose --compatibility up -d
 
