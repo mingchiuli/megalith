@@ -7,12 +7,13 @@ import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class UserEntityVoConvertor {
 
     private UserEntityVoConvertor() {}
 
-    public static UserEntityVo convert(UserEntity userEntity) {
+    public static UserEntityVo convert(UserEntity userEntity, List<String> roleCodes) {
         return UserEntityVo.builder()
                 .id(userEntity.getId())
                 .username(userEntity.getUsername())
@@ -23,18 +24,17 @@ public class UserEntityVoConvertor {
                 .status(userEntity.getStatus())
                 .created(userEntity.getCreated())
                 .lastLogin(userEntity.getLastLogin())
-                .role(userEntity.getRole())
+                .roles(roleCodes)
                 .build();
     }
 
-    public static PageAdapter<UserEntityVo> convert(Page<UserEntity> page) {
+    public static PageAdapter<UserEntityVo> convert(Page<UserEntity> page, Map<Long, List<String>> userIdRoleMap) {
         List<UserEntityVo> content = new ArrayList<>();
         page.getContent().forEach(user -> content
                 .add(UserEntityVo.builder()
                         .email(user.getEmail())
                         .phone(user.getPhone())
                         .updated(user.getUpdated())
-                        .role(user.getRole())
                         .id(user.getId())
                         .nickname(user.getNickname())
                         .status(user.getStatus())
@@ -42,6 +42,7 @@ public class UserEntityVoConvertor {
                         .created(user.getCreated())
                         .lastLogin(user.getLastLogin())
                         .username(user.getUsername())
+                        .roles(userIdRoleMap.get(user.getId()))
                         .build()));
 
         return PageAdapter.<UserEntityVo>builder()

@@ -69,19 +69,19 @@ public class UserController {
     @PreAuthorize("hasAuthority('sys:user:page')")
     public Result<PageAdapter<UserEntityVo>> page(@PathVariable(value = "currentPage") Integer currentPage,
                                                   @RequestParam(value = "size", defaultValue = "5") Integer size) {
-        return Result.success(() -> userService.listPage(currentPage, size));
+        return Result.success(() -> userRoleService.listPage(currentPage, size));
     }
 
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('sys:user:delete')")
     public Result<Void> delete(@RequestBody @NotEmpty List<Long> ids) {
-        return Result.success(() -> userService.deleteUsers(ids));
+        return Result.success(() -> userRoleService.deleteUsers(ids));
     }
 
     @GetMapping("/info/{id}")
     @PreAuthorize("hasAuthority('sys:user:info')")
     public Result<UserEntityVo> info(@PathVariable(value = "id") Long id) {
-        return Result.success(() -> userService.findById(id));
+        return Result.success(() -> userRoleService.findById(id));
     }
 
     @GetMapping("/download")

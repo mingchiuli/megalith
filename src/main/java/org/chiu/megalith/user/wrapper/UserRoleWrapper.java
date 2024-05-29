@@ -27,4 +27,10 @@ public class UserRoleWrapper {
         userRepository.save(userEntity);
         userRoleRepository.saveAll(userRoleEntities);
     }
+
+    @Transactional
+    public void deleteUsers(List<Long> ids, List<Long> userRoleIds) {
+        userRepository.deleteAllById(ids);
+        userRoleRepository.deleteAllById(userRoleIds);
+    }
 }

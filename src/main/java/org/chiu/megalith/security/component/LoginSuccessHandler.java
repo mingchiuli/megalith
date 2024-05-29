@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 import static org.chiu.megalith.infra.lang.Const.*;
 
@@ -61,13 +62,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 			// 生成jwt
 			String accessToken = tokenUtils.generateToken(userId.toString(),
 					authentication.getAuthorities().stream()
-							.findFirst()
 							.map(GrantedAuthority::getAuthority)
-							.orElseThrow(),
+							.toList(),
 					accessExpire);
 
 			String refreshToken = tokenUtils.generateToken(userId.toString(),
-					ROLE_PREFIX.getInfo() + "REFRESH_TOKEN",
+					Collections.singletonList(ROLE_PREFIX.getInfo() + "REFRESH_TOKEN"),
 					refreshExpire);
 
 			outputStream.write(

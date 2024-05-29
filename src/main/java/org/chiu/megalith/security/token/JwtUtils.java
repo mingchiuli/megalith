@@ -1,5 +1,7 @@
 package org.chiu.megalith.security.token;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -24,7 +26,9 @@ import org.springframework.stereotype.Component;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * jwt工具类
@@ -42,7 +46,7 @@ public class JwtUtils implements TokenUtils<Claims> {
 
     private JWSSigner signer;
 
-    private final JsonUtils jsonUtils;
+    private final ObjectMapper objectMapper;
 
     @PostConstruct
     @SneakyThrows
@@ -52,7 +56,7 @@ public class JwtUtils implements TokenUtils<Claims> {
     }
 
     @SneakyThrows
-    public String generateToken(String userId, String role, long expire) {
+    public String generateToken(String userId, List<String> roles, long expire) {
         JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.HS512)
                 .type(JOSEObjectType.JWT)
                 .build();
@@ -63,7 +67,7 @@ public class JwtUtils implements TokenUtils<Claims> {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .issuer("megalith")
                 .subject(userId)
-                .claim("role", role)
+                .claim("role", objectMapper.writeValueAsString(roles))
                 .issueTime(nowDate)
                 .expirationTime(expireDate)
                 .build();
@@ -89,9 +93,11 @@ public class JwtUtils implements TokenUtils<Claims> {
         }
 
         var claim = new Claims();
-        claim.setRole(jwtClaimsSet.getClaim("role").toString());
-        claim.setUserId(jwtClaimsSet.getSubject());
 
+        Object role = jwtClaimsSet.getClaim("role");
+        List<String> roles = objectMapper.readValue((String) role, new TypeReference<>() {});
+        claim.setUserId(jwtClaimsSet.getSubject());
+        claim.setRoles(roles);
         return claim;
     }
 }

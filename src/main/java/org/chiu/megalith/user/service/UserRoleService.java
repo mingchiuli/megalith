@@ -1,7 +1,11 @@
 package org.chiu.megalith.user.service;
 
+import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.user.req.UserEntityRegisterReq;
 import org.chiu.megalith.user.req.UserEntityReq;
+import org.chiu.megalith.user.vo.UserEntityVo;
+
+import java.util.List;
 
 /**
  * @Author limingjiu
@@ -13,4 +17,11 @@ public interface UserRoleService {
 
     void saveRegisterPage(String token, UserEntityRegisterReq userEntityRegisterReq);
 
+    List<String> findRoleCodesByUserId(Long userId);
+
+    UserEntityVo findById(Long userId);
+
+    PageAdapter<UserEntityVo> listPage(Integer currentPage, Integer size);
+
+    void deleteUsers(List<Long> ids);
 }

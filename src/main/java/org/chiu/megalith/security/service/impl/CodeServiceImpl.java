@@ -2,8 +2,9 @@ package org.chiu.megalith.security.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.utils.SmsUtils;
-import org.chiu.megalith.user.service.UserService;
+import org.chiu.megalith.user.repository.UserRepository;
 import org.chiu.megalith.security.http.SmsHttpService;
 import org.chiu.megalith.security.service.CodeService;
 import org.chiu.megalith.infra.lang.Const;
@@ -20,7 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.chiu.megalith.infra.lang.Const.SMS_CODE;
-import static org.chiu.megalith.infra.lang.ExceptionMessage.CODE_EXISTED;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 
 /**
@@ -35,9 +36,9 @@ public class CodeServiceImpl implements CodeService {
 
     private final JavaMailSender javaMailSender;
 
-    private final UserService userService;
-
     private final StringRedisTemplate redisTemplate;
+
+    private final UserRepository userRepository;
 
     private final SmsHttpService smsHttpService;
 
@@ -51,7 +52,8 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public void createEmailCode(String loginEmail) {
-        userService.findByEmail(loginEmail);
+        userRepository.findByEmail(loginEmail)
+                .orElseThrow(() -> new MissException(EMAIL_NOT_EXIST));
         String key = Const.EMAIL_KEY.getInfo() + loginEmail;
         boolean res = Boolean.FALSE.equals(redisTemplate.hasKey(key));
         if (res) {
@@ -72,7 +74,8 @@ public class CodeServiceImpl implements CodeService {
     @SneakyThrows
     @Override
     public void createSMSCode(String loginSMS) {
-        userService.findByPhone(loginSMS);
+        userRepository.findByPhone(loginSMS)
+                .orElseThrow(() -> new MissException(SMS_NOT_EXIST));
         String key = Const.PHONE_KEY.getInfo() + loginSMS;
         boolean res = Boolean.FALSE.equals(redisTemplate.hasKey(key));
         if (res) {

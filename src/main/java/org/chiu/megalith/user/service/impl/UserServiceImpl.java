@@ -4,21 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.blog.http.OssHttpService;
 import org.chiu.megalith.infra.utils.OssSignUtils;
-import org.chiu.megalith.user.convertor.UserEntityVoConvertor;
 import org.chiu.megalith.user.entity.UserEntity;
 import org.chiu.megalith.user.repository.UserRepository;
 import org.chiu.megalith.user.service.UserService;
-import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.page.PageAdapter;
+
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.user.vo.UserEntityVo;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -53,8 +47,6 @@ public class UserServiceImpl implements UserService {
 
     private final OssSignUtils ossSignUtils;
 
-    private final CodeFactory codeFactory;
-
     private final ObjectMapper objectMapper;
 
     @Value("${blog.oss.base-url}")
@@ -69,52 +61,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntityVo findById(Long userId) {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new MissException(USER_NOT_EXIST));
-
-        return UserEntityVoConvertor.convert(userEntity);
-    }
-
-    @Override
     public void changeUserStatusByUsername(String username, Integer status) {
         userRepository.setUserStatusByUsername(username, status);
     }
 
     @Override
-    public PageAdapter<UserEntityVo> listPage(Integer currentPage, Integer size) {
-        var pageRequest = PageRequest.of(currentPage - 1,
-                size,
-                Sort.by("created").ascending());
-        Page<UserEntity> page = userRepository.findAll(pageRequest);
-
-        return UserEntityVoConvertor.convert(page);
-    }
-
-    @Override
-    public void deleteUsers(List<Long> ids) {
-        userRepository.deleteAllById(ids);
-    }
-
-    @Override
     public List<Long> findIdsByStatus(Integer status) {
         return userRepository.findByStatus(status);
-    }
-
-    @Override
-    public UserEntityVo findByEmail(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email)
-                .orElseThrow(() -> new MissException(EMAIL_NOT_EXIST));
-
-        return UserEntityVoConvertor.convert(userEntity);
-    }
-
-    @Override
-    public UserEntityVo findByPhone(String loginSMS) {
-        UserEntity userEntity = userRepository.findByPhone(loginSMS)
-                .orElseThrow(() -> new MissException(SMS_NOT_EXIST));
-
-        return UserEntityVoConvertor.convert(userEntity);
     }
 
     @Override
