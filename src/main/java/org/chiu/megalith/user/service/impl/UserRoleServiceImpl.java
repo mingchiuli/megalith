@@ -144,7 +144,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     public List<String> findRoleCodesByUserId(Long userId) {
-        List<Long> roleIds = userRoleRepository.findByUserIdIn(Collections.singletonList(userId)).stream()
+        List<Long> roleIds = userRoleRepository.findByUserId(userId).stream()
                 .map(UserRoleEntity::getRoleId).toList();
 
         return roleRepository.findAllById(roleIds).stream()
@@ -167,10 +167,10 @@ public class UserRoleServiceImpl implements UserRoleService {
                 size,
                 Sort.by("created").ascending());
         Page<UserEntity> page = userRepository.findAll(pageRequest);
-        List<Long> userId = page.get()
+        List<Long> userIds = page.get()
                 .map(UserEntity::getId)
                 .toList();
-        List<UserRoleEntity> userRoleEntities = userRoleRepository.findByUserIdIn(userId);
+        List<UserRoleEntity> userRoleEntities = userRoleRepository.findByUserIdIn(userIds);
         List<Long> roleIds = userRoleEntities.stream().map(UserRoleEntity::getRoleId).toList();
         Map<Long, String> idCodeMap = roleRepository.findAllById(roleIds).stream()
                 .collect(Collectors.toMap(RoleEntity::getId, RoleEntity::getCode));

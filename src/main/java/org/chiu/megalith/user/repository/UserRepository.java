@@ -35,7 +35,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query(value = "UPDATE UserEntity user set user.status = :status where user.username = :username")
     @Modifying
     @Transactional
-    void setUserStatusByUsername(String username, Integer status);
+    void updateUserStatusByUsername(String username, Integer status);
 
     Optional<UserEntity> findByPhone(String loginSMS);
 }

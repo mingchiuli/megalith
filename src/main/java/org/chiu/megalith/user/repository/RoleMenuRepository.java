@@ -17,8 +17,12 @@ public interface RoleMenuRepository extends JpaRepository<RoleMenuEntity, Long> 
     @Query(value = "SELECT roleMenu.menuId from RoleMenuEntity roleMenu where roleMenu.roleId in (?1)")
     List<Long> findMenuIdsByRoleId(List<Long> id);
 
+    @Modifying
+    @Transactional
     void deleteByRoleId(Long roleId);
 
+    @Modifying
+    @Transactional
     void deleteByMenuId(Long menuId);
 
     @Query(value = "DELETE from RoleMenuEntity roleMenu where roleMenu.roleId in (?1)")

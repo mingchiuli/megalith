@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUserStatusByUsername(String username, Integer status) {
-        userRepository.setUserStatusByUsername(username, status);
+        userRepository.updateUserStatusByUsername(username, status);
     }
 
     @Override
