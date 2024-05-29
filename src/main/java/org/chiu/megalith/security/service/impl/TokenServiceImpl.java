@@ -53,7 +53,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public UserInfoVo userinfo() {
         Long userId = SecurityUtils.getLoginUserId();
-        UserEntityVo userEntity = userService.findById(userId);
+        UserEntityVo userEntity = userRoleService.findById(userId);
 
         return UserInfoVoConvertor.convert(userEntity);
     }
