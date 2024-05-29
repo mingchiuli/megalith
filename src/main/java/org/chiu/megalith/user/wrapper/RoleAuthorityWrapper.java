@@ -49,13 +49,11 @@ public class RoleAuthorityWrapper {
                 .map(RoleEntity::getId)
                 .toList();
 
-        List<RoleAuthorityEntity> authorityEntities = roleAuthorityRepository.findByRoleIdIn(roleIds);
-        Set<Long> authorityIds = authorityEntities.stream()
+        Set<Long> authorityIds = roleAuthorityRepository.findByRoleIdIn(roleIds).stream()
                 .map(RoleAuthorityEntity::getAuthorityId)
                 .collect(Collectors.toSet());
 
-        List<AuthorityEntity> authorities = authorityRepository.findAllById(authorityIds);
-        authorities = authorities.stream()
+        List<AuthorityEntity> authorities = authorityRepository.findAllById(authorityIds).stream()
                 .filter(item -> NORMAL.getCode().equals(item.getStatus()))
                 .toList();
 
