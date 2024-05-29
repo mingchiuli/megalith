@@ -48,39 +48,41 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		@Override
 		public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-				ServletOutputStream outputStream = response.getOutputStream();
-				String username = authentication.getName();
-				redisTemplate.delete(PASSWORD_KEY.getInfo() + username);
+			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			ServletOutputStream outputStream = response.getOutputStream();
+			String username = authentication.getName();
+			LoginUser user = (LoginUser) authentication.getPrincipal();
+			Long userId = user.getUserId();
 
-				userService.updateLoginTime(username, LocalDateTime.now());
-				// 生成jwt
-				LoginUser user = (LoginUser) authentication.getPrincipal();
-				Long userId = user.getUserId();
-				String accessToken = tokenUtils.generateToken(userId.toString(),
-						authentication.getAuthorities().stream()
-								.findFirst()
-								.map(GrantedAuthority::getAuthority)
-								.orElseThrow(),
-						accessExpire);
+			redisTemplate.delete(PASSWORD_KEY.getInfo() + username);
+			redisTemplate.delete(BLOCK_USER.getInfo() + userId);
 
-				String refreshToken = tokenUtils.generateToken(userId.toString(),
-						ROLE_PREFIX.getInfo() + "REFRESH_TOKEN",
-						refreshExpire);
+			userService.updateLoginTime(username, LocalDateTime.now());
+			// 生成jwt
+			String accessToken = tokenUtils.generateToken(userId.toString(),
+					authentication.getAuthorities().stream()
+							.findFirst()
+							.map(GrantedAuthority::getAuthority)
+							.orElseThrow(),
+					accessExpire);
 
-				outputStream.write(
-						objectMapper.writeValueAsString(
-								Result.success(
-										LoginSuccessVo.builder()
-												.accessToken(TOKEN_PREFIX.getInfo() + accessToken)
-												.refreshToken(TOKEN_PREFIX.getInfo() + refreshToken)
-												.build())
-								)
-								.getBytes(StandardCharsets.UTF_8)
-				);
+			String refreshToken = tokenUtils.generateToken(userId.toString(),
+					ROLE_PREFIX.getInfo() + "REFRESH_TOKEN",
+					refreshExpire);
 
-				outputStream.flush();
-				outputStream.close();
+			outputStream.write(
+					objectMapper.writeValueAsString(
+									Result.success(
+											LoginSuccessVo.builder()
+													.accessToken(TOKEN_PREFIX.getInfo() + accessToken)
+													.refreshToken(TOKEN_PREFIX.getInfo() + refreshToken)
+													.build())
+							)
+							.getBytes(StandardCharsets.UTF_8)
+			);
+
+			outputStream.flush();
+			outputStream.close();
 		}
 
 }

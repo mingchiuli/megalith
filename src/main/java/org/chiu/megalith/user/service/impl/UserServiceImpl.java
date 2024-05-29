@@ -6,23 +6,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.blog.http.OssHttpService;
-import org.chiu.megalith.infra.user.UserIndexMessage;
 import org.chiu.megalith.infra.utils.OssSignUtils;
 import org.chiu.megalith.user.convertor.UserEntityVoConvertor;
 import org.chiu.megalith.user.entity.UserEntity;
-import org.chiu.megalith.user.event.UserOperateEvent;
 import org.chiu.megalith.user.repository.UserRepository;
 import org.chiu.megalith.user.req.UserEntityRegisterReq;
 import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.user.req.UserEntityReq;
-import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.user.vo.UserEntityVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,7 +26,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -54,11 +49,9 @@ import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
 
-    private final ApplicationContext applicationContext;
 
     private final StringRedisTemplate redisTemplate;
 
@@ -79,39 +72,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateLoginTime(String username, LocalDateTime time) {
         userRepository.updateLoginTime(username, time);
-    }
-
-    @Override
-    public void saveOrUpdate(UserEntityReq userEntityReq) {
-        Long id = userEntityReq.getId();
-        UserEntity userEntity;
-        String roleLast = null;
-
-        if (Objects.nonNull(id)) {
-            userEntity = userRepository.findById(id)
-                    .orElseThrow(() -> new MissException(USER_NOT_EXIST));
-
-            roleLast = userEntity.getRole();
-            String password = userEntityReq.getPassword();
-            if (StringUtils.hasLength(password)) {
-                userEntityReq.setPassword(passwordEncoder.encode(password));
-            } else {
-                userEntityReq.setPassword(userEntity.getPassword());
-            }
-        } else {
-            userEntity = new UserEntity();
-            userEntityReq.setPassword(
-                    passwordEncoder.encode(Optional.ofNullable(userEntityReq.getPassword())
-                                    .orElseThrow(() -> new CommitException(PASSWORD_REQUIRED))
-                    )
-            );
-        }
-
-        BeanUtils.copyProperties(userEntityReq, userEntity);
-        userRepository.save(userEntity);
-
-        var userIndexMessage = new UserIndexMessage(userEntity.getId(), userEntity.getRole(), roleLast);
-        applicationContext.publishEvent(new UserOperateEvent(this, userIndexMessage));
     }
 
     @Override
@@ -203,7 +163,7 @@ public class UserServiceImpl implements UserService {
         userEntity.ifPresent(entity -> userEntityRegisterReq.setId(entity.getId()));
 
         BeanUtils.copyProperties(userEntityRegisterReq, userEntityReq);
-        userEntityReq.setRole(USER.getInfo());
+        userEntityReq.setRoles(Collections.singletonList(USER.getInfo()));
         userEntityReq.setStatus(NORMAL.getCode());
         saveOrUpdate(userEntityReq);
         redisTemplate.delete(REGISTER_PREFIX.getInfo() + token);

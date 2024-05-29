@@ -18,7 +18,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @ImportRuntimeHints({ CustomRuntimeHints.class })
 public class MegalithApplication {
 
-		public static void main(String[] args) {
+	public static void main(String[] args) {
 				SpringApplication.run(MegalithApplication.class, args);
 		}
 

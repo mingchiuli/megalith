@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.source.JWKSetParseException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.util.List;
 import java.util.Objects;
 import org.apache.http.HttpHeaders;
 import org.chiu.megalith.security.token.Claims;
@@ -55,9 +56,9 @@ public class MessageInterceptor implements ChannelInterceptor {
 
                 Claims claims = tokenUtils.getVerifierByToken(jwt);
                 String userId = claims.getUserId();
-                String role = claims.getRole();
+                List<String> roles = claims.getRoles();
 
-                Authentication authentication = securityAuthenticationUtils.getAuthentication(role, userId);
+                Authentication authentication = securityAuthenticationUtils.getAuthentication(roles, userId);
                 accessor.setUser(authentication);
             }
 

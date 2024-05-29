@@ -1,11 +1,14 @@
 package org.chiu.megalith.user.req;
 
+import jakarta.validation.constraints.NotEmpty;
 import org.chiu.megalith.infra.vaild.ListValue;
 import org.chiu.megalith.user.valid.Phone;
 import org.chiu.megalith.user.valid.Username;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class UserEntityReq {
@@ -32,6 +35,6 @@ public class UserEntityReq {
     @ListValue(values = {0, 1})
     private Integer status;
 
-    @NotBlank
-    private String role;
+    @NotEmpty
+    private List<String> roles;
 }

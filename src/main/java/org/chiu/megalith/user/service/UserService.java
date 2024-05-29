@@ -3,7 +3,6 @@ package org.chiu.megalith.user.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.user.req.UserEntityRegisterReq;
-import org.chiu.megalith.user.req.UserEntityReq;
 import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.user.vo.UserEntityVo;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,8 +17,6 @@ import java.util.List;
 public interface UserService {
 
     void updateLoginTime(String username, LocalDateTime time);
-
-    void saveOrUpdate(UserEntityReq userEntityReq);
 
     UserEntityVo findById(Long userId);
 

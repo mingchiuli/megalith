@@ -65,9 +65,6 @@ public class UserEntity {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    @Column(name = "role")
-    private String role;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,8 +82,7 @@ public class UserEntity {
         if (!Objects.equals(status, that.status)) return false;
         if (!Objects.equals(created, that.created)) return false;
         if (!Objects.equals(lastLogin, that.lastLogin)) return false;
-        if (!Objects.equals(updated, that.updated)) return false;
-        return Objects.equals(role, that.role);
+        return Objects.equals(updated, that.updated);
     }
 
     @Override

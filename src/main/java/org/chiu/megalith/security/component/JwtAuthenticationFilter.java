@@ -25,11 +25,10 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.List;
 
 import static org.chiu.megalith.infra.lang.Const.*;
-import static org.chiu.megalith.infra.lang.ExceptionMessage.BLOCKED;
-import static org.chiu.megalith.infra.lang.ExceptionMessage.TOKEN_INVALID;
+import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
 
 @Component
 public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
@@ -83,7 +82,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
     }
 
-    // @SneakyThrows
     private Authentication getAuthentication(String token) throws JWKSetParseException {
         String jwt;
         try {
@@ -94,14 +92,14 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         Claims claims = tokenUtils.getVerifierByToken(jwt);
         String userId = claims.getUserId();
-        String role = claims.getRole();
+        List<String> roles = claims.getRoles();
 
-        String roleLast = redisTemplate.opsForValue().get(BLOCK_USER.getInfo() + userId);
+        String mark = redisTemplate.opsForValue().get(BLOCK_USER.getInfo() + userId);
 
-        if (StringUtils.hasLength(roleLast) && Objects.equals(role, ROLE_PREFIX.getInfo() + roleLast)) {
-            throw new JWKSetParseException(BLOCKED.getMsg(), null);
+        if (StringUtils.hasLength(mark)) {
+            throw new JWKSetParseException(RE_LOGIN.getMsg(), null);
         }
 
-        return securityAuthenticationUtils.getAuthentication(role, userId);
+        return securityAuthenticationUtils.getAuthentication(roles, userId);
     }
 }

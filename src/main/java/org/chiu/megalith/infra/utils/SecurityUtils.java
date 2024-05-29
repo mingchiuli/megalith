@@ -7,7 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.chiu.megalith.infra.lang.ExceptionMessage.AUTH_EXCEPTION;
 
 @Component
@@ -18,13 +20,18 @@ public class SecurityUtils {
 
     private SecurityUtils(){}
 
-    public static String getLoginRole() {
+    public static List<String> getLoginRole() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
             throw new BadCredentialsException(AUTH_EXCEPTION.getMsg());
         }
-        Object role = authentication.getDetails();
-        return (String) role;
+
+        List<?> details = (List<?>) authentication.getDetails();
+        List<String> roles = new ArrayList<>();
+        for (Object detail : details) {
+            roles.add((String) detail);
+        }
+        return roles;
     }
 
     public static Authentication getLoginAuthentication() {
@@ -40,6 +47,6 @@ public class SecurityUtils {
     }
 
     public Boolean isAdmin(String role) {
-        return (ROLE_PREFIX.getInfo() + highestRole).equals(role);
+        return highestRole.equals(role);
     }
 }

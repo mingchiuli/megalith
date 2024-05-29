@@ -75,7 +75,7 @@ public enum ExceptionMessage {
 
     ACCOUNT_LOCKED(34, "账户被锁"),
 
-    BLOCKED(35, "已被封禁"),
+    RE_LOGIN(35, "重新登里"),
 
     PASSWORD_DIFF(36, "账号密码不一致"),
 

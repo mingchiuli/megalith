@@ -2,7 +2,7 @@ package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.utils.LuaScriptUtils;
-import org.chiu.megalith.authority.repository.RoleRepository;
+import org.chiu.megalith.user.repository.RoleRepository;
 import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.infra.lang.Const;
 import org.springframework.beans.factory.annotation.Value;

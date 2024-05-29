@@ -1,7 +1,8 @@
 package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.lang.StatusEnum;
-import org.chiu.megalith.authority.repository.RoleRepository;
+import org.chiu.megalith.user.entity.RoleEntity;
+import org.chiu.megalith.user.repository.RoleRepository;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -9,6 +10,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
@@ -42,9 +46,12 @@ public abstract sealed class ProviderBase extends DaoAuthenticationProvider perm
                 .orElseThrow()
                 .substring(ROLE_PREFIX.getInfo().length());
 
-        Integer status = roleRepository.findByCode(role)
-                .orElseThrow(() -> new BadCredentialsException(ROLE_NOT_EXIST.getMsg()))
-                .getStatus();
+        List<RoleEntity> roleEntities = roleRepository.findByCode(Collections.singletonList(role));
+        if (roleEntities.isEmpty()) {
+            throw new BadCredentialsException(ROLE_NOT_EXIST.getMsg());
+        }
+
+        Integer status = roleEntities.getFirst().getStatus();
 
         if (StatusEnum.HIDE.getCode().equals(status)) {
             throw new BadCredentialsException(ROLE_DISABLED.getMsg());
