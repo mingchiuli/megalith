@@ -180,7 +180,7 @@ public class UserRoleServiceImpl implements UserRoleService {
             Long id = item.getUserId();
             userIdRoleMap.putIfAbsent(id, new ArrayList<>());
             List<String> roles = userIdRoleMap.get(id);
-            roles.add(idCodeMap.get(id));
+            roles.add(idCodeMap.get(item.getRoleId()));
         });
 
         return UserEntityVoConvertor.convert(page, userIdRoleMap);
