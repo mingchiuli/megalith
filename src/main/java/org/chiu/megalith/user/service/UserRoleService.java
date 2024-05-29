@@ -1,5 +1,6 @@
 package org.chiu.megalith.user.service;
 
+import org.chiu.megalith.user.req.UserEntityRegisterReq;
 import org.chiu.megalith.user.req.UserEntityReq;
 
 /**
@@ -9,5 +10,7 @@ import org.chiu.megalith.user.req.UserEntityReq;
 public interface UserRoleService {
 
     void saveOrUpdate(UserEntityReq userEntityReq);
+
+    void saveRegisterPage(String token, UserEntityRegisterReq userEntityRegisterReq);
 
 }

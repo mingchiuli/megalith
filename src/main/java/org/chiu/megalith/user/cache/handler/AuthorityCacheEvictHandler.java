@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,7 +48,7 @@ public class AuthorityCacheEvictHandler extends CacheEvictHandler {
             }
         }
 
-        Method method = RoleAuthorityWrapper.class.getMethod("getAuthoritiesByRoleCode", String.class);
+        Method method = RoleAuthorityWrapper.class.getMethod("getAuthoritiesByRoleCode", List.class);
         String key = cacheKeyGenerator.generateKey(method, roleCode);
         return Collections.singleton(key);
     }

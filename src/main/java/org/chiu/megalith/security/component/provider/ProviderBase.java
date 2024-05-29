@@ -46,7 +46,7 @@ public abstract sealed class ProviderBase extends DaoAuthenticationProvider perm
                 .orElseThrow()
                 .substring(ROLE_PREFIX.getInfo().length());
 
-        List<RoleEntity> roleEntities = roleRepository.findByCode(Collections.singletonList(role));
+        List<RoleEntity> roleEntities = roleRepository.findByCodeIn(Collections.singletonList(role));
         if (roleEntities.isEmpty()) {
             throw new BadCredentialsException(ROLE_NOT_EXIST.getMsg());
         }

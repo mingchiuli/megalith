@@ -10,14 +10,11 @@ import org.chiu.megalith.infra.utils.OssSignUtils;
 import org.chiu.megalith.user.convertor.UserEntityVoConvertor;
 import org.chiu.megalith.user.entity.UserEntity;
 import org.chiu.megalith.user.repository.UserRepository;
-import org.chiu.megalith.user.req.UserEntityRegisterReq;
 import org.chiu.megalith.user.service.UserService;
-import org.chiu.megalith.user.req.UserEntityReq;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.user.vo.UserEntityVo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.chiu.megalith.infra.lang.Const.*;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.*;
-import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 /**
  * @author mingchiuli
@@ -49,9 +45,7 @@ import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-
     private final UserRepository userRepository;
-
 
     private final StringRedisTemplate redisTemplate;
 
@@ -131,42 +125,6 @@ public class UserServiceImpl implements UserService {
             return pagePrefix + token + "?username=" + username;
         }
         return pagePrefix + token;
-    }
-
-    @Override
-    public void saveRegisterPage(String token, UserEntityRegisterReq userEntityRegisterReq) {
-        Boolean exist = redisTemplate.hasKey(REGISTER_PREFIX.getInfo() + token);
-        if (Objects.isNull(exist) || Boolean.FALSE.equals(exist)) {
-            throw new BadCredentialsException(NO_AUTH.getMsg());
-        }
-        String password = userEntityRegisterReq.getPassword();
-        String confirmPassword = userEntityRegisterReq.getConfirmPassword();
-        if (!Objects.equals(confirmPassword, password)) {
-            throw new MissException(PASSWORD_DIFF.getMsg());
-        }
-
-        String phone = userEntityRegisterReq.getPhone();
-        if (!StringUtils.hasLength(phone)) {
-            String fakePhone = codeFactory.create(PHONE_CODE.getInfo());
-            userEntityRegisterReq.setPhone(fakePhone);
-        }
-
-        String username = userEntityRegisterReq.getUsername();
-        String usernameCopy = redisTemplate.opsForValue().get(REGISTER_PREFIX.getInfo() + token);
-        if (StringUtils.hasLength(usernameCopy) && !Objects.equals(usernameCopy, username)) {
-            throw new BadCredentialsException(NO_AUTH.getMsg());
-        }
-
-        UserEntityReq userEntityReq = new UserEntityReq();
-
-        Optional<UserEntity> userEntity = userRepository.findByUsernameAndStatus(username, NORMAL.getCode());
-        userEntity.ifPresent(entity -> userEntityRegisterReq.setId(entity.getId()));
-
-        BeanUtils.copyProperties(userEntityRegisterReq, userEntityReq);
-        userEntityReq.setRoles(Collections.singletonList(USER.getInfo()));
-        userEntityReq.setStatus(NORMAL.getCode());
-        saveOrUpdate(userEntityReq);
-        redisTemplate.delete(REGISTER_PREFIX.getInfo() + token);
     }
 
     @SneakyThrows

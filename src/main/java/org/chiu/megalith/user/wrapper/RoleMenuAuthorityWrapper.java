@@ -2,11 +2,8 @@ package org.chiu.megalith.user.wrapper;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.user.cache.CacheEvict;
-import org.chiu.megalith.user.cache.handler.AuthorityCacheEvictHandler;
 import org.chiu.megalith.user.cache.handler.AllAuthorityCacheEvictHandler;
 import org.chiu.megalith.user.cache.handler.AllMenuAndButtonCacheEvictHandler;
-import org.chiu.megalith.user.cache.handler.MenuAndButtonCacheEvictHandler;
-import org.chiu.megalith.user.entity.RoleEntity;
 import org.chiu.megalith.user.repository.RoleAuthorityRepository;
 import org.chiu.megalith.user.repository.RoleMenuRepository;
 import org.chiu.megalith.user.repository.RoleRepository;

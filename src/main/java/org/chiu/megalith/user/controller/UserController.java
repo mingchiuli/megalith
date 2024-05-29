@@ -2,6 +2,7 @@ package org.chiu.megalith.user.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.chiu.megalith.user.req.UserEntityRegisterReq;
+import org.chiu.megalith.user.service.UserRoleService;
 import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.user.req.UserEntityReq;
 import org.chiu.megalith.infra.lang.Result;
@@ -26,6 +27,8 @@ public class UserController {
 
     private final UserService userService;
 
+    private final UserRoleService userRoleService;
+
     @GetMapping("/auth/register/page")
     @PreAuthorize("hasAuthority('sys:user:register:page')")
     public Result<String> getRegisterPage(@RequestParam String username) {
@@ -39,24 +42,27 @@ public class UserController {
 
 
     @PostMapping("/register/save")
-    public Result<Void> saveRegisterPage(@RequestParam String token, @RequestBody @Valid UserEntityRegisterReq userEntityRegisterReq) {
-        return Result.success(() -> userService.saveRegisterPage(token, userEntityRegisterReq));
+    public Result<Void> saveRegisterPage(@RequestParam String token,
+                                         @RequestBody @Valid UserEntityRegisterReq userEntityRegisterReq) {
+        return Result.success(() -> userRoleService.saveRegisterPage(token, userEntityRegisterReq));
     }
 
     @PostMapping("/register/image/upload")
-    public Result<String> imageUpload(@RequestParam MultipartFile image, @RequestParam String token) {
+    public Result<String> imageUpload(@RequestParam MultipartFile image,
+                                      @RequestParam String token) {
         return Result.success(() -> userService.imageUpload(token, image));
     }
 
     @GetMapping("/register/image/delete")
-    public Result<Void> imageDelete(@RequestParam String url, @RequestParam String token) {
+    public Result<Void> imageDelete(@RequestParam String url,
+                                    @RequestParam String token) {
         return Result.success(() -> userService.imageDelete(token, url));
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:user:save')")
     public Result<Void> saveOrUpdate(@RequestBody @Valid UserEntityReq userEntityReq) {
-        return Result.success(() -> userService.saveOrUpdate(userEntityReq));
+        return Result.success(() -> userRoleService.saveOrUpdate(userEntityReq));
     }
 
     @GetMapping("/page/{currentPage}")
