@@ -14,6 +14,8 @@ public interface RoleAuthorityRepository extends JpaRepository<RoleAuthorityEnti
 
     List<RoleAuthorityEntity> findByRoleId(Long id);
 
+    List<RoleAuthorityEntity> findByRoleIdIn(List<Long> ids);
+
     @Query(value = "DELETE from RoleAuthorityEntity roleAuthority where roleAuthority.roleId in (?1)")
     @Modifying
     @Transactional

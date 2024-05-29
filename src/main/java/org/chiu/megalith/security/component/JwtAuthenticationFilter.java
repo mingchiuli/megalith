@@ -42,10 +42,10 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     private final StringRedisTemplate redisTemplate;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
-            ObjectMapper objectMapper,
-            TokenUtils<Claims> tokenUtils,
-            SecurityAuthenticationUtils securityAuthenticationUtils,
-            StringRedisTemplate redisTemplate) {
+                                   ObjectMapper objectMapper,
+                                   TokenUtils<Claims> tokenUtils,
+                                   SecurityAuthenticationUtils securityAuthenticationUtils,
+                                   StringRedisTemplate redisTemplate) {
         super(authenticationManager);
         this.objectMapper = objectMapper;
         this.tokenUtils = tokenUtils;

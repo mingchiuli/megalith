@@ -28,7 +28,7 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     private final RoleAuthorityRepository roleAuthorityRepository;
 
     @Override
-    public List<String> getAuthoritiesByRoleCode(List<String> roleCodes) {
+    public List<String> getAuthoritiesByRoleCodes(List<String> roleCodes) {
         return roleAuthorityWrapper.getAuthoritiesByRoleCode(roleCodes);
     }
 

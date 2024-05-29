@@ -21,7 +21,7 @@ public class SecurityAuthenticationUtils {
     public Authentication getAuthentication(List<String> roles, String userId) {
         List<String> rawRoles = new ArrayList<>();
         roles.forEach(role -> rawRoles.add(role.substring(ROLE_PREFIX.getInfo().length())));
-        List<String> authorities = roleAuthorityService.getAuthoritiesByRoleCode(rawRoles);
+        List<String> authorities = roleAuthorityService.getAuthoritiesByRoleCodes(rawRoles);
         PreAuthenticatedAuthenticationToken authenticationToken = new PreAuthenticatedAuthenticationToken(userId, null, AuthorityUtils.createAuthorityList(authorities));
         authenticationToken.setDetails(rawRoles);
 
