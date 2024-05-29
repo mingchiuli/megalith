@@ -263,7 +263,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
                 .orElseGet(ArrayList::new);
 
         List<String> respList = resp.subList(0, resp.size() - 1);
-        Long total = Long.valueOf(resp.get(resp.size() - 1));
+        Long total = Long.valueOf(resp.getLast());
 
         List<BlogEntity> list = respList.stream()
                 .map(str -> jsonUtils.readValue(str, BlogEntity.class))
