@@ -72,14 +72,13 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     }
 
     @Override
-    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword, Integer pageSize) {
+    public PageAdapter<WebsiteDocumentVo> search(Integer currentPage, String keyword, Integer pageSize, List<String> roles) {
 
         Authentication authentication = SecurityUtils.getLoginAuthentication();
         boolean auth = false;
 
         if (Objects.nonNull(authentication)) {
-            String role = SecurityUtils.getLoginRole();
-            if (Boolean.TRUE.equals(securityUtils.isAdmin(role))) {
+            if (Boolean.TRUE.equals(securityUtils.isAdmin(roles))) {
                 auth = true;
             }
         }
@@ -122,15 +121,14 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
     }
 
     @Override
-    public WebsiteDocumentVo searchById(String id) {
+    public WebsiteDocumentVo searchById(String id, List<String> roles) {
         WebsiteDocument document = elasticsearchTemplate.get(id, WebsiteDocument.class);
         if (Objects.isNull(document)) {
             throw new MissException(DOCUMENT_NOT_EXIST);
         }
 
         int status = document.getStatus();
-        String role = SecurityUtils.getLoginRole();
-        if (status == StatusEnum.HIDE.getCode() && Boolean.FALSE.equals(securityUtils.isAdmin(role))) {
+        if (status == StatusEnum.HIDE.getCode() && Boolean.FALSE.equals(securityUtils.isAdmin(roles))) {
             throw new MissException(DOCUMENT_NOT_EXIST);
         }
 

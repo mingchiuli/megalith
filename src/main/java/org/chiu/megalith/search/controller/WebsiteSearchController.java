@@ -3,6 +3,7 @@ package org.chiu.megalith.search.controller;
 import jakarta.validation.Valid;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.search.service.WebsiteSearchService;
 import org.chiu.megalith.search.vo.WebsiteDocumentVo;
 import org.chiu.megalith.search.req.WebsiteDocumentReq;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author mingchiuli
@@ -40,12 +43,14 @@ public class WebsiteSearchController {
     public Result<PageAdapter<WebsiteDocumentVo>> search(@PathVariable Integer currentPage,
                                                          @RequestParam(required = false) String keyword,
                                                          @RequestParam(required = false, defaultValue = "9") Integer pageSize) {
-        return Result.success(() -> websiteSearchService.search(currentPage, keyword, pageSize));
+        List<String> roles = SecurityUtils.getLoginRole();
+        return Result.success(() -> websiteSearchService.search(currentPage, keyword, pageSize, roles));
     }
 
     @GetMapping("/info/{id}")
     @PreAuthorize("hasAuthority('sys:search:website:info')")
     public Result<WebsiteDocumentVo> info(@PathVariable String id) {
-        return Result.success(() -> websiteSearchService.searchById(id));
+        List<String> roles = SecurityUtils.getLoginRole();
+        return Result.success(() -> websiteSearchService.searchById(id, roles));
     }
 }

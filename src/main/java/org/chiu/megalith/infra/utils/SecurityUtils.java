@@ -46,7 +46,7 @@ public class SecurityUtils {
         return Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    public Boolean isAdmin(String role) {
-        return highestRole.equals(role);
+    public Boolean isAdmin(List<String> roles) {
+        return roles.contains(highestRole);
     }
 }

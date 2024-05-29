@@ -13,14 +13,14 @@ public interface BlogManagerService {
 
     void saveOrUpdate(BlogEntityReq blog, Long userId);
 
-    PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String role);
+    PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, List<String> roles);
 
     void recoverDeletedBlog(Integer idx, Long userId);
 
     PageAdapter<BlogDeleteVo> findDeletedBlogs(Integer currentPage, Integer size, Long userId);
 
 
-    void deleteBatch(List<Long> ids, Long userId, String role);
+    void deleteBatch(List<Long> ids, Long userId, List<String> roles);
 
     String uploadOss(MultipartFile image, Long userId);
 

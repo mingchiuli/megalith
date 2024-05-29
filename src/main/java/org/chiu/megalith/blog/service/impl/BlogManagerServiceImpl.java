@@ -212,10 +212,10 @@ public class BlogManagerServiceImpl implements BlogManagerService {
 
     @Override
     @SuppressWarnings("all")
-    public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, String role) {
+    public PageAdapter<BlogEntityVo> findAllABlogs(Integer currentPage, Integer size, Long userId, List<String> roles) {
 
         var pageRequest = PageRequest.of(currentPage - 1, size, Sort.by("created").descending());
-        Page<BlogEntity> page = securityUtils.isAdmin(role) ? blogRepository.findAll(pageRequest) :
+        Page<BlogEntity> page = securityUtils.isAdmin(roles) ? blogRepository.findAll(pageRequest) :
                 blogRepository.findAllByUserId(pageRequest, userId);
 
         List<BlogEntity> items = page.getContent();
@@ -293,12 +293,12 @@ public class BlogManagerServiceImpl implements BlogManagerService {
     }
 
     @Override
-    public void deleteBatch(List<Long> ids, Long userId, String role) {
+    public void deleteBatch(List<Long> ids, Long userId, List<String> roles) {
         List<BlogEntity> blogList = new ArrayList<>();
         ids.forEach(id -> {
             BlogEntity blogEntity = blogRepository.findById(id)
                     .orElseThrow(() -> new MissException(NO_FOUND));
-            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(securityUtils.isAdmin(role))) {
+            if (Boolean.FALSE.equals(Objects.equals(blogEntity.getUserId(), userId)) && Boolean.FALSE.equals(securityUtils.isAdmin(roles))) {
                 throw new BadCredentialsException(DELETE_NO_AUTH.getMsg());
             }
             blogList.add(blogEntity);

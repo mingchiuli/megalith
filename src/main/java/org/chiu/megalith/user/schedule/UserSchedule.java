@@ -3,6 +3,7 @@ package org.chiu.megalith.user.schedule;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.user.req.UserEntityReq;
+import org.chiu.megalith.user.service.UserRoleService;
 import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.user.vo.UserEntityVo;
 import org.redisson.api.RLock;
@@ -27,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 public class UserSchedule {
 
     private final RedissonClient redisson;
+
+    private final UserRoleService userRoleService;
 
     private final UserService userService;
 
@@ -63,7 +66,7 @@ public class UserSchedule {
         CompletableFuture.runAsync(() -> {
             List<Long> ids = userService.findIdsByStatus(StatusEnum.HIDE.getCode());
             ids.forEach(id -> {
-                UserEntityVo user = userService.findById(id);
+                UserEntityVo user = userRoleService.findById(id);
                 user.setStatus(StatusEnum.NORMAL.getCode());
                 var req = new UserEntityReq();
                 req.setAvatar(user.getAvatar());
@@ -71,10 +74,9 @@ public class UserSchedule {
                 req.setId(user.getId());
                 req.setNickname(user.getNickname());
                 req.setStatus(user.getStatus());
-                req.setRole(user.getRole());
                 req.setPhone(user.getPhone());
                 req.setUsername(user.getUsername());
-                userService.saveOrUpdate(req);
+                userRoleService.saveOrUpdate(req);
             });
         }, taskExecutor);
     }
