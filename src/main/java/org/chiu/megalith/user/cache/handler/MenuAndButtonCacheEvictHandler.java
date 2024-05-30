@@ -43,7 +43,7 @@ public class MenuAndButtonCacheEvictHandler extends CacheEvictHandler {
             }
         }
 
-        Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", List.class);
+        Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", String.class);
         String key = cacheKeyGenerator.generateKey(method, roleCode);
         return Collections.singleton(key);
     }

@@ -24,7 +24,6 @@ public class BatchAuthorityCacheEvictHandler extends CacheEvictHandler {
 
     @SneakyThrows
     @Override
-    @SuppressWarnings("all")
     public Set<String> handle(Object[] args) {
         Object roleIds = args[0];
         List<RoleEntity> roleEntities = roleRepository.findAllById((Iterable<Long>) roleIds);

@@ -29,7 +29,11 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
 
     @Override
     public List<String> getAuthoritiesByRoleCodes(List<String> roleCodes) {
-        return roleAuthorityWrapper.getAuthoritiesByRoleCode(roleCodes);
+        List<String> allAuthorities = new ArrayList<>();
+        roleCodes.forEach(role -> allAuthorities.addAll(roleAuthorityWrapper.getAuthoritiesByRoleCode(role)));
+        return allAuthorities.stream()
+                .distinct()
+                .toList();
     }
 
     /**

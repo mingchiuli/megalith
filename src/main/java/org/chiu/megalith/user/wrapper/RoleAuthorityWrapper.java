@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
@@ -34,24 +32,19 @@ public class RoleAuthorityWrapper {
     private final RoleRepository roleRepository;
 
     @Cache(prefix = Const.HOT_AUTHORITIES)
-    public List<String> getAuthoritiesByRoleCode(List<String> roleCodes) {
+    public List<String> getAuthoritiesByRoleCode(String roleCode) {
 
-        if ("REFRESH_TOKEN".equals(roleCodes.getFirst())) {
+        if ("REFRESH_TOKEN".equals(roleCode)) {
             return Collections.singletonList("token:refresh");
         }
 
-        List<RoleEntity> roleEntities = roleRepository.findByCodeInAndStatus(roleCodes, NORMAL.getCode());
-        if (roleEntities.isEmpty()) {
-            throw new MissException(NO_FOUND);
-        }
+        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(roleCode, NORMAL.getCode())
+                .orElseThrow(() -> new MissException(NO_FOUND));
 
-        List<Long> roleIds = roleEntities.stream()
-                .map(RoleEntity::getId)
-                .toList();
 
-        Set<Long> authorityIds = roleAuthorityRepository.findByRoleIdIn(roleIds).stream()
+        List<Long> authorityIds = roleAuthorityRepository.findByRoleId(roleEntity.getId()).stream()
                 .map(RoleAuthorityEntity::getAuthorityId)
-                .collect(Collectors.toSet());
+                .toList();
 
         List<AuthorityEntity> authorities = authorityRepository.findAllById(authorityIds).stream()
                 .filter(item -> NORMAL.getCode().equals(item.getStatus()))

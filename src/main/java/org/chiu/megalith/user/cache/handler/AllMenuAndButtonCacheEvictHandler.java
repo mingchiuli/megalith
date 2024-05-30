@@ -27,7 +27,7 @@ public class AllMenuAndButtonCacheEvictHandler extends CacheEvictHandler {
     public Set<String> handle(Object[] args) {
         List<String> roleList = roleRepository.findAllCodes();
 
-        Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", List.class);
+        Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", String.class);
         Set<String> set = new HashSet<>();
         roleList.forEach(role -> set.add(cacheKeyGenerator.generateKey(method, role)));
         return set;

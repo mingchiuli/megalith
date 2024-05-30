@@ -31,7 +31,7 @@ public class BatchMenuAndButtonCacheEvictHandler extends CacheEvictHandler {
         List<RoleEntity> roleEntities = roleRepository.findAllById((Iterable<Long>) roleIds);
         List<String> roleCodes = roleEntities.stream().map(RoleEntity::getCode).toList();
 
-        Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", List.class);
+        Method method = RoleMenuWrapper.class.getMethod("getCurrentRoleNav", String.class);
         Set<String> set = new HashSet<>();
         roleCodes.forEach(role -> set.add(cacheKeyGenerator.generateKey(method, role)));
 

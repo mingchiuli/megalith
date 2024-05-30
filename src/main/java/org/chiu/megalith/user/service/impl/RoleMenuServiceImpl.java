@@ -4,22 +4,21 @@ import org.chiu.megalith.infra.exception.CommitException;
 import org.chiu.megalith.user.convertor.MenuDisplayVoConvertor;
 import org.chiu.megalith.user.convertor.MenusAndButtonsVoConvertor;
 import org.chiu.megalith.user.convertor.RoleMenuEntityConvertor;
+import org.chiu.megalith.user.dto.ButtonDto;
+import org.chiu.megalith.user.dto.MenuDto;
 import org.chiu.megalith.user.dto.MenusAndButtonsDto;
 import org.chiu.megalith.user.entity.MenuEntity;
 import org.chiu.megalith.user.entity.RoleMenuEntity;
 import org.chiu.megalith.user.repository.MenuRepository;
 import org.chiu.megalith.user.repository.RoleMenuRepository;
 import org.chiu.megalith.user.service.RoleMenuService;
-import org.chiu.megalith.user.vo.MenuDisplayVo;
-import org.chiu.megalith.user.vo.MenusAndButtonsVo;
-import org.chiu.megalith.user.vo.RoleMenuVo;
+import org.chiu.megalith.user.vo.*;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.user.wrapper.RoleMenuWrapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.MENU_INVALID_OPERATE;
@@ -62,13 +61,27 @@ public class RoleMenuServiceImpl implements RoleMenuService {
 
     @Override
     public MenusAndButtonsVo getCurrentUserNav(List<String> roles) {
-        MenusAndButtonsDto menusAndButtonsDto = roleMenuWrapper.getCurrentRoleNav(roles);
-        return MenusAndButtonsVoConvertor.convertor(menusAndButtonsDto);
+        List<MenuDto> allMenus = new ArrayList<>();
+        List<ButtonDto> allButtons = new ArrayList<>();
+        roles.forEach(role -> {
+            MenusAndButtonsDto menusAndButtonsDto = roleMenuWrapper.getCurrentRoleNav(role);
+            allMenus.addAll(menusAndButtonsDto.getMenus());
+            allButtons.addAll(menusAndButtonsDto.getButtons());
+        });
+
+        return MenusAndButtonsVoConvertor.convertor(MenusAndButtonsDto.builder()
+                .buttons(allButtons.stream()
+                        .distinct()
+                        .toList())
+                .menus(allMenus.stream()
+                        .distinct()
+                        .toList())
+                .build());
     }
 
     public List<RoleMenuVo> getMenusInfo(Long roleId) {
         List<MenuDisplayVo> menusInfo = getNormalMenusInfo();
-        List<Long> menuIdsByRole = roleMenuRepository.findMenuIdsByRoleId(Collections.singletonList(roleId));
+        List<Long> menuIdsByRole = roleMenuRepository.findMenuIdsByRoleId(roleId);
         return setCheckMenusInfo(menusInfo, menuIdsByRole, new ArrayList<>());
     }
 

@@ -48,7 +48,7 @@ public class AuthorityCacheEvictHandler extends CacheEvictHandler {
             }
         }
 
-        Method method = RoleAuthorityWrapper.class.getMethod("getAuthoritiesByRoleCode", List.class);
+        Method method = RoleAuthorityWrapper.class.getMethod("getAuthoritiesByRoleCode", String.class);
         String key = cacheKeyGenerator.generateKey(method, roleCode);
         return Collections.singleton(key);
     }

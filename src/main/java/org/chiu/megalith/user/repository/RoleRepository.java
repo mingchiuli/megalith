@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mingchiuli
@@ -14,7 +15,9 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
     List<RoleEntity> findByCodeIn(List<String> roles);
 
-    List<RoleEntity> findByCodeInAndStatus(List<String> role, Integer status);
+    List<RoleEntity> findByCodeInAndStatus(List<String> roles, Integer status);
+
+    Optional<RoleEntity> findByCodeAndStatus(String role, Integer status);
 
     List<RoleEntity> findByStatus(Integer status);
 

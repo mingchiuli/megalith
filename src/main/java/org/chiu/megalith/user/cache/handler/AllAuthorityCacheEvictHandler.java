@@ -29,7 +29,7 @@ public class AllAuthorityCacheEvictHandler extends CacheEvictHandler {
     public Set<String> handle(Object[] args) {
         List<String> roleList = roleRepository.findAllCodes();
 
-        Method method = RoleAuthorityWrapper.class.getMethod("getAuthoritiesByRoleCode", List.class);
+        Method method = RoleAuthorityWrapper.class.getMethod("getAuthoritiesByRoleCode", String.class);
         Set<String> set = new HashSet<>();
         roleList.forEach(role -> set.add(cacheKeyGenerator.generateKey(method, role)));
         return set;

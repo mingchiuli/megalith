@@ -14,8 +14,8 @@ import java.util.List;
  */
 public interface RoleMenuRepository extends JpaRepository<RoleMenuEntity, Long> {
 
-    @Query(value = "SELECT roleMenu.menuId from RoleMenuEntity roleMenu where roleMenu.roleId in (?1)")
-    List<Long> findMenuIdsByRoleId(List<Long> id);
+    @Query(value = "SELECT roleMenu.menuId from RoleMenuEntity roleMenu where roleMenu.roleId = ?1")
+    List<Long> findMenuIdsByRoleId(Long id);
 
     @Modifying
     @Transactional
