@@ -35,10 +35,7 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_EXIST.getMsg()));
 
 		Long userId = user.getId();
-		List<String> roleCodes = userRoleService.findRoleCodesByUserId(userId);
-		roleCodes = roleCodes.stream()
-				.map(role -> ROLE_PREFIX.getInfo() + role)
-				.toList();
+		List<String> roleCodes = userRoleService.findRoleCodesDecorByUserId(userId);
 
 		//通过User去自动比较用户名和密码
 		return new LoginUser(username,

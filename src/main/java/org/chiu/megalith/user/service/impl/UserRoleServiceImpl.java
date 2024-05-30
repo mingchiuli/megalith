@@ -153,6 +153,13 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
+    public List<String> findRoleCodesDecorByUserId(Long userId) {
+        return findRoleCodesByUserId(userId).stream()
+                .map(role -> ROLE_PREFIX.getInfo() + role)
+                .toList();
+    }
+
+    @Override
     public UserEntityVo findById(Long userId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new MissException(USER_NOT_EXIST));
@@ -171,7 +178,9 @@ public class UserRoleServiceImpl implements UserRoleService {
                 .map(UserEntity::getId)
                 .toList();
         List<UserRoleEntity> userRoleEntities = userRoleRepository.findByUserIdIn(userIds);
-        List<Long> roleIds = userRoleEntities.stream().map(UserRoleEntity::getRoleId).toList();
+        List<Long> roleIds = userRoleEntities.stream()
+                .map(UserRoleEntity::getRoleId)
+                .toList();
         Map<Long, String> idCodeMap = roleRepository.findAllById(roleIds).stream()
                 .collect(Collectors.toMap(RoleEntity::getId, RoleEntity::getCode));
 
@@ -188,10 +197,6 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     public void deleteUsers(List<Long> ids) {
-        List<Long> userRoleIds = userRoleRepository.findByUserIdIn(ids)
-                .stream()
-                .map(UserRoleEntity::getId).toList();
-
-        userRoleWrapper.deleteUsers(ids, userRoleIds);
+        userRoleWrapper.deleteUsers(ids);
     }
 }

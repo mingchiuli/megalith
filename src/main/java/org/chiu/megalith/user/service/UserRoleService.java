@@ -19,6 +19,9 @@ public interface UserRoleService {
 
     List<String> findRoleCodesByUserId(Long userId);
 
+    List<String> findRoleCodesDecorByUserId(Long userId);
+
+
     UserEntityVo findById(Long userId);
 
     PageAdapter<UserEntityVo> listPage(Integer currentPage, Integer size);

@@ -30,8 +30,8 @@ public class UserRoleWrapper {
     }
 
     @Transactional
-    public void deleteUsers(List<Long> ids, List<Long> userRoleIds) {
+    public void deleteUsers(List<Long> ids) {
         userRepository.deleteAllById(ids);
-        userRoleRepository.deleteAllById(userRoleIds);
+        userRoleRepository.deleteByUserIdIn(ids);
     }
 }

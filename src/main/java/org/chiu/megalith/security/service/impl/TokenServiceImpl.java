@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.chiu.megalith.infra.lang.Const.ROLE_PREFIX;
 import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 
 /**
@@ -42,10 +41,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Map<String, String> refreshToken() {
         Long userId = SecurityUtils.getLoginUserId();
-        List<String> roleCodes = userRoleService.findRoleCodesByUserId(userId);
-        roleCodes = roleCodes.stream()
-                .map(role -> ROLE_PREFIX.getInfo() + role)
-                .toList();
+        List<String> roleCodes = userRoleService.findRoleCodesDecorByUserId(userId);
         String accessToken = tokenUtils.generateToken(userId.toString(), roleCodes, expire);
         return Collections.singletonMap("accessToken", TOKEN_PREFIX.getInfo() + accessToken);
     }
