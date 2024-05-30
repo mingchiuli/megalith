@@ -55,8 +55,8 @@ public class CacheEvictRabbitConfig {
 
     @Bean("cacheEvictMessageListenerContainer")
     SimpleMessageListenerContainer cacheEvictMessageListenerContainer(ConnectionFactory connectionFactory,
-                                                                @Qualifier("cacheEvictMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
-                                                                @Qualifier("cacheEvictQueue") Queue queue) {
+                                                                      @Qualifier("cacheEvictMessageListenerAdapter") MessageListenerAdapter listenerAdapter,
+                                                                      @Qualifier("cacheEvictQueue") Queue queue) {
         var container = new SimpleMessageListenerContainer();
         //框架处理了
         listenerAdapter.containerAckMode(AcknowledgeMode.MANUAL);
