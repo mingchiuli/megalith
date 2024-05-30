@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 import static org.chiu.megalith.infra.lang.TypeMenu.*;
 
