@@ -10,6 +10,7 @@ import org.chiu.megalith.user.wrapper.RoleAuthorityWrapper;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,14 @@ public class BatchAuthorityCacheEvictHandler extends CacheEvictHandler {
     @Override
     public Set<String> handle(Object[] args) {
         Object roleIds = args[0];
-        List<RoleEntity> roleEntities = roleRepository.findAllById((Iterable<Long>) roleIds);
+        List<Long> ids = new ArrayList<>();
+        if (roleIds instanceof List<?>) {
+            for (Object o : (List<?>)roleIds) {
+                ids.add((Long) o);
+            }
+        }
+
+        List<RoleEntity> roleEntities = roleRepository.findAllById(ids);
         List<String> roleCodes = roleEntities.stream().map(RoleEntity::getCode).toList();
 
         Method method = RoleAuthorityWrapper.class.getMethod("getAuthoritiesByRoleCode", String.class);
