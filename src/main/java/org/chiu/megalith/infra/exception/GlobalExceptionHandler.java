@@ -23,13 +23,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = BadCredentialsException.class)
     public Result<Object> handler(BadCredentialsException e) {
-        return Result.fail(e.getMessage(), () -> log.error("authentication exception:{}", e));
+        return Result.fail(e.getMessage(), () -> log.error("authentication exception:", e));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BaseException.class)
     public Result<String> handler(BaseException e){
-        return Result.fail(e.getCode(), e.getMessage(),  () -> log.error("diy exception------------{}", e));
+        return Result.fail(e.getCode(), e.getMessage(),  () -> log.error("diy exception------------", e));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -38,26 +38,26 @@ public class GlobalExceptionHandler {
         return e.getBindingResult().getAllErrors().stream()
                 .findFirst()
                 .<Result<String>>map(error ->
-                        Result.fail(error.getDefaultMessage(), () -> log.error("entity validate exception------------{}", e)))
+                        Result.fail(error.getDefaultMessage(), () -> log.error("entity validate exception------------", e)))
                 .orElseGet(Result::fail);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = IllegalArgumentException.class)
     public Result<String> handler(IllegalArgumentException e) {
-        return Result.fail(e.getMessage(), () -> log.error("Assert exception------------{}", e));
+        return Result.fail(e.getMessage(), () -> log.error("Assert exception------------", e));
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AccessDeniedException.class)
     public Result<String> handler(AccessDeniedException e){
-        return Result.fail(e.getMessage(),  () -> log.error("authorization exception------------{}", e));
+        return Result.fail(e.getMessage(),  () -> log.error("authorization exception------------", e));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = RuntimeException.class)
     public Result<String> handler(RuntimeException e) {
-        return Result.fail(e.getMessage(), () -> log.error("runtime exception------------{}", e));
+        return Result.fail(e.getMessage(), () -> log.error("runtime exception------------", e));
     }
 
 }
