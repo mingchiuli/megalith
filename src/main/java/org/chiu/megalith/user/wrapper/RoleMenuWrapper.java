@@ -2,7 +2,6 @@ package org.chiu.megalith.user.wrapper;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.exception.MissException;
-import org.chiu.megalith.infra.lang.ExceptionMessage;
 import org.chiu.megalith.user.cache.handler.AllMenuAndButtonCacheEvictHandler;
 import org.chiu.megalith.user.convertor.ButtonDtoConvertor;
 import org.chiu.megalith.user.convertor.MenuDisplayDtoConvertor;
