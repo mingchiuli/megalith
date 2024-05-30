@@ -1,7 +1,6 @@
 package org.chiu.megalith.user.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.user.cache.handler.AllMenuAndButtonCacheEvictHandler;
 import org.chiu.megalith.user.convertor.ButtonDtoConvertor;
 import org.chiu.megalith.user.convertor.MenuDisplayDtoConvertor;
@@ -23,7 +22,9 @@ import org.chiu.megalith.user.repository.RoleRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
@@ -49,8 +50,16 @@ public class RoleMenuWrapper {
 
     @Cache(prefix = Const.HOT_MENUS_AND_BUTTONS)
     public MenusAndButtonsDto getCurrentRoleNav(String role) {
-        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(role, NORMAL.getCode())
-                .orElseThrow(() -> new MissException(NO_FOUND));
+        Optional<RoleEntity> roleEntityOptional = roleRepository.findByCodeAndStatus(role, NORMAL.getCode());
+
+        if (roleEntityOptional.isEmpty()) {
+            return MenusAndButtonsDto.builder()
+                    .menus(Collections.emptyList())
+                    .buttons(Collections.emptyList())
+                    .build();
+        }
+
+        RoleEntity roleEntity = roleEntityOptional.get();
 
         List<Long> menuIds = roleMenuRepository.findMenuIdsByRoleId(roleEntity.getId()).stream()
                 .distinct()

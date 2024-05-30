@@ -3,7 +3,6 @@ package org.chiu.megalith.user.wrapper;
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.infra.cache.Cache;
 import org.chiu.megalith.user.cache.CacheEvict;
-import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.Const;
 import org.chiu.megalith.user.cache.handler.AuthorityCacheEvictHandler;
 import org.chiu.megalith.user.entity.AuthorityEntity;
@@ -17,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static org.chiu.megalith.infra.lang.ExceptionMessage.NO_FOUND;
 import static org.chiu.megalith.infra.lang.StatusEnum.NORMAL;
 
 @Component
@@ -38,9 +37,13 @@ public class RoleAuthorityWrapper {
             return Collections.singletonList("token:refresh");
         }
 
-        RoleEntity roleEntity = roleRepository.findByCodeAndStatus(roleCode, NORMAL.getCode())
-                .orElseThrow(() -> new MissException(NO_FOUND));
+        Optional<RoleEntity> roleEntityOptional = roleRepository.findByCodeAndStatus(roleCode, NORMAL.getCode());
 
+        if (roleEntityOptional.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        RoleEntity roleEntity = roleEntityOptional.get();
 
         List<Long> authorityIds = roleAuthorityRepository.findByRoleId(roleEntity.getId()).stream()
                 .map(RoleAuthorityEntity::getAuthorityId)
