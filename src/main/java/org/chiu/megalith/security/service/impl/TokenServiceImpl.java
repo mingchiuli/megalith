@@ -4,7 +4,6 @@ import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.user.service.UserRoleService;
-import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.user.vo.UserEntityVo;
 import org.chiu.megalith.security.convertor.UserInfoVoConvertor;
 import org.chiu.megalith.security.service.TokenService;
@@ -30,8 +29,6 @@ import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 public class TokenServiceImpl implements TokenService {
 
     private final TokenUtils<Claims> tokenUtils;
-
-    private final UserService userService;
 
     private final UserRoleService userRoleService;
 
