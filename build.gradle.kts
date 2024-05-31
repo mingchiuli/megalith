@@ -33,7 +33,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.security:spring-security-messaging")
-	implementation("com.nimbusds:nimbus-jose-jwt:9.39.1")
+	implementation("com.nimbusds:nimbus-jose-jwt:9.39.3")
 	implementation("org.redisson:redisson-spring-boot-starter:3.30.0")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
