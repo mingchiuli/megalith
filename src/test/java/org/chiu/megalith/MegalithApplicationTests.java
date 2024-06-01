@@ -38,6 +38,4 @@ class MegalithApplicationTests {
 		userEntity.setPassword(passwordEncoder.encode("111111"));
 		userEntity.setUsername("admin");
 
-		userRepository.save(userEntity);
-	}
 }
