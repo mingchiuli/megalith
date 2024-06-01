@@ -25,7 +25,7 @@ public class BatchMenuAndButtonCacheEvictHandler extends CacheEvictHandler {
 
     @SneakyThrows
     @Override
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public Set<String> handle(Object[] args) {
         Object roleIds = args[0];
         List<RoleEntity> roleEntities = roleRepository.findAllById((Iterable<Long>) roleIds);

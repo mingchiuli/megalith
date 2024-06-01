@@ -30,7 +30,6 @@ class MegalithApplicationTests {
 	void contextLoads() {
 		UserEntity userEntity = new UserEntity();
 		userEntity.setEmail("1111@163.com");
-		userEntity.setRole("admin");
 		userEntity.setCreated(LocalDateTime.now());
 		userEntity.setStatus(0);
 		userEntity.setAvatar("aa");
@@ -38,4 +37,5 @@ class MegalithApplicationTests {
 		userEntity.setPassword(passwordEncoder.encode("111111"));
 		userEntity.setUsername("admin");
 
+	}
 }
