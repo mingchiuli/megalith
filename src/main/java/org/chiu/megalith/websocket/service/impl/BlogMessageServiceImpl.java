@@ -3,7 +3,6 @@ package org.chiu.megalith.websocket.service.impl;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.chiu.megalith.infra.utils.JsonUtils;
-import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.chiu.megalith.websocket.convertor.BlogEditVoConvertor;
@@ -45,13 +44,17 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
     private final BlogRepository blogRepository;
 
-    private String script;
+    private String pushActionScript;
+
+    private String pushAllScript;
 
     @PostConstruct
     @SneakyThrows
     private void init() {
-        Resource resource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/push-action.lua");
-        script = resource.getContentAsString(StandardCharsets.UTF_8);
+        Resource pushActionResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/push-action.lua");
+        pushActionScript = pushActionResource.getContentAsString(StandardCharsets.UTF_8);
+        Resource pushAllResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/push-all.lua");
+        pushAllScript = pushAllResource.getContentAsString(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class BlogMessageServiceImpl implements BlogMessageService {
 
         String redisKey = KeyFactory.createBlogEditRedisKey(userId, blogId);
 
-        Long execute = redisTemplate.execute(RedisScript.of(script, Long.class), Collections.singletonList(redisKey),
+        Long execute = redisTemplate.execute(RedisScript.of(pushActionScript, Long.class), Collections.singletonList(redisKey),
                 contentChange,
                 operateTypeCode.toString(),
                 version.toString(),
@@ -98,7 +101,8 @@ public class BlogMessageServiceImpl implements BlogMessageService {
         List<String> paragraphList = List.of(content.split(PARAGRAPH_SPLITTER.getInfo()));
         String paragraphListString = jsonUtils.writeValueAsString(paragraphList);
 
-        redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
+        redisTemplate.execute(RedisScript.of(pushAllScript),
+                Collections.singletonList(redisKey),
                 paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
                 STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                 Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
@@ -158,12 +162,13 @@ public class BlogMessageServiceImpl implements BlogMessageService {
             paragraphListString = jsonUtils.writeValueAsString(paragraphList);
         }
 
-        redisTemplate.execute(LuaScriptUtils.pushAllLua, Collections.singletonList(redisKey),
-                    paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
-                    STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
+        redisTemplate.execute(RedisScript.of(pushAllScript),
+                Collections.singletonList(redisKey),
+                paragraphListString, ID.getMsg(), USER_ID.getMsg(), TITLE.getMsg(), DESCRIPTION.getMsg(),
+                STATUS.getMsg(), LINK.getMsg(), VERSION.getMsg(),
                     Objects.isNull(blog.getId()) ? "" : blog.getId().toString(), userId.toString(), blog.getTitle(),
-                    blog.getDescription(), blog.getStatus().toString(), blog.getLink(), Integer.toString(version),
-                    A_WEEK.getInfo());
+                blog.getDescription(), blog.getStatus().toString(), blog.getLink(), Integer.toString(version),
+                A_WEEK.getInfo());
 
         return BlogEditVoConvertor.convert(blog, version);
     }

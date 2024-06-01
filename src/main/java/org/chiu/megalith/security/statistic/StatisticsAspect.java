@@ -1,7 +1,7 @@
 package org.chiu.megalith.security.statistic;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -9,12 +9,17 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +39,17 @@ public class StatisticsAspect {
 
     private static final String UNKNOWN = "unknown";
 
+    private final ResourceLoader resourceLoader;
+
+    private String script;
+
+    @PostConstruct
+    @SneakyThrows
+    private void init() {
+        Resource resource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/statistics.lua");
+        script = resource.getContentAsString(StandardCharsets.UTF_8);
+    }
+
     @Pointcut(value ="execution(* org.chiu.megalith.exhibit.controller.*.*(..)) || execution(* org.chiu.megalith.search.controller.*.*(..))")
     public void pt() {}
 
@@ -48,7 +64,7 @@ public class StatisticsAspect {
             return;
         }
         String ipAddr = getIpAddr(request);
-        redisTemplate.execute(LuaScriptUtils.statisticLua,
+        redisTemplate.execute(RedisScript.of(script),
                 List.of(DAY_VISIT.getInfo(), WEEK_VISIT.getInfo(), MONTH_VISIT.getInfo(), YEAR_VISIT.getInfo()),
                 ipAddr);
     }

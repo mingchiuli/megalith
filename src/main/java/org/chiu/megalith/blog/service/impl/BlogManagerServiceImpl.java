@@ -1,6 +1,8 @@
 package org.chiu.megalith.blog.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,6 @@ import org.chiu.megalith.infra.page.PageAdapter;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.chiu.megalith.infra.utils.JsonUtils;
-import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.infra.utils.OssSignUtils;
 import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.blog.convertor.BlogDeleteVoConvertor;
@@ -29,16 +30,20 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.server.header.CacheControlServerHttpHeadersWriter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,11 +81,34 @@ public class BlogManagerServiceImpl implements BlogManagerService {
 
     private final SecurityUtils securityUtils;
 
+    private final ResourceLoader resourceLoader;
+
     @Qualifier("commonExecutor")
     private final ExecutorService taskExecutor;
 
     @Value("${blog.oss.base-url}")
     private String baseUrl;
+
+    private String hotBlogsScript;
+
+    private String blogDeleteScript;
+
+    private String listDeleteScript;
+
+    private String recoverDeleteScript;
+
+    @PostConstruct
+    @SneakyThrows
+    private void init() {
+        Resource hotBlogsResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/hot-blogs.lua");
+        hotBlogsScript = hotBlogsResource.getContentAsString(StandardCharsets.UTF_8);
+        Resource blogDeleteResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/blog-delete.lua");
+        blogDeleteScript = blogDeleteResource.getContentAsString(StandardCharsets.UTF_8);
+        Resource listDeleteResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/list-delete.lua");
+        listDeleteScript = listDeleteResource.getContentAsString(StandardCharsets.UTF_8);
+        Resource recoverDeleteResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/recover-delete.lua");
+        recoverDeleteScript = recoverDeleteResource.getContentAsString(StandardCharsets.UTF_8);
+    }
 
     @SneakyThrows
     @Override
@@ -223,7 +251,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
                 .map(item -> String.valueOf(item.getId()))
                 .toList();
 
-        List<String> res = redisTemplate.execute(LuaScriptUtils.getHotBlogsLua,
+        List<String> res = redisTemplate.execute(RedisScript.of(hotBlogsScript, List.class),
                 Collections.singletonList(HOT_READ.getInfo()),
                 jsonUtils.writeValueAsString(ids));
 
@@ -257,7 +285,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
         int start = (currentPage - 1) * size;
 
         List<String> resp = Optional.ofNullable(
-                        redisTemplate.execute(LuaScriptUtils.listDeletedRedisScript,
+                        redisTemplate.execute(RedisScript.of(listDeleteScript, List.class),
                                 Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                                 String.valueOf(l), "-1", String.valueOf(size - 1), String.valueOf(start)))
                 .orElseGet(ArrayList::new);
@@ -276,7 +304,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
     public void recoverDeletedBlog(Integer idx, Long userId) {
 
         String str = Optional.ofNullable(
-                        redisTemplate.execute(LuaScriptUtils.recoverDeletedScript,
+                        redisTemplate.execute(RedisScript.of(recoverDeleteScript, String.class),
                                 Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                                 String.valueOf(idx)))
                 .orElse("");
@@ -308,7 +336,7 @@ public class BlogManagerServiceImpl implements BlogManagerService {
 
         blogList.forEach(blogEntity -> {
             Long id = blogEntity.getId();
-            redisTemplate.execute(LuaScriptUtils.setBlogDeleteLua,
+            redisTemplate.execute(RedisScript.of(blogDeleteScript),
                     Collections.singletonList(QUERY_DELETED.getInfo() + userId),
                     jsonUtils.writeValueAsString(blogEntity), A_WEEK.getInfo());
 

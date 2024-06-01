@@ -51,6 +51,15 @@ public class CustomRuntimeHints implements RuntimeHintsRegistrar {
         // Register resources
         hints.resources().registerPattern("ValidationMessages.properties");
         hints.resources().registerPattern("script/push-action.lua");
-
+        hints.resources().registerPattern("script/blog-delete.lua");
+        hints.resources().registerPattern("script/count-years.lua");
+        hints.resources().registerPattern("script/email-phone.lua");
+        hints.resources().registerPattern("script/hot-blogs.lua");
+        hints.resources().registerPattern("script/list-delete.lua");
+        hints.resources().registerPattern("script/password.lua");
+        hints.resources().registerPattern("script/push-all.lua");
+        hints.resources().registerPattern("script/recover-delete.lua");
+        hints.resources().registerPattern("script/statistics.lua");
+        hints.resources().registerPattern("script/visit.lua");
     }
 }

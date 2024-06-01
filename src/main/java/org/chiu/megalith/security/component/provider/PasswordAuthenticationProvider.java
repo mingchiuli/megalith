@@ -1,12 +1,14 @@
 package org.chiu.megalith.security.component.provider;
 
 import org.chiu.megalith.infra.lang.StatusEnum;
-import org.chiu.megalith.infra.utils.LuaScriptUtils;
 import org.chiu.megalith.user.repository.RoleRepository;
 import org.chiu.megalith.user.service.UserService;
 import org.chiu.megalith.infra.lang.Const;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,7 +16,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
+import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,21 +43,34 @@ public final class PasswordAuthenticationProvider extends ProviderBase {
 
     private final UserService userService;
 
+    private final ResourceLoader resourceLoader;
+
     @Value("${blog.password-error-intervalTime}")
     private long intervalTime;
 
     @Value("${blog.email-try-count}")
     private int maxTryNum;
 
+    private String script;
+
+    @PostConstruct
+    @SneakyThrows
+    private void init() {
+        Resource resource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/password.lua");
+        script = resource.getContentAsString(StandardCharsets.UTF_8);
+    }
+
     public PasswordAuthenticationProvider(PasswordEncoder passwordEncoder,
                                           StringRedisTemplate redisTemplate,
                                           UserService userService,
                                           UserDetailsService userDetailsService,
-                                          RoleRepository roleRepository) {
+                                          RoleRepository roleRepository,
+                                          ResourceLoader resourceLoader) {
         super(userDetailsService, roleRepository);
         this.passwordEncoder = passwordEncoder;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
@@ -93,7 +113,8 @@ public final class PasswordAuthenticationProvider extends ProviderBase {
             userService.changeUserStatusByUsername(username, StatusEnum.HIDE.getCode());
         }
 
-        redisTemplate.execute(LuaScriptUtils.passwordLua, Collections.singletonList(prefix),
+        redisTemplate.execute(RedisScript.of(script),
+                Collections.singletonList(prefix),
                 String.valueOf(l), "-1", String.valueOf(System.currentTimeMillis()), String.valueOf(intervalTime / 1000));
     }
 }

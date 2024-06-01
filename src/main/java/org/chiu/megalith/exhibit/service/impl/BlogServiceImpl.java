@@ -18,17 +18,25 @@ import org.chiu.megalith.exhibit.service.BlogService;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.page.PageAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import org.chiu.megalith.blog.repository.BlogRepository;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
+import jakarta.annotation.PostConstruct;
+
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.chiu.megalith.infra.lang.Const.*;
@@ -50,6 +58,21 @@ public class BlogServiceImpl implements BlogService {
     private final BlogWrapper blogWrapper;
 
     private final SecurityUtils securityUtils;
+
+    private final ResourceLoader resourceLoader;
+
+    private String visitScript;
+
+    private String countYearsScript;
+
+    @PostConstruct
+    @SneakyThrows
+    private void init() {
+        Resource visitResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/visit.lua");
+        Resource countYearsResource = resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "script/count-years.lua");
+        visitScript = visitResource.getContentAsString(StandardCharsets.UTF_8);
+        countYearsScript = countYearsResource.getContentAsString(StandardCharsets.UTF_8);
+    }
 
     @Override
     public PageAdapter<BlogDescriptionVo> findPage(Integer currentPage, Integer year) {
@@ -108,7 +131,8 @@ public class BlogServiceImpl implements BlogService {
     public List<Integer> searchYears() {
         Long count = Optional
                 .ofNullable(
-                        redisTemplate.execute(LuaScriptUtils.countYears, List.of(BLOOM_FILTER_YEARS.getInfo())))
+                        redisTemplate.execute(RedisScript.of(countYearsScript, Long.class), 
+                                List.of(BLOOM_FILTER_YEARS.getInfo())))
                 .orElse(0L);
         int start = 2021;
         int end = Math.max(start + count.intValue() - 1, start);
@@ -125,7 +149,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @SuppressWarnings("unchecked")
     public VisitStatisticsVo getVisitStatistics() {
-        List<Long> list = Optional.ofNullable(redisTemplate.execute(LuaScriptUtils.getVisitLua,
+        List<Long> list = Optional.ofNullable(redisTemplate.execute(RedisScript.of(visitScript,List.class),
                         List.of(DAY_VISIT.getInfo(), WEEK_VISIT.getInfo(), MONTH_VISIT.getInfo(), YEAR_VISIT.getInfo())))
                 .orElseGet(ArrayList::new);
 
