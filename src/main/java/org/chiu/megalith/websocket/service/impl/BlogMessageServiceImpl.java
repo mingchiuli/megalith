@@ -79,11 +79,11 @@ public class BlogMessageServiceImpl implements BlogMessageService {
                 Objects.nonNull(paraNo) ? paraNo.toString() : null);
 
         if (Long.valueOf(-1).equals(execute)) {
-            simpMessagingTemplate.convertAndSend("/edits/push/" + userKey, "");
+            simpMessagingTemplate.convertAndSend("/edits/push/" + userKey, version.toString());
         }
 
         if (Long.valueOf(-2).equals(execute)) {
-            simpMessagingTemplate.convertAndSend("/edits/pull/" + userKey, "");
+            simpMessagingTemplate.convertAndSend("/edits/pull/" + userKey, version.toString());
         }
     }
 
