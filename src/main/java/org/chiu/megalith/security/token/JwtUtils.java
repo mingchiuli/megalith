@@ -1,6 +1,5 @@
 package org.chiu.megalith.security.token;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JOSEObjectType;
@@ -65,7 +64,7 @@ public class JwtUtils implements TokenUtils<Claims> {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .issuer("megalith")
                 .subject(userId)
-                .claim("role", objectMapper.writeValueAsString(roles))
+                .claim("roles", roles)
                 .issueTime(nowDate)
                 .expirationTime(expireDate)
                 .build();
@@ -76,6 +75,7 @@ public class JwtUtils implements TokenUtils<Claims> {
         return jwsObject.serialize();
     }
 
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     public Claims getVerifierByToken(String token) {
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -92,10 +92,9 @@ public class JwtUtils implements TokenUtils<Claims> {
 
         var claim = new Claims();
 
-        Object role = jwtClaimsSet.getClaim("role");
-        List<String> roles = objectMapper.readValue((String) role, new TypeReference<>() {});
+        Object roles = jwtClaimsSet.getClaim("roles");
         claim.setUserId(jwtClaimsSet.getSubject());
-        claim.setRoles(roles);
+        claim.setRoles((List<String>) roles);
         return claim;
     }
 }
