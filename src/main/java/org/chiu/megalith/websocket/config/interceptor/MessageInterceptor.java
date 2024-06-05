@@ -10,7 +10,7 @@ import java.util.Objects;
 import org.apache.http.HttpHeaders;
 import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
-import org.chiu.megalith.infra.utils.SecurityAuthenticationUtils;
+import org.chiu.megalith.security.utils.SecurityAuthenticationUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

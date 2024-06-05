@@ -14,7 +14,7 @@ import org.chiu.megalith.infra.constant.BlogOperateEnum;
 import org.chiu.megalith.infra.constant.BlogOperateMessage;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.chiu.megalith.infra.utils.OssSignUtils;
-import org.chiu.megalith.infra.utils.SecurityUtils;
+import org.chiu.megalith.security.utils.SecurityUtils;
 import org.chiu.megalith.blog.convertor.BlogDeleteVoConvertor;
 import org.chiu.megalith.blog.convertor.BlogEntityVoConvertor;
 import org.chiu.megalith.blog.entity.BlogEntity;

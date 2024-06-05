@@ -2,6 +2,7 @@ package org.chiu.megalith.security.component;
 
 import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
+import org.chiu.megalith.security.utils.SecurityAuthenticationUtils;
 import org.chiu.megalith.infra.lang.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.source.JWKSetParseException;
@@ -11,7 +12,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.chiu.megalith.infra.utils.SecurityAuthenticationUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

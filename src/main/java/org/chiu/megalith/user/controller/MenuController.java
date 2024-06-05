@@ -1,10 +1,12 @@
 package org.chiu.megalith.user.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.chiu.megalith.infra.utils.SecurityUtils;
+
 import org.chiu.megalith.user.service.MenuService;
 import org.chiu.megalith.user.req.MenuEntityReq;
 import org.chiu.megalith.infra.lang.Result;
+import org.chiu.megalith.security.utils.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.user.service.RoleMenuService;
 import org.chiu.megalith.user.valid.MenuValue;

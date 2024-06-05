@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.utils;
+package org.chiu.megalith.security.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.chiu.megalith.user.service.RoleAuthorityService;

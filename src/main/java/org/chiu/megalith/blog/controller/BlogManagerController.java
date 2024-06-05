@@ -5,9 +5,9 @@ import org.chiu.megalith.blog.service.BlogManagerService;
 import org.chiu.megalith.blog.vo.BlogDeleteVo;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.blog.req.BlogEntityReq;
-import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.security.utils.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 

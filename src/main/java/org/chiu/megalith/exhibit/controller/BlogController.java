@@ -8,10 +8,11 @@ import org.chiu.megalith.exhibit.bloom.Bloom;
 import org.chiu.megalith.exhibit.service.BlogService;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
+import org.chiu.megalith.security.utils.SecurityUtils;
 import org.chiu.megalith.exhibit.vo.BlogExhibitVo;
 import org.chiu.megalith.exhibit.vo.BlogHotReadVo;
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.utils.SecurityUtils;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

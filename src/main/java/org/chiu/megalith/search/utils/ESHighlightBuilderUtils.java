@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.utils;
+package org.chiu.megalith.search.utils;
 
 import org.springframework.data.elasticsearch.core.query.HighlightQuery;
 import org.springframework.data.elasticsearch.core.query.highlight.Highlight;

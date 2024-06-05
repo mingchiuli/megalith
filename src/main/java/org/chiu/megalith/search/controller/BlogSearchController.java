@@ -3,9 +3,9 @@ package org.chiu.megalith.search.controller;
 import org.chiu.megalith.blog.vo.BlogEntityVo;
 import org.chiu.megalith.infra.lang.Result;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.search.service.BlogSearchService;
 import org.chiu.megalith.search.vo.BlogDocumentVo;
+import org.chiu.megalith.security.utils.SecurityUtils;
 
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;

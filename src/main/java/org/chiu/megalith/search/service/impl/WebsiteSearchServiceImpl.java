@@ -5,12 +5,12 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.lang.StatusEnum;
 import org.chiu.megalith.infra.page.PageAdapter;
-import org.chiu.megalith.infra.utils.ESHighlightBuilderUtils;
-import org.chiu.megalith.infra.utils.SecurityUtils;
 import org.chiu.megalith.search.convertor.WebsiteDocumentVoConvertor;
 import org.chiu.megalith.search.document.WebsiteDocument;
 import org.chiu.megalith.search.service.WebsiteSearchService;
+import org.chiu.megalith.search.utils.ESHighlightBuilderUtils;
 import org.chiu.megalith.search.vo.WebsiteDocumentVo;
+import org.chiu.megalith.security.utils.SecurityUtils;
 import org.chiu.megalith.search.req.WebsiteDocumentReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -77,10 +77,8 @@ public class WebsiteSearchServiceImpl implements WebsiteSearchService {
         Authentication authentication = SecurityUtils.getLoginAuthentication();
         boolean auth = false;
 
-        if (Objects.nonNull(authentication)) {
-            if (Boolean.TRUE.equals(securityUtils.isAdmin(roles))) {
-                auth = true;
-            }
+        if (Objects.nonNull(authentication) && Boolean.TRUE.equals(securityUtils.isAdmin(roles))) {
+            auth = true; 
         }
 
         var nativeQueryBuilder = NativeQuery.builder()

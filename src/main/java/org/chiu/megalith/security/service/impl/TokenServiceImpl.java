@@ -2,7 +2,7 @@ package org.chiu.megalith.security.service.impl;
 
 import org.chiu.megalith.security.token.Claims;
 import org.chiu.megalith.security.token.TokenUtils;
-import org.chiu.megalith.infra.utils.SecurityUtils;
+import org.chiu.megalith.security.utils.SecurityUtils;
 import org.chiu.megalith.user.service.UserRoleService;
 import org.chiu.megalith.user.vo.UserEntityVo;
 import org.chiu.megalith.security.convertor.UserInfoVoConvertor;

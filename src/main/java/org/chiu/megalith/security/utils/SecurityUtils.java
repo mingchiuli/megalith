@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.utils;
+package org.chiu.megalith.security.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
