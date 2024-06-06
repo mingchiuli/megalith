@@ -2,7 +2,6 @@ package org.chiu.megalith.infra.cache;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
-import static org.chiu.megalith.infra.lang.ExceptionMessage.GET_LOCK_TIMEOUT;
 
 @AllArgsConstructor
 public class CacheTask implements Function<String, Object> {
@@ -57,11 +55,10 @@ public class CacheTask implements Function<String, Object> {
         // 已经线程安全
         RLock rLock = redisson.getLock(lock);
 
-        if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
-            throw new TimeoutException(GET_LOCK_TIMEOUT.getMsg());
-        }
-
         try {
+            if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
+                return pjp.proceed();
+            }
             // 双重检查
             String r = redisTemplate.opsForValue().get(key);
 
