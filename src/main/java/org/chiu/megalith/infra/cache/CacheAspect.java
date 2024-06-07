@@ -12,12 +12,15 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.chiu.megalith.infra.utils.ClassUtils;
 import org.chiu.megalith.infra.utils.JsonUtils;
 import org.redisson.api.*;
+import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 统一缓存处理
@@ -48,6 +51,8 @@ public class CacheAspect {
     public void pt() {
     }
 
+    private static final String LOCK = "blogLock:";
+
     @SneakyThrows
     @Around("pt()")
     public Object around(ProceedingJoinPoint pjp) {
@@ -70,7 +75,50 @@ public class CacheAspect {
             return cacheValue;
         }
 
-        return localCache.get(cacheKey, new CacheTask(redisTemplate, objectMapper, redisson, pjp, javaType, method));
+        Object localCacheObj = localCache.getIfPresent(cacheKey);
+
+        if (Objects.nonNull(localCacheObj)) {
+            return localCacheObj;
+        }
+
+        String remoteCacheObj;
+        // 防止redis挂了以后db也访问不了
+        try {
+            remoteCacheObj = redisTemplate.opsForValue().get(cacheKey);
+        } catch (NestedRuntimeException e) {
+            return pjp.proceed();
+        }
+
+        if (StringUtils.hasLength(remoteCacheObj)) {
+            Object obj = objectMapper.readValue(remoteCacheObj, javaType);
+            localCache.put(cacheKey, obj);
+            return obj;
+        }
+
+        String lock = LOCK + cacheKey;
+        // 已经线程安全
+        RLock rLock = redisson.getLock(lock);
+
+        try {
+            if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
+                return pjp.proceed();
+            }
+            // 双重检查
+            String r = redisTemplate.opsForValue().get(cacheKey);
+
+            if (StringUtils.hasLength(r)) {
+                return objectMapper.readValue(r, javaType);
+            }
+            // 执行目标方法
+            Object proceed = pjp.proceed();
+
+            Cache annotation = method.getAnnotation(Cache.class);
+            redisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(proceed), annotation.expire(), TimeUnit.MINUTES);
+            localCache.put(cacheKey, proceed);
+            return proceed;
+        } finally {
+            rLock.unlock();
+        }
     }
 
 }
