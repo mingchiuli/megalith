@@ -43,7 +43,7 @@ public class OssSignUtils {
 
     private String buildSignData(String date, String canonicalizedResource, String methodName, String contentType) {
         //https://help.aliyun.com/zh/oss/developer-reference/include-signatures-in-the-authorization-header?spm=a2c4g.11186623.0.0.54e828efd3PoE6
-        return  methodName + "\n" +
+        return methodName + "\n" +
                 "\n" +
                 contentType + "\n" +
                 date + "\n" +
@@ -55,6 +55,6 @@ public class OssSignUtils {
         String signData = buildSignData(date, "/" + bucketName + "/" + objectName, method, contentType);
         byte[] bytes = hmacSha1(signData, accessKeySecret);
         String signature = Base64.getEncoder().encodeToString(bytes);
-        return  "OSS " + accessKeyId + ":" + signature;
+        return "OSS " + accessKeyId + ":" + signature;
     }
 }
