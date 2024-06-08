@@ -99,10 +99,11 @@ public class CacheAspect {
         // 已经线程安全
         RLock rLock = redisson.getLock(lock);
 
+        if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
+            return pjp.proceed();
+        }
+
         try {
-            if (Boolean.FALSE.equals(rLock.tryLock(5000, TimeUnit.MILLISECONDS))) {
-                return pjp.proceed();
-            }
             // 双重检查
             String r = redisTemplate.opsForValue().get(cacheKey);
 
