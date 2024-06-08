@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.chiu.megalith.infra.lang.ExceptionMessage.AUTH_EXCEPTION;
@@ -20,18 +19,14 @@ public class SecurityUtils {
 
     private SecurityUtils(){}
 
+    @SuppressWarnings("unchecked")
     public static List<String> getLoginRole() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (Boolean.TRUE.equals(authentication instanceof AnonymousAuthenticationToken)) {
             throw new BadCredentialsException(AUTH_EXCEPTION.getMsg());
         }
 
-        List<?> details = (List<?>) authentication.getDetails();
-        List<String> roles = new ArrayList<>();
-        for (Object detail : details) {
-            roles.add((String) detail);
-        }
-        return roles;
+        return (List<String>) authentication.getDetails();
     }
 
     public static Authentication getLoginAuthentication() {
