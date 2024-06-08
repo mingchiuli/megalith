@@ -10,7 +10,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.chiu.megalith.infra.utils.ClassUtils;
-import org.chiu.megalith.infra.utils.JsonUtils;
 import org.redisson.api.*;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.annotation.Order;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -43,8 +43,6 @@ public class CacheAspect {
 
     private final RedissonClient redisson;
 
-    private final JsonUtils jsonUtils;
-
     private final com.github.benmanes.caffeine.cache.Cache<String, Object> localCache;
 
     @Pointcut("@annotation(org.chiu.megalith.infra.cache.Cache)")
@@ -66,8 +64,10 @@ public class CacheAspect {
 
         // 参数
         Method method = declaringType.getMethod(methodName, parameterTypes);
+        Type genericReturnType = method.getGenericReturnType();
 
-        JavaType javaType = jsonUtils.getTypesReference(method);
+        JavaType javaType = objectMapper.getTypeFactory().constructType(genericReturnType);
+
         String cacheKey = cacheKeyGenerator.generateKey(method, args);
 
         Object cacheValue = localCache.getIfPresent(cacheKey);
