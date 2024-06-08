@@ -81,18 +81,18 @@ public class CacheAspect {
             return localCacheObj;
         }
 
-        String remoteCacheObj;
+        String remoteCacheStr;
         // 防止redis挂了以后db也访问不了
         try {
-            remoteCacheObj = redisTemplate.opsForValue().get(cacheKey);
+            remoteCacheStr = redisTemplate.opsForValue().get(cacheKey);
         } catch (NestedRuntimeException e) {
             return pjp.proceed();
         }
 
-        if (StringUtils.hasLength(remoteCacheObj)) {
-            Object obj = objectMapper.readValue(remoteCacheObj, javaType);
-            localCache.put(cacheKey, obj);
-            return obj;
+        if (StringUtils.hasLength(remoteCacheStr)) {
+            Object remoteCacheObj = objectMapper.readValue(remoteCacheStr, javaType);
+            localCache.put(cacheKey, remoteCacheObj);
+            return remoteCacheObj;
         }
 
         String lock = LOCK + cacheKey;
