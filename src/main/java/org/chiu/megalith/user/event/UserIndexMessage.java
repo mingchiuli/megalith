@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.user;
+package org.chiu.megalith.user.event;
 
 
 import java.io.Serializable;

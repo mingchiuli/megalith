@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.chiu.megalith.infra.exception.MissException;
 import org.chiu.megalith.infra.utils.SmsUtils;
 import org.chiu.megalith.user.repository.UserRepository;
+import org.chiu.megalith.security.code.CodeFactory;
 import org.chiu.megalith.security.http.SmsHttpService;
 import org.chiu.megalith.security.service.CodeService;
 import org.chiu.megalith.infra.lang.Const;
@@ -14,7 +15,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.chiu.megalith.infra.code.CodeFactory;
 import org.chiu.megalith.infra.exception.CodeException;
 
 import java.util.Collections;

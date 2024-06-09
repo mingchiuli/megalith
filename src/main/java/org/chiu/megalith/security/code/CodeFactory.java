@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.code;
+package org.chiu.megalith.security.code;
 
 import org.chiu.megalith.infra.exception.CodeException;
 import lombok.RequiredArgsConstructor;

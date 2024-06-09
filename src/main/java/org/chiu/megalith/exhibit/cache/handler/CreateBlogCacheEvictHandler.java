@@ -2,8 +2,8 @@ package org.chiu.megalith.exhibit.cache.handler;
 
 import org.chiu.megalith.blog.entity.BlogEntity;
 import org.chiu.megalith.infra.cache.CacheKeyGenerator;
-import org.chiu.megalith.infra.key.KeyFactory;
 import org.chiu.megalith.infra.constant.BlogOperateEnum;
+import org.chiu.megalith.websocket.key.KeyFactory;
 import org.chiu.megalith.blog.repository.BlogRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

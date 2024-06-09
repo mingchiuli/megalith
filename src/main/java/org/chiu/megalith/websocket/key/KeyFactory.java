@@ -1,4 +1,4 @@
-package org.chiu.megalith.infra.key;
+package org.chiu.megalith.websocket.key;
 
 import java.util.Objects;
 

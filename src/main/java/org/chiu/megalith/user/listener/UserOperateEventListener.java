@@ -1,8 +1,9 @@
 package org.chiu.megalith.user.listener;
 
 import lombok.RequiredArgsConstructor;
-import org.chiu.megalith.infra.user.UserIndexMessage;
+
 import org.chiu.megalith.user.constant.UserOperateEnum;
+import org.chiu.megalith.user.event.UserIndexMessage;
 import org.chiu.megalith.user.event.UserOperateEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
