@@ -46,22 +46,23 @@ public class MessageInterceptor implements ChannelInterceptor {
         Assert.isTrue(Objects.nonNull(accessor), ACCESSOR_NULL.getMsg());
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
-            if (StringUtils.hasLength(token)) {
-                String jwt;
-                try {
-                    jwt = token.substring(TOKEN_PREFIX.getInfo().length());
-                } catch (IndexOutOfBoundsException e) {
-                    throw new JWKSetParseException(TOKEN_INVALID.getMsg(), null);
-                }
-
-                Claims claims = tokenUtils.getVerifierByToken(jwt);
-                String userId = claims.getUserId();
-                List<String> roles = claims.getRoles();
-
-                Authentication authentication = securityAuthenticationUtils.getAuthentication(roles, userId);
-                accessor.setUser(authentication);
+            if (!StringUtils.hasLength(token)) {
+                return message;
             }
 
+            String jwt;
+            try {
+                jwt = token.substring(TOKEN_PREFIX.getInfo().length());
+            } catch (IndexOutOfBoundsException e) {
+                throw new JWKSetParseException(TOKEN_INVALID.getMsg(), null);
+            }
+
+            Claims claims = tokenUtils.getVerifierByToken(jwt);
+            String userId = claims.getUserId();
+            List<String> roles = claims.getRoles();
+
+            Authentication authentication = securityAuthenticationUtils.getAuthentication(roles, userId);
+            accessor.setUser(authentication);
         }
 
         return message;
