@@ -21,7 +21,6 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import static org.chiu.megalith.infra.lang.Const.TOKEN_PREFIX;
 import static org.chiu.megalith.infra.lang.ExceptionMessage.ACCESSOR_NULL;
@@ -46,9 +45,6 @@ public class MessageInterceptor implements ChannelInterceptor {
         Assert.isTrue(Objects.nonNull(accessor), ACCESSOR_NULL.getMsg());
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
-            if (!StringUtils.hasLength(token)) {
-                return message;
-            }
 
             String jwt;
             try {
