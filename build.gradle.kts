@@ -34,7 +34,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.security:spring-security-messaging")
 	implementation("com.nimbusds:nimbus-jose-jwt:9.40")
-	implementation("org.redisson:redisson-spring-boot-starter:3.31.0")
+	implementation("org.redisson:redisson-spring-boot-starter:3.32.0")
 	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	compileOnly("org.projectlombok:lombok")
